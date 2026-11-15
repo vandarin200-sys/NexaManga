@@ -518,7 +518,7 @@ async function handler(req, res) {
     if (error instanceof CatalogNotInitializedError) return sendJson(res, 409, { error: error.message });
     if (error instanceof TelegramError) {
       console.error(error.message);
-      return sendJson(res, 502, { error: 'Telegram API gagal memproses permintaan. Periksa konfigurasi dan izin bot.' });
+      return sendJson(res, 502, { error: error.message });
     }
     if (/Environment variable|TOKEN_SECRET|TELEGRAM_STORAGE_CHAT_ID|PUBLIC_API_URL|GOOGLE_CLIENT|DISCORD_CLIENT/.test(error.message)) {
       console.error(error.message);
