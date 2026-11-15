@@ -2141,14 +2141,18 @@
           (state.commentNotice
             ? '<div class="kv-stat-box" style="margin-bottom:14px;border-color:var(--kv-success);"><p style="margin:0;">' + escapeHtml(state.commentNotice) + '</p></div>'
             : '') +
-          '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">' +
-            '<input class="kv-input" name="author" placeholder="Nama Anda" required/>' +
-            '<textarea class="kv-textarea" name="content" placeholder="Tulis ulasan atau komentar sopan..." required></textarea>' +
-            '<button class="kv-btn kv-btn-primary" type="submit" style="align-self:flex-start;">Kirim Komentar</button>' +
-          '</form>' +
-          comments.map(function (c) {
-            return '<div class="kv-stat-box" style="margin-bottom:10px;"><div style="font-weight:700;font-size:0.875rem;">' + escapeHtml(c.authorName) + ' <span class="kv-mono" style="font-weight:400;color:var(--kv-text-muted);">' + escapeHtml(c.createdAt) + '</span></div><p style="margin:6px 0 0;color:var(--kv-text-muted);">' + escapeHtml(c.content) + '</p></div>';
-          }).join('') +
+           '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">' +
+             (state.user
+               ? '<div style="display:flex;align-items:center;gap:8px;font-size:0.875rem;color:var(--kv-text-muted);">Komentar sebagai <strong>' + escapeHtml(state.user.name) + '</strong>' + (state.user.avatar ? ' <img src="' + escapeHtml(state.user.avatar) + '" alt="" style="width:20px;height:20px;border-radius:50%;"/>' : '') + '</div>'
+               : '<input class="kv-input" name="author" placeholder="Nama Anda" required/>') +
+             '<textarea class="kv-textarea" name="content" placeholder="Tulis ulasan atau komentar sopan..." required></textarea>' +
+             '<button class="kv-btn kv-btn-primary" type="submit" style="align-self:flex-start;">Kirim Komentar</button>' +
+           '</form>' +
+           comments.map(function (c) {
+             var avatar = c.authorAvatar ? '<img src="' + escapeHtml(c.authorAvatar) + '" alt="" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;"/>' : '';
+             var own = state.user && c.userId && c.userId === state.user.id;
+             return '<div class="kv-stat-box" style="margin-bottom:10px;"><div style="font-weight:700;font-size:0.875rem;">' + avatar + escapeHtml(c.authorName) + ' <span class="kv-mono" style="font-weight:400;color:var(--kv-text-muted);">' + escapeHtml(c.createdAt) + '</span>' + (own ? ' <span style="font-size:0.7rem;color:var(--kv-accent);">(Anda)</span>' : '') + '</div><p style="margin:6px 0 0;color:var(--kv-text-muted);">' + escapeHtml(c.content) + '</p></div>';
+           }).join('') +
         '</section>' +
       '</main>';
     }
@@ -3080,29 +3084,36 @@
 
       var cForm = document.getElementById('kv-comment-form');
       if (cForm) {
-        cForm.onsubmit = function (e) {
-          e.preventDefault();
-          var fd = new FormData(cForm);
-          var mangaId = cForm.getAttribute('data-manga-id');
-          state.data.comments.unshift({
-            id: 'c-' + Date.now(),
-            mangaId: mangaId,
-            authorName: fd.get('author'),
-            content: fd.get('content'),
-            createdAt: new Date().toISOString().slice(0, 10),
-            status: 'pending'
-          });
-          persistData();
-          state.commentNotice = 'Komentar Anda terkirim dan menunggu moderasi admin. Terima kasih!';
-          if (CONFIG.API_BASE_URL) {
-            fetch(CONFIG.API_BASE_URL + '/api/comment', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ mangaId: mangaId, authorName: fd.get('author'), content: fd.get('content') })
-            }).catch(function () { toast('Komentar tersimpan lokal, gagal terkirim ke server.', 'warn'); });
-          }
-          render();
-        };
+         cForm.onsubmit = function (e) {
+           e.preventDefault();
+           var fd = new FormData(cForm);
+           var mangaId = cForm.getAttribute('data-manga-id');
+           var authorName = state.user ? state.user.name : String(fd.get('author') || '').trim();
+           var authorAvatar = state.user ? (state.user.avatar || null) : null;
+           var userId = state.user ? state.user.id : null;
+           state.data.comments.unshift({
+             id: 'c-' + Date.now(),
+             mangaId: mangaId,
+             userId: userId,
+             authorName: authorName,
+             authorAvatar: authorAvatar,
+             content: fd.get('content'),
+             createdAt: new Date().toISOString().slice(0, 10),
+             status: 'pending'
+           });
+           persistData();
+           state.commentNotice = 'Komentar Anda terkirim dan menunggu moderasi admin. Terima kasih!';
+           if (CONFIG.API_BASE_URL) {
+             var headers = { 'Content-Type': 'application/json' };
+             if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
+             fetch(CONFIG.API_BASE_URL + '/api/comment', {
+               method: 'POST',
+               headers: headers,
+               body: JSON.stringify({ mangaId: mangaId, authorName: authorName, authorAvatar: authorAvatar, content: fd.get('content') })
+             }).catch(function () { toast('Komentar tersimpan lokal, gagal terkirim ke server.', 'warn'); });
+           }
+           render();
+         };
       }
 
       /* --- Binding panel admin --- */

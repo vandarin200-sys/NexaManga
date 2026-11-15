@@ -162,7 +162,9 @@ function addComment(catalog, input) {
   const comment = {
     id: `c-${crypto.randomUUID()}`,
     mangaId,
+    userId: typeof input.userId === 'string' && input.userId ? input.userId : null,
     authorName: requireText(input.authorName, 'Nama', 80),
+    authorAvatar: typeof input.authorAvatar === 'string' ? input.authorAvatar.slice(0, 2048) : null,
     content: requireText(input.content, 'Komentar', 2000, 2),
     createdAt: new Date().toISOString().slice(0, 10),
     status: 'pending'

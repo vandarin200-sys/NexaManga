@@ -368,6 +368,12 @@ async function handler(req, res) {
 
     if (route === 'comment' && req.method === 'POST') {
       const body = await readBody(req);
+      const claims = sessionClaims(req);
+      if (claims) {
+        body.userId = claims.sub;
+        if (!body.authorName) body.authorName = claims.user && claims.user.name ? claims.user.name : 'Pengguna';
+        if (!body.authorAvatar && claims.user && claims.user.avatar) body.authorAvatar = claims.user.avatar;
+      }
       let created;
       await updateCatalog((catalog) => { created = addComment(catalog, body); });
       return sendJson(res, 201, { comment: created });
