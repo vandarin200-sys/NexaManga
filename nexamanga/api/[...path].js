@@ -44,16 +44,21 @@ function sendJson(res, status, value) {
   res.end(JSON.stringify(value));
 }
 
+function parseAllowedOrigins() {
+  return (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((item) => item.trim().replace(/^["']|["']$/g, '').replace(/\/+$/, ''))
+    .filter(Boolean);
+}
+
 function setCors(req, res) {
   const origin = req.headers.origin;
-  const allowed = (process.env.ALLOWED_ORIGINS || '*')
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const allowed = parseAllowedOrigins();
+  const wildcard = (process.env.ALLOWED_ORIGINS || '*').includes('*');
 
-  if (allowed.includes('*')) {
+  if (wildcard) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-  } else if (origin && allowed.includes(origin)) {
+  } else if (origin && allowed.includes(origin.replace(/\/+$/, ''))) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
   }
@@ -137,10 +142,8 @@ function allowedReturnOrigin(value) {
   } catch {
     return null;
   }
-  const allowed = (process.env.ALLOWED_ORIGINS || '')
-    .split(',')
-    .map((item) => item.trim())
-    .filter((item) => item && item !== '*')
+  const allowed = parseAllowedOrigins()
+    .filter((item) => item !== '*')
     .map((item) => {
       try { return new URL(item).origin; } catch { return ''; }
     });
@@ -328,7 +331,13 @@ async function handler(req, res) {
     }
 
     if (route === 'catalog' && req.method === 'GET') {
-      const catalog = await readCatalog();
+      let catalog;
+      try {
+        catalog = await readCatalog();
+      } catch (error) {
+        if (!(error instanceof CatalogNotInitializedError)) throw error;
+        catalog = { manga: [], chapters: [], comments: [], users: [] };
+      }
       if (!isAdmin(req)) {
         catalog.comments = catalog.comments.filter((comment) => comment.status === 'approved');
       }

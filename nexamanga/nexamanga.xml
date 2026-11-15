@@ -14,7 +14,9 @@
        CARA PASANG:
        1. Buka Dashboard Blogger -> Tema -> klik panah bawah -> Edit HTML.
        2. Hapus semua kode lama, tempel seluruh isi file .xml ini, lalu Simpan.
-       3. Ubah konfigurasi SITE_NAME dan API_BASE_URL di bagian <script> bawah.
+        3. Ubah konfigurasi SITE_NAME dan API_BASE_URL di bagian <script> bawah.
+           API_BASE_URL wajib sama dengan PUBLIC_API_URL di .env / Vercel
+           (origin HTTPS tanpa garis miring di akhir).
        ========================================================================= -->
 
   <link href='https://fonts.googleapis.com' rel='preconnect'/>
@@ -1421,8 +1423,12 @@
        1. BLOGGER (frontend): file XML ini. Menayangkan SPA pembaca. Blogger TIDAK
           bisa menjalankan kode server - semua rahasia HARUS di environment Vercel.
        2. VERCEL FUNCTIONS (folder proyek: api/) menyimpan secrets:
-          TELEGRAM_BOT_TOKEN, TOKEN_SECRET, dan credential OAuth Google/Discord.
+          TELEGRAM_BOT_TOKEN, TELEGRAM_STORAGE_CHAT_ID, TOKEN_SECRET,
+          PUBLIC_API_URL, ALLOWED_ORIGINS, dan credential OAuth Google/Discord.
           Backend ini tidak memakai database selain Telegram.
+          Pemetaan ke tema Blogger:
+          - CONFIG.API_BASE_URL  = PUBLIC_API_URL  (origin Vercel yang sama)
+          - return_to OAuth      = origin blog      (harus terdaftar di ALLOWED_ORIGINS)
           Endpoint minimum yang dipanggil frontend:
           - GET  /api/auth/{google|discord}/start dan /callback -> login OAuth
           - GET  /api/auth/me                -> profil dan role sesi aktif
@@ -1448,7 +1454,7 @@
        - Gunakan satu sesi admin untuk mencegah perubahan serentak saling menimpa.
        - Upload JPEG/PNG/WebP maksimal 3 MiB per berkas (batas request Vercel).
        CATATAN JUJUR:
-       - Tanpa API_BASE_URL, situs berjalan dalam mode data lokal (localStorage).
+        - Tanpa API_BASE_URL (diisi = PUBLIC_API_URL), situs jalan mode lokal (localStorage).
        - Panduan deploy Vercel ada di README.md.
        - Notifikasi chapter baru butuh backend (mis. polling feed / bot
           broadcast ke channel) - tidak mungkin dari Blogger saja.
@@ -1458,7 +1464,10 @@
      var CONFIG = {
       SITE_NAME: 'NexaManga',                 /* UBAH: nama website Anda */
       SITE_TAGLINE: 'Platform baca manga berbahasa Indonesia cepat & nyaman.',
-      API_BASE_URL: '', /* UBAH: URL deployment Vercel, mis. 'https://nexamanga-api.vercel.app' */
+      /* Harus identik dengan PUBLIC_API_URL di .env / Vercel Environment Variables.
+         Contoh: 'https://nexamanga-nexamanga.vercel.app' (tanpa slash di akhir).
+         Kosongkan hanya jika ingin mode lokal tanpa backend. */
+      API_BASE_URL: 'https://nexamanga-nexamanga.vercel.app',
       DEFAULT_THEME: 'light', /* 'dark' atau 'light' */
       ITEMS_PER_PAGE: 8,
       CONTACT_EMAIL: 'redaksi@nexamanga.example' /* UBAH: email redaksi */
@@ -1768,7 +1777,11 @@
       var headers = {};
       if (state.adminToken) headers.Authorization = 'Bearer ' + state.adminToken;
       fetch(CONFIG.API_BASE_URL + '/api/catalog', { headers: headers })
-        .then(function (r) { if (!r.ok) throw new Error('Gagal memuat katalog dari server proxy.'); return r.json(); })
+        .then(function (r) {
+          if (r.status === 409) throw new Error('Database belum diinisialisasi. Login sebagai admin (Google/Discord) sekali untuk memulai.');
+          if (!r.ok) throw new Error('Gagal memuat katalog dari server proxy (HTTP ' + r.status + ').');
+          return r.json();
+        })
         .then(function (json) {
           state.data = json;
           state.loading = false;
@@ -2196,7 +2209,7 @@
         '<h1 class="kv-section-title" style="font-size:1.75rem;margin-top:28px;">Akun &amp; Pustaka Pembaca</h1>' +
         '<div class="kv-stat-box" style="margin-top:16px;">' +
           (state.user
-            '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;"><div><strong>' + escapeHtml(state.user.name) + '</strong><div style="color:var(--kv-text-muted);font-size:0.875rem;">' + escapeHtml(state.user.email || 'Email tidak dibagikan') + ' &middot; ' + escapeHtml(state.user.provider) + '</div><span class="kv-chip kv-chip-accent" style="margin-top:8px;">Role: ' + escapeHtml(state.user.role) + '</span></div><button type="button" class="kv-btn kv-btn-ghost" data-action="logout-user">Keluar</button></div>'
+            ? '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;"><div><strong>' + escapeHtml(state.user.name) + '</strong><div style="color:var(--kv-text-muted);font-size:0.875rem;">' + escapeHtml(state.user.email || 'Email tidak dibagikan') + ' &middot; ' + escapeHtml(state.user.provider) + '</div><span class="kv-chip kv-chip-accent" style="margin-top:8px;">Role: ' + escapeHtml(state.user.role) + '</span></div><button type="button" class="kv-btn kv-btn-ghost" data-action="logout-user">Keluar</button></div>'
             : '<h2 style="font-size:1rem;margin:0 0 8px;">Masuk dengan akun</h2>' + renderOAuthButtons() + '<p style="font-size:0.8125rem;color:var(--kv-text-muted);margin:10px 0 0;">Pendaftaran pertama mendapatkan role admin. Akun berikutnya otomatis menjadi member.</p>') +
         '</div>' +
         '<section class="kv-section"><div class="kv-kicker">Koleksi</div><h2 class="kv-section-title">Manga Favorit (' + favManga.length + ')</h2>' +

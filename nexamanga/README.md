@@ -31,7 +31,7 @@ Selain pengaturan Telegram, tambahkan variabel aplikasi dan OAuth berikut:
 | Variable | Nilai |
 |---|---|
 | `TOKEN_SECRET` | Secret acak minimal 32 karakter |
-| `PUBLIC_API_URL` | URL HTTPS deployment, misalnya `https://nexamanga-api.vercel.app` |
+| `PUBLIC_API_URL` | URL HTTPS deployment, misalnya `https://nexamanga-nexamanga.vercel.app` |
 | `ALLOWED_ORIGINS` | Origin Blogger yang tepat, misalnya `https://nama-blog.blogspot.com`; pisahkan beberapa origin dengan koma |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth client credentials Google |
 | `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` | OAuth application credentials Discord |
@@ -45,11 +45,11 @@ Template [`.env.example`](./.env.example) menunjukkan formatnya. Untuk pengatura
 Daftarkan URL callback berikut sebagai **Authorized redirect URI** di Google Cloud OAuth Client dan Discord Developer Portal:
 
 ```text
-https://nama-proyek.vercel.app/api/auth/google/callback
-https://nama-proyek.vercel.app/api/auth/discord/callback
+https://nexamanga-nexamanga.vercel.app/api/auth/google/callback
+https://nexamanga-nexamanga.vercel.app/api/auth/discord/callback
 ```
 
-Ganti domain dengan nilai `PUBLIC_API_URL`. Di konfigurasi Blogger, isi `CONFIG.API_BASE_URL` dengan origin Vercel dan pastikan origin blog terdaftar persis di `ALLOWED_ORIGINS`.
+Ganti domain dengan nilai `PUBLIC_API_URL`. `CONFIG.API_BASE_URL` di `nexamanga.xml` **harus sama persis** dengan `PUBLIC_API_URL` (origin HTTPS tanpa trailing slash). Origin blog (`https://x10think.blogspot.com` dsb.) harus terdaftar di `ALLOWED_ORIGINS`.
 
 Akun pertama yang berhasil mendaftar melalui Google atau Discord mendapat role `admin`; akun berikutnya mendapat role `member`. Pendaftaran pertama membuat snapshot katalog Telegram jika belum ada, sehingga tidak perlu langkah inisialisasi terpisah. Role tidak dapat dipilih dari browser. Jangan hapus daftar `users` dari snapshot Telegram.
 
@@ -58,7 +58,7 @@ Jika sudah memiliki database dari versi lama, pindahkan dan pin snapshot lama se
 Setelah deploy dengan semua variabel di atas, periksa API:
 
 ```powershell
-$api = "https://nexamanga-api.vercel.app"
+$api = "https://nexamanga-nexamanga.vercel.app"
 Invoke-RestMethod -Method Get -Uri "$api/api/health"
 ```
 
@@ -66,10 +66,10 @@ Dokumen snapshot dipin oleh backend pada pendaftaran pertama. Pesan yang dipin m
 
 ## Hubungkan Blogger
 
-Ubah `CONFIG.API_BASE_URL` di `nexamanga.xml` menjadi URL Vercel tanpa garis miring di akhir:
+Ubah `CONFIG.API_BASE_URL` di `nexamanga.xml` agar sama dengan `PUBLIC_API_URL` di `.env` / Vercel, tanpa garis miring di akhir:
 
 ```js
-API_BASE_URL: 'https://nexamanga-api.vercel.app'
+API_BASE_URL: 'https://nexamanga-nexamanga.vercel.app'
 ```
 
 Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/health` dapat dipakai untuk memeriksa apakah deployment merespons.

@@ -185,16 +185,27 @@ test('comment rejects unknown manga with validation error', async () => {
   }
 });
 
-test('catalog not initialized returns 409 with clear message', async () => {
+test('catalog returns empty payload when storage not yet initialized', async () => {
   setEnv();
   const restore = mockTelegram({ catalog: null, pinned: false });
   try {
     const res = await call('GET', '/api/catalog');
-    assert.equal(res.statusCode, 409);
-    assert.match(res.json.error, /belum diinisialisasi/);
+    assert.equal(res.statusCode, 200);
+    assert.deepEqual(res.json, { manga: [], chapters: [], comments: [] });
   } finally {
     restore();
   }
+});
+
+test('CORS allows configured blog origin even with quoted env value', async () => {
+  process.env.TELEGRAM_BOT_TOKEN = 'test-token';
+  process.env.TELEGRAM_STORAGE_CHAT_ID = '-100123';
+  process.env.TOKEN_SECRET = 'test-secret-with-more-than-32-characters';
+  process.env.ALLOWED_ORIGINS = '"https://nexa.example/"';
+  process.env.PUBLIC_API_URL = 'https://nexa.example';
+  const res = await call('GET', '/api/health', { Origin: 'https://nexa.example' });
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.headers['access-control-allow-origin'], 'https://nexa.example');
 });
 
 test('auth/me rejects missing session', async () => {
