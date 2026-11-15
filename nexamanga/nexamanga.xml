@@ -1888,13 +1888,13 @@
        ========================================================================= */
     function renderHeader() {
       if (state.route === 'reader' || state.route === 'admin') return '';
-      var navItems = [
-        { path: '/', label: 'Beranda', key: 'home' },
-        { path: '/katalog', label: 'Katalog', key: 'catalog' },
-        { path: '/akun', label: state.user ? 'Akun Saya' : 'Masuk', key: 'account' },
-        { path: '/tentang', label: 'Tentang', key: 'info' },
-        { path: '/admin', label: 'Admin', key: 'admin' }
-      ];
+       var navItems = [
+         { path: '/', label: 'Beranda', key: 'home' },
+         { path: '/katalog', label: 'Katalog', key: 'catalog' },
+         { path: '/akun', label: state.user ? 'Akun Saya' : 'Masuk', key: 'account' },
+         { path: '/tentang', label: 'Tentang', key: 'info' }
+       ];
+       if (state.user && state.user.role === 'admin') navItems.splice(3, 0, { path: '/admin', label: 'Admin', key: 'admin' });
       var linksHtml = navItems.map(function (item) {
         var cls = 'kv-nav-link' + (item.key === 'account' ? ' kv-nav-login' : '') + (state.route === item.key ? ' active' : '');
         return '<a class="' + cls + '" href="' + item.path + '"' + (state.route === item.key ? ' aria-current="page"' : '') + '>' + item.label + '</a>';
