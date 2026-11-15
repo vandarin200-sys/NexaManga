@@ -2027,24 +2027,29 @@
        HALAMAN KATALOG
        ========================================================================= */
     function renderCatalog() {
-      var genreOptions = ['Semua'].concat(collectGenres());
-      var typeOptions = ['Semua'].concat(collectTypes());
-      var statusOptions = ['Semua', 'Ongoing', 'Tamat'];
-      if (genreOptions.indexOf(state.filterGenre) === -1) state.filterGenre = 'Semua';
-      if (typeOptions.indexOf(state.filterType) === -1) state.filterType = 'Semua';
+       var genreOptions = ['Semua Genre'].concat(collectGenres());
+       var typeOptions = ['Semua Tipe'].concat(collectTypes());
+       var statusOptions = ['Semua Status', 'Ongoing', 'Tamat', 'Hiatus'];
+       if (state.filterGenre === 'Semua') state.filterGenre = 'Semua Genre';
+       if (state.filterType === 'Semua') state.filterType = 'Semua Tipe';
+       if (state.filterStatus === 'Semua') state.filterStatus = 'Semua Status';
+       if (genreOptions.indexOf(state.filterGenre) === -1) state.filterGenre = 'Semua Genre';
+       if (typeOptions.indexOf(state.filterType) === -1) state.filterType = 'Semua Tipe';
+       if (statusOptions.indexOf(state.filterStatus) === -1) state.filterStatus = 'Semua Status';
 
       var list = state.data.manga.filter(function (m) {
         var matchQ = !state.search || m.title.toLowerCase().indexOf(state.search.toLowerCase()) !== -1;
-        var matchG = state.filterGenre === 'Semua' || (m.genres || []).indexOf(state.filterGenre) !== -1;
-        var matchS = state.filterStatus === 'Semua' || m.status === state.filterStatus;
-        var matchT = state.filterType === 'Semua' || m.type === state.filterType;
+         var matchG = state.filterGenre === 'Semua Genre' || (m.genres || []).indexOf(state.filterGenre) !== -1;
+         var matchS = state.filterStatus === 'Semua Status' || m.status === state.filterStatus;
+         var matchT = state.filterType === 'Semua Tipe' || m.type === state.filterType;
         return matchQ && matchG && matchS && matchT;
       });
 
       list.sort(function (a, b) {
-        if (state.sortBy === 'populer') return b.views - a.views;
-        if (state.sortBy === 'abjad') return a.title.localeCompare(b.title);
-        return b.updatedAt.localeCompare(a.updatedAt);
+         if (state.sortBy === 'populer') return (b.views || 0) - (a.views || 0);
+         if (state.sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+         if (state.sortBy === 'abjad') return a.title.localeCompare(b.title);
+         return String(b.updatedAt || '').localeCompare(String(a.updatedAt || ''));
       });
 
       var totalPages = Math.max(1, Math.ceil(list.length / CONFIG.ITEMS_PER_PAGE));
@@ -2079,11 +2084,12 @@
               return '<option value="' + escapeHtml(s) + '"' + (state.filterStatus === s ? ' selected' : '') + '>' + escapeHtml(s) + '</option>';
             }).join('') +
           '</select>' +
-          '<select id="kv-sort-by" class="kv-select" aria-label="Urutkan">' +
-            '<option value="terbaru"' + (state.sortBy === 'terbaru' ? ' selected' : '') + '>Terbaru</option>' +
-            '<option value="populer"' + (state.sortBy === 'populer' ? ' selected' : '') + '>Terpopuler</option>' +
-            '<option value="abjad"' + (state.sortBy === 'abjad' ? ' selected' : '') + '>A - Z</option>' +
-          '</select>' +
+           '<select id="kv-sort-by" class="kv-select" aria-label="Urutkan">' +
+             '<option value="terbaru"' + (state.sortBy === 'terbaru' ? ' selected' : '') + '>Terbaru</option>' +
+             '<option value="populer"' + (state.sortBy === 'populer' ? ' selected' : '') + '>Terpopuler</option>' +
+             '<option value="rating"' + (state.sortBy === 'rating' ? ' selected' : '') + '>Rating Tertinggi</option>' +
+             '<option value="abjad"' + (state.sortBy === 'abjad' ? ' selected' : '') + '>A - Z</option>' +
+           '</select>' +
         '</div>' +
         (paged.length === 0
           ? '<div class="kv-stat-box" style="margin-top:24px;text-align:center;"><p>Tidak ada manga yang cocok dengan filter Anda.</p></div>'
