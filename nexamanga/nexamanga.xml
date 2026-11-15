@@ -2261,7 +2261,7 @@
         '<h1 class="kv-section-title" style="font-size:1.75rem;margin-top:28px;">Akun &amp; Pustaka Pembaca</h1>' +
         '<div class="kv-stat-box" style="margin-top:16px;">' +
           (state.user
-            ? '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;"><div><strong>' + escapeHtml(state.user.name) + '</strong><div style="color:var(--kv-text-muted);font-size:0.875rem;">' + escapeHtml(state.user.email || 'Email tidak dibagikan') + ' &middot; ' + escapeHtml(state.user.provider) + '</div><span class="kv-chip kv-chip-accent" style="margin-top:8px;">Role: ' + escapeHtml(state.user.role) + '</span></div><button type="button" class="kv-btn kv-btn-ghost" data-action="logout-user">Keluar</button></div>'
+            ? '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;"><div><strong>' + escapeHtml(state.user.name) + '</strong><div style="color:var(--kv-text-muted);font-size:0.875rem;">' + escapeHtml(state.user.email || 'Email tidak dibagikan') + ' &middot; ' + escapeHtml(state.user.provider) + '</div><span class="kv-chip kv-chip-accent" style="margin-top:8px;">Role: ' + escapeHtml(state.user.role) + '</span>' + (state.user.role !== 'admin' ? '<div style="margin-top:8px;"><button type="button" class="kv-btn kv-btn-primary" data-action="claim-admin-now">Klaim Admin</button></div>' : '') + '</div><button type="button" class="kv-btn kv-btn-ghost" data-action="logout-user">Keluar</button></div>'
             : '<h2 style="font-size:1rem;margin:0 0 8px;">Masuk dengan akun</h2>' + renderOAuthButtons() + '<p style="font-size:0.8125rem;color:var(--kv-text-muted);margin:10px 0 0;">Pendaftaran pertama mendapatkan role admin. Akun berikutnya otomatis menjadi member.</p>') +
         '</div>' +
         '<section class="kv-section"><div class="kv-kicker">Koleksi</div><h2 class="kv-section-title">Manga Favorit (' + favManga.length + ')</h2>' +
@@ -2678,6 +2678,26 @@
           '<table class="kv-table"><thead><tr><th>Manga</th><th>Penulis</th><th>Isi</th><th>Status</th><th>Aksi</th></tr></thead><tbody>' +
           (rows || '<tr><td colspan="5" style="text-align:center;color:var(--kv-text-muted);">Tidak ada komentar.</td></tr>') +
           '</tbody></table></div>';
+    }
+
+    function claimAdminNow() {
+      if (!CONFIG.API_BASE_URL || !state.adminToken) { alert('Backend tidak terhubung.'); return; }
+      fetch(CONFIG.API_BASE_URL + '/api/auth/claim-admin', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + state.adminToken }
+      }).then(function (r) {
+        return r.json().then(function (j) { return { ok: r.ok, status: r.status, body: j }; });
+      }).then(function (res) {
+        if (res.body && res.body.token) {
+          state.adminToken = res.body.token;
+          sessionStorage.setItem('kv_session_token', res.body.token);
+          if (res.body.user) { state.user = res.body.user; if (res.body.user.role) state.user.role = res.body.user.role; }
+          alert('Berhasil: ' + (res.body.user ? res.body.user.role : 'ok'));
+        } else {
+          alert('Gagal: ' + (res.body && res.body.error ? res.body.error : ('HTTP ' + res.status)));
+        }
+        render();
+      }).catch(function (e) { alert('Error: ' + e.message); });
     }
 
     function loadAdminUsers() {
@@ -3205,6 +3225,7 @@
         el.textContent = 'Tautan Disalin';
         setTimeout(function () { el.textContent = prevLabel; }, 2000);
       }
+      else if (act === 'claim-admin-now') { claimAdminNow(); }
       else if (act === 'logout-user' || act === 'logout-admin') {
         state.user = null;
         state.adminToken = '';
