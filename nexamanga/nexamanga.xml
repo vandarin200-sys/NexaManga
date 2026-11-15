@@ -1416,6 +1416,19 @@
      .kv-wysi-textarea { border-radius: 0 0 10px 10px !important; }
      @media (max-width: 900px) { .kv-kpi-grid { grid-template-columns: repeat(2, 1fr); } .kv-two-col { grid-template-columns: 1fr; } }
       @media (max-width: 520px) { .kv-kpi-grid { grid-template-columns: 1fr; } }
+      /* ===== Admin redesign: top navigation layout ===== */
+      .kv-admin-shell.kv-admin-top { display: block; min-height: 100vh; background: radial-gradient(1200px 600px at 50% -20%, color-mix(in srgb, var(--kv-accent) 14%, transparent), transparent), var(--kv-bg); }
+      .kv-admin-topbar-new { display: flex; align-items: center; gap: 16px; padding: 14px 28px; background: color-mix(in srgb, var(--kv-surface) 80%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--kv-border); position: sticky; top: 0; z-index: 40; flex-wrap: wrap; }
+      .kv-admin-topbar-new .kv-admin-logo { font-size: 1.1rem; font-weight: 800; color: var(--kv-text); text-decoration: none; }
+      .kv-admin-nav-h { display: flex; gap: 4px; flex: 1; justify-content: center; flex-wrap: wrap; }
+      .kv-admin-nav-h .kv-admin-nav-item { padding: 8px 14px; border-radius: 10px; background: transparent; color: var(--kv-text-muted); font-weight: 600; font-size: .85rem; border: none; cursor: pointer; }
+      .kv-admin-nav-h .kv-admin-nav-item:hover { background: var(--kv-surface-2); color: var(--kv-text); }
+      .kv-admin-nav-h .kv-admin-nav-item.active { background: color-mix(in srgb, var(--kv-accent) 18%, transparent); color: var(--kv-accent); }
+      .kv-admin-quickbar { padding: 12px 28px; border-bottom: 1px solid var(--kv-border); background: var(--kv-surface); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+      .kv-admin-quicklink { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: .8rem; color: var(--kv-text-muted); text-decoration: none; border: 1px solid var(--kv-border); background: var(--kv-surface-2); transition: border-color .12s, color .12s; }
+      .kv-admin-quicklink:hover { border-color: var(--kv-accent); color: var(--kv-accent); }
+      .kv-admin-main-full { max-width: 1400px; margin: 0 auto; padding: 28px 32px 48px; }
+      .kv-admin-pagehead { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--kv-border); }
       /* ===== Admin redesign: full shell restyle ===== */
       .kv-admin-shell { font-family: var(--kv-font-body, inherit); }
       .kv-admin-shell .kv-stat-box { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px color-mix(in srgb, #000 6%, transparent); }
@@ -2407,34 +2420,32 @@
         return '<button type="button" class="kv-admin-nav-item" data-action="' + n.act + '"' + (n.tab ? ' data-tab="' + n.tab + '"' : '') + '>' + kvIcon(n.icon) + '<span>' + n.label + '</span></button>';
       }).join('');
 
-      return '<div class="kv-admin-shell">' +
-        '<aside class="kv-admin-side">' +
-          '<a class="kv-admin-logo" href="#/">' + escapeHtml(CONFIG.SITE_NAME) + ' <span>Console</span></a>' +
-          '<div class="kv-admin-side-label">Menu Utama</div>' +
-          '<nav class="kv-admin-nav" aria-label="Menu panel admin">' + navHtml + '</nav>' +
-          '<div class="kv-admin-side-label">Pintasan</div>' +
-          '<div class="kv-admin-nav">' + quickHtml + '</div>' +
-          '<div class="kv-admin-side-label">Jelajah</div>' +
-          '<div class="kv-admin-nav">' +
-            '<a class="kv-admin-nav-item" href="#/">' + kvIcon('globe') + '<span>Lihat Situs</span></a>' +
-            '<a class="kv-admin-nav-item" href="#/katalog">' + kvIcon('book') + '<span>Katalog Publik</span></a>' +
-            '<a class="kv-admin-nav-item" href="#/akun">' + kvIcon('users') + '<span>Pustaka Pembaca</span></a>' +
-            '<a class="kv-admin-nav-item" href="#/tentang">' + kvIcon('zap') + '<span>Tentang Platform</span></a>' +
-          '</div>' +
-          '<div class="kv-admin-side-foot">' +
-            '<div class="kv-admin-chip' + (CONFIG.API_BASE_URL ? '' : ' off') + '"><span class="dot"></span><span>' + (CONFIG.API_BASE_URL ? 'Backend terhubung' : 'Mode lokal (demo)') + '</span></div>' +
-            '<button type="button" class="kv-btn kv-btn-ghost" data-action="logout-admin">' + kvIcon('out') + ' Keluar</button>' +
-          '</div>' +
-        '</aside>' +
-        '<main class="kv-admin-main">' +
-          '<div class="kv-admin-topbar">' +
-            '<div><h1 class="kv-admin-title">' + t[0] + '</h1><p class="kv-admin-sub">' + t[1] + '</p></div>' +
-            '<div class="kv-admin-top-actions">' + topActions + '</div>' +
-          '</div>' +
-          body +
-          (state.pendingDelete ? renderConfirmModal() : '') +
-        '</main>' +
-      '</div>';
+       return '<div class="kv-admin-shell kv-admin-top">' +
+         '<header class="kv-admin-topbar kv-admin-topbar-new">' +
+           '<a class="kv-admin-logo" href="#/">' + escapeHtml(CONFIG.SITE_NAME) + ' <span>Console</span></a>' +
+           '<nav class="kv-admin-nav kv-admin-nav-h" aria-label="Menu panel admin">' + navHtml + '</nav>' +
+           '<div class="kv-admin-top-actions">' +
+             '<div class="kv-admin-chip' + (CONFIG.API_BASE_URL ? '' : ' off') + '"><span class="dot"></span><span>' + (CONFIG.API_BASE_URL ? 'Backend terhubung' : 'Mode lokal (demo)') + '</span></div>' +
+             '<button type="button" class="kv-btn kv-btn-ghost" data-action="logout-admin">' + kvIcon('out') + ' Keluar</button>' +
+           '</div>' +
+         '</header>' +
+         '<div class="kv-admin-quickbar">' +
+           '<div class="kv-admin-quicklinks">' +
+             '<a class="kv-admin-quicklink" href="#/">' + kvIcon('globe') + ' Lihat Situs</a>' +
+             '<a class="kv-admin-quicklink" href="#/katalog">' + kvIcon('book') + ' Katalog Publik</a>' +
+             '<a class="kv-admin-quicklink" href="#/akun">' + kvIcon('users') + ' Pustaka Pembaca</a>' +
+             quickHtml +
+           '</div>' +
+         '</div>' +
+         '<main class="kv-admin-main kv-admin-main-full">' +
+           '<div class="kv-admin-pagehead">' +
+             '<div><h1 class="kv-admin-title">' + t[0] + '</h1><p class="kv-admin-sub">' + t[1] + '</p></div>' +
+             '<div class="kv-admin-top-actions">' + topActions + '</div>' +
+           '</div>' +
+           body +
+           (state.pendingDelete ? renderConfirmModal() : '') +
+         '</main>' +
+       '</div>';
     }
 
     function renderAdminDashboard() {
