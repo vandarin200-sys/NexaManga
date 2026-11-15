@@ -2713,14 +2713,25 @@
     }
 
     function changeUserRoleAdmin(userId, role) {
-      if (!CONFIG.API_BASE_URL || !state.adminToken) { toast('Backend tidak terhubung.', 'error'); return; }
+      if (!CONFIG.API_BASE_URL || !state.adminToken) { alert('Backend tidak terhubung.'); return; }
       fetch(CONFIG.API_BASE_URL + '/api/admin/user-role', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
         body: JSON.stringify({ id: userId, role: role })
-      }).then(function (r) { if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Gagal mengubah role.'); }); return r.json(); })
-        .then(function () { toast('Role diperbarui.', 'success'); state.usersCache = undefined; loadAdminUsers(); })
-        .catch(function (e) { toast(e.message, 'error'); state.usersCache = undefined; loadAdminUsers(); });
+      }).then(function (r) {
+        return r.json().then(function (j) { return { ok: r.ok, status: r.status, body: j }; });
+      }).then(function (res) {
+        if (res.ok) {
+          if (state.usersCache) {
+            state.usersCache = state.usersCache.map(function (u) { if (u.id === userId) { u.role = role; } return u; });
+          }
+          alert('Role berhasil diubah menjadi ' + role + '.');
+        } else {
+          alert('Gagal: ' + (res.body && res.body.error ? res.body.error : ('HTTP ' + res.status)));
+        }
+        state.usersCache = undefined;
+        loadAdminUsers();
+      }).catch(function (e) { alert('Error jaringan: ' + e.message); });
     }
     function deleteUserAdmin(userId) {
       if (!confirm('Hapus pengguna ini?')) return;
@@ -3160,6 +3171,13 @@
        document.querySelectorAll('select[data-action="admin-user-role"]').forEach(function (sel) {
          sel.onchange = function () { changeUserRoleAdmin(sel.getAttribute('data-id'), sel.value); };
        });
+       if (!window.__adminChangeDelegated) {
+         window.__adminChangeDelegated = true;
+         document.addEventListener('change', function (e) {
+           var sel = e.target && e.target.closest ? e.target.closest('select[data-action="admin-user-role"]') : null;
+           if (sel) changeUserRoleAdmin(sel.getAttribute('data-id'), sel.value);
+         });
+       }
     }
 
     document.addEventListener('click', function (e) {
