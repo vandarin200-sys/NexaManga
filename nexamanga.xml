@@ -1485,7 +1485,7 @@
       }
       .kv-admin-brand { display: flex; flex-direction: column; gap: 10px; padding: 0 6px; }
       .kv-admin-brand-row { display: flex; align-items: center; gap: 10px; }
-      .kv-admin-logo-icon { width: 34px; height: 34px; flex-shrink: 0; border-radius: 8px; display: grid; place-items: center; background: #6558D9; color: #EFEBFF; }
+      .kv-admin-logo-icon { width: auto; min-width: 34px; height: 34px; padding: 0 10px; flex-shrink: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #6558D9; color: #EFEBFF; overflow: hidden; }
       .kv-admin-logo-icon svg { width: 20px; height: 20px; }
       .kv-admin-side-group { display: flex; flex-direction: column; gap: 6px; }
       .kv-admin-side-label { font-family: 'JetBrains Mono', monospace; font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; color: #737B91; padding: 0 8px 4px; }
@@ -2088,10 +2088,10 @@
         body.kv-home-route .kv-account-history-cover { width:100%; max-width:140px; aspect-ratio:2/3; }
         body.kv-home-route .kv-account-fav-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
       }
-      .kv-brand-logo img { width:100%; height:100%; object-fit:contain; display:block; }
-      .kv-brand-logo { display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:12px; overflow:hidden; background:#ffffff; border:1px solid #e2e8f0; }
-      .kv-brand-logo.kv-reader-brand-logo { width:30px; height:30px; border-radius:8px; overflow:hidden; background:#ffffff; }
-      .kv-admin-logo-icon img { width:100%; height:100%; object-fit:contain; border-radius:8px; }
+      .kv-brand-logo img { height:100%; width:auto; max-width:190px; object-fit:contain; display:block; }
+      .kv-brand-logo { display:flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px; border-radius:12px; overflow:hidden; background:#ffffff; border:1px solid #e2e8f0; }
+      .kv-brand-logo.kv-reader-brand-logo { min-width:30px; height:30px; padding:0 8px; border-radius:8px; overflow:hidden; background:#ffffff; }
+      .kv-admin-logo-icon img { height:100%; width:auto; max-width:180px; object-fit:contain; display:block; }
     ]]></b:skin>
 </head>
 <body>
@@ -2269,6 +2269,20 @@
      function siteTagline() { return siteSetting('siteTagline', CONFIG.SITE_TAGLINE); }
      function siteLogo() { return siteSetting('logoUrl', ''); }
      function siteContact() { return siteSetting('contactEmail', CONFIG.CONTACT_EMAIL); }
+     function brandMode() { return siteSetting('brandMode', 'logo-name'); }
+     function siteNameColor() { return siteSetting('siteNameColor', ''); }
+     function siteNameStyle() { var c = siteNameColor(); return c ? ' style="color:' + escapeHtml(c) + '"' : ''; }
+     function renderBrandInner(textClass) {
+       var mode = brandMode(), logo = siteLogo(), name = siteName();
+       var html = '';
+       if (mode !== 'name-only') {
+         html += logo ? '<span class="kv-brand-logo"><img src="' + escapeHtml(logo) + '" alt="Logo ' + escapeHtml(name) + '"/></span>' : '<span class="kv-brand-mark" aria-hidden="true">N</span>';
+       }
+       if (mode !== 'logo-only') {
+         html += '<span' + (textClass ? ' class="' + escapeHtml(textClass) + '"' : '') + siteNameStyle() + '>' + escapeHtml(name) + '</span>';
+       }
+       return html;
+     }
      function renderBrandMarkup(extraClass) {
        var logo = siteLogo();
        if (logo) return '<span class="kv-brand-logo ' + (extraClass || '') + '"><img src="' + escapeHtml(logo) + '" alt="Logo ' + escapeHtml(siteName()) + '"/></span>';
@@ -2586,8 +2600,7 @@
       return '<header class="kv-header">' +
         '<div class="kv-container kv-header-inner">' +
           '<a class="kv-brand" href="#/" aria-label="' + escapeHtml(siteName()) + ' - beranda">' +
-            renderBrandMarkup() +
-            '<span>' + escapeHtml(siteName()) + '</span>' +
+            renderBrandInner() +
           '</a>' +
           '<nav class="kv-nav" aria-label="Navigasi Utama">' + linksHtml + '</nav>' +
           '<div class="kv-header-actions">' +
@@ -2603,7 +2616,7 @@
       if (state.route === 'reader' || state.route === 'admin') return '';
       return '<footer class="kv-footer">' +
         '<div class="kv-container kv-footer-inner">' +
-          '<div><strong>' + escapeHtml(siteName()) + '</strong> &middot; ' + escapeHtml(siteTagline()) + '</div>' +
+          '<div><strong' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</strong> &middot; ' + escapeHtml(siteTagline()) + '</div>' +
           '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">' +
             '<a href="#/tentang">Tentang</a>' +
             '<a href="#/kontak">Kontak</a>' +
@@ -3063,7 +3076,7 @@
         '<div class="kv-reader-progress" id="kv-progress-bar" style="width:0%" aria-hidden="true"></div>' +
         '<header class="kv-reader-topbar">' +
           '<div class="kv-reader-top-left">' +
-            '<a class="kv-reader-brand" href="#/">' + (siteLogo() ? '<span class="kv-brand-logo kv-reader-brand-logo"><img src="' + escapeHtml(siteLogo()) + '" alt="Logo ' + escapeHtml(siteName()) + '"/></span>' : '<span class="kv-reader-brand-mark">N</span><span class="kv-reader-brand-text">N<em>'+ escapeHtml(siteName()) + '</em></span>') + '</a>' +
+            '<a class="kv-reader-brand" href="#/">' + renderBrandInner('kv-reader-brand-text') + '</a>' +
             '<span class="kv-reader-divider"></span>' +
             '<a class="kv-reader-back" href="#/manga/' + escapeHtml(manga.slug) + '" title="Kembali ke daftar chapter">&#8592;<span class="kv-reader-back-text">' + escapeHtml(manga.title) + '</span></a>' +
           '</div>' +
@@ -3340,6 +3353,16 @@
           (n.badge ? '<span class="kv-admin-nav-badge">' + n.badge + '</span>' : '') +
         '</button>';
       }).join('');
+      var adminBrandMode = brandMode();
+      var adminBrandIcon = adminBrandMode !== 'name-only'
+        ? (siteLogo()
+          ? '<span class="kv-admin-logo-icon"><img src="' + escapeHtml(siteLogo()) + '" alt="Logo"/></span>'
+          : '<span class="kv-admin-logo-icon">' + kvIcon('book') + '</span>')
+        : '';
+      var adminBrandText = adminBrandMode !== 'logo-only'
+        ? '<a class="kv-admin-logo" href="#/"><span' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</span> <span>Console</span></a>'
+        : '';
+
       var quickHtml = [
         { label: 'Tambah Manga', icon: 'plus', act: 'admin-new-manga' },
         { label: 'Tambah Chapter', icon: 'layers', act: 'admin-new-chapter' },
@@ -3352,8 +3375,8 @@
           '<aside class="kv-admin-sidebar">' +
             '<div class="kv-admin-brand">' +
               '<div class="kv-admin-brand-row">' +
-                (siteLogo() ? '<span class="kv-admin-logo-icon"><img src="' + escapeHtml(siteLogo()) + '" alt="Logo"/></span>' : '<span class="kv-admin-logo-icon">' + kvIcon('book') + '</span>') +
-                '<a class="kv-admin-logo" href="#/">' + escapeHtml(siteName()) + ' <span>Console</span></a>' +
+                adminBrandIcon +
+                adminBrandText +
               '</div>' +
               '<div class="kv-admin-chip' + (CONFIG.API_BASE_URL ? '' : ' off') + '"><span class="dot"></span><span>' + (CONFIG.API_BASE_URL ? 'Backend terhubung' : 'Mode lokal') + '</span></div>' +
             '</div>' +
@@ -3776,10 +3799,12 @@
     }
 
     function resetSiteSettings() {
-      persistSiteSettings({ siteName: '', siteTagline: '', logoUrl: '', contactEmail: '' });
+      persistSiteSettings({ siteName: '', siteTagline: '', logoUrl: '', contactEmail: '', brandMode: '', siteNameColor: '' });
     }
 
     function renderAdminSettings() {
+       var brandModeValue = escapeHtml(siteSetting('brandMode', 'logo-name'));
+       var siteNameColorValue = escapeHtml(siteSetting('siteNameColor', ''));
        var siteNameValue = escapeHtml(siteSetting('siteName', CONFIG.SITE_NAME));
        var siteTaglineValue = escapeHtml(siteSetting('siteTagline', CONFIG.SITE_TAGLINE));
        var logoValue = escapeHtml(siteLogo());
@@ -3792,6 +3817,12 @@
             '<label>Tagline<input class="kv-input" name="siteTagline" value="' + siteTaglineValue + '"/></label>' +
             '<label style="grid-column:1/-1;">URL Logo<input class="kv-input" id="kv-setting-logoUrl" name="logoUrl" type="url" value="' + logoValue + '" placeholder="https://contoh.com/logo.png"/></label>' +
             '<label style="grid-column:1/-1;">Email Kontak<input class="kv-input" name="contactEmail" type="email" value="' + contactValue + '" placeholder="redaksi@contoh.com"/></label>' +
+            '<label>Tampilan Brand<select class="kv-select" name="brandMode">' +
+              '<option value="logo-name"' + (brandModeValue === 'logo-name' ? ' selected' : '') + '>Logo + Nama</option>' +
+              '<option value="logo-only"' + (brandModeValue === 'logo-only' ? ' selected' : '') + '>Hanya Logo</option>' +
+              '<option value="name-only"' + (brandModeValue === 'name-only' ? ' selected' : '') + '>Hanya Nama</option>' +
+            '</select></label>' +
+            '<label>Warna Nama Situs<input class="kv-input" name="siteNameColor" type="color" value="' + (siteNameColorValue || '#6366f1') + '" style="height:38px;padding:2px 6px;"/></label>' +
             '<div class="kv-site-logo-preview">' + (logoValue ? '<img src="' + logoValue + '" alt="Preview logo"/>' : '<span>Belum ada logo</span>') + '</div>' +
             '<div style="display:flex;gap:10px;flex-wrap:wrap;grid-column:1/-1;">' +
               '<button type="button" class="kv-btn kv-btn-ghost" id="kv-logo-upload-btn">Unggah Logo</button>' +
@@ -4179,7 +4210,9 @@
             siteName: String(fd.get('siteName') || '').trim(),
             siteTagline: String(fd.get('siteTagline') || '').trim(),
             logoUrl: String(fd.get('logoUrl') || '').trim(),
-            contactEmail: String(fd.get('contactEmail') || '').trim()
+            contactEmail: String(fd.get('contactEmail') || '').trim(),
+            brandMode: String(fd.get('brandMode') || 'logo-name').trim(),
+            siteNameColor: String(fd.get('siteNameColor') || '').trim()
           });
         };
       }
