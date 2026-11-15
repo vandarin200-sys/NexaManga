@@ -166,19 +166,41 @@ function addComment(catalog, input) {
   if (!catalog.manga.some((manga) => manga.id === mangaId)) {
     throw new ValidationError('Manga tidak ditemukan.');
   }
+  const parentId = typeof input.parentId === 'string' && input.parentId ? input.parentId : null;
+  if (parentId) {
+    const parent = catalog.comments.find((item) => item.id === parentId && item.mangaId === mangaId);
+    if (!parent) throw new ValidationError('Komentar induk tidak ditemukan.');
+  }
   const comment = {
     id: `c-${crypto.randomUUID()}`,
     mangaId,
+    parentId,
     userId: typeof input.userId === 'string' && input.userId ? input.userId : null,
     authorName: requireText(input.authorName, 'Nama', 80),
     authorAvatar: typeof input.authorAvatar === 'string' ? input.authorAvatar.slice(0, 2048) : null,
     content: requireText(input.content, 'Komentar', 2000, 2),
     createdAt: new Date().toISOString().slice(0, 10),
-    status: 'approved'  };
+    status: 'approved',
+    upvotes: []
+  };
   catalog.comments.unshift(comment);
   return comment;
 }
 
+function upvoteComment(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data upvote tidak valid.');
+  }
+  const id = requireText(input.id, 'ID komentar', 100);
+  const voterId = requireText(input.voterId, 'ID voter', 100);
+  const comment = catalog.comments.find((item) => item.id === id);
+  if (!comment) throw new ValidationError('Komentar tidak ditemukan.');
+  if (!Array.isArray(comment.upvotes)) comment.upvotes = [];
+  const index = comment.upvotes.indexOf(voterId);
+  if (index === -1) comment.upvotes.push(voterId);
+  else comment.upvotes.splice(index, 1);
+  return comment;
+}
 module.exports = {
   EMPTY_CATALOG,
   ValidationError,
@@ -191,5 +213,6 @@ module.exports = {
   registerOAuthUser,
   saveChapter,
   saveManga,
+  upvoteComment,
   validateCatalog
 };

@@ -17,7 +17,8 @@ const {
   incrementMangaViews,
   registerOAuthUser,
   saveChapter,
-  saveManga
+  saveManga,
+  upvoteComment
 } = require('../lib/catalog');
 const {
   MAX_MEDIA_BYTES,
@@ -359,6 +360,14 @@ async function handler(req, res) {
       let updated;
       await updateCatalog((catalog) => { updated = incrementMangaViews(catalog, id); });
       return sendJson(res, 200, { ok: true, views: updated.views });
+    }
+
+    if (route === 'comment/upvote' && req.method === 'POST') {
+      const body = await readBody(req);
+      if (typeof body.voterId !== 'string' || !body.voterId) throw new HttpError(400, 'ID voter tidak valid.');
+      let updated;
+      await updateCatalog((catalog) => { updated = upvoteComment(catalog, body); });
+      return sendJson(res, 200, { comment: updated });
     }
 
     if (route === 'catalog' && req.method === 'GET') {
