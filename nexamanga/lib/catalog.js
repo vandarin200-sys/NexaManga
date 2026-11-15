@@ -96,8 +96,8 @@ function saveManga(catalog, input) {
   if (!Array.isArray(item.genres) || item.genres.some((genre) => typeof genre !== 'string' || genre.length > 60)) {
     throw new ValidationError('Genre manga tidak valid.');
   }
-  if (item.rating !== undefined && (!Number.isFinite(Number(item.rating)) || Number(item.rating) < 0 || Number(item.rating) > 5)) {
-    throw new ValidationError('Rating manga harus berada di antara 0 dan 5.');
+  if (item.rating !== undefined && (!Number.isFinite(Number(item.rating)) || Number(item.rating) < 0 || Number(item.rating) > 10)) {
+    throw new ValidationError('Rating manga harus berada di antara 0 dan 10.');
   }
   if (catalog.manga.some((manga) => manga.slug === item.slug && manga.id !== item.id)) {
     throw new ValidationError('Slug sudah digunakan oleh manga lain.');
