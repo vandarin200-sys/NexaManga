@@ -47,12 +47,12 @@ test('saves chapters and prevents duplicates within a manga', () => {
   assert.throws(() => saveChapter(data, { ...chapter, id: 'ch2' }), ValidationError);
 });
 
-test('stores comments as pending and cascades manga deletion', () => {
+test('stores comments as approved and cascades manga deletion', () => {
   const data = catalog();
   saveManga(data, manga());
   saveChapter(data, { id: 'ch1', mangaId: 'm1', number: 1, title: '', pages: [] });
   const comment = addComment(data, { mangaId: 'm1', authorName: 'Pembaca', content: 'Komentar yang cukup baik.' });
-  assert.equal(comment.status, 'pending');
+  assert.equal(comment.status, 'approved');
   assert.equal(data.comments.length, 1);
   deleteManga(data, 'm1');
   assert.deepEqual(data, { manga: [], chapters: [], comments: [], users: [] });

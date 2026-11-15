@@ -14,6 +14,7 @@ const {
   deleteChapter,
   deleteComment,
   deleteManga,
+  incrementMangaViews,
   registerOAuthUser,
   saveChapter,
   saveManga
@@ -349,6 +350,15 @@ async function handler(req, res) {
         messageId,
         instruction: 'Dokumen katalog sudah dipin di chat Telegram. Tidak perlu menyimpan ID tambahan.'
       });
+    }
+
+    if (route === 'manga/view' && req.method === 'POST') {
+      const body = await readBody(req);
+      const id = typeof body.id === 'string' ? body.id : (typeof body.slug === 'string' ? body.slug : '');
+      if (!id) throw new HttpError(400, 'ID atau slug manga tidak valid.');
+      let updated;
+      await updateCatalog((catalog) => { updated = incrementMangaViews(catalog, id); });
+      return sendJson(res, 200, { ok: true, views: updated.views });
     }
 
     if (route === 'catalog' && req.method === 'GET') {

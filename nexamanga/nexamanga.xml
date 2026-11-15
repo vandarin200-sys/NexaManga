@@ -1609,7 +1609,7 @@
       user: null,
       bookmarks: JSON.parse(localStorage.getItem('kv_bookmarks') || '[]'),
       history: JSON.parse(localStorage.getItem('kv_history') || '[]'),
-      adminToken: sessionStorage.getItem('kv_session_token') || '',
+      adminToken: localStorage.getItem('kv_session_token') || '',
       mobileMenuOpen: false,
       refocusSearch: false,
       /* --- State panel admin & moderasi --- */
@@ -1828,7 +1828,7 @@
        var callbackToken = new URLSearchParams(window.location.search).get('auth_token');
        if (callbackToken) {
          state.adminToken = callbackToken;
-         sessionStorage.setItem('kv_session_token', callbackToken);
+         localStorage.setItem('kv_session_token', callbackToken);
          window.history.replaceState(null, '', window.location.pathname + window.location.hash);
        }
        if (!state.adminToken || !CONFIG.API_BASE_URL) {
@@ -1848,7 +1848,7 @@
          }).then(function (result) {
            if (result && result.token) {
              state.adminToken = result.token;
-             sessionStorage.setItem('kv_session_token', result.token);
+              localStorage.setItem('kv_session_token', result.token);
            }
          }).catch(function () {});
        })().then(function () {
@@ -1863,7 +1863,7 @@
           }).catch(function () {
            state.adminToken = '';
            state.user = null;
-           sessionStorage.removeItem('kv_session_token');
+           localStorage.removeItem('kv_session_token');
          }).then(function () {
            render();
            syncFromApi();
@@ -1946,24 +1946,10 @@
       var latestCards = state.data.manga.slice()
         .sort(function (a, b) { return b.updatedAt.localeCompare(a.updatedAt); })
         .slice(0, 8).map(renderMangaCard).join('');
-      var genres = collectGenres();
 
-      /* Chapter terbaru lintas judul (maks. 6) */
-      var latestChapters = state.data.chapters.slice()
-        .sort(function (a, b) { return b.publishedAt.localeCompare(a.publishedAt); })
-        .slice(0, 6).map(function (c) {
-          var m = mangaById(c.mangaId);
-          if (!m) return '';
-          return '<div class="kv-chapter-row" data-action="open-reader" data-slug="' + escapeHtml(m.slug) + '" data-cid="' + escapeHtml(c.id) + '" tabindex="0" role="button" aria-label="Baca ' + escapeHtml(m.title) + ' Chapter ' + c.number + '">' +
-            '<div style="display:flex;align-items:center;gap:10px;min-width:0;">' +
-              kvChip('Ch. ' + c.number, true, true) +
-              '<div style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><strong>' + escapeHtml(m.title) + '</strong> <span style="color:var(--kv-text-muted);">&middot; ' + escapeHtml(c.title) + '</span></div>' +
-            '</div>' +
-            '<div class="kv-mono" style="color:var(--kv-text-muted);font-size:0.8125rem;flex-shrink:0;">' + escapeHtml(c.publishedAt) + '</div>' +
-          '</div>';
-        }).join('');
 
-      var popular = state.data.manga.slice().sort(function (a, b) { return b.views - a.views; }).slice(0, 4);
+
+      var popular = state.data.manga.slice().sort(function (a, b) { return (b.views || 0) - (a.views || 0); }).slice(0, 4);
       var recommended = state.data.manga.filter(function (m) { return m.recommended; }).slice(0, 4);
 
       return '<main class="kv-container">' +
@@ -1974,7 +1960,7 @@
               '<h1 class="kv-hero-title">' + escapeHtml(featured.title) + '</h1>' +
               '<p style="color:var(--kv-text-muted);max-width:60ch;margin:0 0 20px;">' + escapeHtml(featured.synopsis) + '</p>' +
               '<div class="kv-meta-line" style="margin-bottom:24px;">' +
-                kvChip('Rating ' + featured.rating + '/5.0', false, true) + kvChip(chCount + ' Chapter', false, true) + kvChip(featured.views.toLocaleString('id-ID') + ' dibaca', false, true) +
+                kvChip('Rating ' + featured.rating + '/5.0', false, true) + kvChip(chCount + ' Chapter', false, true) + kvChip(((featured.views || 0)).toLocaleString('id-ID') + ' dibaca', false, true) +
               '</div>' +
             '</div>' +
             '<div style="display:flex;flex-wrap:wrap;gap:12px;">' +
@@ -1988,9 +1974,6 @@
           '<div class="kv-section-head"><div><div class="kv-kicker">Update</div><h2 class="kv-section-title">Pembaruan Terbaru</h2></div><a href="#/katalog" style="color:var(--kv-accent);font-size:0.875rem;font-weight:600;">Lihat Semua &rarr;</a></div>' +
           '<div class="kv-grid">' + latestCards + '</div>' +
         '</section>' +
-        (latestChapters
-          ? '<section class="kv-section"><div class="kv-section-head"><div><div class="kv-kicker">Episode</div><h2 class="kv-section-title">Chapter Terbaru</h2></div></div><div class="kv-table-wrap">' + latestChapters + '</div></section>'
-          : '') +
         '<section class="kv-section">' +
           '<div class="kv-section-head"><div><div class="kv-kicker">Populer</div><h2 class="kv-section-title">Manga Populer</h2></div><a href="#/katalog" style="color:var(--kv-accent);font-size:0.875rem;font-weight:600;">Lihat Semua &rarr;</a></div>' +
           '<div class="kv-grid">' + popular.map(renderMangaCard).join('') + '</div>' +
@@ -1999,15 +1982,7 @@
           '<div class="kv-section-head"><div><div class="kv-kicker">Kurasi</div><h2 class="kv-section-title">Rekomendasi Redaksi</h2></div></div>' +
           '<div class="kv-grid">' + recommended.map(renderMangaCard).join('') + '</div>' +
         '</section>' +
-        '<section class="kv-section">' +
-          '<div class="kv-section-head"><div><div class="kv-kicker">Kategori</div><h2 class="kv-section-title">Telusuri Genre</h2></div></div>' +
-          '<div style="display:flex;flex-wrap:wrap;gap:10px;">' +
-            genres.map(function (g) {
-              return '<button type="button" class="kv-btn kv-btn-ghost" data-action="quick-genre" data-genre="' + escapeHtml(g) + '">' + escapeHtml(g) + '</button>';
-            }).join('') +
-          '</div>' +
-        '</section>' +
-      '</main>';
+       '</main>';
     }
 
     function renderMangaCard(m) {
@@ -2147,13 +2122,21 @@
           (state.commentNotice
             ? '<div class="kv-stat-box" style="margin-bottom:14px;border-color:var(--kv-success);"><p style="margin:0;">' + escapeHtml(state.commentNotice) + '</p></div>'
             : '') +
-           '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">' +
-             (state.user
-               ? '<div style="display:flex;align-items:center;gap:8px;font-size:0.875rem;color:var(--kv-text-muted);">Komentar sebagai <strong>' + escapeHtml(state.user.name) + '</strong>' + (state.user.avatar ? ' <img src="' + escapeHtml(state.user.avatar) + '" alt="" style="width:20px;height:20px;border-radius:50%;"/>' : '') + '</div>'
-               : '<input class="kv-input" name="author" placeholder="Nama Anda" required/>') +
-             '<textarea class="kv-textarea" name="content" placeholder="Tulis ulasan atau komentar sopan..." required></textarea>' +
-             '<button class="kv-btn kv-btn-primary" type="submit" style="align-self:flex-start;">Kirim Komentar</button>' +
-           '</form>' +
+            '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;padding:18px;border:1px solid var(--kv-border);border-radius:16px;background:var(--kv-surface);box-shadow:0 8px 24px -18px rgba(0,0,0,.35);">' +
+              '<div style="display:flex;align-items:center;gap:12px;">' +
+                (state.user && state.user.avatar ? '<img src="' + escapeHtml(state.user.avatar) + '" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"/>' : '<div style="width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface));color:var(--kv-accent);font-weight:700;">' + escapeHtml((state.user ? state.user.name : 'A').charAt(0).toUpperCase()) + '</div>') +
+                '<div style="min-width:0;">' +
+                  '<div style="font-weight:700;font-size:0.95rem;">' + (state.user ? escapeHtml(state.user.name) : 'Tulis komentar Anda') + '</div>' +
+                  '<div style="color:var(--kv-text-muted);font-size:0.8rem;">' + (state.user ? 'Komentar akan dimoderasi admin sebelum tampil.' : 'Masukkan nama dan komentar Anda.') + '</div>' +
+                '</div>' +
+              '</div>' +
+              (state.user ? '' : '<input class="kv-input" name="author" placeholder="Nama Anda" required style="max-width:320px;"/>') +
+              '<textarea class="kv-textarea" name="content" placeholder="Bagikan pendapat Anda tentang manga ini..." required rows="4" style="min-height:110px;resize:vertical;"></textarea>' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">' +
+                '<span style="color:var(--kv-text-muted);font-size:0.78rem;">Komentar sopan dan relevan lebih cepat disetujui.</span>' +
+                '<button class="kv-btn kv-btn-primary" type="submit">Kirim Komentar</button>' +
+              '</div>' +
+            '</form>' +
            comments.map(function (c) {
              var avatar = c.authorAvatar ? '<img src="' + escapeHtml(c.authorAvatar) + '" alt="" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;"/>' : '';
              var own = state.user && c.userId && c.userId === state.user.id;
@@ -2177,7 +2160,27 @@
       var prevCh = idx > 0 ? allCh[idx - 1] : null;
       var nextCh = idx >= 0 && idx < allCh.length - 1 ? allCh[idx + 1] : null;
 
-      saveHistory(manga.id, chapter.id, chapter.number);
+       saveHistory(manga.id, chapter.id, chapter.number);
+
+       if (!state.viewedChapters) state.viewedChapters = {};
+       if (!state.viewedChapters[chapter.id]) {
+         state.viewedChapters[chapter.id] = true;
+         var viewedManga = state.data.manga.filter(function (m) { return m.id === manga.id; })[0];
+         if (viewedManga) {
+           viewedManga.views = (viewedManga.views || 0) + 1;
+           persistData();
+           if (CONFIG.API_BASE_URL) {
+             fetch(CONFIG.API_BASE_URL + '/api/manga/view', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ id: viewedManga.id })
+             }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
+               if (res && typeof res.views === 'number' && viewedManga) viewedManga.views = res.views;
+               render();
+             }).catch(function () {});
+           }
+         }
+       }
 
       var pagesHtml = '';
       if (state.readerMode === 'vertical') {
@@ -3105,10 +3108,10 @@
              authorAvatar: authorAvatar,
              content: fd.get('content'),
              createdAt: new Date().toISOString().slice(0, 10),
-             status: 'pending'
+              status: 'approved'
            });
            persistData();
-           state.commentNotice = 'Komentar Anda terkirim dan menunggu moderasi admin. Terima kasih!';
+            state.commentNotice = 'Komentar Anda berhasil dikirim dan langsung ditampilkan. Terima kasih!';
            if (CONFIG.API_BASE_URL) {
              var headers = { 'Content-Type': 'application/json' };
              if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
@@ -3231,7 +3234,7 @@
       else if (act === 'logout-user' || act === 'logout-admin') {
         state.user = null;
         state.adminToken = '';
-        sessionStorage.removeItem('kv_session_token');
+        localStorage.removeItem('kv_session_token');
         render();
         syncFromApi();
       }

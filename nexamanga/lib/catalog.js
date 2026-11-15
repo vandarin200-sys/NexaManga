@@ -151,6 +151,13 @@ function deleteComment(catalog, id) {
   catalog.comments = catalog.comments.filter((comment) => comment.id !== id);
 }
 
+function incrementMangaViews(catalog, id) {
+  const manga = catalog.manga.find((item) => item.id === id || item.slug === id);
+  if (!manga) throw new ValidationError('Manga tidak ditemukan.');
+  manga.views = (Number(manga.views) || 0) + 1;
+  return manga;
+}
+
 function addComment(catalog, input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new ValidationError('Data komentar tidak valid.');
@@ -167,8 +174,7 @@ function addComment(catalog, input) {
     authorAvatar: typeof input.authorAvatar === 'string' ? input.authorAvatar.slice(0, 2048) : null,
     content: requireText(input.content, 'Komentar', 2000, 2),
     createdAt: new Date().toISOString().slice(0, 10),
-    status: 'pending'
-  };
+    status: 'approved'  };
   catalog.comments.unshift(comment);
   return comment;
 }
@@ -180,6 +186,7 @@ module.exports = {
   deleteChapter,
   deleteComment,
   deleteManga,
+  incrementMangaViews,
   claimAdminRole,
   registerOAuthUser,
   saveChapter,
