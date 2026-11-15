@@ -2361,8 +2361,11 @@
       var tab = state.adminTab || 'dashboard';
       var pending = state.data.comments.filter(function (c) { return c.status === 'pending'; }).length;
       var body;
-       if (tab === 'manga') body = state.adminForm ? renderAdminMangaForm() : renderAdminMangaList();
-       else if (tab === 'chapter') body = state.adminChapterForm ? renderAdminChapterForm() : renderAdminChapterList();
+       if (tab === 'manga') {
+         if (state.adminChapterForm) body = renderAdminChapterForm();
+         else if (state.adminForm) body = renderAdminMangaForm();
+         else body = renderAdminMangaList();
+       }
        else if (tab === 'komentar') body = renderAdminComments();
        else if (tab === 'pengguna') body = renderAdminUsers();
        else if (tab === 'pengaturan') body = renderAdminSettings();
@@ -2370,8 +2373,7 @@
 
        var titles = {
          dashboard: ['Dashboard Analitik', 'KPI, grafik, dan pintasan cepat.'],
-         manga: ['Manajemen Manga', 'Tambah, ubah, hapus, dan atur manga unggulan & rekomendasi.'],
-         chapter: ['Manajemen Chapter', 'Atur urutan, kelola halaman, dan simpan gambar ke Telegram.'],
+         manga: ['Manajemen Manga & Chapter', 'Tambah, ubah, hapus manga dan kelola chapter per judul.'],
          komentar: ['Moderasi Komentar', 'Setujui, tolak, atau hapus komentar pembaca.'],
          pengguna: ['Manajemen Pengguna', 'Daftar akun, ubah role, dan hapus pengguna.'],
          pengaturan: ['Pengaturan', 'Konfigurasi tema, integrasi backend, dan zona bahaya.']
@@ -2382,17 +2384,12 @@
         topActions = '<a class="kv-btn kv-btn-ghost" href="#/">Lihat Situs</a>' +
           '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-new-chapter">+ Chapter</button>' +
           '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-manga">+ Manga</button>';
-      } else if (tab === 'manga') {
-        topActions = '<a class="kv-btn kv-btn-ghost" href="#/katalog">Buka Katalog</a>' +
-          (state.adminForm
-            ? '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-cancel-form">Batal Edit</button>'
-            : '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-manga">+ Tambah Manga</button>');
-      } else if (tab === 'chapter') {
-        topActions = '<a class="kv-btn kv-btn-ghost" href="#/katalog">Buka Katalog</a>' +
-          (state.adminChapterForm
-            ? '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-cancel-form">Batal Edit</button>'
-            : '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-chapter">+ Tambah Chapter</button>');
-      } else if (tab === 'komentar') {
+       } else if (tab === 'manga') {
+         topActions = '<a class="kv-btn kv-btn-ghost" href="#/katalog">Buka Katalog</a>' +
+           (state.adminForm || state.adminChapterForm
+             ? '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-cancel-form">Batal Edit</button>'
+             : '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-manga">+ Tambah Manga</button>');
+       } else if (tab === 'komentar') {
         topActions = '<a class="kv-btn kv-btn-ghost" href="#/">Lihat Situs</a>';
       } else {
         topActions = '<a class="kv-btn kv-btn-ghost" href="#/">Lihat Situs</a>';
@@ -2401,7 +2398,6 @@
        var navMain = [
          { key: 'dashboard', label: 'Dashboard', icon: 'grid' },
          { key: 'manga', label: 'Manga', icon: 'book' },
-         { key: 'chapter', label: 'Chapter', icon: 'layers' },
          { key: 'komentar', label: 'Komentar', icon: 'chat', badge: pending },
          { key: 'pengguna', label: 'Pengguna', icon: 'users' },
          { key: 'pengaturan', label: 'Pengaturan', icon: 'gear' }
@@ -2532,15 +2528,16 @@
         '</tr>' +
         (expanded ? '<tr><td colspan="6" style="padding:0;">' + renderAdminChapterPanel(m, chs) + '</td></tr>' : '');
       }).join('');
-      return '<div class="kv-toolbar">' +
-          '<input id="kv-admin-manga-search" class="kv-input" type="search" placeholder="Cari judul atau slug..." value="' + escapeHtml(state.adminSearch) + '" aria-label="Cari manga di panel admin"/>' +
-          '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-manga">+ Tambah Manga</button>' +
-        '</div>' +
-        '<div class="kv-table-wrap" style="margin-top:16px;">' +
+       return '<div class="kv-card" style="margin-bottom:16px;">' +
+         '<div class="kv-toolbar">' +
+           '<input id="kv-admin-manga-search" class="kv-input" type="search" placeholder="Cari judul atau slug..." value="' + escapeHtml(state.adminSearch) + '" aria-label="Cari manga di panel admin"/>' +
+           '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-manga">+ Tambah Manga</button>' +
+         '</div>' +
+         '<div class="kv-table-wrap" style="margin-top:16px;">' +
           '<table class="kv-table"><thead><tr><th>Sampul</th><th>Judul</th><th>Tipe/Status</th><th>Chapter</th><th>Penanda</th><th>Aksi</th></tr></thead><tbody>' +
-          (rows || '<tr><td colspan="6" style="text-align:center;color:var(--kv-text-muted);">Tidak ada manga.</td></tr>') +
-          '</tbody></table></div>';
-    }
+           (rows || '<tr><td colspan="6" style="text-align:center;color:var(--kv-text-muted);">Tidak ada manga.</td></tr>') +
+           '</tbody></table></div></div>';
+     }
 
     /* Panel chapter terintegrasi di baris manga — selalu diurut otomatis by nomor */
     function renderAdminChapterPanel(m, chs) {
@@ -2577,7 +2574,7 @@
 
     function renderAdminMangaForm() {
       var f = state.adminForm;
-      return '<form id="kv-manga-form" class="kv-stat-box" style="margin-top:16px;" novalidate>' +
+       return '<form id="kv-manga-form" class="kv-card" style="margin-top:16px;" novalidate>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">' +
           '<h2 class="kv-section-title">' + (f.id ? 'Ubah Manga' : 'Tambah Manga Baru') + '</h2>' +
           '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-cancel-form">Batal</button>' +
@@ -2669,7 +2666,7 @@
           '</div></td>' +
         '</tr>';
       }).join('');
-      return '<form id="kv-chapter-form" class="kv-stat-box" style="margin-top:16px;" novalidate>' +
+       return '<form id="kv-chapter-form" class="kv-card" style="margin-top:16px;" novalidate>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">' +
           '<h2 class="kv-section-title">' + (f.id ? 'Ubah Chapter' : 'Tambah Chapter Baru') + '</h2>' +
           '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-cancel-form">Batal</button>' +
@@ -3293,29 +3290,30 @@
         var dm = mangaById(el.getAttribute('data-id'));
         if (dm) confirmDelete('manga', dm.id, 'Hapus manga "' + dm.title + '" beserta seluruh chapter dan komentarnya?', 'Hapus Manga');
       }
-      else if (act === 'admin-new-chapter') {
-        if (el.getAttribute('data-id')) state.adminChapterMangaId = el.getAttribute('data-id');
-        if (!state.data.manga.length) { toast('Tambahkan manga terlebih dahulu di tab Manga.', 'warn'); }
-        else { state.adminChapterForm = blankChapter(state.adminChapterMangaId); state.adminTab = 'chapter'; render(); }
-      }
+       else if (act === 'admin-new-chapter') {
+         if (el.getAttribute('data-id')) { state.adminChapterMangaId = el.getAttribute('data-id'); state.adminExpandedManga = el.getAttribute('data-id'); }
+         if (!state.data.manga.length) { toast('Tambahkan manga terlebih dahulu di tab Manga.', 'warn'); }
+         else { state.adminChapterForm = blankChapter(state.adminChapterMangaId); state.adminTab = 'manga'; render(); }
+       }
       else if (act === 'admin-toggle-expand') {
         var expId = el.getAttribute('data-id');
         state.adminExpandedManga = state.adminExpandedManga === expId ? null : expId;
         render();
       }
-      else if (act === 'admin-open-chapters') {
-        state.adminChapterMangaId = el.getAttribute('data-id');
-        state.adminChapterForm = null;
-        state.adminTab = 'chapter';
-        render();
-      }
+       else if (act === 'admin-open-chapters') {
+         state.adminChapterMangaId = el.getAttribute('data-id');
+         state.adminChapterForm = null;
+         state.adminExpandedManga = el.getAttribute('data-id');
+         state.adminTab = 'manga';
+         render();
+       }
       else if (act === 'admin-edit-chapter') {
         var ec = chapterById(el.getAttribute('data-id'));
         if (ec) {
           state.adminChapterForm = JSON.parse(JSON.stringify(ec));
           state.adminChapterForm.pages = state.adminChapterForm.pages || [];
           state.adminChapterMangaId = ec.mangaId;
-          state.adminTab = 'chapter';
+          state.adminTab = 'manga';
           render();
         }
       }
