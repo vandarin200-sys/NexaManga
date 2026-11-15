@@ -158,6 +158,29 @@ function incrementMangaViews(catalog, id) {
   return manga;
 }
 
+function saveSettings(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data pengaturan tidak valid.');
+  }
+  const settings = Object.assign({}, catalog.settings || {});
+  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'contactEmail'];
+  for (const field of stringFields) {
+    const value = input[field];
+    if (typeof value !== 'string') continue;
+    const trimmed = value.trim();
+    if (field === 'siteName' && trimmed.length > 100) throw new ValidationError('Nama situs maksimal 100 karakter.');
+    if (field === 'siteTagline' && trimmed.length > 250) throw new ValidationError('Tagline maksimal 250 karakter.');
+    if (field === 'logoUrl' && trimmed.length > 2048) throw new ValidationError('URL logo terlalu panjang.');
+    if (field === 'contactEmail' && trimmed.length > 254) throw new ValidationError('Email kontak terlalu panjang.');
+    if (field === 'contactEmail' && trimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      throw new ValidationError('Format email kontak tidak valid.');
+    }
+    settings[field] = trimmed;
+  }
+  catalog.settings = settings;
+  return settings;
+}
+
 function addComment(catalog, input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new ValidationError('Data komentar tidak valid.');
@@ -213,6 +236,7 @@ module.exports = {
   registerOAuthUser,
   saveChapter,
   saveManga,
+  saveSettings,
   upvoteComment,
   validateCatalog
 };

@@ -1563,6 +1563,8 @@
       .kv-admin-chapter-meta { color: #737B91; font-size: .72rem; flex-shrink: 0; }
       .kv-admin-chapter-actions { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
       .kv-admin-chapter-empty { color: #737B91; font-size: .875rem; margin: 0; }
+      .kv-site-logo-preview { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; min-height: 110px; border: 1px dashed #2B304C; border-radius: 10px; background: #161A30; color: #737B91; font-size: .8rem; overflow: hidden; }
+      .kv-site-logo-preview img { max-width: 100%; max-height: 110px; object-fit: contain; display: block; }
       @media (max-width: 900px) {
         .kv-admin-chapter-row { flex-direction: column; align-items: stretch; gap: 8px; }
         .kv-admin-chapter-actions { justify-content: flex-end; }
@@ -2086,6 +2088,10 @@
         body.kv-home-route .kv-account-history-cover { width:100%; max-width:140px; aspect-ratio:2/3; }
         body.kv-home-route .kv-account-fav-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
       }
+      .kv-brand-logo img { width:100%; height:100%; object-fit:contain; display:block; }
+      .kv-brand-logo { display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:12px; overflow:hidden; background:#ffffff; border:1px solid #e2e8f0; }
+      .kv-brand-logo.kv-reader-brand-logo { width:30px; height:30px; border-radius:8px; overflow:hidden; background:#ffffff; }
+      .kv-admin-logo-icon img { width:100%; height:100%; object-fit:contain; border-radius:8px; }
     ]]></b:skin>
 </head>
 <body>
@@ -2250,7 +2256,26 @@
       return new Date().toISOString().slice(0, 10);
     }
 
-     function mangaById(id) {
+     function siteSetting(key, fallback) {
+       var settings = (state.data && state.data.settings) ? state.data.settings : {};
+       var local = {};
+       try { local = JSON.parse(localStorage.getItem('kv_site_settings') || '{}') || {}; } catch (e) { local = {}; }
+       if (settings && settings[key]) return settings[key];
+       if (local && local[key]) return local[key];
+       return fallback;
+     }
+
+     function siteName() { return siteSetting('siteName', CONFIG.SITE_NAME); }
+     function siteTagline() { return siteSetting('siteTagline', CONFIG.SITE_TAGLINE); }
+     function siteLogo() { return siteSetting('logoUrl', ''); }
+     function siteContact() { return siteSetting('contactEmail', CONFIG.CONTACT_EMAIL); }
+     function renderBrandMarkup(extraClass) {
+       var logo = siteLogo();
+       if (logo) return '<span class="kv-brand-logo ' + (extraClass || '') + '"><img src="' + escapeHtml(logo) + '" alt="Logo ' + escapeHtml(siteName()) + '"/></span>';
+       return '<span class="kv-brand-mark" aria-hidden="true">N</span>';
+     }
+
+      function mangaById(id) {
        return state.data.manga.filter(function (m) { return m.id === id; })[0] || null;
      }
 
@@ -2560,9 +2585,9 @@
 
       return '<header class="kv-header">' +
         '<div class="kv-container kv-header-inner">' +
-          '<a class="kv-brand" href="#/" aria-label="' + escapeHtml(CONFIG.SITE_NAME) + ' - beranda">' +
-            '<span class="kv-brand-mark" aria-hidden="true">N</span>' +
-            '<span>' + escapeHtml(CONFIG.SITE_NAME) + '</span>' +
+          '<a class="kv-brand" href="#/" aria-label="' + escapeHtml(siteName()) + ' - beranda">' +
+            renderBrandMarkup() +
+            '<span>' + escapeHtml(siteName()) + '</span>' +
           '</a>' +
           '<nav class="kv-nav" aria-label="Navigasi Utama">' + linksHtml + '</nav>' +
           '<div class="kv-header-actions">' +
@@ -2578,7 +2603,7 @@
       if (state.route === 'reader' || state.route === 'admin') return '';
       return '<footer class="kv-footer">' +
         '<div class="kv-container kv-footer-inner">' +
-          '<div><strong>' + escapeHtml(CONFIG.SITE_NAME) + '</strong> &middot; ' + escapeHtml(CONFIG.SITE_TAGLINE) + '</div>' +
+          '<div><strong>' + escapeHtml(siteName()) + '</strong> &middot; ' + escapeHtml(siteTagline()) + '</div>' +
           '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">' +
             '<a href="#/tentang">Tentang</a>' +
             '<a href="#/kontak">Kontak</a>' +
@@ -3038,7 +3063,7 @@
         '<div class="kv-reader-progress" id="kv-progress-bar" style="width:0%" aria-hidden="true"></div>' +
         '<header class="kv-reader-topbar">' +
           '<div class="kv-reader-top-left">' +
-            '<a class="kv-reader-brand" href="#/"><span class="kv-reader-brand-mark">N</span><span class="kv-reader-brand-text">NEXA<em>MANGA</em></span></a>' +
+            '<a class="kv-reader-brand" href="#/">' + (siteLogo() ? '<span class="kv-brand-logo kv-reader-brand-logo"><img src="' + escapeHtml(siteLogo()) + '" alt="Logo ' + escapeHtml(siteName()) + '"/></span>' : '<span class="kv-reader-brand-mark">N</span><span class="kv-reader-brand-text">N<em>'+ escapeHtml(siteName()) + '</em></span>') + '</a>' +
             '<span class="kv-reader-divider"></span>' +
             '<a class="kv-reader-back" href="#/manga/' + escapeHtml(manga.slug) + '" title="Kembali ke daftar chapter">&#8592;<span class="kv-reader-back-text">' + escapeHtml(manga.title) + '</span></a>' +
           '</div>' +
@@ -3327,8 +3352,8 @@
           '<aside class="kv-admin-sidebar">' +
             '<div class="kv-admin-brand">' +
               '<div class="kv-admin-brand-row">' +
-                '<span class="kv-admin-logo-icon">' + kvIcon('book') + '</span>' +
-                '<a class="kv-admin-logo" href="#/">' + escapeHtml(CONFIG.SITE_NAME) + ' <span>Console</span></a>' +
+                (siteLogo() ? '<span class="kv-admin-logo-icon"><img src="' + escapeHtml(siteLogo()) + '" alt="Logo"/></span>' : '<span class="kv-admin-logo-icon">' + kvIcon('book') + '</span>') +
+                '<a class="kv-admin-logo" href="#/">' + escapeHtml(siteName()) + ' <span>Console</span></a>' +
               '</div>' +
               '<div class="kv-admin-chip' + (CONFIG.API_BASE_URL ? '' : ' off') + '"><span class="dot"></span><span>' + (CONFIG.API_BASE_URL ? 'Backend terhubung' : 'Mode lokal') + '</span></div>' +
             '</div>' +
@@ -3722,8 +3747,61 @@
         .catch(function (e) { toast(e.message, 'error'); });
     }
 
+    function persistSiteSettings(values) {
+      var isBackend = CONFIG.API_BASE_URL && state.adminToken;
+      var done = function () { toast('Pengaturan logo & nama disimpan.', 'ok'); render(); };
+      if (isBackend) {
+        return fetch(CONFIG.API_BASE_URL + '/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+          body: JSON.stringify(values)
+        }).then(function (r) {
+          return r.json().then(function (j) {
+            if (!r.ok) throw new Error((j && j.error) || ('HTTP ' + r.status));
+            return j.settings;
+          });
+        }).then(function (saved) {
+          state.data.settings = saved;
+          try { localStorage.setItem('kv_site_settings', JSON.stringify(saved)); } catch (e) {}
+          done();
+        }).catch(function (err) { toast('Gagal menyimpan pengaturan: ' + err.message, 'error'); });
+      }
+      try {
+        localStorage.setItem('kv_site_settings', JSON.stringify(values));
+        state.data.settings = values;
+        done();
+      } catch (e) {
+        toast('Gagal menyimpan pengaturan di browser.', 'warn');
+      }
+    }
+
+    function resetSiteSettings() {
+      persistSiteSettings({ siteName: '', siteTagline: '', logoUrl: '', contactEmail: '' });
+    }
+
     function renderAdminSettings() {
+       var siteNameValue = escapeHtml(siteSetting('siteName', CONFIG.SITE_NAME));
+       var siteTaglineValue = escapeHtml(siteSetting('siteTagline', CONFIG.SITE_TAGLINE));
+       var logoValue = escapeHtml(siteLogo());
+       var contactValue = escapeHtml(siteSetting('contactEmail', CONFIG.CONTACT_EMAIL));
        return '<div class="kv-card" style="margin-top:16px;">' +
+          '<h2 class="kv-section-title" style="margin-bottom:4px;">Logo &amp; Nama Situs</h2>' +
+          '<p class="kv-admin-sub" style="margin-bottom:14px;">Gunakan URL gambar atau unggah berkas logo. Logo &amp; nama tampil di beranda, katalog, reader, footer, dan sidebar admin.</p>' +
+          '<form id="kv-site-settings-form" class="kv-form-grid" novalidate>' +
+            '<label>Nama Situs<input class="kv-input" name="siteName" value="' + siteNameValue + '" required/></label>' +
+            '<label>Tagline<input class="kv-input" name="siteTagline" value="' + siteTaglineValue + '"/></label>' +
+            '<label style="grid-column:1/-1;">URL Logo<input class="kv-input" id="kv-setting-logoUrl" name="logoUrl" type="url" value="' + logoValue + '" placeholder="https://contoh.com/logo.png"/></label>' +
+            '<label style="grid-column:1/-1;">Email Kontak<input class="kv-input" name="contactEmail" type="email" value="' + contactValue + '" placeholder="redaksi@contoh.com"/></label>' +
+            '<div class="kv-site-logo-preview">' + (logoValue ? '<img src="' + logoValue + '" alt="Preview logo"/>' : '<span>Belum ada logo</span>') + '</div>' +
+            '<div style="display:flex;gap:10px;flex-wrap:wrap;grid-column:1/-1;">' +
+              '<button type="button" class="kv-btn kv-btn-ghost" id="kv-logo-upload-btn">Unggah Logo</button>' +
+              '<input id="kv-logo-file" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;"/>' +
+              '<button type="submit" class="kv-btn kv-btn-primary">Simpan Pengaturan</button>' +
+              '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-settings-reset">Kembalikan ke Default</button>' +
+            '</div>' +
+          '</form>' +
+         '</div>' +
+         '<div class="kv-card" style="margin-top:16px;">' +
            '<h2 class="kv-section-title" style="margin-bottom:12px;">Konfigurasi Aktif (dibaca dari file XML)</h2>' +
            '<table class="kv-table"><tbody>' +
             '<tr><td>Nama Situs</td><td class="kv-mono">' + escapeHtml(CONFIG.SITE_NAME) + '</td></tr>' +
@@ -4092,6 +4170,55 @@
         };
       }
 
+      var sForm = document.getElementById('kv-site-settings-form');
+      if (sForm) {
+        sForm.onsubmit = function (e) {
+          e.preventDefault();
+          var fd = new FormData(sForm);
+          persistSiteSettings({
+            siteName: String(fd.get('siteName') || '').trim(),
+            siteTagline: String(fd.get('siteTagline') || '').trim(),
+            logoUrl: String(fd.get('logoUrl') || '').trim(),
+            contactEmail: String(fd.get('contactEmail') || '').trim()
+          });
+        };
+      }
+
+      var logoBtn = document.getElementById('kv-logo-upload-btn');
+      var logoFile = document.getElementById('kv-logo-file');
+      if (logoBtn && logoFile) {
+        logoBtn.onclick = function () {
+          if (!CONFIG.API_BASE_URL || !state.adminToken) { toast('Upload logo hanya tersedia saat terhubung ke backend.', 'warn'); return; }
+          logoFile.click();
+        };
+        logoFile.onchange = function (e) {
+          var file = e.target.files && e.target.files[0];
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function () {
+            fetch(CONFIG.API_BASE_URL + '/api/admin/upload-dual', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+              body: JSON.stringify({ fileName: file.name, mimeType: file.type, dataBase64: reader.result })
+            }).then(function (r) {
+              return r.json().then(function (res) {
+                if (!r.ok) throw new Error(res.error || ('HTTP ' + r.status));
+                return res;
+              });
+            }).then(function (res) {
+              var url = res.bloggerUrl || '';
+              var input = document.getElementById('kv-setting-logoUrl');
+              if (input) input.value = url;
+              var preview = sForm && sForm.querySelector('.kv-site-logo-preview');
+              if (preview) preview.innerHTML = '<img src="' + escapeHtml(url) + '" alt="Preview logo"/>';
+              toast('Logo berhasil diunggah. Klik Simpan Pengaturan untuk menerapkan.', 'ok');
+            }).catch(function (err) { toast('Gagal mengunggah logo: ' + err.message, 'error'); });
+          };
+          reader.readAsDataURL(file);
+        };
+      }
+
+
       var cForm = document.getElementById('kv-comment-form');
       if (cForm) {
          cForm.onsubmit = function (e) {
@@ -4272,6 +4399,7 @@
         render();
       }
       else if (act === 'retry-api') { state.error = null; syncFromApi(); }
+      else if (act === 'admin-settings-reset') { resetSiteSettings(); }
       else if (act === 'toggle-admin-drawer') { state.adminDrawerOpen = !state.adminDrawerOpen; render(); }
       else if (act === 'close-admin-drawer') { state.adminDrawerOpen = false; render(); }
       else if (act === 'share-manga') {

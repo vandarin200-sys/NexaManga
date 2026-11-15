@@ -18,6 +18,7 @@ const {
   registerOAuthUser,
   saveChapter,
   saveManga,
+  saveSettings,
   upvoteComment
 } = require('../lib/catalog');
 const {
@@ -342,6 +343,14 @@ async function handler(req, res) {
       }
       const token = createSessionToken(updatedUser);
       return sendJson(res, 200, { ok: true, token, user: updatedUser });
+    }
+
+    if (route === 'admin/settings' && req.method === 'POST') {
+      requireAdmin(req);
+      const body = await readBody(req);
+      let saved;
+      await updateCatalog((catalog) => { saved = saveSettings(catalog, body); });
+      return sendJson(res, 200, { settings: saved });
     }
 
     if (route === 'admin/storage/init' && req.method === 'POST') {
