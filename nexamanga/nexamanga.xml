@@ -1829,9 +1829,10 @@
          }).then(function (response) {
            if (!response.ok) throw new Error('Sesi tidak valid.');
            return response.json();
-         }).then(function (result) {
-           state.user = result.user;
-         }).catch(function () {
+          }).then(function (result) {
+            state.user = result.user || null;
+            if (state.user && result.role) state.user.role = result.role;
+          }).catch(function () {
            state.adminToken = '';
            state.user = null;
            sessionStorage.removeItem('kv_session_token');
