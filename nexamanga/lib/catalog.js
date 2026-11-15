@@ -60,7 +60,14 @@ function claimAdminRole(catalog, userId) {
   const user = catalog.users.find((item) => item.id === userId);
   if (!user) throw new ValidationError('Pengguna tidak ditemukan.');
   const hasAdmin = catalog.users.some((item) => item.role === 'admin');
-  if (hasAdmin) {
+  const firstUser = catalog.users.reduce((oldest, item) => {
+    if (!oldest) return item;
+    const a = typeof oldest.createdAt === 'string' ? oldest.createdAt : '';
+    const b = typeof item.createdAt === 'string' ? item.createdAt : '';
+    return b && (!a || b < a) ? item : oldest;
+  }, null);
+  const isFirstUser = !!firstUser && firstUser.id === user.id;
+  if (hasAdmin && !isFirstUser) {
     return { promoted: false, user };
   }
   user.role = 'admin';
