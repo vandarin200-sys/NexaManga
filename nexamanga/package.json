@@ -1,0 +1,12 @@
+{
+  "name": "nexamanga-vercel-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vercel API backend for the NexaManga Blogger theme with Telegram storage",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
