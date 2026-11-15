@@ -3168,9 +3168,6 @@
        }
        var cFilter = document.getElementById('kv-comment-filter');
        if (cFilter) cFilter.onchange = function (e) { state.commentFilter = e.target.value; render(); };
-       document.querySelectorAll('select[data-action="admin-user-role"]').forEach(function (sel) {
-         sel.onchange = function () { changeUserRoleAdmin(sel.getAttribute('data-id'), sel.value); };
-       });
        if (!window.__adminChangeDelegated) {
          window.__adminChangeDelegated = true;
          document.addEventListener('change', function (e) {
