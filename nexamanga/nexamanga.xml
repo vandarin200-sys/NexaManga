@@ -1797,34 +1797,49 @@
 
     function initializeAuth() {
       sessionStorage.removeItem('kv_admin_token');
-      var callbackToken = new URLSearchParams(window.location.search).get('auth_token');
-      if (callbackToken) {
-        state.adminToken = callbackToken;
-        sessionStorage.setItem('kv_session_token', callbackToken);
-        window.history.replaceState(null, '', window.location.pathname + window.location.hash);
-      }
-      if (!state.adminToken || !CONFIG.API_BASE_URL) {
-        state.user = null;
-        render();
-        syncFromApi();
-        return;
-      }
-      render();
-      fetch(CONFIG.API_BASE_URL + '/api/auth/me', {
-        headers: { Authorization: 'Bearer ' + state.adminToken }
-      }).then(function (response) {
-        if (!response.ok) throw new Error('Sesi tidak valid.');
-        return response.json();
-      }).then(function (result) {
-        state.user = result.user;
-      }).catch(function () {
-        state.adminToken = '';
-        state.user = null;
-        sessionStorage.removeItem('kv_session_token');
-      }).then(function () {
-        render();
-        syncFromApi();
-      });
+       var callbackToken = new URLSearchParams(window.location.search).get('auth_token');
+       if (callbackToken) {
+         state.adminToken = callbackToken;
+         sessionStorage.setItem('kv_session_token', callbackToken);
+         window.history.replaceState(null, '', window.location.pathname + window.location.hash);
+       }
+       if (!state.adminToken || !CONFIG.API_BASE_URL) {
+         state.user = null;
+         render();
+         syncFromApi();
+         return;
+       }
+       render();
+       (function claimAdminIfNeeded() {
+         return fetch(CONFIG.API_BASE_URL + '/api/auth/claim-admin', {
+           method: 'POST',
+           headers: { Authorization: 'Bearer ' + state.adminToken }
+         }).then(function (response) {
+           if (!response.ok) return null;
+           return response.json();
+         }).then(function (result) {
+           if (result && result.token) {
+             state.adminToken = result.token;
+             sessionStorage.setItem('kv_session_token', result.token);
+           }
+         }).catch(function () {});
+       })().then(function () {
+         fetch(CONFIG.API_BASE_URL + '/api/auth/me', {
+           headers: { Authorization: 'Bearer ' + state.adminToken }
+         }).then(function (response) {
+           if (!response.ok) throw new Error('Sesi tidak valid.');
+           return response.json();
+         }).then(function (result) {
+           state.user = result.user;
+         }).catch(function () {
+           state.adminToken = '';
+           state.user = null;
+           sessionStorage.removeItem('kv_session_token');
+         }).then(function () {
+           render();
+           syncFromApi();
+         });
+       });
     }
 
     function collectGenres() {

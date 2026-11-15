@@ -38,6 +38,7 @@ function registerOAuthUser(catalog, identity) {
   );
   if (existing) return existing;
 
+  const hasAdmin = catalog.users.some((existingUser) => existingUser.role === 'admin');
   const user = {
     id: `usr-${crypto.randomUUID()}`,
     provider: identity.provider,
@@ -45,11 +46,25 @@ function registerOAuthUser(catalog, identity) {
     name: identity.name.trim().slice(0, 100),
     email: typeof identity.email === 'string' ? identity.email.slice(0, 254) : null,
     avatar: typeof identity.avatar === 'string' ? identity.avatar.slice(0, 2048) : null,
-    role: catalog.users.length === 0 ? 'admin' : 'member',
+    role: (!hasAdmin || catalog.users.length === 0) ? 'admin' : 'member',
     createdAt: new Date().toISOString()
   };
   catalog.users.push(user);
   return user;
+}
+
+function claimAdminRole(catalog, userId) {
+  if (typeof userId !== 'string' || !userId) {
+    throw new ValidationError('ID pengguna tidak valid.');
+  }
+  const user = catalog.users.find((item) => item.id === userId);
+  if (!user) throw new ValidationError('Pengguna tidak ditemukan.');
+  const hasAdmin = catalog.users.some((item) => item.role === 'admin');
+  if (hasAdmin) {
+    return { promoted: false, user };
+  }
+  user.role = 'admin';
+  return { promoted: true, user };
 }
 
 function requireText(value, label, maxLength, minLength = 1) {
@@ -156,6 +171,7 @@ module.exports = {
   deleteChapter,
   deleteComment,
   deleteManga,
+  claimAdminRole,
   registerOAuthUser,
   saveChapter,
   saveManga,

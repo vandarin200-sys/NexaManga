@@ -10,6 +10,7 @@ const {
   EMPTY_CATALOG,
   ValidationError,
   addComment,
+  claimAdminRole,
   deleteChapter,
   deleteComment,
   deleteManga,
@@ -322,6 +323,23 @@ async function handler(req, res) {
       const claims = sessionClaims(req);
       if (!claims) throw new HttpError(401, 'Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.');
       return sendJson(res, 200, { user: claims.user, role: claims.role });
+    }
+
+    if (route === 'auth/claim-admin' && req.method === 'POST') {
+      const claims = sessionClaims(req);
+      if (!claims) throw new HttpError(401, 'Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.');
+      let promoted = false;
+      let updatedUser = null;
+      await updateCatalog((catalog) => {
+        const result = claimAdminRole(catalog, claims.sub);
+        promoted = result.promoted;
+        updatedUser = result.user;
+      });
+      if (!promoted) {
+        return sendJson(res, 409, { error: 'Sudah ada admin. Tidak ada perubahan.' });
+      }
+      const token = createSessionToken(updatedUser);
+      return sendJson(res, 200, { ok: true, token, user: updatedUser });
     }
 
     if (route === 'admin/storage/init' && req.method === 'POST') {
