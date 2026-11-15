@@ -1375,13 +1375,48 @@
       .kv-hero { padding: 25px; margin-top: 22px; border-radius: 20px; }
       .kv-grid { gap: 14px; }
       .kv-detail-grid { margin-top: 24px; }
-    }
-    @media (max-width: 420px) {
-      .kv-container { padding-right: 14px; padding-left: 14px; }
-      .kv-hero { padding: 21px; }
-      .kv-toolbar { padding: 13px; }
-    }
-  ]]></b:skin>
+     }
+     @media (max-width: 420px) {
+       .kv-container { padding-right: 14px; padding-left: 14px; }
+       .kv-hero { padding: 21px; }
+       .kv-toolbar { padding: 13px; }
+     }
+     /* ===== Admin redesign: analytics dashboard ===== */
+     .kv-admin-shell { background: radial-gradient(1200px 600px at 80% -10%, color-mix(in srgb, var(--kv-accent) 12%, transparent), transparent), var(--kv-bg); }
+     .kv-admin-side { backdrop-filter: blur(12px); }
+     .kv-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 18px 0 24px; }
+     .kv-kpi { position: relative; overflow: hidden; padding: 18px 20px; border-radius: 16px; background: var(--kv-surface); border: 1px solid var(--kv-border); transition: transform .18s ease, box-shadow .18s ease; }
+     .kv-kpi:hover { transform: translateY(-2px); box-shadow: 0 12px 30px color-mix(in srgb, var(--kv-accent) 14%, transparent); }
+     .kv-kpi .ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface-2)); color: var(--kv-accent); margin-bottom: 12px; }
+     .kv-kpi .lbl { font-size: .78rem; color: var(--kv-text-muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+     .kv-kpi .val { font-size: 1.85rem; font-weight: 800; letter-spacing: -.03em; margin-top: 4px; font-family: var(--kv-font-mono, monospace); }
+     .kv-kpi .delta { font-size: .75rem; color: var(--kv-text-muted); margin-top: 6px; }
+     .kv-chart-card { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 16px; padding: 20px; }
+     .kv-chart-title { font-size: .95rem; font-weight: 700; margin: 0 0 4px; }
+     .kv-chart-sub { font-size: .78rem; color: var(--kv-text-muted); margin: 0 0 14px; }
+     .kv-bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 180px; padding: 8px 4px 0; border-bottom: 1px solid var(--kv-border); }
+     .kv-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+     .kv-bar { width: 100%; border-radius: 8px 8px 0 0; background: linear-gradient(180deg, var(--kv-accent), color-mix(in srgb, var(--kv-accent) 40%, transparent)); min-height: 4px; transition: height .3s ease; position: relative; }
+     .kv-bar:hover { filter: brightness(1.15); }
+     .kv-bar-label { font-size: .7rem; color: var(--kv-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
+     .kv-bar-val { font-size: .7rem; font-weight: 600; color: var(--kv-text); }
+     .kv-two-col { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin: 16px 0; }
+     .kv-card { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 16px; padding: 20px; }
+     .kv-card h3 { margin: 0 0 12px; font-size: 1rem; font-weight: 700; }
+     .kv-user-table img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 8px; }
+     .kv-role-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+     .kv-role-badge.admin { background: color-mix(in srgb, var(--kv-accent) 18%, transparent); color: var(--kv-accent); }
+     .kv-role-badge.member { background: var(--kv-surface-2); color: var(--kv-text-muted); }
+     .kv-dropzone { border: 2px dashed var(--kv-border); border-radius: 14px; padding: 28px; text-align: center; color: var(--kv-text-muted); background: var(--kv-surface-2); cursor: pointer; transition: border-color .15s, background .15s; }
+     .kv-dropzone.drag { border-color: var(--kv-accent); background: color-mix(in srgb, var(--kv-accent) 8%, var(--kv-surface-2)); color: var(--kv-text); }
+     .kv-dropzone .ico { font-size: 2rem; margin-bottom: 8px; }
+     .kv-toolbar-wysi { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; border: 1px solid var(--kv-border); border-bottom: none; border-radius: 10px 10px 0 0; background: var(--kv-surface-2); }
+     .kv-toolbar-wysi button { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--kv-border); background: var(--kv-surface); color: var(--kv-text); font-size: .8rem; font-weight: 600; cursor: pointer; }
+     .kv-toolbar-wysi button:hover { background: var(--kv-accent); color: #fff; border-color: var(--kv-accent); }
+     .kv-wysi-textarea { border-radius: 0 0 10px 10px !important; }
+     @media (max-width: 900px) { .kv-kpi-grid { grid-template-columns: repeat(2, 1fr); } .kv-two-col { grid-template-columns: 1fr; } }
+     @media (max-width: 520px) { .kv-kpi-grid { grid-template-columns: 1fr; } }
+   ]]></b:skin>
 </head>
 <body>
   <!-- Blogger Required Main Section (Hidden when SPA active, preserved for valid Blogger XML) -->
@@ -1595,9 +1630,10 @@
       adminExpandedManga: null,
       commentFilter: 'Semua',
       commentNotice: '',
-      pendingDelete: null,        // { type, id, label, confirmLabel }
-      toasts: []
-    };
+       pendingDelete: null,        // { type, id, label, confirmLabel }
+       toasts: [],
+       usersCache: undefined
+     };
 
     /* Persistensi lokal: perubahan admin disimpan ke localStorage agar
        tidak hilang saat reload (mode demo tanpa backend). */
@@ -2271,19 +2307,21 @@
       var tab = state.adminTab || 'dashboard';
       var pending = state.data.comments.filter(function (c) { return c.status === 'pending'; }).length;
       var body;
-      if (tab === 'manga') body = state.adminForm ? renderAdminMangaForm() : renderAdminMangaList();
-      else if (tab === 'chapter') body = state.adminChapterForm ? renderAdminChapterForm() : renderAdminChapterList();
-      else if (tab === 'komentar') body = renderAdminComments();
-      else if (tab === 'pengaturan') body = renderAdminSettings();
-      else body = renderAdminDashboard();
+       if (tab === 'manga') body = state.adminForm ? renderAdminMangaForm() : renderAdminMangaList();
+       else if (tab === 'chapter') body = state.adminChapterForm ? renderAdminChapterForm() : renderAdminChapterList();
+       else if (tab === 'komentar') body = renderAdminComments();
+       else if (tab === 'pengguna') body = renderAdminUsers();
+       else if (tab === 'pengaturan') body = renderAdminSettings();
+       else body = renderAdminDashboard();
 
-      var titles = {
-        dashboard: ['Dashboard', 'Ringkasan performa, aktivitas, dan pintasan cepat.'],
-        manga: ['Manajemen Manga', 'Tambah, ubah, hapus, dan atur manga unggulan & rekomendasi.'],
-        chapter: ['Manajemen Chapter', 'Atur urutan, kelola halaman, dan simpan gambar ke Telegram.'],
-        komentar: ['Moderasi Komentar', 'Setujui, tolak, atau hapus komentar pembaca.'],
-        pengaturan: ['Pengaturan', 'Konfigurasi tema, integrasi backend, dan zona bahaya.']
-      };
+       var titles = {
+         dashboard: ['Dashboard Analitik', 'KPI, grafik, dan pintasan cepat.'],
+         manga: ['Manajemen Manga', 'Tambah, ubah, hapus, dan atur manga unggulan & rekomendasi.'],
+         chapter: ['Manajemen Chapter', 'Atur urutan, kelola halaman, dan simpan gambar ke Telegram.'],
+         komentar: ['Moderasi Komentar', 'Setujui, tolak, atau hapus komentar pembaca.'],
+         pengguna: ['Manajemen Pengguna', 'Daftar akun, ubah role, dan hapus pengguna.'],
+         pengaturan: ['Pengaturan', 'Konfigurasi tema, integrasi backend, dan zona bahaya.']
+       };
       var t = titles[tab] || titles.dashboard;
       var topActions;
       if (tab === 'dashboard') {
@@ -2306,13 +2344,14 @@
         topActions = '<a class="kv-btn kv-btn-ghost" href="#/">Lihat Situs</a>';
       }
 
-      var navMain = [
-        { key: 'dashboard', label: 'Dashboard', icon: 'grid' },
-        { key: 'manga', label: 'Manga', icon: 'book' },
-        { key: 'chapter', label: 'Chapter', icon: 'layers' },
-        { key: 'komentar', label: 'Komentar', icon: 'chat', badge: pending },
-        { key: 'pengaturan', label: 'Pengaturan', icon: 'gear' }
-      ];
+       var navMain = [
+         { key: 'dashboard', label: 'Dashboard', icon: 'grid' },
+         { key: 'manga', label: 'Manga', icon: 'book' },
+         { key: 'chapter', label: 'Chapter', icon: 'layers' },
+         { key: 'komentar', label: 'Komentar', icon: 'chat', badge: pending },
+         { key: 'pengguna', label: 'Pengguna', icon: 'users' },
+         { key: 'pengaturan', label: 'Pengaturan', icon: 'gear' }
+       ];
       var navHtml = navMain.map(function (n) {
         return '<button type="button" class="kv-admin-nav-item' + (tab === n.key ? ' active' : '') + '" role="tab" aria-selected="' + (tab === n.key ? 'true' : 'false') + '" data-action="admin-tab" data-tab="' + n.key + '">' +
           kvIcon(n.icon) + '<span>' + n.label + '</span>' +
@@ -2360,11 +2399,27 @@
     function renderAdminDashboard() {
       var pending = state.data.comments.filter(function (c) { return c.status === 'pending'; }).length;
       var totalViews = state.data.manga.reduce(function (acc, m) { return acc + (m.views || 0); }, 0);
-      var stats =
-        '<div class="kv-stat-card"><div class="kv-stat-ico">' + kvIcon('book') + '</div><div class="kv-stat-label">Total Manga</div><div class="kv-stat-val kv-mono">' + state.data.manga.length + '</div></div>' +
-        '<div class="kv-stat-card"><div class="kv-stat-ico">' + kvIcon('layers') + '</div><div class="kv-stat-label">Total Chapter</div><div class="kv-stat-val kv-mono">' + state.data.chapters.length + '</div></div>' +
-        '<div class="kv-stat-card"><div class="kv-stat-ico">' + kvIcon('chat') + '</div><div class="kv-stat-label">Komentar Menunggu</div><div class="kv-stat-val kv-mono">' + pending + '</div></div>' +
-        '<div class="kv-stat-card"><div class="kv-stat-ico">' + kvIcon('trend') + '</div><div class="kv-stat-label">Total Dibaca</div><div class="kv-stat-val kv-mono">' + totalViews.toLocaleString('id-ID') + '</div></div>';
+      var totalUsers = (state.usersCache || []).length;
+      var kpis =
+        '<div class="kv-kpi"><div class="ico">' + kvIcon('book') + '</div><div class="lbl">Total Manga</div><div class="val">' + state.data.manga.length + '</div><div class="delta">Judul terdaftar</div></div>' +
+        '<div class="kv-kpi"><div class="ico">' + kvIcon('layers') + '</div><div class="lbl">Total Chapter</div><div class="val">' + state.data.chapters.length + '</div><div class="delta">Halaman tersimpan</div></div>' +
+        '<div class="kv-kpi"><div class="ico">' + kvIcon('chat') + '</div><div class="lbl">Komentar Menunggu</div><div class="val">' + pending + '</div><div class="delta">Perlu moderasi</div></div>' +
+        '<div class="kv-kpi"><div class="ico">' + kvIcon('trend') + '</div><div class="lbl">Total Dibaca</div><div class="val">' + totalViews.toLocaleString('id-ID') + '</div><div class="delta">Akumulasi views</div></div>';
+      // Bar chart: chapters per manga (top 8)
+      var counts = state.data.manga.map(function (m) {
+        return { title: m.title, count: state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length };
+      }).sort(function (a, b) { return b.count - a.count; }).slice(0, 8);
+      var maxC = counts.reduce(function (a, c) { return Math.max(a, c.count); }, 1) || 1;
+      var bars = counts.map(function (c) {
+        var h = Math.round((c.count / maxC) * 150);
+        return '<div class="kv-bar-col">' +
+          '<div class="kv-bar-val">' + c.count + '</div>' +
+          '<div class="kv-bar" style="height:' + h + 'px;" title="' + escapeHtml(c.title) + ': ' + c.count + ' chapter"></div>' +
+          '<div class="kv-bar-label">' + escapeHtml(c.title) + '</div>' +
+        '</div>';
+      }).join('');
+      var chart = '<div class="kv-chart-card"><h3 class="kv-chart-title">Chapter per Manga</h3><p class="kv-chart-sub">Top 8 manga berdasarkan jumlah chapter.</p>' +
+        (bars ? '<div class="kv-bar-chart">' + bars + '</div>' : '<p style="color:var(--kv-text-muted);">Belum ada data.</p>') + '</div>';
       var qas = [
         { icon: 'plus', t: 'Tambah Manga', d: 'Publikasikan judul baru ke katalog.', act: 'admin-new-manga' },
         { icon: 'layers', t: 'Tambah Chapter', d: 'Unggah halaman ke penyimpanan Telegram.', act: 'admin-new-chapter' },
@@ -2388,11 +2443,12 @@
             '<div class="kv-mono" style="color:var(--kv-text-muted);font-size:0.8125rem;">' + escapeHtml(c.publishedAt) + '</div>' +
           '</div>';
         }).join('');
-      return '<div class="kv-admin-grid">' + stats + '</div>' +
-        '<div class="kv-admin-side-label" style="padding-left:0;padding-top:22px;">Aksi Cepat</div>' +
-        '<div class="kv-qa-grid">' + qas + '</div>' +
-        '<div class="kv-stat-box" style="margin-top:20px;">' +
-          '<h2 class="kv-section-title" style="margin-bottom:4px;">Aktivitas Chapter Terbaru</h2>' +
+      return '<div class="kv-kpi-grid">' + kpis + '</div>' +
+        '<div class="kv-two-col">' + chart +
+          '<div class="kv-card"><h3>Aksi Cepat</h3><div class="kv-qa-grid">' + qas + '</div></div>' +
+        '</div>' +
+        '<div class="kv-card" style="margin-top:4px;">' +
+          '<h3>Aktivitas Chapter Terbaru</h3>' +
           '<p class="kv-mono" style="color:var(--kv-text-muted);font-size:0.8125rem;margin:0 0 12px;">Klik untuk preview langsung di reader</p>' +
           (recent ? '<div class="kv-table-wrap">' + recent + '</div>' : '<p style="color:var(--kv-text-muted);">Belum ada chapter.</p>') +
         '</div>';
@@ -2480,7 +2536,16 @@
           '<label>Judul Alternatif<input class="kv-input" name="altTitle" value="' + escapeHtml(f.altTitle || '') + '" style="width:100%;display:block;margin-top:4px;"/></label>' +
           '<label>Slug (otomatis dari judul jika kosong)<input class="kv-input kv-mono" name="slug" value="' + escapeHtml(f.slug || '') + '" placeholder="contoh: judul-manga" style="width:100%;display:block;margin-top:4px;"/></label>' +
           '<label>Penulis<input class="kv-input" name="author" value="' + escapeHtml(f.author || '') + '" style="width:100%;display:block;margin-top:4px;"/></label>' +
-          '<label style="grid-column:1/-1;">Sinopsis *<textarea class="kv-textarea" name="synopsis" required>' + escapeHtml(f.synopsis || '') + '</textarea></label>' +
+          '<label style="grid-column:1/-1;">Sinopsis *' +
+            '<div class="kv-toolbar-wysi">' +
+              '<button type="button" data-wysi="bold">B</button>' +
+              '<button type="button" data-wysi="italic">I</button>' +
+              '<button type="button" data-wysi="h3">H3</button>' +
+              '<button type="button" data-wysi="ul">List</button>' +
+              '<button type="button" data-wysi="link">Link</button>' +
+            '</div>' +
+            '<textarea class="kv-textarea kv-wysi-textarea" name="synopsis" id="kv-synopsis" required>' + escapeHtml(f.synopsis || '') + '</textarea>' +
+          '</label>' +
           '<label style="grid-column:1/-1;">URL Cover Blogger<input class="kv-input" name="cover" value="' + escapeHtml(f.coverBloggerUrl || '') + '" placeholder="https://blogger.googleusercontent.com/..." style="width:100%;display:block;margin-top:4px;"/></label>' +
           '<label>Genre (pisahkan dengan koma)<input class="kv-input" name="genres" value="' + escapeHtml(f.genresText || '') + '" placeholder="Aksi, Fantasi" style="width:100%;display:block;margin-top:4px;"/></label>' +
           '<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">' +
@@ -2568,7 +2633,12 @@
         '</div>' +
         '<div style="margin:16px 0 8px;">' +
           '<h3 style="margin:0 0 8px;font-size:0.9375rem;">Halaman Gambar (Penyimpanan Telegram)</h3>' +
-          '<input id="kv-ch-files" type="file" accept="image/jpeg,image/png,image/webp" multiple class="kv-input"/>' +
+          '<div id="kv-dropzone" class="kv-dropzone" tabindex="0" role="button" aria-label="Seret gambar ke sini atau klik untuk memilih">' +
+            '<div class="ico">📁</div>' +
+            '<div><strong>Seret gambar ke sini</strong> atau klik untuk memilih</div>' +
+            '<div style="font-size:.75rem;margin-top:4px;">JPEG/PNG/WebP, maks 3 MiB per berkas</div>' +
+          '</div>' +
+          '<input id="kv-ch-files" type="file" accept="image/jpeg,image/png,image/webp" multiple class="kv-input" style="display:none;"/>' +
           '<p style="color:var(--kv-text-muted);font-size:0.75rem;margin:6px 0 0;">Setiap file dikirim ke Vercel <code>/api/admin/upload-dual</code> dan disimpan sebagai dokumen Telegram. Reader menayangkan gambar melalui endpoint proxy Vercel. Batas 3 MiB per berkas.</p>' +
         '</div>' +
         (f.pages.length
@@ -2608,6 +2678,60 @@
           '<table class="kv-table"><thead><tr><th>Manga</th><th>Penulis</th><th>Isi</th><th>Status</th><th>Aksi</th></tr></thead><tbody>' +
           (rows || '<tr><td colspan="5" style="text-align:center;color:var(--kv-text-muted);">Tidak ada komentar.</td></tr>') +
           '</tbody></table></div>';
+    }
+
+    function loadAdminUsers() {
+      if (!CONFIG.API_BASE_URL || !state.adminToken) return;
+      fetch(CONFIG.API_BASE_URL + '/api/admin/users', { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
+        .then(function (r) { if (!r.ok) throw new Error('Gagal memuat pengguna.'); return r.json(); })
+        .then(function (res) { state.usersCache = res.users || []; render(); })
+        .catch(function () { state.usersCache = []; });
+    }
+
+    function renderAdminUsers() {
+      if (state.usersCache === undefined) { state.usersCache = null; loadAdminUsers(); }
+      if (state.usersCache === null) return '<div class="kv-card"><p style="color:var(--kv-text-muted);">Memuat pengguna...</p></div>';
+      var rows = state.usersCache.map(function (u) {
+        var isSelf = state.user && state.user.id === u.id;
+        return '<tr>' +
+          '<td><img src="' + escapeHtml(u.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(u.name)) + '" alt=""/>' + escapeHtml(u.name) + (isSelf ? ' <span style="color:var(--kv-text-muted);font-size:.75rem;">(Anda)</span>' : '') + '</td>' +
+          '<td>' + escapeHtml(u.email || '-') + '</td>' +
+          '<td>' + escapeHtml(u.provider || '-') + '</td>' +
+          '<td><span class="kv-role-badge ' + escapeHtml(u.role) + '">' + escapeHtml(u.role) + '</span></td>' +
+          '<td class="kv-mono" style="font-size:.75rem;">' + escapeHtml(u.createdAt || '-') + '</td>' +
+          '<td><select class="kv-input" style="width:auto;padding:4px 8px;" data-action="admin-user-role" data-id="' + escapeHtml(u.id) + '">' +
+            '<option value="member"' + (u.role === 'member' ? ' selected' : '') + '>member</option>' +
+            '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>admin</option>' +
+          '</select>' +
+          (isSelf ? '' : '<button type="button" class="kv-btn kv-btn-ghost" style="margin-left:6px;" data-action="admin-delete-user" data-id="' + escapeHtml(u.id) + '">Hapus</button>') +
+        '</tr>';
+      }).join('');
+      return '<div class="kv-card"><h3>Daftar Pengguna (' + state.usersCache.length + ')</h3>' +
+        '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>Nama</th><th>Email</th><th>Provider</th><th>Role</th><th>Dibuat</th><th>Aksi</th></tr></thead><tbody>' +
+        (rows || '<tr><td colspan="6" style="text-align:center;color:var(--kv-text-muted);">Belum ada pengguna.</td></tr>') +
+        '</tbody></table></div></div>';
+    }
+
+    function changeUserRoleAdmin(userId, role) {
+      if (!CONFIG.API_BASE_URL || !state.adminToken) { toast('Backend tidak terhubung.', 'error'); return; }
+      fetch(CONFIG.API_BASE_URL + '/api/admin/user-role', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+        body: JSON.stringify({ id: userId, role: role })
+      }).then(function (r) { if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Gagal mengubah role.'); }); return r.json(); })
+        .then(function () { toast('Role diperbarui.', 'success'); state.usersCache = undefined; loadAdminUsers(); })
+        .catch(function (e) { toast(e.message, 'error'); state.usersCache = undefined; loadAdminUsers(); });
+    }
+    function deleteUserAdmin(userId) {
+      if (!confirm('Hapus pengguna ini?')) return;
+      if (!CONFIG.API_BASE_URL || !state.adminToken) { toast('Backend tidak terhubung.', 'error'); return; }
+      fetch(CONFIG.API_BASE_URL + '/api/admin/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+        body: JSON.stringify({ id: userId })
+      }).then(function (r) { if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Gagal menghapus pengguna.'); }); return r.json(); })
+        .then(function () { toast('Pengguna dihapus.', 'success'); state.usersCache = undefined; loadAdminUsers(); })
+        .catch(function (e) { toast(e.message, 'error'); });
     }
 
     function renderAdminSettings() {
@@ -2988,22 +3112,54 @@
         var aLen = aSearch.value.length;
         aSearch.setSelectionRange(aLen, aLen);
       }
-      var mForm = document.getElementById('kv-manga-form');
-      if (mForm) mForm.onsubmit = function (e) { e.preventDefault(); saveMangaForm(mForm); };
+       var mForm = document.getElementById('kv-manga-form');
+       if (mForm) mForm.onsubmit = function (e) { e.preventDefault(); saveMangaForm(mForm); };
+       document.querySelectorAll('[data-wysi]').forEach(function (btn) {
+         btn.onclick = function () {
+           var ta = document.getElementById('kv-synopsis');
+           if (!ta) return;
+           var tag = btn.getAttribute('data-wysi');
+           var start = ta.selectionStart, end = ta.selectionEnd;
+           var sel = ta.value.slice(start, end);
+           var wrap = { bold: ['**', '**'], italic: ['*', '*'], h3: ['### ', ''], ul: ['- ', ''], link: ['[', '](url)'] }[tag];
+           if (!wrap) return;
+           var text = wrap[0] + (sel || 'teks') + wrap[1];
+           ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
+           ta.focus();
+           ta.selectionStart = start + wrap[0].length;
+           ta.selectionEnd = start + wrap[0].length + (sel || 'teks').length;
+         };
+       });
       var chMangaSel = document.getElementById('kv-ch-manga');
       if (chMangaSel) chMangaSel.onchange = function (e) { state.adminChapterMangaId = e.target.value; render(); };
       var chForm = document.getElementById('kv-chapter-form');
       if (chForm) chForm.onsubmit = function (e) { e.preventDefault(); saveChapterForm(chForm); };
       var chFormSel = document.getElementById('kv-ch-form-manga');
       if (chFormSel) chFormSel.onchange = function (e) { if (state.adminChapterForm) state.adminChapterForm.mangaId = e.target.value; };
-      var chFiles = document.getElementById('kv-ch-files');
-      if (chFiles) chFiles.onchange = function (e) {
-        var files = Array.prototype.slice.call(e.target.files);
-        e.target.value = '';
-        if (files.length) uploadPageFiles(files);
-      };
-      var cFilter = document.getElementById('kv-comment-filter');
-      if (cFilter) cFilter.onchange = function (e) { state.commentFilter = e.target.value; render(); };
+       var chFiles = document.getElementById('kv-ch-files');
+       if (chFiles) chFiles.onchange = function (e) {
+         var files = Array.prototype.slice.call(e.target.files);
+         e.target.value = '';
+         if (files.length) uploadPageFiles(files);
+       };
+       var dropzone = document.getElementById('kv-dropzone');
+       if (dropzone) {
+         dropzone.onclick = function () { if (chFiles) chFiles.click(); };
+         dropzone.ondragover = function (e) { e.preventDefault(); dropzone.classList.add('drag'); };
+         dropzone.ondragleave = function () { dropzone.classList.remove('drag'); };
+         dropzone.ondrop = function (e) {
+           e.preventDefault();
+           dropzone.classList.remove('drag');
+           var files = [];
+           if (e.dataTransfer && e.dataTransfer.files) files = Array.prototype.slice.call(e.dataTransfer.files);
+           if (files.length) uploadPageFiles(files);
+         };
+       }
+       var cFilter = document.getElementById('kv-comment-filter');
+       if (cFilter) cFilter.onchange = function (e) { state.commentFilter = e.target.value; render(); };
+       document.querySelectorAll('select[data-action="admin-user-role"]').forEach(function (sel) {
+         sel.onchange = function () { changeUserRoleAdmin(sel.getAttribute('data-id'), sel.value); };
+       });
     }
 
     document.addEventListener('click', function (e) {
@@ -3057,7 +3213,8 @@
         syncFromApi();
       }
       /* --- Aksi panel admin --- */
-      else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; render(); }
+      else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; if (state.adminTab === 'pengguna') state.usersCache = undefined; render(); }
+      else if (act === 'admin-delete-user') { deleteUserAdmin(el.getAttribute('data-id')); }
       else if (act === 'admin-new-manga') { state.adminForm = blankManga(); state.adminTab = 'manga'; render(); }
       else if (act === 'admin-edit-manga') {
         var am = mangaById(el.getAttribute('data-id'));

@@ -426,6 +426,58 @@ async function handler(req, res) {
       return sendJson(res, 200, { ok: true });
     }
 
+    if (route === 'admin/users' && req.method === 'GET') {
+      requireAdmin(req);
+      const catalog = await readCatalog();
+      const users = (catalog.users || []).map((user) => ({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        provider: user.provider,
+        role: user.role,
+        createdAt: user.createdAt
+      }));
+      return sendJson(res, 200, { users });
+    }
+
+    if (route === 'admin/user-role' && req.method === 'POST') {
+      requireAdmin(req);
+      const body = await readBody(req);
+      if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID pengguna tidak valid.');
+      if (!['admin', 'member'].includes(body.role)) throw new HttpError(400, 'Role harus admin atau member.');
+      let updated = null;
+      await updateCatalog((catalog) => {
+        const user = (catalog.users || []).find((item) => item.id === body.id);
+        if (!user) throw new HttpError(404, 'Pengguna tidak ditemukan.');
+        if (user.role === 'admin' && body.role === 'member') {
+          const adminCount = (catalog.users || []).filter((item) => item.role === 'admin').length;
+          if (adminCount <= 1) throw new HttpError(400, 'Tidak dapat menurunkan admin terakhir.');
+        }
+        user.role = body.role;
+        updated = user;
+      });
+      return sendJson(res, 200, { ok: true, user: updated });
+    }
+
+    if (route === 'admin/delete-user' && req.method === 'POST') {
+      requireAdmin(req);
+      const body = await readBody(req);
+      if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID pengguna tidak valid.');
+      const claims = sessionClaims(req);
+      if (claims && claims.sub === body.id) throw new HttpError(400, 'Tidak dapat menghapus akun sendiri.');
+      await updateCatalog((catalog) => {
+        const user = (catalog.users || []).find((item) => item.id === body.id);
+        if (!user) throw new HttpError(404, 'Pengguna tidak ditemukan.');
+        if (user.role === 'admin') {
+          const adminCount = (catalog.users || []).filter((item) => item.role === 'admin').length;
+          if (adminCount <= 1) throw new HttpError(400, 'Tidak dapat menghapus admin terakhir.');
+        }
+        catalog.users = (catalog.users || []).filter((item) => item.id !== body.id);
+      });
+      return sendJson(res, 200, { ok: true });
+    }
+
     if (route === 'admin/upload-dual' && req.method === 'POST') {
       requireAdmin(req);
       const body = await readBody(req);
