@@ -163,7 +163,7 @@ function saveSettings(catalog, input) {
     throw new ValidationError('Data pengaturan tidak valid.');
   }
   const settings = Object.assign({}, catalog.settings || {});
-  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'contactEmail', 'brandMode', 'siteNameColor'];
+  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'contactEmail', 'brandMode', 'siteNameColor', 'aboutContent', 'contactContent', 'privacyContent', 'termsContent'];
   for (const field of stringFields) {
     const value = input[field];
     if (typeof value !== 'string') continue;
@@ -172,6 +172,9 @@ function saveSettings(catalog, input) {
     if (field === 'siteTagline' && trimmed.length > 250) throw new ValidationError('Tagline maksimal 250 karakter.');
     if (field === 'logoUrl' && trimmed.length > 2048) throw new ValidationError('URL logo terlalu panjang.');
     if (field === 'contactEmail' && trimmed.length > 254) throw new ValidationError('Email kontak terlalu panjang.');
+    if (['aboutContent', 'contactContent', 'privacyContent', 'termsContent'].includes(field) && trimmed.length > 20000) {
+      throw new ValidationError('Konten halaman terlalu panjang (maks 20.000 karakter).');
+    }
     if (field === 'contactEmail' && trimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
       throw new ValidationError('Format email kontak tidak valid.');
     }
