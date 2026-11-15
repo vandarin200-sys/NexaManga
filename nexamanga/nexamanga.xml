@@ -1581,85 +1581,7 @@
     /* =========================================================================
        DATA CONTOH LEGAL (FALLBACK JIKA API_BASE_URL BELUM DIHUBUNGKAN)
        ========================================================================= */
-    var SAMPLE_DATA = {
-      manga: [
-        {
-          id: 'mng-001',
-          slug: 'kronik-astral-2099',
-          title: 'Kronik Astral 2099',
-          altTitle: 'Neo-Jakarta Courier Protocol',
-          author: 'Raka Pratama',
-          synopsis: 'Di tahun 2099, kurir data lapis baja Arga mengantar paket terenkripsi melintasi distrik atas Neo-Jakarta hingga menemukan cetak biru memori kota.',
-          coverBloggerUrl: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiSamplePlaceholder01/s800/cover-placeholder.png',
-          genres: ['Sci-Fi', 'Aksi', 'Cyberpunk'],
-          type: 'Manga',
-          status: 'Ongoing',
-          rating: 4.9,
-          views: 128450,
-          featured: true,
-          recommended: true,
-          updatedAt: '2026-11-13'
-        },
-        {
-          id: 'mng-002',
-          slug: 'pedang-gerhana',
-          title: 'Pedang Gerhana',
-          altTitle: 'Kurogane no Nisshoku',
-          author: 'Dian Kusuma',
-          synopsis: 'Setiap seratus tahun, gerhana matahari membangunkan bayangan kuno dari lembah abu. Pengembara tanpa nama membawa bilah obsidian.',
-          coverBloggerUrl: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiSamplePlaceholder02/s800/cover-placeholder.png',
-          genres: ['Fantasi', 'Aksi', 'Petualangan'],
-          type: 'Manga',
-          status: 'Ongoing',
-          rating: 4.8,
-          views: 96320,
-          featured: true,
-          recommended: true,
-          updatedAt: '2026-11-12'
-        },
-        {
-          id: 'mng-003',
-          slug: 'taman-lentera',
-          title: 'Taman Lentera',
-          altTitle: 'Konservatori Senja',
-          author: 'Nadia Larasati',
-          synopsis: 'Rumah kaca yang hanya buka selepas matahari terbenam tempat ingatan pengunjung dititipkan pada tanaman bioluminesensi.',
-          coverBloggerUrl: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiSamplePlaceholder03/s800/cover-placeholder.png',
-          genres: ['Misteri', 'Drama', 'Slice of Life'],
-          type: 'Manhwa',
-          status: 'Ongoing',
-          rating: 4.7,
-          views: 64110,
-          featured: false,
-          recommended: true,
-          updatedAt: '2026-11-10'
-        }
-      ],
-      chapters: [
-        {
-          id: 'ch-001-1', mangaId: 'mng-001', number: 1, title: 'Protokol Pengiriman Hujan', publishedAt: '2026-11-01',
-          pages: [
-            { order: 1, bloggerUrl: '', telegramFileId: 'BQACAgUAAxkBAA_DEMO_01', fileName: '01.jpg' },
-            { order: 2, bloggerUrl: '', telegramFileId: 'BQACAgUAAxkBAA_DEMO_02', fileName: '02.jpg' }
-          ]
-        },
-        {
-          id: 'ch-001-2', mangaId: 'mng-001', number: 2, title: 'Menara Relai Selatan', publishedAt: '2026-11-07',
-          pages: [
-            { order: 1, bloggerUrl: '', telegramFileId: 'BQACAgUAAxkBAA_DEMO_03', fileName: '01.jpg' }
-          ]
-        },
-        {
-          id: 'ch-002-1', mangaId: 'mng-002', number: 1, title: 'Langit di Atas Lembah Abu', publishedAt: '2026-11-03',
-          pages: [
-            { order: 1, bloggerUrl: '', telegramFileId: 'BQACAgUAAxkBAA_DEMO_04', fileName: '01.jpg' }
-          ]
-        }
-      ],
-      comments: [
-        { id: 'c1', mangaId: 'mng-001', authorName: 'Fajar', content: 'Mode baca vertikalnya sangat ringan di ponsel.', createdAt: '2026-11-13', status: 'approved' }
-      ]
-    };
+     var SAMPLE_DATA = { manga: [], chapters: [], comments: [] };
 
     /* =========================================================================
        STATE & PERSISTENSI LOKAL
@@ -1669,7 +1591,7 @@
       params: {},
       theme: localStorage.getItem('kv_theme') || CONFIG.DEFAULT_THEME,
       /* Data dimuat dari: backend API -> data lokal admin -> data contoh */
-      data: JSON.parse(localStorage.getItem('kv_local_data') || 'null') || JSON.parse(JSON.stringify(SAMPLE_DATA)),
+       data: JSON.parse(localStorage.getItem('kv_local_data') || 'null') || { manga: [], chapters: [], comments: [] },
       loading: false,
       error: null,
       search: '',
@@ -3024,7 +2946,7 @@
         persistData();
       } else if (d.type === 'reset') {
         localStorage.removeItem('kv_local_data');
-        state.data = JSON.parse(JSON.stringify(SAMPLE_DATA));
+         state.data = { manga: [], chapters: [], comments: [] };
         toast('Data lokal dikembalikan ke data contoh.', 'ok');
       }
       render();
