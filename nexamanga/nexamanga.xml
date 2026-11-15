@@ -2531,7 +2531,7 @@
            '<div class="kv-manga-card-body">' +
              '<div class="kv-manga-card-head">' +
                '<div><h3 class="kv-manga-card-title">' + escapeHtml(m.title) + '</h3>' +
-                 '<div class="kv-mono kv-manga-card-slug">/' + escapeHtml(m.slug) + '</div></div>' +
+                 '<div class="kv-mono kv-manga-card-slug">' + escapeHtml(m.slug) + '</div></div>' +
                '<div class="kv-manga-card-badges">' + (m.featured ? '<span class="kv-badge kv-badge-ok">Unggulan</span> ' : '') + (m.recommended ? '<span class="kv-badge">Rekomendasi</span>' : '') + '</div>' +
              '</div>' +
              '<div class="kv-manga-card-meta">' +
