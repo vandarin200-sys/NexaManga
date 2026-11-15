@@ -203,10 +203,14 @@ function addComment(catalog, input) {
     const parent = catalog.comments.find((item) => item.id === parentId && item.mangaId === mangaId);
     if (!parent) throw new ValidationError('Komentar induk tidak ditemukan.');
   }
+  const imageUrl = typeof input.imageUrl === 'string' && input.imageUrl.trim() ? input.imageUrl.trim().slice(0, 2048) : null;
+  const replyTo = typeof input.replyTo === 'string' && input.replyTo.trim() ? input.replyTo.trim().slice(0, 100) : null;
   const comment = {
     id: `c-${crypto.randomUUID()}`,
     mangaId,
     parentId,
+    replyTo,
+    imageUrl,
     userId: typeof input.userId === 'string' && input.userId ? input.userId : null,
     authorName: requireText(input.authorName, 'Nama', 80),
     authorAvatar: typeof input.authorAvatar === 'string' ? input.authorAvatar.slice(0, 2048) : null,

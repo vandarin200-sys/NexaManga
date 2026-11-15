@@ -379,6 +379,16 @@ async function handler(req, res) {
       return sendJson(res, 200, { comment: updated });
     }
 
+    if (route === 'comment/image' && req.method === 'POST') {
+      const claims = sessionClaims(req);
+      if (!claims) throw new HttpError(401, 'Masuk terlebih dahulu untuk mengunggah gambar.');
+      const body = await readBody(req);
+      const { mimeType, bytes } = decodeUpload(body.dataBase64);
+      const fileId = await saveMedia(body.fileName || 'comment.jpg', mimeType, bytes);
+      const url = `${apiBaseUrl()}/api/media/${encodeURIComponent(fileId)}`;
+      return sendJson(res, 201, { url });
+    }
+
     if (route === 'catalog' && req.method === 'GET') {
       let catalog;
       try {

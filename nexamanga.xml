@@ -1603,6 +1603,22 @@
       .kv-admin-shell .kv-role-badge { font-family: 'JetBrains Mono', monospace; font-size: .68rem; border-radius: 4px; padding: 3px 7px; }
       .kv-admin-shell .kv-role-badge.admin { background: rgba(78, 222, 163, .15); color: #4EDEA3; }
       .kv-admin-shell .kv-role-badge.member { background: rgba(198, 192, 255, .15); color: #C6C0FF; }
+      .kv-admin-shell .kv-user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
+      .kv-admin-shell .kv-user-card { background: #171A27; border: 1px solid #2B304C; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+      .kv-admin-shell .kv-user-card-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
+      .kv-admin-shell .kv-user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+      .kv-admin-shell .kv-user-meta { flex: 1; min-width: 0; }
+      .kv-admin-shell .kv-user-name { font-size: .88rem; font-weight: 700; color: #DEE1FE; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .kv-admin-shell .kv-user-self { font-size: .72rem; font-weight: 400; color: #737B91; }
+      .kv-admin-shell .kv-user-email { font-size: .74rem; color: #737B91; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .kv-admin-shell .kv-user-card-body { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-top: 1px solid #2B304C; border-bottom: 1px solid #2B304C; }
+      .kv-admin-shell .kv-user-row { display: flex; justify-content: space-between; gap: 12px; font-size: .76rem; color: #A0A7B8; }
+      .kv-admin-shell .kv-user-row strong { color: #DEE1FE; font-weight: 500; }
+      .kv-admin-shell .kv-user-card-actions { display: flex; gap: 8px; align-items: center; margin-top: auto; }
+      .kv-admin-shell .kv-user-card-head .kv-role-badge { flex-shrink: 0; }
+      .kv-admin-shell .kv-user-role { flex: 1; }
+      .kv-admin-shell .kv-user-card-actions .kv-btn { flex-shrink: 0; }
+      .kv-admin-shell .kv-admin-empty { color: #737B91; text-align: center; padding: 24px 0; margin: 0; }
       .kv-admin-shell .kv-admin-side { background: rgba(22, 26, 48, .9); border-right: 1px solid #2B304C; }
       .kv-admin-shell .kv-admin-nav-item { border-radius: 6px; transition: background .12s, color .12s; }
       .kv-admin-shell .kv-admin-nav-item.active { background: #6558D9; color: #EFEBFF; font-weight: 600; }
@@ -2541,6 +2557,11 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       .kv-brand-logo.kv-reader-brand-logo { min-width:30px; height:30px; padding:0 8px; border-radius:8px; overflow:hidden; background:#171a27; }
       .kv-admin-logo-icon img { height:100%; width:auto; max-width:180px; object-fit:contain; display:block; }
 
+      .kv-comment-image { max-width: 100%; max-height: 360px; border-radius: 12px; display: block; margin-top: 8px; border: 1px solid var(--kv-border); object-fit: cover; }
+      .kv-comment-image-input { margin-top: 8px; }
+      .kv-spoiler { background: var(--kv-surface-2); color: transparent; padding: 0 4px; border-radius: 4px; cursor: pointer; user-select: none; }
+      .kv-spoiler.revealed { color: inherit; background: transparent; user-select: auto; }
+      .kv-reply-to { display: inline-flex; align-items: center; background: rgba(101,88,217,.18); color: var(--kv-accent); padding: 2px 7px; border-radius: 999px; font-size: .68rem; font-weight: 600; margin-right: 6px; }
     ]]></b:skin>
 </head>
 <body>
@@ -2684,6 +2705,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         adminDrawerOpen: false,
         editingProfile: false,
         replyingTo: null,
+        imageTargetForm: null,
         viewedChapters: {}
       };
 
@@ -2860,6 +2882,17 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function renderCommentContent(text) {
+      var html = escapeHtml(text);
+      html = html.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, function (m, alt, url) {
+        return '<img class="kv-comment-image" src="' + escapeHtml(url) + '" alt="' + escapeHtml(alt || 'Gambar komentar') + '" loading="lazy" referrerpolicy="no-referrer"/>';
+      });
+      html = html.replace(/\|\|([\s\S]+?)\|\|/g, '<span class="kv-spoiler" title="Klik untuk melihat spoiler">$1</span>');
+      html = html.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*([\s\S]+?)\*/g, '<em>$1</em>');
+      return html;
     }
 
     function svgFallbackCover(title) {
@@ -3389,37 +3422,61 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                   '<div><div class="kv-comment-name">' + (state.user ? escapeHtml(state.user.name) : 'Tulis komentar Anda') + '</div><div class="kv-comment-hint">Komentar dan balasan langsung ditampilkan.</div></div>' +
                 '</div>' +
                 (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
-                '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tuliskan teorimu atau tanggapan untuk chapter ini..." required rows="3"></textarea>' +
+                '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis komentar. Dukung **tebal**, *miring*, ||spoiler||, dan gambar." required rows="3"></textarea>' +
+                '<input class="kv-input kv-comment-image-input" name="imageUrl" type="url" placeholder="URL gambar (opsional)"/>' +
                 '<div class="kv-comment-form-foot">' +
-                  '<span class="kv-comment-hint">Berbahasa Indonesia, sopan, dan relevan.</span>' +
+                  '<span class="kv-comment-hint">Gunakan **tebal**, *miring*, ||spoiler||</span>' +
+                  '<button type="button" class="kv-btn kv-btn-ghost" data-action="comment-image">+ Gambar</button>' +
                   '<button class="kv-btn kv-btn-primary kv-detail-submit" type="submit">Kirim Komentar</button>' +
                 '</div>' +
               '</form>' +
+              '<input type="file" id="kv-comment-image-file" accept="image/jpeg,image/png,image/webp" style="display:none;"/>' +
               (function () {
                 var voterKey = state.user ? state.user.id : voterId();
-                function childrenOf(parentId) { return comments.filter(function (x) { return x.parentId === parentId; }); }
-                function renderNode(c, depth) {
-                  var kids = childrenOf(c.id);
+                var byParent = {};
+                comments.forEach(function (c) {
+                  var key = c.parentId || '';
+                  if (!byParent[key]) byParent[key] = [];
+                  byParent[key].push(c);
+                });
+                function oldestFirst(list) {
+                  return list.slice().sort(function (a, b) {
+                    return String(a.createdAt || '').localeCompare(String(b.createdAt || '')) || String(a.id || '').localeCompare(String(b.id || ''));
+                  });
+                }
+                function renderComment(c, depth) {
                   var upvotes = Array.isArray(c.upvotes) ? c.upvotes : [];
                   var voted = upvotes.indexOf(voterKey) !== -1;
                   var own = state.user && c.userId && c.userId === state.user.id;
                   var avatar = c.authorAvatar ? '<img src="' + escapeHtml(c.authorAvatar) + '" alt="" class="kv-comment-avatar"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(String(c.authorName || '?').charAt(0).toUpperCase()) + '</div>';
+                  var rootId = depth === 0 ? c.id : c.parentId;
+                  var replyToBadge = c.replyTo ? '<span class="kv-reply-to">@' + escapeHtml(c.replyTo) + '</span>' : '';
+                  var contentHtml = renderCommentContent(c.content);
+                  var imageHtml = c.imageUrl ? '<img class="kv-comment-image" src="' + escapeHtml(c.imageUrl) + '" alt="Gambar dari ' + escapeHtml(c.authorName) + '" loading="lazy" referrerpolicy="no-referrer"/>' : '';
                   var replyForm = state.replyingTo === c.id
-                    ? '<form class="kv-reply-form kv-comment-reply-form" data-manga-id="' + escapeHtml(manga.id) + '" data-parent-id="' + escapeHtml(c.id) + '">' +
+                    ? '<form class="kv-reply-form kv-comment-reply-form" data-manga-id="' + escapeHtml(manga.id) + '" data-parent-id="' + escapeHtml(rootId) + '" data-reply-to="' + escapeHtml(c.authorName) + '">' +
                         (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
                         '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis balasan..." required rows="3"></textarea>' +
-                        '<div class="kv-comment-reply-actions"><button type="button" class="kv-btn kv-btn-ghost" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Batal</button><button class="kv-btn kv-btn-primary" type="submit">Kirim Balasan</button></div>' +
+                        '<input class="kv-input kv-comment-image-input" name="imageUrl" type="url" placeholder="URL gambar (opsional)"/>' +
+                        '<div class="kv-comment-reply-actions">' +
+                          '<button type="button" class="kv-btn kv-btn-ghost" data-action="comment-image">+ Gambar</button>' +
+                          '<button type="button" class="kv-btn kv-btn-ghost" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Batal</button>' +
+                          '<button class="kv-btn kv-btn-primary" type="submit">Kirim Balasan</button>' +
+                        '</div>' +
                       '</form>'
                     : '';
+                  var children = depth === 0 ? oldestFirst(byParent[c.id] || []) : [];
                   return '<div class="kv-detail-comment' + (depth ? ' kv-detail-comment-child' : '') + '">' +
                     '<div class="kv-detail-comment-card">' +
                       '<div class="kv-detail-comment-main">' + avatar +
                         '<div class="kv-detail-comment-body">' +
                           '<div class="kv-detail-comment-head">' +
                             '<strong>' + escapeHtml(c.authorName) + '</strong>' + (own ? '<span class="kv-detail-comment-you">(Anda)</span>' : '') +
+                            replyToBadge +
                             '<span class="kv-detail-comment-date">' + escapeHtml(c.createdAt || '') + '</span>' +
                           '</div>' +
-                          '<p class="kv-detail-comment-text">' + escapeHtml(c.content) + '</p>' +
+                          '<div class="kv-detail-comment-text">' + contentHtml + '</div>' +
+                          imageHtml +
                           '<div class="kv-detail-comment-actions">' +
                             '<button type="button" class="kv-comment-action' + (voted ? ' active' : '') + '" data-action="upvote-comment" data-id="' + escapeHtml(c.id) + '">' + (voted ? '&#9650;' : '&#9651;') + ' ' + upvotes.length + '</button>' +
                             '<button type="button" class="kv-comment-action" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Balas</button>' +
@@ -3428,10 +3485,11 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                         '</div>' +
                       '</div>' +
                     '</div>' +
-                    (kids.length ? '<div class="kv-detail-comment-children">' + kids.map(function (k) { return renderNode(k, depth + 1); }).join('') + '</div>' : '') +
+                    (children.length ? '<div class="kv-detail-comment-children">' + children.map(function (k) { return renderComment(k, 1); }).join('') + '</div>' : '') +
                   '</div>';
                 }
-                return comments.filter(function (c) { return !c.parentId; }).map(function (c) { return renderNode(c, 0); }).join('') || '<p class="kv-detail-empty">Belum ada komentar. Jadilah yang pertama.</p>';
+                var topLevel = byParent[''] || [];
+                return topLevel.map(function (c) { return renderComment(c, 0); }).join('') || '<p class="kv-detail-empty">Belum ada komentar. Jadilah yang pertama.</p>';
               })() +
             '</section>' +
           '</div>' +
@@ -4154,23 +4212,32 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       if (state.usersCache === null) return '<div class="kv-card"><p style="color:var(--kv-text-muted);">Memuat pengguna...</p></div>';
       var rows = state.usersCache.map(function (u) {
         var isSelf = state.user && state.user.id === u.id;
-        return '<tr>' +
-          '<td><img src="' + escapeHtml(u.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(u.name)) + '" alt=""/>' + escapeHtml(u.name) + (isSelf ? ' <span style="color:var(--kv-text-muted);font-size:.75rem;">(Anda)</span>' : '') + '</td>' +
-          '<td>' + escapeHtml(u.email || '-') + '</td>' +
-          '<td>' + escapeHtml(u.provider || '-') + '</td>' +
-          '<td><span class="kv-role-badge ' + escapeHtml(u.role) + '">' + escapeHtml(u.role) + '</span></td>' +
-          '<td class="kv-mono" style="font-size:.75rem;">' + escapeHtml(u.createdAt || '-') + '</td>' +
-          '<td><select class="kv-input" style="width:auto;padding:4px 8px;" data-action="admin-user-role" data-id="' + escapeHtml(u.id) + '">' +
-            '<option value="member"' + (u.role === 'member' ? ' selected' : '') + '>member</option>' +
-            '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>admin</option>' +
-          '</select>' +
-          (isSelf ? '' : '<button type="button" class="kv-btn kv-btn-ghost" style="margin-left:6px;" data-action="admin-delete-user" data-id="' + escapeHtml(u.id) + '">Hapus</button>') +
-        '</tr>';
+        var avatar = u.avatar || ('https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(u.name));
+        return '<div class="kv-user-card">' +
+          '<div class="kv-user-card-head">' +
+            '<img class="kv-user-avatar" src="' + escapeHtml(avatar) + '" alt=""/>' +
+            '<div class="kv-user-meta">' +
+              '<div class="kv-user-name">' + escapeHtml(u.name) + (isSelf ? ' <span class="kv-user-self">(Anda)</span>' : '') + '</div>' +
+              '<div class="kv-user-email">' + escapeHtml(u.email || '-') + '</div>' +
+            '</div>' +
+            '<span class="kv-role-badge ' + escapeHtml(u.role) + '">' + escapeHtml(u.role) + '</span>' +
+          '</div>' +
+          '<div class="kv-user-card-body">' +
+            '<div class="kv-user-row"><span>Provider</span><strong>' + escapeHtml(u.provider || '-') + '</strong></div>' +
+            '<div class="kv-user-row"><span>Dibuat</span><strong>' + escapeHtml(u.createdAt || '-') + '</strong></div>' +
+          '</div>' +
+          '<div class="kv-user-card-actions">' +
+            '<select class="kv-input kv-user-role" data-action="admin-user-role" data-id="' + escapeHtml(u.id) + '">' +
+              '<option value="member"' + (u.role === 'member' ? ' selected' : '') + '>member</option>' +
+              '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>admin</option>' +
+            '</select>' +
+            (isSelf ? '' : '<button type="button" class="kv-btn kv-btn-danger-ghost" data-action="admin-delete-user" data-id="' + escapeHtml(u.id) + '">Hapus</button>') +
+          '</div>' +
+        '</div>';
       }).join('');
       return '<div class="kv-card"><h3>Daftar Pengguna (' + state.usersCache.length + ')</h3>' +
-        '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>Nama</th><th>Email</th><th>Provider</th><th>Role</th><th>Dibuat</th><th>Aksi</th></tr></thead><tbody>' +
-        (rows || '<tr><td colspan="6" style="text-align:center;color:var(--kv-text-muted);">Belum ada pengguna.</td></tr>') +
-        '</tbody></table></div></div>';
+        (rows ? '<div class="kv-user-grid">' + rows + '</div>' : '<p class="kv-admin-empty">Belum ada pengguna.</p>') +
+      '</div>';
     }
 
     function changeUserRoleAdmin(userId, role) {
@@ -4717,8 +4784,9 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
             var mangaId = cForm.getAttribute('data-manga-id');
             var parentId = cForm.getAttribute('data-parent-id') || null;
             var authorName = state.user ? state.user.name : String(fd.get('author') || '').trim();
-           var authorAvatar = state.user ? (state.user.avatar || null) : null;
-           var userId = state.user ? state.user.id : null;
+            var authorAvatar = state.user ? (state.user.avatar || null) : null;
+            var userId = state.user ? state.user.id : null;
+            var imageUrl = String(fd.get('imageUrl') || '').trim();
             state.data.comments.unshift({
               id: 'c-' + Date.now(),
               mangaId: mangaId,
@@ -4727,20 +4795,21 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
               authorName: authorName,
               authorAvatar: authorAvatar,
               content: fd.get('content'),
+              imageUrl: imageUrl || null,
               createdAt: new Date().toISOString().slice(0, 10),
               status: 'approved',
               upvotes: []
             });
-           persistData();
+            persistData();
             state.commentNotice = 'Komentar Anda berhasil dikirim dan langsung ditampilkan. Terima kasih!';
             state.replyingTo = null;
-           if (CONFIG.API_BASE_URL) {
-             var headers = { 'Content-Type': 'application/json' };
-             if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
+            if (CONFIG.API_BASE_URL) {
+              var headers = { 'Content-Type': 'application/json' };
+              if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
               fetch(CONFIG.API_BASE_URL + '/api/comment', {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({ mangaId: mangaId, parentId: parentId, authorName: authorName, authorAvatar: authorAvatar, content: fd.get('content') })
+                body: JSON.stringify({ mangaId: mangaId, parentId: parentId, replyTo: null, imageUrl: imageUrl || null, authorName: authorName, authorAvatar: authorAvatar, content: fd.get('content') })
               }).catch(function () { toast('Komentar tersimpan lokal, gagal terkirim ke server.', 'warn'); });
            }
            render();
@@ -4753,36 +4822,71 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
            var fd = new FormData(rf);
            var mangaId = rf.getAttribute('data-manga-id');
            var parentId = rf.getAttribute('data-parent-id');
-           var authorName = state.user ? state.user.name : String(fd.get('author') || '').trim();
-           var authorAvatar = state.user ? (state.user.avatar || null) : null;
-           var userId = state.user ? state.user.id : null;
-           state.data.comments.unshift({
-             id: 'c-' + Date.now(),
-             mangaId: mangaId,
-             parentId: parentId,
-             userId: userId,
-             authorName: authorName,
-             authorAvatar: authorAvatar,
-             content: fd.get('content'),
-             createdAt: new Date().toISOString().slice(0, 10),
-             status: 'approved',
-             upvotes: []
-           });
-           persistData();
-           state.commentNotice = 'Balasan Anda berhasil dikirim.';
-           state.replyingTo = null;
-           if (CONFIG.API_BASE_URL) {
-             var headers = { 'Content-Type': 'application/json' };
-             if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
-             fetch(CONFIG.API_BASE_URL + '/api/comment', {
-               method: 'POST',
-               headers: headers,
-               body: JSON.stringify({ mangaId: mangaId, parentId: parentId, authorName: authorName, authorAvatar: authorAvatar, content: fd.get('content') })
-             }).catch(function () { toast('Balasan tersimpan lokal, gagal terkirim ke server.', 'warn'); });
+            var authorName = state.user ? state.user.name : String(fd.get('author') || '').trim();
+            var authorAvatar = state.user ? (state.user.avatar || null) : null;
+            var userId = state.user ? state.user.id : null;
+            var replyTo = rf.getAttribute('data-reply-to') || null;
+            var imageUrl = String(fd.get('imageUrl') || '').trim();
+            state.data.comments.unshift({
+              id: 'c-' + Date.now(),
+              mangaId: mangaId,
+              parentId: parentId,
+              replyTo: replyTo,
+              imageUrl: imageUrl || null,
+              userId: userId,
+              authorName: authorName,
+              authorAvatar: authorAvatar,
+              content: fd.get('content'),
+              createdAt: new Date().toISOString().slice(0, 10),
+              status: 'approved',
+              upvotes: []
+            });
+            persistData();
+            state.commentNotice = 'Balasan Anda berhasil dikirim.';
+            state.replyingTo = null;
+            if (CONFIG.API_BASE_URL) {
+              var headers = { 'Content-Type': 'application/json' };
+              if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
+              fetch(CONFIG.API_BASE_URL + '/api/comment', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ mangaId: mangaId, parentId: parentId, replyTo: replyTo, imageUrl: imageUrl || null, authorName: authorName, authorAvatar: authorAvatar, content: fd.get('content') })
+              }).catch(function () { toast('Balasan tersimpan lokal, gagal terkirim ke server.', 'warn'); });
            }
            render();
          };
        });
+
+       var imgFile = document.getElementById('kv-comment-image-file');
+       if (imgFile) {
+         imgFile.onchange = function (e) {
+           var file = e.target.files && e.target.files[0];
+           var targetForm = state.imageTargetForm;
+           state.imageTargetForm = null;
+           if (!file || !targetForm) return;
+           if (!CONFIG.API_BASE_URL) { toast('Upload gambar butuh backend yang terhubung.', 'warn'); return; }
+           var reader = new FileReader();
+           reader.onload = function () {
+             var headers = { 'Content-Type': 'application/json' };
+             if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
+             fetch(CONFIG.API_BASE_URL + '/api/comment/image', {
+               method: 'POST',
+               headers: headers,
+               body: JSON.stringify({ fileName: file.name, mimeType: file.type, dataBase64: reader.result })
+             }).then(function (r) {
+               return r.json().then(function (res) {
+                 if (!r.ok) throw new Error(res.error || ('HTTP ' + r.status));
+                 return res;
+               });
+             }).then(function (res) {
+               var input = targetForm.querySelector('input[name="imageUrl"]');
+               if (input) input.value = res.url || '';
+               toast('Gambar diunggah.', 'ok');
+             }).catch(function (err) { toast('Gagal upload gambar: ' + err.message, 'error'); });
+           };
+           reader.readAsDataURL(file);
+         };
+       }
 
        /* --- Binding panel admin --- */
       var aSearch = document.getElementById('kv-admin-manga-search');
@@ -4889,6 +4993,12 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         render();
       }
       else if (act === 'retry-api') { state.error = null; syncFromApi(); }
+      else if (act === 'comment-image') {
+        if (!state.user) { toast('Masuk terlebih dahulu untuk mengunggah gambar.', 'warn'); return; }
+        state.imageTargetForm = el.closest('form');
+        var fileInput = document.getElementById('kv-comment-image-file');
+        if (fileInput) fileInput.click();
+      }
       else if (act === 'admin-settings-reset') { resetSiteSettings(); }
       else if (act === 'toggle-admin-drawer') { state.adminDrawerOpen = !state.adminDrawerOpen; render(); }
       else if (act === 'close-admin-drawer') { state.adminDrawerOpen = false; render(); }
@@ -5007,6 +5117,12 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       render();
       window.scrollTo(0, 0);
     }
+
+    // Toggle spoiler komentar saat diklik
+    document.addEventListener('click', function (e) {
+      var sp = e.target && e.target.closest ? e.target.closest('.kv-spoiler') : null;
+      if (sp) sp.classList.toggle('revealed');
+    });
 
     window.addEventListener('popstate', handleRouteChange);
     window.addEventListener('hashchange', handleRouteChange);
