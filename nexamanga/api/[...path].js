@@ -271,7 +271,10 @@ async function handler(req, res) {
   }
 
   const pathname = new URL(req.url, 'http://localhost').pathname;
-  const route = pathname.replace(/^\/api\/?/, '');
+  const route = pathname
+    .replace(/^\/+/, '')
+    .replace(/^api\//, '')
+    .replace(/\/+$/, '');
   try {
     const oauthRoute = route.match(/^auth\/(google|discord)\/(start|callback)$/);
     if (oauthRoute && req.method === 'GET') {
@@ -437,7 +440,7 @@ async function handler(req, res) {
       return sendJson(res, 200, { ok: true, service: 'nexamanga-vercel-backend' });
     }
 
-    throw new HttpError(404, 'Endpoint tidak ditemukan.');
+    throw new HttpError(404, `Endpoint tidak ditemukan: ${req.method} /${route}`);
   } catch (error) {
     if (error instanceof HttpError) return sendJson(res, error.status, { error: error.message });
     if (error instanceof ValidationError) return sendJson(res, 400, { error: error.message });

@@ -100,7 +100,34 @@ test('unknown route returns 404 in Indonesian', async () => {
   setEnv();
   const res = await call('GET', '/api/tidak-ada');
   assert.equal(res.statusCode, 404);
-  assert.equal(res.json.error, 'Endpoint tidak ditemukan.');
+  assert.match(res.json.error, /Endpoint tidak ditemukan/);
+});
+
+test('oauth start route matches regardless of URL shape', async () => {
+  setEnv();
+  process.env.DISCORD_CLIENT_ID = 'cid';
+  process.env.DISCORD_CLIENT_SECRET = 'csecret';
+  const shapes = [
+    '/api/auth/discord/start?return_to=https%3A%2F%2Fnexa.example',
+    '/auth/discord/start?return_to=https%3A%2F%2Fnexa.example',
+    'api/auth/discord/start?return_to=https%3A%2F%2Fnexa.example',
+    '/api/auth/discord/start/?return_to=https%3A%2F%2Fnexa.example'
+  ];
+  for (const url of shapes) {
+    const res = await call('GET', url);
+    assert.notEqual(res.statusCode, 404, `shape ${url} should not 404, got ${res.statusCode}: ${JSON.stringify(res.json)}`);
+    assert.equal(res.statusCode, 302, `shape ${url} should redirect`);
+    assert.match(String(res.headers.location || ''), /discord\.com\/oauth2\/authorize/);
+  }
+});
+
+test('oauth start rejects origin not in ALLOWED_ORIGINS', async () => {
+  setEnv();
+  process.env.DISCORD_CLIENT_ID = 'cid';
+  process.env.DISCORD_CLIENT_SECRET = 'csecret';
+  const res = await call('GET', '/api/auth/discord/start?return_to=https%3A%2F%2Fevil.example');
+  assert.equal(res.statusCode, 400);
+  assert.match(res.json.error, /Origin Blogger/);
 });
 
 test('catalog hides pending comments and users from visitors', async () => {
