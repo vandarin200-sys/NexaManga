@@ -1415,8 +1415,49 @@
      .kv-toolbar-wysi button:hover { background: var(--kv-accent); color: #fff; border-color: var(--kv-accent); }
      .kv-wysi-textarea { border-radius: 0 0 10px 10px !important; }
      @media (max-width: 900px) { .kv-kpi-grid { grid-template-columns: repeat(2, 1fr); } .kv-two-col { grid-template-columns: 1fr; } }
-     @media (max-width: 520px) { .kv-kpi-grid { grid-template-columns: 1fr; } }
-   ]]></b:skin>
+      @media (max-width: 520px) { .kv-kpi-grid { grid-template-columns: 1fr; } }
+      /* ===== Admin redesign: full shell restyle ===== */
+      .kv-admin-shell { font-family: var(--kv-font-body, inherit); }
+      .kv-admin-shell .kv-stat-box { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px color-mix(in srgb, #000 6%, transparent); }
+      .kv-admin-shell .kv-section-title { letter-spacing: -0.02em; }
+      .kv-admin-shell .kv-input, .kv-admin-shell .kv-select, .kv-admin-shell .kv-textarea {
+        background: var(--kv-surface-2); border: 1px solid var(--kv-border); border-radius: 10px;
+        padding: 10px 12px; font-size: .9rem; transition: border-color .15s, box-shadow .15s;
+      }
+      .kv-admin-shell .kv-input:focus, .kv-admin-shell .kv-select:focus, .kv-admin-shell .kv-textarea:focus {
+        outline: none; border-color: var(--kv-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kv-accent) 18%, transparent);
+      }
+      .kv-admin-shell .kv-table { border-radius: 12px; overflow: hidden; border: 1px solid var(--kv-border); }
+      .kv-admin-shell .kv-table th { background: var(--kv-surface-2); font-weight: 700; text-transform: uppercase; font-size: .72rem; letter-spacing: .06em; color: var(--kv-text-muted); padding: 12px 14px; }
+      .kv-admin-shell .kv-table td { padding: 12px 14px; border-top: 1px solid var(--kv-border); vertical-align: middle; }
+      .kv-admin-shell .kv-table tbody tr:hover { background: color-mix(in srgb, var(--kv-accent) 4%, var(--kv-surface)); }
+      .kv-admin-shell .kv-table-wrap { border-radius: 12px; overflow: auto; }
+      .kv-admin-shell .kv-btn-primary { background: linear-gradient(135deg, var(--kv-accent), color-mix(in srgb, var(--kv-accent) 70%, #6366f1)); border: none; box-shadow: 0 6px 16px color-mix(in srgb, var(--kv-accent) 30%, transparent); }
+      .kv-admin-shell .kv-btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+      .kv-admin-shell .kv-btn-ghost { border: 1px solid var(--kv-border); background: var(--kv-surface); }
+      .kv-admin-shell .kv-btn-ghost:hover { background: var(--kv-surface-2); border-color: var(--kv-accent); color: var(--kv-accent); }
+      .kv-admin-shell .kv-btn-danger-ghost { border: 1px solid color-mix(in srgb, #ef4444 40%, var(--kv-border)); color: #ef4444; background: var(--kv-surface); }
+      .kv-admin-shell .kv-btn-danger-ghost:hover { background: color-mix(in srgb, #ef4444 10%, var(--kv-surface)); }
+      .kv-admin-shell .kv-toolbar { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 14px; padding: 14px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+      .kv-admin-shell .kv-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .kv-admin-shell .kv-form-grid > label { display: flex; flex-direction: column; gap: 6px; font-size: .85rem; font-weight: 600; color: var(--kv-text-muted); }
+      .kv-admin-shell .kv-form-grid > label input, .kv-admin-shell .kv-form-grid > label select, .kv-admin-shell .kv-form-grid > label textarea { margin-top: 0; }
+      .kv-admin-shell .kv-qa-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      .kv-admin-shell .kv-qa { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 12px; border: 1px solid var(--kv-border); background: var(--kv-surface); cursor: pointer; transition: border-color .15s, transform .15s; }
+      .kv-admin-shell .kv-qa:hover { border-color: var(--kv-accent); transform: translateY(-2px); }
+      .kv-admin-shell .kv-qa-ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface-2)); color: var(--kv-accent); }
+      .kv-admin-shell .kv-admin-side { background: color-mix(in srgb, var(--kv-surface) 85%, transparent); border-right: 1px solid var(--kv-border); }
+      .kv-admin-shell .kv-admin-nav-item { border-radius: 10px; transition: background .12s, color .12s; }
+      .kv-admin-shell .kv-admin-nav-item.active { background: color-mix(in srgb, var(--kv-accent) 16%, transparent); color: var(--kv-accent); font-weight: 700; }
+      .kv-admin-shell .kv-admin-logo { font-weight: 800; letter-spacing: -0.02em; }
+      .kv-admin-shell .kv-admin-logo span { color: var(--kv-accent); }
+      .kv-admin-shell .kv-admin-chip { background: var(--kv-surface-2); border: 1px solid var(--kv-border); border-radius: 999px; padding: 6px 12px; font-size: .75rem; }
+      .kv-admin-shell .kv-admin-topbar { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--kv-border); }
+      .kv-admin-shell .kv-admin-title { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; }
+      .kv-admin-shell .kv-admin-sub { color: var(--kv-text-muted); font-size: .875rem; margin-top: 4px; }
+      .kv-admin-shell .kv-page-thumb { border-radius: 8px; border: 1px solid var(--kv-border); }
+      @media (max-width: 900px) { .kv-admin-shell .kv-form-grid { grid-template-columns: 1fr; } .kv-admin-shell .kv-qa-grid { grid-template-columns: 1fr; } }
+    ]]></b:skin>
 </head>
 <body>
   <!-- Blogger Required Main Section (Hidden when SPA active, preserved for valid Blogger XML) -->
