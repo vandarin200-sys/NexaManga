@@ -2558,9 +2558,16 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       .kv-admin-logo-icon img { height:100%; width:auto; max-width:180px; object-fit:contain; display:block; }
 
       .kv-comment-image { max-width: 100%; max-height: 360px; border-radius: 12px; display: block; margin-top: 8px; border: 1px solid var(--kv-border); object-fit: cover; }
-      .kv-comment-image-input { margin-top: 8px; }
-      .kv-spoiler { background: var(--kv-surface-2); color: transparent; padding: 0 4px; border-radius: 4px; cursor: pointer; user-select: none; }
-      .kv-spoiler.revealed { color: inherit; background: transparent; user-select: auto; }
+      .kv-comment-image-btn { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; }
+      .kv-comment-image-btn svg { width: 18px; height: 18px; display: block; }
+      .kv-spoiler { border: 1px solid var(--kv-border); border-radius: 10px; margin: 8px 0; overflow: hidden; background: var(--kv-surface-2); }
+      .kv-spoiler-toggle { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; background: transparent; border: 0; color: var(--kv-text-muted); font-size: .78rem; font-weight: 600; cursor: pointer; text-align: left; }
+      .kv-spoiler-toggle:hover { background: color-mix(in srgb, var(--kv-accent) 10%, transparent); color: var(--kv-text); }
+      .kv-spoiler-body { display: none; padding: 12px; border-top: 1px solid var(--kv-border); color: var(--kv-text); background: var(--kv-surface); white-space: pre-wrap; }
+      .kv-spoiler.open .kv-spoiler-body { display: block; }
+      .kv-spoiler-state-close { display: none; }
+      .kv-spoiler.open .kv-spoiler-state-close { display: inline; }
+      .kv-spoiler.open .kv-spoiler-state-open { display: none; }
       .kv-reply-to { display: inline-flex; align-items: center; background: rgba(101,88,217,.18); color: var(--kv-accent); padding: 2px 7px; border-radius: 999px; font-size: .68rem; font-weight: 600; margin-right: 6px; }
     ]]></b:skin>
 </head>
@@ -2764,11 +2771,27 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
        return state.data.manga.filter(function (m) { return m.id === id; })[0] || null;
      }
 
-     function voterId() {
-       var id = localStorage.getItem('kv_voter_id');
-       if (!id) { id = 'v-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); localStorage.setItem('kv_voter_id', id); }
-       return id;
-     }
+      function voterId() {
+        var id = localStorage.getItem('kv_voter_id');
+        if (!id) { id = 'v-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); localStorage.setItem('kv_voter_id', id); }
+        return id;
+      }
+
+      function profileOverride() {
+        try { return JSON.parse(localStorage.getItem('kv_profile_override') || '{}') || {}; } catch (e) { return {}; }
+      }
+
+      function currentDisplayName(fallback) {
+        var o = profileOverride();
+        return o.name || (state.user && state.user.name) || fallback || 'Pengguna';
+      }
+
+      function currentDisplayAvatar(fallback) {
+        var o = profileOverride();
+        if (o.avatar) return o.avatar;
+        if (state.user && state.user.avatar) return state.user.avatar;
+        return fallback || null;
+      }
 
      function upvoteCommentLocal(id) {
        var c = state.data.comments.filter(function (x) { return x.id === id; })[0];
@@ -2884,12 +2907,18 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         .replace(/'/g, '&#39;');
     }
 
+    function kvSpoilerIcon() {
+      return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+    }
+
     function renderCommentContent(text) {
       var html = escapeHtml(text);
       html = html.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, function (m, alt, url) {
         return '<img class="kv-comment-image" src="' + escapeHtml(url) + '" alt="' + escapeHtml(alt || 'Gambar komentar') + '" loading="lazy" referrerpolicy="no-referrer"/>';
       });
-      html = html.replace(/\|\|([\s\S]+?)\|\|/g, '<span class="kv-spoiler" title="Klik untuk melihat spoiler">$1</span>');
+      html = html.replace(/\|\|([\s\S]+?)\|\|/g, function (m, inner) {
+        return '<div class="kv-spoiler"><button type="button" class="kv-spoiler-toggle">' + kvSpoilerIcon() + '<span class="kv-spoiler-label">Spoiler</span><span class="kv-spoiler-state kv-spoiler-state-open">Buka</span><span class="kv-spoiler-state kv-spoiler-state-close">Tutup</span></button><div class="kv-spoiler-body">' + inner + '</div></div>';
+      });
       html = html.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
       html = html.replace(/\*([\s\S]+?)\*/g, '<em>$1</em>');
       return html;
@@ -3336,6 +3365,8 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       var firstCh = allChapters.slice().sort(function (a, b) { return a.number - b.number; })[0];
       var isBookmarked = state.bookmarks.indexOf(manga.id) !== -1;
       var comments = state.data.comments.filter(function (c) { return c.mangaId === manga.id && c.status === 'approved'; });
+      var myDisplayName = state.user ? currentDisplayName(state.user.name) : 'Pengguna';
+      var myDisplayAvatar = state.user ? currentDisplayAvatar(state.user.avatar) : null;
       var rating = Number(manga.rating || 0).toFixed(2);
       var views = (manga.views || 0).toLocaleString('id-ID');
       var recommended = state.data.manga.filter(function (m) { return m.id !== manga.id && (m.genres || []).some(function (g) { return (manga.genres || []).indexOf(g) !== -1; }); });
@@ -3418,15 +3449,15 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
               (state.commentNotice ? '<div class="kv-detail-notice">' + escapeHtml(state.commentNotice) + '</div>' : '') +
               '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" class="kv-comment-form kv-detail-comment-form">' +
                 '<div class="kv-comment-form-head">' +
-                  (state.user && state.user.avatar ? '<img src="' + escapeHtml(state.user.avatar) + '" alt="" class="kv-comment-avatar"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml((state.user ? state.user.name : 'A').charAt(0).toUpperCase()) + '</div>') +
-                  '<div><div class="kv-comment-name">' + (state.user ? escapeHtml(state.user.name) : 'Tulis komentar Anda') + '</div><div class="kv-comment-hint">Komentar dan balasan langsung ditampilkan.</div></div>' +
+                  (myDisplayAvatar ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="kv-comment-avatar"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(myDisplayName.charAt(0).toUpperCase()) + '</div>') +
+                  '<div><div class="kv-comment-name">' + (state.user ? escapeHtml(myDisplayName) : 'Tulis komentar Anda') + '</div><div class="kv-comment-hint">Komentar dan balasan langsung ditampilkan.</div></div>' +
                 '</div>' +
                 (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
                 '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis komentar. Dukung **tebal**, *miring*, ||spoiler||, dan gambar." required rows="3"></textarea>' +
-                '<input class="kv-input kv-comment-image-input" name="imageUrl" type="url" placeholder="URL gambar (opsional)"/>' +
+                '<input type="hidden" name="imageUrl" value=""/>' +
                 '<div class="kv-comment-form-foot">' +
                   '<span class="kv-comment-hint">Gunakan **tebal**, *miring*, ||spoiler||</span>' +
-                  '<button type="button" class="kv-btn kv-btn-ghost" data-action="comment-image">+ Gambar</button>' +
+                  '<button type="button" class="kv-btn kv-btn-ghost kv-comment-image-btn" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>' +
                   '<button class="kv-btn kv-btn-primary kv-detail-submit" type="submit">Kirim Komentar</button>' +
                 '</div>' +
               '</form>' +
@@ -3448,18 +3479,20 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                   var upvotes = Array.isArray(c.upvotes) ? c.upvotes : [];
                   var voted = upvotes.indexOf(voterKey) !== -1;
                   var own = state.user && c.userId && c.userId === state.user.id;
-                  var avatar = c.authorAvatar ? '<img src="' + escapeHtml(c.authorAvatar) + '" alt="" class="kv-comment-avatar"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(String(c.authorName || '?').charAt(0).toUpperCase()) + '</div>';
+                  var authorName = own ? myDisplayName : c.authorName;
+                  var authorAvatar = own ? myDisplayAvatar : c.authorAvatar;
+                  var avatar = authorAvatar ? '<img src="' + escapeHtml(authorAvatar) + '" alt="" class="kv-comment-avatar"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(String(authorName || '?').charAt(0).toUpperCase()) + '</div>';
                   var rootId = depth === 0 ? c.id : c.parentId;
                   var replyToBadge = c.replyTo ? '<span class="kv-reply-to">@' + escapeHtml(c.replyTo) + '</span>' : '';
                   var contentHtml = renderCommentContent(c.content);
-                  var imageHtml = c.imageUrl ? '<img class="kv-comment-image" src="' + escapeHtml(c.imageUrl) + '" alt="Gambar dari ' + escapeHtml(c.authorName) + '" loading="lazy" referrerpolicy="no-referrer"/>' : '';
+                  var imageHtml = c.imageUrl ? '<img class="kv-comment-image" src="' + escapeHtml(c.imageUrl) + '" alt="Gambar dari ' + escapeHtml(authorName) + '" loading="lazy" referrerpolicy="no-referrer"/>' : '';
                   var replyForm = state.replyingTo === c.id
-                    ? '<form class="kv-reply-form kv-comment-reply-form" data-manga-id="' + escapeHtml(manga.id) + '" data-parent-id="' + escapeHtml(rootId) + '" data-reply-to="' + escapeHtml(c.authorName) + '">' +
+                    ? '<form class="kv-reply-form kv-comment-reply-form" data-manga-id="' + escapeHtml(manga.id) + '" data-parent-id="' + escapeHtml(rootId) + '" data-reply-to="' + escapeHtml(authorName) + '">' +
                         (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
                         '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis balasan..." required rows="3"></textarea>' +
-                        '<input class="kv-input kv-comment-image-input" name="imageUrl" type="url" placeholder="URL gambar (opsional)"/>' +
+                        '<input type="hidden" name="imageUrl" value=""/>' +
                         '<div class="kv-comment-reply-actions">' +
-                          '<button type="button" class="kv-btn kv-btn-ghost" data-action="comment-image">+ Gambar</button>' +
+                          '<button type="button" class="kv-btn kv-btn-ghost kv-comment-image-btn" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>' +
                           '<button type="button" class="kv-btn kv-btn-ghost" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Batal</button>' +
                           '<button class="kv-btn kv-btn-primary" type="submit">Kirim Balasan</button>' +
                         '</div>' +
@@ -3471,7 +3504,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                       '<div class="kv-detail-comment-main">' + avatar +
                         '<div class="kv-detail-comment-body">' +
                           '<div class="kv-detail-comment-head">' +
-                            '<strong>' + escapeHtml(c.authorName) + '</strong>' + (own ? '<span class="kv-detail-comment-you">(Anda)</span>' : '') +
+                            '<strong>' + escapeHtml(authorName) + '</strong>' + (own ? '<span class="kv-detail-comment-you">(Anda)</span>' : '') +
                             replyToBadge +
                             '<span class="kv-detail-comment-date">' + escapeHtml(c.createdAt || '') + '</span>' +
                           '</div>' +
@@ -4169,6 +4202,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
     }
 
     function renderAdminComments() {
+      var myDisplayName = state.user ? currentDisplayName(state.user.name) : 'Pengguna';
       var opts = [['Semua', 'Semua'], ['pending', 'Menunggu'], ['approved', 'Disetujui'], ['rejected', 'Ditolak']];
       var list = state.data.comments.filter(function (c) { return state.commentFilter === 'Semua' || c.status === state.commentFilter; });
       var rows = list.map(function (c) {
@@ -4178,7 +4212,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           : '<span class="kv-badge kv-badge-reject">Ditolak</span>';
         return '<tr>' +
           '<td>' + escapeHtml(m ? m.title : '(manga dihapus)') + '</td>' +
-          '<td><strong>' + escapeHtml(c.authorName) + '</strong><div class="kv-mono" style="color:var(--kv-text-muted);font-size:0.75rem;">' + escapeHtml(c.createdAt) + '</div></td>' +
+          '<td><strong>' + escapeHtml(state.user && c.userId === state.user.id ? myDisplayName : c.authorName) + '</strong><div class="kv-mono" style="color:var(--kv-text-muted);font-size:0.75rem;">' + escapeHtml(c.createdAt) + '</div></td>' +
           '<td style="max-width:280px;">' + escapeHtml(c.content) + '</td>' +
           '<td>' + badge + '</td>' +
           '<td><div style="display:flex;gap:6px;flex-wrap:wrap;">' +
@@ -5120,8 +5154,10 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
 
     // Toggle spoiler komentar saat diklik
     document.addEventListener('click', function (e) {
-      var sp = e.target && e.target.closest ? e.target.closest('.kv-spoiler') : null;
-      if (sp) sp.classList.toggle('revealed');
+      var sp = e.target && e.target.closest ? e.target.closest('.kv-spoiler-toggle') : null;
+      if (!sp) return;
+      var box = sp.closest('.kv-spoiler');
+      if (box) box.classList.toggle('open');
     });
 
     window.addEventListener('popstate', handleRouteChange);

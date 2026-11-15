@@ -14,6 +14,7 @@ const {
   deleteChapter,
   deleteComment,
   deleteManga,
+  enrichCommentsWithUsers,
   incrementMangaViews,
   registerOAuthUser,
   saveChapter,
@@ -397,6 +398,7 @@ async function handler(req, res) {
         if (!(error instanceof CatalogNotInitializedError)) throw error;
         catalog = { manga: [], chapters: [], comments: [], users: [] };
       }
+      enrichCommentsWithUsers(catalog);
       if (!isAdmin(req)) {
         catalog.comments = catalog.comments.filter((comment) => comment.status === 'approved');
       }
