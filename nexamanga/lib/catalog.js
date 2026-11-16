@@ -13,16 +13,16 @@ class ValidationError extends Error {
 
 function validateCatalog(catalog) {
   if (!catalog || typeof catalog !== 'object' || Array.isArray(catalog)) {
-    throw new Error('Penyimpanan katalog Telegram berisi format yang tidak valid.');
+    throw new Error('Penyimpanan katalog berisi format yang tidak valid.');
   }
   for (const key of ['manga', 'chapters', 'comments']) {
     if (!Array.isArray(catalog[key])) {
-      throw new Error(`Penyimpanan katalog Telegram tidak memiliki daftar ${key} yang valid.`);
+      throw new Error(`Penyimpanan katalog tidak memiliki daftar ${key} yang valid.`);
     }
   }
   if (catalog.users === undefined) catalog.users = [];
   if (!Array.isArray(catalog.users)) {
-    throw new Error('Penyimpanan katalog Telegram tidak memiliki daftar users yang valid.');
+    throw new Error('Penyimpanan katalog tidak memiliki daftar users yang valid.');
   }
   return catalog;
 }
