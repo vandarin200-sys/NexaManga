@@ -268,8 +268,8 @@
       justify-content: space-between; gap: 12px;
     }
     .kv-reader-progress {
-      position: fixed; top: 0; left: 0; height: 3px; background: var(--kv-neon);
-      z-index: 60; transition: width 0.12s linear;
+      position: sticky; top: 0; height: 3px; background: var(--kv-neon);
+      z-index: 49; transition: width 0.12s linear;
     }
     .kv-reader-canvas {
       margin: 0 auto; padding: 20px 12px 64px; display: flex; flex-direction: column;
@@ -2002,16 +2002,26 @@
         html:not(.dark) body.kv-detail-route .kv-detail-chapter-tools { width: 100%; justify-content: space-between; }
         html:not(.dark) body.kv-detail-route .kv-detail-search-wrap { flex: 1; width: auto; }
       }
+    body.kv-reader-route .kv-reader-site-header {
+      position: static;
+      background: var(--kv-bg);
+      border-bottom: 1px solid var(--kv-border);
+      box-shadow: none;
+      backdrop-filter: none;
+      z-index: auto;
+    }
+    body.kv-reader-route .kv-reader-toolbar {
+      position: static;
+      height: 54px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 0 14px;
+      background: var(--kv-surface);
+      border-bottom: 1px solid var(--kv-border);
+    }
       html:not(.dark) body.kv-reader-route { background:#f8fafc; color:#0f172a; --kv-bg:#f8fafc; --kv-surface:#ffffff; --kv-surface-2:#f1f5f9; --kv-border:#e2e8f0; --kv-text:#0f172a; --kv-text-muted:#64748b; --kv-accent:#6366f1; --kv-success:#10b981; }
-      html:not(.dark) body.kv-reader-route .kv-container { max-width: none; padding: 0; }
+
 html:not(.dark) body.kv-reader-route .kv-reader-shell { min-height:100vh; background:#f8fafc; color:#0f172a; font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
-html:not(.dark) body.kv-reader-route .kv-reader-topbar { position:fixed; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 14px; background:rgba(255,255,255,.95); backdrop-filter:blur(14px); border-bottom:1px solid #e2e8f0; z-index:50; }
 html:not(.dark) body.kv-reader-route .kv-reader-top-left { display:flex; align-items:center; gap:10px; min-width:0; }
-html:not(.dark) body.kv-reader-route .kv-reader-brand { display:flex; align-items:center; gap:8px; text-decoration:none; color:#0f172a; flex-shrink:0; }
-html:not(.dark) body.kv-reader-route .kv-reader-brand-mark { width:30px; height:30px; border-radius:8px; background:#6366f1; color:#ffffff; display:grid; place-items:center; font-weight:800; font-size:.9rem; }
-html:not(.dark) body.kv-reader-route .kv-reader-brand-text { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; letter-spacing:-0.01em; font-size:.82rem; color:#0f172a; }
-html:not(.dark) body.kv-reader-route .kv-reader-brand-text em { color:#4f46e5; font-style:normal; }
-html:not(.dark) body.kv-reader-route .kv-reader-divider { width:1px; height:20px; background:#e2e8f0; flex-shrink:0; }
 html:not(.dark) body.kv-reader-route .kv-reader-back { display:flex; align-items:center; gap:8px; color:#475569; text-decoration:none; min-width:0; }
 html:not(.dark) body.kv-reader-route .kv-reader-back:hover { color:#0f172a; }
 html:not(.dark) body.kv-reader-route .kv-reader-back-text { max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.8rem; }
@@ -2028,8 +2038,8 @@ html:not(.dark) body.kv-reader-route .kv-reader-pill, .kv-reader-icon-btn, .kv-r
 html:not(.dark) body.kv-reader-route .kv-reader-pill { display:inline-flex; align-items:center; gap:6px; }
 html:not(.dark) body.kv-reader-route .kv-reader-pill:hover, .kv-reader-icon-btn:hover, .kv-reader-select:hover { background:#f1f5f9; color:#0f172a; }
 html:not(.dark) body.kv-reader-route .kv-reader-icon-btn { min-width:32px; display:grid; place-items:center; }
-html:not(.dark) body.kv-reader-route .kv-reader-progress { position:fixed; top:56px; left:0; height:3px; width:0%; background:linear-gradient(90deg,#6366f1,#8b5cf6); z-index:49; transition:width .12s linear; }
-html:not(.dark) body.kv-reader-route .kv-reader-main { padding-top:56px; display:flex; flex-direction:column; align-items:center; width:100%; }
+      html:not(.dark) body.kv-reader-route .kv-reader-progress { position:sticky; top:0; height:3px; width:0%; background:linear-gradient(90deg,#6366f1,#8b5cf6); z-index:49; transition:width .12s linear; }
+html:not(.dark) body.kv-reader-route .kv-reader-main { padding-top:0; display:flex; flex-direction:column; align-items:center; width:100%; }
 html:not(.dark) body.kv-reader-route .kv-reader-strip { width:100%; margin:0 auto; background:#f8fafc; }
 html:not(.dark) body.kv-reader-route .kv-reader-page { position:relative; width:100%; margin:0; background:#f8fafc; }
 html:not(.dark) body.kv-reader-route .kv-reader-page img { display:block; width:100%; height:auto; user-select:none; pointer-events:none; }
@@ -2072,7 +2082,7 @@ html:not(.dark) body.kv-reader-route .kv-reader-step-label { display:block; font
 html:not(.dark) body.kv-reader-route .kv-reader-step-title { display:block; font-size:.82rem; font-weight:600; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 html:not(.dark) body.kv-reader-route .kv-reader-step-icon { font-size:1.3rem; color:#4f46e5; flex-shrink:0; }
       @media (max-width: 760px) {
-html:not(.dark) body.kv-reader-route .kv-reader-brand-text, .kv-reader-divider, .kv-reader-back-text, .kv-reader-current-title { display:none !important; }
+html:not(.dark) body.kv-reader-route .kv-reader-back-text, .kv-reader-current-title { display:none !important; }
 html:not(.dark) body.kv-reader-route .kv-reader-top-right { display:none; }
 html:not(.dark) body.kv-reader-route .kv-reader-reaction-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
 html:not(.dark) body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; }
@@ -2453,15 +2463,9 @@ html:not(.dark) body.kv-reader-route .kv-reader-stepper { grid-template-columns:
         html.dark body.kv-detail-route .kv-detail-search-wrap { flex: 1; width: auto; }
       }
       html.dark body.kv-reader-route { background:#0f111a; color:#dee1fe; --kv-bg:#0f111a; --kv-surface:#171a27; --kv-surface-2:#20243a; --kv-border:#2b304c; --kv-text:#dee1fe; --kv-text-muted:#a0a7b8; --kv-accent:#6558d9; --kv-success:#22c55e; }
-      html.dark body.kv-reader-route .kv-container { max-width: none; padding: 0; }
+
 html.dark body.kv-reader-route .kv-reader-shell { min-height:100vh; background:#0f111a; color:#dee1fe; font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
-html.dark body.kv-reader-route .kv-reader-topbar { position:fixed; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 14px; background:rgba(25,28,39,.9); backdrop-filter:blur(14px); border-bottom:1px solid #2b304c; z-index:50; }
 html.dark body.kv-reader-route .kv-reader-top-left { display:flex; align-items:center; gap:10px; min-width:0; }
-html.dark body.kv-reader-route .kv-reader-brand { display:flex; align-items:center; gap:8px; text-decoration:none; color:#dee1fe; flex-shrink:0; }
-html.dark body.kv-reader-route .kv-reader-brand-mark { width:30px; height:30px; border-radius:8px; background:#6558d9; color:#efebff; display:grid; place-items:center; font-weight:800; font-size:.9rem; }
-html.dark body.kv-reader-route .kv-reader-brand-text { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; letter-spacing:-0.01em; font-size:.82rem; color:#dee1fe; }
-html.dark body.kv-reader-route .kv-reader-brand-text em { color:#6558d9; font-style:normal; }
-html.dark body.kv-reader-route .kv-reader-divider { width:1px; height:20px; background:#2b304c; flex-shrink:0; }
 html.dark body.kv-reader-route .kv-reader-back { display:flex; align-items:center; gap:8px; color:#a0a7b8; text-decoration:none; min-width:0; }
 html.dark body.kv-reader-route .kv-reader-back:hover { color:#dee1fe; }
 html.dark body.kv-reader-route .kv-reader-back-text { max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.8rem; }
@@ -2478,8 +2482,8 @@ html.dark body.kv-reader-route .kv-reader-pill, .kv-reader-icon-btn, .kv-reader-
 html.dark body.kv-reader-route .kv-reader-pill { display:inline-flex; align-items:center; gap:6px; }
 html.dark body.kv-reader-route .kv-reader-pill:hover, .kv-reader-icon-btn:hover, .kv-reader-select:hover { background:#20243a; color:#dee1fe; }
 html.dark body.kv-reader-route .kv-reader-icon-btn { min-width:32px; display:grid; place-items:center; }
-html.dark body.kv-reader-route .kv-reader-progress { position:fixed; top:56px; left:0; height:3px; width:0%; background:linear-gradient(90deg,#6558d9,#7a6fe0); z-index:49; transition:width .12s linear; }
-html.dark body.kv-reader-route .kv-reader-main { padding-top:56px; display:flex; flex-direction:column; align-items:center; width:100%; }
+      html.dark body.kv-reader-route .kv-reader-progress { position:sticky; top:0; height:3px; width:0%; background:linear-gradient(90deg,#6558d9,#7a6fe0); z-index:49; transition:width .12s linear; }
+html.dark body.kv-reader-route .kv-reader-main { padding-top:0; display:flex; flex-direction:column; align-items:center; width:100%; }
 html.dark body.kv-reader-route .kv-reader-strip { width:100%; margin:0 auto; background:#0f111a; }
 html.dark body.kv-reader-route .kv-reader-page { position:relative; width:100%; margin:0; background:#0f111a; }
 html.dark body.kv-reader-route .kv-reader-page img { display:block; width:100%; height:auto; user-select:none; pointer-events:none; }
@@ -2522,7 +2526,7 @@ html.dark body.kv-reader-route .kv-reader-step-label { display:block; font-famil
 html.dark body.kv-reader-route .kv-reader-step-title { display:block; font-size:.82rem; font-weight:600; color:#dee1fe; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 html.dark body.kv-reader-route .kv-reader-step-icon { font-size:1.3rem; color:#6558d9; flex-shrink:0; }
       @media (max-width: 760px) {
-html.dark body.kv-reader-route .kv-reader-brand-text, .kv-reader-divider, .kv-reader-back-text, .kv-reader-current-title { display:none !important; }
+html.dark body.kv-reader-route .kv-reader-back-text, .kv-reader-current-title { display:none !important; }
 html.dark body.kv-reader-route .kv-reader-top-right { display:none; }
 html.dark body.kv-reader-route .kv-reader-reaction-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
 html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; }
@@ -2630,7 +2634,24 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       .kv-brand-logo.kv-reader-brand-logo { min-width:0; height:30px; overflow:hidden; background:transparent; }
       .kv-admin-logo-icon img { height:100%; width:auto; max-width:180px; object-fit:contain; display:block; }
 
-      .kv-comment-image { max-width: 100%; max-height: 360px; border-radius: 12px; display: block; margin-top: 8px; border: 1px solid var(--kv-border); object-fit: cover; }
+      .kv-comment-rules { margin: 0 0 12px; padding: 12px 14px; border: 1px solid var(--kv-border); border-left: 4px solid var(--kv-accent); border-radius: 12px; background: var(--kv-surface-2); }
+    .kv-comment-rules-head { display:flex; align-items:center; gap:8px; font-size:.78rem; font-weight:800; color:var(--kv-text); letter-spacing:.04em; text-transform:uppercase; margin-bottom:8px; }
+    .kv-comment-rules-head svg { width:16px; height:16px; display:block; color:var(--kv-accent); }
+    .kv-comment-rules-list { margin:0; padding-left:18px; display:grid; gap:4px; font-size:.8rem; line-height:1.5; color:var(--kv-text-muted); }
+    .kv-comment-reaction { margin: 12px 0 4px; padding: 12px 14px; border:1px solid var(--kv-border); border-radius:12px; background: var(--kv-surface); }
+    .kv-comment-reaction-label { font-size:.68rem; font-weight:700; color:var(--kv-text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+    .kv-manga-reaction-row { display:flex; flex-wrap:wrap; gap:8px; }
+    .kv-manga-reaction { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; border:1px solid var(--kv-border); background:var(--kv-surface-2); color:var(--kv-text-muted); cursor:pointer; transition: border-color .15s ease, transform .15s ease, color .15s ease, background-color .15s ease; }
+    .kv-manga-reaction:hover { transform: translateY(-1px); border-color: var(--kv-accent); color: var(--kv-text); }
+    .kv-manga-reaction.active { border-color: var(--kv-accent); color: var(--kv-accent); background: color-mix(in srgb, var(--kv-accent) 12%, var(--kv-surface)); }
+    .kv-manga-reaction-emoji { font-size:1.05rem; line-height:1; }
+    .kv-manga-reaction-count { font-size:.78rem; font-weight:800; font-variant-numeric:tabular-nums; }
+    .kv-manga-reaction-label { font-size:.72rem; font-weight:600; }
+    @media (max-width: 520px) {
+      .kv-manga-reaction { padding:6px 10px; gap:6px; }
+      .kv-manga-reaction-label { display:none; }
+    }
+    .kv-comment-image { max-width: 100%; max-height: 360px; border-radius: 12px; display: block; margin-top: 8px; border: 1px solid var(--kv-border); object-fit: cover; }
       .kv-comment-image-btn { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; }
       .kv-comment-image-btn svg { width: 18px; height: 18px; display: block; }
       .kv-spoiler { border: 1px solid var(--kv-border); border-radius: 10px; margin: 8px 0; overflow: hidden; background: var(--kv-surface-2); }
@@ -2679,6 +2700,9 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           - GET  /api/catalog               -> { manga, chapters, comments }
           - POST /api/admin/upload-dual     -> simpan ke Telegram dan kembalikan
                                                URL proxy /api/media/{file_id}
+          - POST /api/comment               -> { mangaId, content, ... }
+          - POST /api/manga/reaction        -> { mangaId, voterId, reaction }
+          - POST /api/comment/upvote        -> { id, voterId }
           - POST /api/admin/save-manga      -> simpan/ubah data manga
           - POST /api/admin/save-chapter    -> simpan/ubah data chapter
           - POST /api/admin/delete-manga    -> { id }
@@ -2880,6 +2904,54 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         state.commentImageMap = {};
         return content;
       }
+
+     function mangaReactionSummary(mangaId) {
+       var all = (state.data && state.data.mangaReactions) || {};
+       var forManga = (all[mangaId] && typeof all[mangaId] === 'object' && !Array.isArray(all[mangaId])) ? all[mangaId] : {};
+       var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
+       var key = state.user ? state.user.id : voterId();
+       var counts = {};
+       var userVote = null;
+       for (var i = 0; i < keys.length; i++) {
+         var list = Array.isArray(forManga[keys[i]]) ? forManga[keys[i]] : [];
+         counts[keys[i]] = list.length;
+         if (list.indexOf(key) !== -1) userVote = keys[i];
+       }
+       return { counts: counts, userVote: userVote };
+     }
+
+     function mangaReactionLocal(mangaId, reaction) {
+       var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
+       if (keys.indexOf(reaction) === -1) return;
+       if (!state.data.mangaReactions || typeof state.data.mangaReactions !== 'object' || Array.isArray(state.data.mangaReactions)) {
+         state.data.mangaReactions = {};
+       }
+       var forManga = state.data.mangaReactions[mangaId];
+       if (!forManga || typeof forManga !== 'object' || Array.isArray(forManga)) forManga = {};
+       for (var i = 0; i < keys.length; i++) {
+         if (!Array.isArray(forManga[keys[i]])) forManga[keys[i]] = [];
+       }
+       var key = state.user ? state.user.id : voterId();
+       var removeOnly = false;
+       for (var j = 0; j < keys.length; j++) {
+         var idx = forManga[keys[j]].indexOf(key);
+         if (idx !== -1) {
+           forManga[keys[j]].splice(idx, 1);
+           if (keys[j] === reaction) removeOnly = true;
+         }
+       }
+       if (!removeOnly) forManga[reaction].push(key);
+       state.data.mangaReactions[mangaId] = forManga;
+       persistData();
+       if (CONFIG.API_BASE_URL) {
+         fetch(CONFIG.API_BASE_URL + '/api/manga/reaction', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ mangaId: mangaId, voterId: key, reaction: reaction })
+         }).then(function (r) { return r.ok ? r.json() : null; }).then(function () { render(); }).catch(function () {});
+       }
+       render();
+     }
 
      function upvoteCommentLocal(id) {
        var c = state.data.comments.filter(function (x) { return x.id === id; })[0];
@@ -3173,7 +3245,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         '</div>' +
         '<div class="kv-home-card-tags"><span class="kv-home-card-tag">' + escapeHtml(m.type || 'Manga') + '</span><span class="kv-home-card-tag status">' + escapeHtml(m.status || 'Ongoing') + '</span></div>' +
         '<h3 class="kv-home-card-title">' + escapeHtml(m.title) + '</h3>' +
-        '<div style="margin-top:auto;padding-top:10px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.68rem;color:#64748b;">' + escapeHtml(m.updatedAt || '') + '</span><span style="font-size:.7rem;font-weight:700;color:#f59e0b;">&#9733; ' + escapeHtml(rating) + '</span></div>' +
+        '<div style="margin-top:auto;padding-top:10px;display:flex;justify-content:flex-end;align-items:center;"><span style="font-size:.7rem;font-weight:700;color:#f59e0b;">&#9733; ' + escapeHtml(rating) + '</span></div>' +
       '</a>';
     }
 
@@ -3181,7 +3253,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
        RENDER HEADER & FOOTER
        ========================================================================= */
     function renderHeader() {
-      if (state.route === 'admin' || state.route === 'reader') return '';
+      if (state.route === 'admin') return '';
        var navItems = [
          { path: '/', label: 'Beranda', key: 'home' },
          { path: '/archive', label: 'Archive', key: 'catalog' },
@@ -3198,7 +3270,8 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>'
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>';
 
-      return '<header class="kv-header">' +
+      var headerClass = state.route === 'reader' ? 'kv-header kv-reader-site-header' : 'kv-header';
+      return '<header class="' + headerClass + '">' +
         '<div class="kv-container kv-header-inner">' +
           '<a class="kv-brand" href="#/" aria-label="' + escapeHtml(siteName()) + ' - beranda">' +
             renderBrandInner() +
@@ -3253,7 +3326,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           '</div>' +
           '<div class="kv-home-card-tags"><span class="kv-home-card-tag">' + escapeHtml(m.type || 'Manga') + '</span><span class="kv-home-card-tag status">' + escapeHtml(m.status || 'Ongoing') + '</span></div>' +
           '<h3 class="kv-home-card-title">' + escapeHtml(m.title) + '</h3>' +
-          '<div style="margin-top:auto;padding-top:10px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.68rem;color:#64748b;">' + escapeHtml(m.updatedAt || '') + '</span><span style="font-size:.7rem;font-weight:700;color:#f59e0b;">&#9733; ' + escapeHtml(rating) + '</span></div>' +
+          '<div style="margin-top:auto;padding-top:10px;display:flex;justify-content:flex-end;align-items:center;"><span style="font-size:.7rem;font-weight:700;color:#f59e0b;">&#9733; ' + escapeHtml(rating) + '</span></div>' +
         '</a>';
       }
       function rankingCard(m, idx) {
@@ -3536,6 +3609,16 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                 '<div class="kv-detail-card-title">Komentar Pembaca <span class="kv-detail-count">' + comments.length + '</span></div>' +
                 '<span class="kv-detail-card-note">Hormati sesama pembaca</span>' +
               '</div>' +
+              '<div class="kv-comment-rules" role="note" aria-label="Aturan berkomentar">' +
+                '<div class="kv-comment-rules-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Papan Aturan Berkomentar</div>' +
+                '<ul class="kv-comment-rules-list">' +
+                  '<li>Hormati sesama pembaca: dilarang SARA, hinaan, dan ujaran kebencian.</li>' +
+                  '<li>Dilarang spam, promosi, tautan iklan, dan berbagi konten ilegal.</li>' +
+                  '<li>Jangan bagikan spoiler tanpa tanda ||spoiler||.</li>' +
+                  '<li>Gunakan bahasa yang sopan dan relevan dengan manga ini.</li>' +
+                  '<li>Komentar dapat dimoderasi atau dihapus admin jika melanggar aturan.</li>' +
+                '</ul>' +
+              '</div>' +
               (state.commentNotice ? '<div class="kv-detail-notice">' + escapeHtml(state.commentNotice) + '</div>' : '') +
               '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" class="kv-comment-form kv-detail-comment-form">' +
                 '<div class="kv-comment-form-head">' +
@@ -3551,6 +3634,29 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                 '</div>' +
               '</form>' +
               '<input type="file" id="kv-comment-image-file" accept="image/jpeg,image/png,image/webp" style="display:none;"/>' +
+              (function () {
+                var summary = mangaReactionSummary(manga.id);
+                var reactions = [
+                  { key: 'fire', emoji: '&#128293;', label: 'Semangat' },
+                  { key: 'shock', emoji: '&#128562;', label: 'Kaget' },
+                  { key: 'cry', emoji: '&#128557;', label: 'Nangis' },
+                  { key: 'laugh', emoji: '&#128514;', label: 'Lucu' },
+                  { key: 'angry', emoji: '&#128545;', label: 'Marah' }
+                ];
+                return '<div class="kv-comment-reaction">' +
+                  '<div class="kv-comment-reaction-label">Berikan reaksi untuk manga ini</div>' +
+                  '<div class="kv-manga-reaction-row" role="group" aria-label="Reaksi manga">' +
+                    reactions.map(function (item) {
+                      var active = summary.userVote === item.key;
+                      return '<button type="button" class="kv-manga-reaction' + (active ? ' active' : '') + '" data-action="manga-reaction" data-id="' + escapeHtml(manga.id) + '" data-reaction="' + item.key + '" aria-pressed="' + (active ? 'true' : 'false') + '" title="' + item.label + '">' +
+                        '<span class="kv-manga-reaction-emoji" aria-hidden="true">' + item.emoji + '</span>' +
+                        '<span class="kv-manga-reaction-count">' + (summary.counts[item.key] || 0) + '</span>' +
+                        '<span class="kv-manga-reaction-label">' + item.label + '</span>' +
+                      '</button>';
+                    }).join('') +
+                  '</div>' +
+                '</div>';
+              })() +
               (function () {
                 var voterKey = state.user ? state.user.id : voterId();
                 var byParent = {};
@@ -3702,10 +3808,8 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
 
       return '<div class="kv-reader-shell">' +
         '<div class="kv-reader-progress" id="kv-progress-bar" style="width:0%" aria-hidden="true"></div>' +
-        '<header class="kv-reader-topbar">' +
+        '<div class="kv-reader-toolbar" role="toolbar" aria-label="Navigasi chapter">' +
           '<div class="kv-reader-top-left">' +
-            '<a class="kv-reader-brand" href="#/">' + renderBrandInner('kv-reader-brand-text') + '</a>' +
-            '<span class="kv-reader-divider"></span>' +
             '<a class="kv-reader-back" href="#/manga/' + escapeHtml(manga.slug) + '" title="Kembali ke daftar chapter">&#8592;<span class="kv-reader-back-text">' + escapeHtml(manga.title) + '</span></a>' +
           '</div>' +
           '<div class="kv-reader-chapter-picker">' +
@@ -3718,7 +3822,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
             '<select id="kv-reader-width" class="kv-reader-select" aria-label="Lebar panel"><option value="800"' + (state.readerWidth === 800 ? ' selected' : '') + '>800px</option><option value="1000"' + (state.readerWidth === 1000 ? ' selected' : '') + '>1000px</option><option value="1200"' + (state.readerWidth === 1200 ? ' selected' : '') + '>Fit</option></select>' +
             '<button type="button" class="kv-reader-icon-btn" data-action="toggle-fullscreen" title="Layar penuh">&#9974;</button>' +
           '</div>' +
-        '</header>' +
+        '</div>' +
         '<main class="kv-reader-main">' +
           '<div class="kv-reader-strip" id="readerCanvas" style="max-width:' + state.readerWidth + 'px">' +
             pagesHtml +
@@ -5133,6 +5237,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       else if (act === 'open-manga') { navigate('#/manga/' + el.getAttribute('data-slug')); }
       else if (act === 'reply-comment') { var rid = el.getAttribute('data-id'); state.replyingTo = state.replyingTo === rid ? null : rid; render(); }
       else if (act === 'upvote-comment') { upvoteCommentLocal(el.getAttribute('data-id')); }
+      else if (act === 'manga-reaction') { mangaReactionLocal(el.getAttribute('data-id'), el.getAttribute('data-reaction')); }
       else if (act === 'open-reader') { navigate('#/baca/' + el.getAttribute('data-slug') + '/' + el.getAttribute('data-cid')); }
       else if (act === 'quick-genre') { state.filterGenre = el.getAttribute('data-genre'); navigate('#/archive'); }
       else if (act === 'toggle-ch-sort') { state.chapterSortAsc = !state.chapterSortAsc; render(); }

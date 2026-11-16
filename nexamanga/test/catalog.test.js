@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const {
   ValidationError,
   addComment,
+  addMangaReaction,
   deleteManga,
   registerOAuthUser,
   saveChapter,
@@ -81,4 +82,22 @@ test('first OAuth account is admin, later accounts are members, and logins reuse
   assert.equal(repeated.id, first.id);
   assert.equal(data.users.length, 2);
   assert.equal(second.role, 'member');
+});
+
+test('manga reactions toggle per voter and reject unknown manga/reactions', () => {
+  const data = catalog();
+  saveManga(data, manga());
+  const first = addMangaReaction(data, { mangaId: 'm1', voterId: 'v1', reaction: 'fire' });
+  assert.equal(first.counts.fire, 1);
+  assert.equal(first.userVote, 'fire');
+  addMangaReaction(data, { mangaId: 'm1', voterId: 'v2', reaction: 'fire' });
+  const switched = addMangaReaction(data, { mangaId: 'm1', voterId: 'v1', reaction: 'laugh' });
+  assert.equal(switched.counts.fire, 1);
+  assert.equal(switched.counts.laugh, 1);
+  assert.equal(switched.userVote, 'laugh');
+  const toggledOff = addMangaReaction(data, { mangaId: 'm1', voterId: 'v1', reaction: 'laugh' });
+  assert.equal(toggledOff.counts.laugh, 0);
+  assert.equal(toggledOff.userVote, null);
+  assert.throws(() => addMangaReaction(data, { mangaId: 'tidak-ada', voterId: 'v1', reaction: 'fire' }), ValidationError);
+  assert.throws(() => addMangaReaction(data, { mangaId: 'm1', voterId: 'v1', reaction: 'rock' }), ValidationError);
 });
