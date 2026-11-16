@@ -7,6 +7,7 @@ const {
   addChapterReaction,
   addComment,
   deleteManga,
+  pinComment,
   registerOAuthUser,
   saveChapter,
   saveManga
@@ -101,6 +102,17 @@ test('chapter reactions toggle per voter and reject unknown chapter/reaction', (
   assert.equal(toggledOff.userVote, null);
   assert.throws(() => addChapterReaction(data, { chapterId: 'tidak-ada', voterId: 'v1', reaction: 'fire' }), ValidationError);
   assert.throws(() => addChapterReaction(data, { chapterId: 'ch1', voterId: 'v1', reaction: 'rock' }), ValidationError);
+});
+
+test('admin can pin and unpin comments', () => {
+  const data = catalog();
+  saveManga(data, manga());
+  const comment = addComment(data, { mangaId: 'm1', authorName: 'Pembaca', content: 'Komentar untuk disematkan.' });
+  const pinned = pinComment(data, { id: comment.id });
+  assert.equal(pinned.pinned, true);
+  const pinnedAgain = pinComment(data, { id: comment.id });
+  assert.equal(pinnedAgain.pinned, false);
+  assert.throws(() => pinComment(data, { id: 'tidak-ada' }), ValidationError);
 });
 
 test('chapter comments are scoped to their chapter and replies inherit it', () => {

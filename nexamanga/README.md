@@ -127,7 +127,7 @@ Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/h
 - `POST /api/comment` — kirim komentar untuk moderasi.
 - `POST /api/admin/save-manga`, `/api/admin/save-chapter`
 - `POST /api/admin/delete-manga`, `/api/admin/delete-chapter`
-- `POST /api/admin/delete-comment`, `/api/admin/comment-status`
+- `POST /api/admin/delete-comment`, `/api/admin/comment-status`, `/api/admin/pin-comment` — hapus, moderasi status, atau sematkan komentar (admin).
 - `POST /api/admin/upload-dual` — unggah gambar ke Telegram; batas 3 MiB per berkas karena batas request Vercel dan encoding base64.
 - `GET /api/media/{file_id}` — proxy gambar dari Telegram.
 

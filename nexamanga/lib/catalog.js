@@ -137,6 +137,17 @@ function saveChapter(catalog, input) {
   else catalog.chapters[index] = item;
 }
 
+function pinComment(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data sematan komentar tidak valid.');
+  }
+  const id = requireText(input.id, 'ID komentar', 100);
+  const comment = catalog.comments.find((item) => item.id === id);
+  if (!comment) throw new ValidationError('Komentar tidak ditemukan.');
+  comment.pinned = !comment.pinned;
+  return comment;
+}
+
 function deleteManga(catalog, id) {
   catalog.manga = catalog.manga.filter((manga) => manga.id !== id);
   const chapterIds = catalog.chapters.filter((chapter) => chapter.mangaId === id).map((chapter) => chapter.id);
@@ -338,6 +349,7 @@ module.exports = {
   deleteChapter,
   deleteComment,
   deleteManga,
+  pinComment,
   enrichCommentsWithUsers,
   incrementMangaViews,
   claimAdminRole,

@@ -1766,9 +1766,10 @@
       body.kv-reader-route .kv-reader-ctl-primary:hover { filter:brightness(1.08); }
       body.kv-reader-route .kv-reader-ctl:disabled, body.kv-reader-route .kv-reader-ctl.is-disabled { opacity:.4; cursor:not-allowed; pointer-events:none; }
       body.kv-reader-route .kv-reader-frame { background:var(--kv-reader-bg); border:0; border-radius:0; min-height:0; }
-      body.kv-reader-route .kv-reader-frame.vertical .manga-page { display:flex; align-items:center; justify-content:center; }
+      body.kv-reader-route .kv-reader-frame.vertical .manga-page { display:block; height:auto; }
+      body.kv-reader-route .kv-reader-frame.vertical .manga-page img { height:auto; object-fit:contain; }
       body.kv-reader-route .kv-reader-frame.horizontal { display:flex; align-items:center; justify-content:center; height:100vh; height:100svh; }
-      body.kv-reader-route .kv-reader-frame.horizontal .manga-page { display:none; align-items:center; justify-content:center; }
+      body.kv-reader-route .kv-reader-frame.horizontal .manga-page { display:none; align-items:center; justify-content:center; height:100vh; height:100svh; }
       body.kv-reader-route .kv-reader-frame.horizontal .manga-page.is-active { display:flex; }
       body.kv-reader-route .manga-page { position:relative; display:block; width:100%; max-width:100%; height:100vh; height:100svh; margin:0 auto; background:var(--kv-reader-bg); }
       body.kv-reader-route .manga-page img { display:block; width:100%; height:100%; object-fit:contain; background:var(--kv-reader-bg); user-select:none; pointer-events:none; }
@@ -2340,10 +2341,15 @@
     .kv-manga-reaction.active { border-color: var(--kv-accent); color: var(--kv-accent); background: color-mix(in srgb, var(--kv-accent) 12%, var(--kv-surface)); }
     .kv-manga-reaction-emoji { font-size:1.05rem; line-height:1; }
     .kv-manga-reaction-count { font-size:.78rem; font-weight:800; font-variant-numeric:tabular-nums; }
+    .kv-comment-action svg { width:16px; height:16px; }
     .kv-manga-reaction-label { font-size:.72rem; font-weight:600; }
     .kv-manga-reaction-static { cursor:default; }
     .kv-comment-scope-note { margin:0 0 10px; font-size:.74rem; color:var(--kv-text-muted); }
     .kv-comment-chapter-badge { display:inline-flex; align-items:center; padding:1px 7px; border-radius:6px; background:color-mix(in srgb, var(--kv-accent) 12%, var(--kv-surface)); color:var(--kv-accent); font-size:.64rem; font-weight:700; letter-spacing:.02em; }
+    .kv-comment-pinned { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; background:color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface)); color:var(--kv-accent); font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+    .kv-comment-pinned svg { width:12px; height:12px; display:block; }
+    .kv-comment-action-danger { color:var(--kv-text-muted); }
+    .kv-comment-action-danger:hover { color:#ef4444; border-color:#ef4444; }
     @media (max-width: 520px) {
       .kv-manga-reaction { padding:6px 10px; gap:6px; }
       .kv-manga-reaction-label { display:none; }
@@ -2406,6 +2412,7 @@
           - POST /api/admin/delete-chapter  -> { id }
           - POST /api/admin/delete-comment  -> { id }
           - POST /api/admin/comment-status  -> { id, status }
+          - POST /api/admin/pin-comment     -> { id } — sematkan komentar (admin)
           Semua endpoint admin memverifikasi header: Authorization: Bearer <token>.
        3. NEON POSTGRES menjadi database katalog/akun/komentar: archive
           disimpan sebagai dokumen JSONB pada tabel nexamanga_snapshot di
@@ -2668,6 +2675,28 @@
          }
        }
        return { counts: counts, userVote: null };
+     }
+
+     function adminPinComment(id) {
+       var comment = state.data.comments.filter(function (x) { return x.id === id; })[0];
+       if (!comment) return;
+       comment.pinned = !comment.pinned;
+       persistData();
+       render();
+       if (CONFIG.API_BASE_URL) {
+         fetch(CONFIG.API_BASE_URL + '/api/admin/pin-comment', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+           body: JSON.stringify({ id: id })
+         }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
+           if (res && typeof res.pinned === 'boolean' && comment) comment.pinned = res.pinned;
+           render();
+         }).catch(function () {
+           comment.pinned = !comment.pinned;
+           render();
+           toast('Gagal mengubah pin komentar.', 'warn');
+         });
+       }
      }
 
      function upvoteCommentLocal(id) {
@@ -3352,6 +3381,18 @@
                   if (!ch) return '';
                   return '<span class="kv-comment-chapter-badge">Ch. ' + escapeHtml(ch.number) + '</span>';
                 }
+                function pinnedBadge(comment) {
+                  if (!comment.pinned) return '';
+                  return '<span class="kv-comment-pinned"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M9 4v7L7 14v3h10v-3l-2-3V4m-6 0V3h6v1"/></svg>Disematkan</span>';
+                }
+                function adminCommentActions(c) {
+                  var isAdmin = state.user && state.user.role === 'admin';
+                  if (!isAdmin) return '';
+                  var pinIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v7l-2 4v3h10v-3l-2-4V4M10 4h4M12 18v3"/></svg>';
+                  var trashIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+                  return '<button type="button" class="kv-comment-action kv-comment-action-admin' + (c.pinned ? ' active' : '') + '" data-action="admin-pin-comment" data-id="' + escapeHtml(c.id) + '" aria-pressed="' + (c.pinned ? 'true' : 'false') + '" title="' + (c.pinned ? 'Lepas pin' : 'Sematkan komentar') + '">' + pinIcon + '</button>' +
+                    '<button type="button" class="kv-comment-action kv-comment-action-admin kv-comment-action-danger" data-action="admin-delete-comment" data-id="' + escapeHtml(c.id) + '" title="Hapus komentar">' + trashIcon + '</button>';
+                }
                 function renderComment(c, depth) {
                   var upvotes = Array.isArray(c.upvotes) ? c.upvotes : [];
                   var voted = upvotes.indexOf(voterKey) !== -1;
@@ -3383,13 +3424,15 @@
                             '<strong>' + escapeHtml(authorName) + '</strong>' + (own ? '<span class="kv-detail-comment-you">(Anda)</span>' : '') +
                             replyToBadge +
                             chapterBadge(c) +
+                            pinnedBadge(c) +
                             '<span class="kv-detail-comment-date">' + escapeHtml(c.createdAt || '') + '</span>' +
                           '</div>' +
                           '<div class="kv-detail-comment-text">' + contentHtml + '</div>' +
                           imageHtml +
                           '<div class="kv-detail-comment-actions">' +
-                            '<button type="button" class="kv-comment-action' + (voted ? ' active' : '') + '" data-action="upvote-comment" data-id="' + escapeHtml(c.id) + '">' + (voted ? '&#9650;' : '&#9651;') + ' ' + upvotes.length + '</button>' +
+                            '<button type="button" class="kv-comment-action' + (voted ? ' active' : '') + '" data-action="upvote-comment" data-id="' + escapeHtml(c.id) + '" aria-pressed="' + (voted ? 'true' : 'false') + '" title="' + (voted ? 'Batalkan suka' : 'Suka') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v10h11.28a2 2 0 0 0 2-1.7l.96-6.5A2 2 0 0 0 19.28 10H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>' + ' ' + upvotes.length + '</button>' +
                             '<button type="button" class="kv-comment-action" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Balas</button>' +
+                            adminCommentActions(c) +
                           '</div>' +
                           replyForm +
                         '</div>' +
@@ -3398,7 +3441,12 @@
                     (children.length ? '<div class="kv-detail-comment-children">' + children.map(function (k) { return renderComment(k, 1); }).join('') + '</div>' : '') +
                   '</div>';
                 }
-                var topLevel = byParent[''] || [];
+                var topLevel = (byParent[''] || []).slice().sort(function (a, b) {
+                  var ap = a.pinned ? 1 : 0;
+                  var bp = b.pinned ? 1 : 0;
+                  if (ap !== bp) return bp - ap;
+                  return String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || String(b.id || '').localeCompare(String(a.id || ''));
+                });
                 return topLevel.map(function (c) { return renderComment(c, 0); }).join('') || '<p class="kv-detail-empty">Belum ada komentar. Jadilah yang pertama.</p>';
               })() +
             '</section>' 
@@ -5076,6 +5124,11 @@
       else if (act === 'open-manga') { navigate('#/manga/' + el.getAttribute('data-slug')); }
       else if (act === 'reply-comment') { var rid = el.getAttribute('data-id'); state.replyingTo = state.replyingTo === rid ? null : rid; render(); }
       else if (act === 'upvote-comment') { upvoteCommentLocal(el.getAttribute('data-id')); }
+      else if (act === 'admin-pin-comment') { adminPinComment(el.getAttribute('data-id')); }
+      else if (act === 'admin-delete-comment') {
+        var dc = state.data.comments.filter(function (x) { return x.id === el.getAttribute('data-id'); })[0];
+        if (dc) confirmDelete('comment', dc.id, 'Hapus komentar dari ' + (dc.authorName || 'Pembaca') + '?', 'Hapus Komentar');
+      }
       else if (act === 'chapter-reaction') { chapterReactionLocal(el.getAttribute('data-id'), el.getAttribute('data-reaction')); }
       else if (act === 'open-reader') { navigate('#/baca/' + el.getAttribute('data-slug') + '/' + el.getAttribute('data-cid')); }
       else if (act === 'quick-genre') { state.filterGenre = el.getAttribute('data-genre'); navigate('#/archive'); }

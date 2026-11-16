@@ -269,6 +269,29 @@ test('comment ignores client-sent identity when session exists', async () => {
   }
 });
 
+test('admin pin-comment toggles pinned state', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [{ id: 'c1', mangaId: 'm1', authorName: 'Pembaca', content: 'Komentar untuk disematkan.', createdAt: '2026-11-10', status: 'approved', pinned: false }],
+      users: [{ id: 'usr-admin', role: 'admin' }]
+    }
+  });
+  try {
+    const on = await call('POST', '/api/admin/pin-comment', { Authorization: `Bearer ${adminToken()}` }, { id: 'c1' });
+    assert.equal(on.statusCode, 200);
+    assert.equal(on.json.pinned, true);
+    assert.equal(db.state.data.comments[0].pinned, true);
+    const off = await call('POST', '/api/admin/pin-comment', { Authorization: `Bearer ${adminToken()}` }, { id: 'c1' });
+    assert.equal(off.json.pinned, false);
+    assert.equal(db.state.data.comments[0].pinned, false);
+  } finally {
+    db.restore();
+  }
+});
+
 test('chapter reaction route toggles counts per chapter', async () => {
   setEnv();
   const db = mockDatabase({

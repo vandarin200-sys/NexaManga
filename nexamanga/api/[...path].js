@@ -14,6 +14,7 @@ const {
   deleteChapter,
   deleteComment,
   deleteManga,
+  pinComment,
   enrichCommentsWithUsers,
   incrementMangaViews,
   registerOAuthUser,
@@ -569,6 +570,15 @@ async function handler(req, res) {
         catalog.users = (catalog.users || []).filter((item) => item.id !== body.id);
       });
       return sendJson(res, 200, { ok: true });
+    }
+
+    if (route === 'admin/pin-comment' && req.method === 'POST') {
+      await requireAdmin(req);
+      const body = await readBody(req);
+      if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID komentar tidak valid.');
+      let updated;
+      await updateCatalog((catalog) => { updated = pinComment(catalog, body); });
+      return sendJson(res, 200, { ok: true, pinned: !!updated.pinned });
     }
 
     if (route === 'admin/upload-dual' && req.method === 'POST') {
