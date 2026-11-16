@@ -412,8 +412,8 @@ async function handler(req, res) {
       const claims = sessionClaims(req);
       if (claims) {
         body.userId = claims.sub;
-        if (!body.authorName) body.authorName = claims.user && claims.user.name ? claims.user.name : 'Pengguna';
-        if (!body.authorAvatar && claims.user && claims.user.avatar) body.authorAvatar = claims.user.avatar;
+        body.authorName = claims.user && claims.user.name ? claims.user.name : 'Pengguna';
+        body.authorAvatar = claims.user && claims.user.avatar ? claims.user.avatar : null;
       }
       let created;
       await updateCatalog((catalog) => { created = addComment(catalog, body); });

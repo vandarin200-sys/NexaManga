@@ -224,6 +224,39 @@ test('comment rejects unknown manga with validation error', async () => {
   }
 });
 
+test('comment ignores client-sent identity when session exists', async () => {
+  setEnv();
+  const member = createSessionToken({
+    id: 'usr-member-9',
+    role: 'member',
+    name: 'Budi Asli',
+    email: 'budi@example.com',
+    provider: 'google'
+  });
+  const db = mockDatabase({
+    catalog: {
+      manga: [{ id: 'm1', slug: 'judul', title: 'Judul', synopsis: 'Sinopsis yang cukup panjang untuk lolos validasi.', genres: [] }],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-member-9', role: 'member', name: 'Budi Asli' }]
+    }
+  });
+  try {
+    const res = await call('POST', '/api/comment', { Authorization: `Bearer ${member}` }, {
+      mangaId: 'm1',
+      authorName: 'Akun Orang Lain',
+      authorAvatar: 'https://evil.example/avatar.png',
+      content: 'Komentar yang cukup panjang untuk lolos.'
+    });
+    assert.equal(res.statusCode, 201);
+    assert.equal(res.json.comment.userId, 'usr-member-9');
+    assert.equal(res.json.comment.authorName, 'Budi Asli');
+    assert.equal(res.json.comment.authorAvatar, null);
+  } finally {
+    db.restore();
+  }
+});
+
 test('catalog returns empty payload when database not yet initialized', async () => {
   setEnv();
   const db = mockDatabase({ initialized: false });

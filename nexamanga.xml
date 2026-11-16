@@ -122,6 +122,79 @@
     .kv-btn-ghost:hover { border-color: var(--kv-accent); }
     .kv-btn-danger { background: var(--kv-danger); color: #FFFFFF; }
 
+    /* Halaman Login */
+    .kv-login-shell {
+      display: grid; grid-template-columns: 1.05fr 1fr;
+      margin-top: 20px; border-radius: 22px; overflow: hidden;
+      border: 1px solid var(--kv-border);
+      background: var(--kv-surface);
+      box-shadow: 0 24px 60px -40px rgba(15, 23, 42, 0.45);
+    }
+    .kv-login-brand {
+      display: flex; flex-direction: column; justify-content: center; gap: 18px;
+      padding: 44px 38px; color: #FFFFFF; position: relative; overflow: hidden;
+      background: linear-gradient(155deg, #312e81 0%, #4f46e5 45%, #7c3aed 100%);
+    }
+    .kv-login-brand::after {
+      content: ""; position: absolute; width: 340px; height: 340px; right: -120px; top: -140px;
+      border-radius: 999px; background: rgba(255, 255, 255, 0.14); filter: blur(70px); pointer-events: none;
+    }
+    .kv-login-brand::before {
+      content: ""; position: absolute; width: 260px; height: 260px; left: -110px; bottom: -130px;
+      border-radius: 999px; background: rgba(168, 85, 247, 0.35); filter: blur(60px); pointer-events: none;
+    }
+    .kv-login-brand > * { position: relative; }
+    .kv-login-brand-logo { height: 56px; display: flex; align-items: center; }
+    .kv-login-brand-logo img { height: 100%; width: auto; max-width: 220px; object-fit: contain; display: block; filter: drop-shadow(0 6px 16px rgba(0,0,0,.35)); }
+    .kv-login-kicker {
+      display: inline-flex; align-items: center; gap: 8px; width: max-content;
+      padding: 5px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,.92); background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+    }
+    .kv-login-title {
+      margin: 0; font-size: clamp(1.5rem, 2.4vw, 2.1rem); line-height: 1.18;
+      font-weight: 800; letter-spacing: -0.02em; color: #FFFFFF;
+    }
+    .kv-login-sub { margin: 0; font-size: 0.92rem; line-height: 1.6; color: rgba(255,255,255,.85); max-width: 42ch; }
+    .kv-login-features { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 12px; }
+    .kv-login-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.86rem; color: rgba(255,255,255,.92); }
+    .kv-login-feature-icon {
+      flex: 0 0 auto; width: 22px; height: 22px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.2); color: #FFFFFF;
+    }
+    .kv-login-feature-icon svg { width: 12px; height: 12px; display: block; }
+    .kv-login-card { padding: 44px 38px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+    .kv-login-card-title { margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; color: var(--kv-text); }
+    .kv-login-card-sub { margin: 4px 0 18px; font-size: 0.88rem; line-height: 1.55; color: var(--kv-text-muted); }
+    .kv-login-providers { display: grid; gap: 10px; }
+    .kv-login-btn {
+      display: flex; align-items: center; gap: 12px; width: 100%;
+      padding: 12px 16px; border-radius: 12px; font-size: 0.92rem; font-weight: 650;
+      cursor: pointer; border: 1px solid var(--kv-border);
+      background: var(--kv-surface-2); color: var(--kv-text);
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+    .kv-login-btn:hover { transform: translateY(-1px); border-color: var(--kv-accent); box-shadow: 0 10px 26px -18px rgba(79, 70, 229, 0.55); }
+    .kv-login-btn:active { transform: translateY(0) scale(0.99); }
+    .kv-login-btn svg { flex: 0 0 auto; width: 20px; height: 20px; display: block; }
+    .kv-login-btn-google { background: #FFFFFF; color: #1f2937; border-color: #e5e7eb; }
+    .kv-login-btn-google:hover { border-color: #d1d5db; }
+    .kv-login-btn-discord { background: #5865F2; border-color: #5865F2; color: #FFFFFF; }
+    .kv-login-btn-discord:hover { background: #4752c4; border-color: #4752c4; }
+    .kv-login-foot { margin: 16px 0 0; font-size: 0.74rem; line-height: 1.6; color: var(--kv-text-muted); text-align: center; }
+    .kv-login-foot strong { color: var(--kv-text); font-weight: 700; }
+    @media (max-width: 900px) {
+      .kv-login-shell { grid-template-columns: 1fr; }
+      .kv-login-brand { padding: 26px 22px; gap: 12px; }
+      .kv-login-sub { display: none; }
+      .kv-login-brand-logo { height: 44px; }
+      .kv-login-title { font-size: 1.25rem; }
+      .kv-login-features { display: none; }
+      .kv-login-card { padding: 24px 20px; }
+    }
+
     /* Hero Featured */
     .kv-hero {
       display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: stretch;
@@ -2084,11 +2157,11 @@ html:not(.dark) body.kv-reader-route .kv-reader-stepper { grid-template-columns:
       html:not(.dark) body.kv-home-route .kv-account-edit-hint { color:#777587; font-size:.75rem; margin:10px 0 0; }
       html:not(.dark) body.kv-home-route .kv-account-edit-actions { margin-top:12px; display:flex; justify-content:flex-end; }
       @media (max-width: 760px) { html:not(.dark) body.kv-home-route .kv-account-edit-grid { grid-template-columns: 1fr; } }
-      html:not(.dark) body.kv-home-route .kv-account-guest { background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:48px 24px; text-align:center; margin-top:16px; box-shadow: 0 16px 40px -28px rgba(15,23,42,.18); }
-      html:not(.dark) body.kv-home-route .kv-account-guest-title { font-size:1.6rem; font-weight:800; color:#131b2e; margin:8px 0; }
-      html:not(.dark) body.kv-home-route .kv-account-guest-sub { color:#64748b; font-size:.9rem; max-width:420px; margin:0 auto 20px; }
-      html:not(.dark) body.kv-home-route .kv-account-guest-login { display:flex; justify-content:center; }
-      html:not(.dark) body.kv-home-route .kv-account-guest-note { color:#777587; font-size:.78rem; margin-top:14px; }
+
+
+
+
+
       @media (max-width: 1100px) {
         html:not(.dark) body.kv-home-route .kv-account-layout { grid-template-columns: 1fr; }
         html:not(.dark) body.kv-home-route .kv-account-fav-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
@@ -2103,8 +2176,8 @@ html:not(.dark) body.kv-reader-route .kv-reader-stepper { grid-template-columns:
         html:not(.dark) body.kv-home-route .kv-account-fav-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
       }
       .kv-brand-logo img { height:100%; width:auto; max-width:190px; object-fit:contain; display:block; }
-      .kv-brand-logo { display:flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px; border-radius:12px; overflow:hidden; background:#ffffff; border:1px solid #e2e8f0; }
-      .kv-brand-logo.kv-reader-brand-logo { min-width:30px; height:30px; padding:0 8px; border-radius:8px; overflow:hidden; background:#ffffff; }
+      .kv-brand-logo { display:flex; align-items:center; justify-content:center; min-width:0; height:38px; overflow:hidden; background:transparent; border:0; }
+      .kv-brand-logo.kv-reader-brand-logo { min-width:0; height:30px; overflow:hidden; background:transparent; }
       .kv-admin-logo-icon img { height:100%; width:auto; max-width:180px; object-fit:contain; display:block; }
 
       html.dark body.kv-home-route {
@@ -2534,11 +2607,11 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       html.dark body.kv-home-route .kv-account-edit-hint { color:#a0a7b8; font-size:.75rem; margin:10px 0 0; }
       html.dark body.kv-home-route .kv-account-edit-actions { margin-top:12px; display:flex; justify-content:flex-end; }
       @media (max-width: 760px) { html.dark body.kv-home-route .kv-account-edit-grid { grid-template-columns: 1fr; } }
-      html.dark body.kv-home-route .kv-account-guest { background:#171a27; border:1px solid #2b304c; border-radius:20px; padding:48px 24px; text-align:center; margin-top:16px; box-shadow: 0 16px 40px -28px rgba(0,0,0,.5); }
-      html.dark body.kv-home-route .kv-account-guest-title { font-size:1.6rem; font-weight:800; color:#dee1fe; margin:8px 0; }
-      html.dark body.kv-home-route .kv-account-guest-sub { color:#a0a7b8; font-size:.9rem; max-width:420px; margin:0 auto 20px; }
-      html.dark body.kv-home-route .kv-account-guest-login { display:flex; justify-content:center; }
-      html.dark body.kv-home-route .kv-account-guest-note { color:#a0a7b8; font-size:.78rem; margin-top:14px; }
+
+
+
+
+
       @media (max-width: 1100px) {
         html.dark body.kv-home-route .kv-account-layout { grid-template-columns: 1fr; }
         html.dark body.kv-home-route .kv-account-fav-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
@@ -2553,8 +2626,8 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         html.dark body.kv-home-route .kv-account-fav-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
       }
       .kv-brand-logo img { height:100%; width:auto; max-width:190px; object-fit:contain; display:block; }
-      .kv-brand-logo { display:flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px; border-radius:12px; overflow:hidden; background:#171a27; border:1px solid #2b304c; }
-      .kv-brand-logo.kv-reader-brand-logo { min-width:30px; height:30px; padding:0 8px; border-radius:8px; overflow:hidden; background:#171a27; }
+      .kv-brand-logo { display:flex; align-items:center; justify-content:center; min-width:0; height:38px; overflow:hidden; background:transparent; border:0; }
+      .kv-brand-logo.kv-reader-brand-logo { min-width:0; height:30px; overflow:hidden; background:transparent; }
       .kv-admin-logo-icon img { height:100%; width:auto; max-width:180px; object-fit:contain; display:block; }
 
       .kv-comment-image { max-width: 100%; max-height: 360px; border-radius: 12px; display: block; margin-top: 8px; border: 1px solid var(--kv-border); object-fit: cover; }
@@ -2764,7 +2837,9 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       }
 
       function profileOverride() {
-        try { return JSON.parse(localStorage.getItem('kv_profile_override') || '{}') || {}; } catch (e) { return {}; }
+        var id = state.user && state.user.id;
+        if (!id) return {};
+        try { return JSON.parse(localStorage.getItem('kv_profile_override_' + id) || '{}') || {}; } catch (e) { return {}; }
       }
 
       function currentDisplayName(fallback) {
@@ -3012,6 +3087,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
        if (callbackToken) {
          state.adminToken = callbackToken;
          localStorage.setItem('kv_session_token', callbackToken);
+         localStorage.removeItem('kv_local_data');
          window.history.replaceState(null, '', window.location.pathname + window.location.hash);
        }
        if (!state.adminToken || !CONFIG.API_BASE_URL) {
@@ -3043,6 +3119,15 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           }).then(function (result) {
             state.user = result.user || null;
             if (state.user && result.role) state.user.role = result.role;
+            if (state.user) {
+              var legacyOverride = null;
+              try { legacyOverride = JSON.parse(localStorage.getItem('kv_profile_override') || 'null'); } catch (e) { legacyOverride = null; }
+              var overrideKey = 'kv_profile_override_' + state.user.id;
+              if (legacyOverride && typeof legacyOverride === 'object' && !localStorage.getItem(overrideKey)) {
+                try { localStorage.setItem(overrideKey, JSON.stringify(legacyOverride)); } catch (e) {}
+              }
+              localStorage.removeItem('kv_profile_override');
+            }
           }).catch(function () {
            state.adminToken = '';
            state.user = null;
@@ -3690,23 +3775,40 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       var chapterSelesai = historyItems.length;
 
       if (!state.user) {
+        var guestLogo = siteLogo();
+        var brandMedia = guestLogo
+          ? '<div class="kv-login-brand-logo"><img src="' + escapeHtml(guestLogo) + '" alt="Logo ' + escapeHtml(siteName()) + '"/></div>'
+          : '';
+        var checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 10"></polyline></svg>';
+        var guestFeatures = [
+          'Simpan manga favorit ke bookmark',
+          'Lanjutkan bacaan dari chapter terakhir',
+          'Ikut berdiskusi di komentar tiap judul'
+        ].map(function (text) {
+          return '<li><span class="kv-login-feature-icon">' + checkIcon + '</span><span>' + escapeHtml(text) + '</span></li>';
+        }).join('');
         return '<main class="kv-container kv-home-light kv-account-page">' +
-          '<section class="kv-account-guest">' +
-            '<div class="kv-account-guest-body">' +
-              '<div class="kv-home-kicker">Akun</div>' +
-              '<h1 class="kv-account-guest-title">Masuk ke NexaManga</h1>' +
-              '<p class="kv-account-guest-sub">Masuk untuk menyimpan favorit, melanjutkan bacaan, dan mengelola komentar kamu.</p>' +
-              '<div class="kv-account-guest-login">' + renderOAuthButtons() + '</div>' +
-              '<p class="kv-account-guest-note">Pendaftaran pertama mendapatkan role admin. Akun berikutnya otomatis menjadi member.</p>' +
+          '<section class="kv-login-shell">' +
+            '<div class="kv-login-brand">' +
+              brandMedia +
+              '<span class="kv-login-kicker">' + escapeHtml(siteName()) + '</span>' +
+              '<h1 class="kv-login-title">Selamat datang di ' + escapeHtml(siteName()) + '</h1>' +
+              '<p class="kv-login-sub">Masuk untuk membuka semua fitur pembaca — dari favorit hingga komentar. Satu akun untuk semua, tanpa password tambahan.</p>' +
+              '<ul class="kv-login-features">' + guestFeatures + '</ul>' +
+            '</div>' +
+            '<div class="kv-login-card">' +
+              '<h2 class="kv-login-card-title">Masuk ke akunmu</h2>' +
+              '<p class="kv-login-card-sub">Pilih penyedia akun. Kamu akan diarahkan sebentar ke halaman resmi Google atau Discord lalu kembali ke sini.</p>' +
+              '<div class="kv-login-providers">' + renderOAuthButtons() + '</div>' +
+              '<p class="kv-login-foot"><strong>Catatan:</strong> pendaftaran pertama menjadi <strong>admin</strong>; akun berikutnya otomatis <strong>member</strong>. Login lewat OAuth resmi — kami tidak pernah melihat password kamu.</p>' +
             '</div>' +
           '</section>' +
         '</main>';
       }
 
-      var profileOverride = {};
-      try { profileOverride = JSON.parse(localStorage.getItem('kv_profile_override') || '{}') || {}; } catch (e) { profileOverride = {}; }
-      var displayName = String(profileOverride.name || state.user.name || 'Member');
-      var displayAvatar = profileOverride.avatar || state.user.avatar || '';
+      var override = profileOverride();
+      var displayName = String(override.name || state.user.name || 'Member');
+      var displayAvatar = override.avatar || state.user.avatar || '';
       var initial = escapeHtml(displayName.charAt(0).toUpperCase());
       var avatar = displayAvatar
         ? '<img src="' + escapeHtml(displayAvatar) + '" alt="Avatar ' + escapeHtml(displayName) + '" class="kv-account-avatar-img"/>'
@@ -3815,10 +3917,17 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       if (!CONFIG.API_BASE_URL) {
         return '<p style="color:var(--kv-text-muted);font-size:0.875rem;">Login membutuhkan backend Vercel. Atur API_BASE_URL untuk mengaktifkan Google dan Discord.</p>';
       }
-      return '<div style="display:flex;flex-wrap:wrap;gap:10px;">' +
-        '<button type="button" class="kv-btn kv-btn-ghost" data-action="oauth-login" data-provider="google">Lanjutkan dengan Google</button>' +
-        '<button type="button" class="kv-btn kv-btn-ghost" data-action="oauth-login" data-provider="discord">Lanjutkan dengan Discord</button>' +
-        '</div>';
+      var googleIcon = '<svg viewBox="0 0 48 48" aria-hidden="true">' +
+        '<path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.3-.4-3.5z"/>' +
+        '<path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/>' +
+        '<path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2C29.3 35.4 26.8 36 24 36c-5.2 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.5 16.2 44 24 44z"/>' +
+        '<path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4 5.9l6.2 5.2C37.3 39.5 44 34 44 24c0-1.2-.1-2.3-.4-3.5z"/>' +
+      '</svg>';
+      var discordIcon = '<svg viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true">' +
+        '<path d="M20.3 4.4A19.9 19.9 0 0 0 15.4 3c-.2.4-.4.8-.6 1.2a18.4 18.4 0 0 0-5.6 0A12.6 12.6 0 0 0 8.6 3a19.9 19.9 0 0 0-4.9 1.4C.7 8.7.1 13 .6 17.1a19.9 19.9 0 0 0 6 2.9c.5-.6.9-1.3 1.3-2a13 13 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4a13 13 0 0 1-2 1c.4.7.8 1.4 1.3 2a19.8 19.8 0 0 0 6-2.9c.6-4.7-1.1-9-3.7-12.7zM9.7 13.6c-1.1 0-2-1-2-2.3s.9-2.3 2-2.3 2 1 2 2.3-.9 2.3-2 2.3zm4.6 0c-1.1 0-2-1-2-2.3s.9-2.3 2-2.3 2 1 2 2.3-.9 2.3-2 2.3z"/>' +
+      '</svg>';
+      return '<button type="button" class="kv-login-btn kv-login-btn-google" data-action="oauth-login" data-provider="google">' + googleIcon + '<span>Lanjutkan dengan Google</span></button>' +
+        '<button type="button" class="kv-login-btn kv-login-btn-discord" data-action="oauth-login" data-provider="discord">' + discordIcon + '<span>Lanjutkan dengan Discord</span></button>';
     }
 
     function renderAdmin() {
@@ -4733,7 +4842,9 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           var name = String(fd.get('name') || '').trim();
           var avatar = String(fd.get('avatar') || '').trim();
           if (name.length < 2) { toast('Nama minimal 2 karakter.', 'warn'); return; }
-          try { localStorage.setItem('kv_profile_override', JSON.stringify({ name: name, avatar: avatar })); } catch (err) { toast('Gagal menyimpan profil di browser.', 'warn'); }
+          var overrideId = state.user && state.user.id;
+          if (!overrideId) { toast('Masuk terlebih dahulu untuk menyimpan profil.', 'warn'); return; }
+          try { localStorage.setItem('kv_profile_override_' + overrideId, JSON.stringify({ name: name, avatar: avatar })); } catch (err) { toast('Gagal menyimpan profil di browser.', 'warn'); }
           state.editingProfile = false;
           toast('Profil berhasil disimpan.', 'ok');
           render();
@@ -5054,7 +5165,11 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       else if (act === 'logout-user' || act === 'logout-admin') {
         state.user = null;
         state.adminToken = '';
+        state.usersCache = undefined;
+        state.data = { manga: [], chapters: [], comments: [] };
         localStorage.removeItem('kv_session_token');
+        localStorage.removeItem('kv_local_data');
+        localStorage.removeItem('kv_profile_override');
         render();
         syncFromApi();
       }
