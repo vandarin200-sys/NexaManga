@@ -112,8 +112,36 @@ async function readBody(req, maxBytes = 4.5 * 1024 * 1024) {
   }
 }
 
-function isAdmin(req) {
+async function freshSessionClaims(req) {
   const claims = sessionClaims(req);
+  if (!claims) return null;
+  try {
+    const catalog = await readCatalog();
+    const user = (catalog.users || []).find((item) => item.id === claims.sub);
+    if (!user) return null;
+    return {
+      sub: user.id,
+      role: user.role,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email || null,
+        avatar: user.avatar || null,
+        provider: user.provider
+      },
+      exp: claims.exp
+    };
+  } catch (error) {
+    if (error instanceof CatalogNotInitializedError) {
+      // Basis data belum siap (misal untuk storage/init pertama); percayai JWT.
+      return claims;
+    }
+    throw error;
+  }
+}
+
+async function isAdmin(req) {
+  const claims = await freshSessionClaims(req);
   return Boolean(claims && claims.role === 'admin');
 }
 
@@ -123,8 +151,8 @@ function sessionClaims(req) {
   return match ? verifySessionToken(match[1]) : null;
 }
 
-function requireAdmin(req) {
-  if (!isAdmin(req)) throw new HttpError(401, 'Sesi admin tidak valid atau sudah berakhir. Silakan masuk kembali.');
+async function requireAdmin(req) {
+  if (!(await isAdmin(req))) throw new HttpError(401, 'Sesi admin tidak valid atau sudah berakhir. Silakan masuk kembali.');
 }
 
 function apiBaseUrl() {
@@ -325,8 +353,13 @@ async function handler(req, res) {
     }
 
     if (route === 'auth/me' && req.method === 'GET') {
-      const claims = sessionClaims(req);
-      if (!claims) throw new HttpError(401, 'Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.');
+      const rawClaims = sessionClaims(req);
+      const claims = await freshSessionClaims(req);
+      if (!claims) {
+        throw new HttpError(401, rawClaims
+          ? 'Akun tidak ditemukan atau sudah dihapus. Silakan masuk kembali.'
+          : 'Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.');
+      }
       return sendJson(res, 200, { user: claims.user, role: claims.role });
     }
 
@@ -348,7 +381,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/settings' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       let saved;
       await updateCatalog((catalog) => { saved = saveSettings(catalog, body); });
@@ -356,7 +389,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/storage/init' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const rowId = await initializeCatalog(EMPTY_CATALOG);
       return sendJson(res, 201, {
         rowId,
@@ -382,8 +415,9 @@ async function handler(req, res) {
     }
 
     if (route === 'comment/image' && req.method === 'POST') {
-      const claims = sessionClaims(req);
-      if (!claims) throw new HttpError(401, 'Masuk terlebih dahulu untuk mengunggah gambar.');
+      const rawClaims = sessionClaims(req);
+      const claims = await freshSessionClaims(req);
+      if (!claims) throw new HttpError(401, rawClaims ? 'Akun tidak ditemukan atau sudah dihapus. Silakan masuk kembali.' : 'Masuk terlebih dahulu untuk mengunggah gambar.');
       const body = await readBody(req);
       const { mimeType, bytes } = decodeUpload(body.dataBase64);
       const fileId = await saveMedia(body.fileName || 'comment.jpg', mimeType, bytes);
@@ -400,7 +434,7 @@ async function handler(req, res) {
         catalog = { manga: [], chapters: [], comments: [], users: [] };
       }
       enrichCommentsWithUsers(catalog);
-      if (!isAdmin(req)) {
+      if (!(await isAdmin(req))) {
         catalog.comments = catalog.comments.filter((comment) => comment.status === 'approved');
       }
       delete catalog.users;
@@ -409,7 +443,11 @@ async function handler(req, res) {
 
     if (route === 'comment' && req.method === 'POST') {
       const body = await readBody(req);
-      const claims = sessionClaims(req);
+      const rawClaims = sessionClaims(req);
+      const claims = await freshSessionClaims(req);
+      if (rawClaims && !claims) {
+        throw new HttpError(401, 'Akun tidak ditemukan atau sudah dihapus. Silakan masuk kembali.');
+      }
       if (claims) {
         body.userId = claims.sub;
         body.authorName = claims.user && claims.user.name ? claims.user.name : 'Pengguna';
@@ -421,21 +459,21 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/save-manga' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       await updateCatalog((catalog) => saveManga(catalog, body));
       return sendJson(res, 200, { ok: true });
     }
 
     if (route === 'admin/save-chapter' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       await updateCatalog((catalog) => saveChapter(catalog, body));
       return sendJson(res, 200, { ok: true });
     }
 
     if (route === 'admin/delete-manga' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID manga tidak valid.');
       await updateCatalog((catalog) => deleteManga(catalog, body.id));
@@ -443,7 +481,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/delete-chapter' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID chapter tidak valid.');
       await updateCatalog((catalog) => deleteChapter(catalog, body.id));
@@ -451,7 +489,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/delete-comment' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID komentar tidak valid.');
       await updateCatalog((catalog) => deleteComment(catalog, body.id));
@@ -459,7 +497,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/comment-status' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID komentar tidak valid.');
       if (!['approved', 'rejected'].includes(body.status)) {
@@ -474,7 +512,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/users' && req.method === 'GET') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const catalog = await readCatalog();
       const users = (catalog.users || []).map((user) => ({
         id: user.id,
@@ -489,7 +527,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/user-role' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID pengguna tidak valid.');
       if (!['admin', 'member'].includes(body.role)) throw new HttpError(400, 'Role harus admin atau member.');
@@ -508,7 +546,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/delete-user' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID pengguna tidak valid.');
       const claims = sessionClaims(req);
@@ -526,7 +564,7 @@ async function handler(req, res) {
     }
 
     if (route === 'admin/upload-dual' && req.method === 'POST') {
-      requireAdmin(req);
+      await requireAdmin(req);
       const body = await readBody(req);
       const { mimeType, bytes } = decodeUpload(body.dataBase64);
       const baseUrl = apiBaseUrl();

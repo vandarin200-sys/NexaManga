@@ -2836,10 +2836,26 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         return id;
       }
 
+      function purgeLegacyProfileOverrides() {
+        try {
+          if (localStorage.getItem('kv_pov_purged') === '2') return;
+          var doomed = [];
+          for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (!key) continue;
+            var isLegacyGlobal = key === 'kv_profile_override';
+            var isOldPerUser = key.indexOf('kv_profile_override_') === 0 && key.indexOf('kv_profile_override_v2_') !== 0;
+            if (isLegacyGlobal || isOldPerUser) doomed.push(key);
+          }
+          doomed.forEach(function (key) { localStorage.removeItem(key); });
+          localStorage.setItem('kv_pov_purged', '2');
+        } catch (e) { /* abaikan */ }
+      }
+
       function profileOverride() {
         var id = state.user && state.user.id;
         if (!id) return {};
-        try { return JSON.parse(localStorage.getItem('kv_profile_override_' + id) || '{}') || {}; } catch (e) { return {}; }
+        try { return JSON.parse(localStorage.getItem('kv_profile_override_v2_' + id) || '{}') || {}; } catch (e) { return {}; }
       }
 
       function currentDisplayName(fallback) {
@@ -3082,6 +3098,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
     }
 
     function initializeAuth() {
+      purgeLegacyProfileOverrides();
       sessionStorage.removeItem('kv_admin_token');
        var callbackToken = new URLSearchParams(window.location.search).get('auth_token');
        if (callbackToken) {
@@ -3119,15 +3136,6 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           }).then(function (result) {
             state.user = result.user || null;
             if (state.user && result.role) state.user.role = result.role;
-            if (state.user) {
-              var legacyOverride = null;
-              try { legacyOverride = JSON.parse(localStorage.getItem('kv_profile_override') || 'null'); } catch (e) { legacyOverride = null; }
-              var overrideKey = 'kv_profile_override_' + state.user.id;
-              if (legacyOverride && typeof legacyOverride === 'object' && !localStorage.getItem(overrideKey)) {
-                try { localStorage.setItem(overrideKey, JSON.stringify(legacyOverride)); } catch (e) {}
-              }
-              localStorage.removeItem('kv_profile_override');
-            }
           }).catch(function () {
            state.adminToken = '';
            state.user = null;
@@ -3531,7 +3539,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
               (state.commentNotice ? '<div class="kv-detail-notice">' + escapeHtml(state.commentNotice) + '</div>' : '') +
               '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" class="kv-comment-form kv-detail-comment-form">' +
                 '<div class="kv-comment-form-head">' +
-                  (myDisplayAvatar ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="kv-comment-avatar"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(myDisplayName.charAt(0).toUpperCase()) + '</div>') +
+                  (myDisplayAvatar ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="kv-comment-avatar" referrerpolicy="no-referrer"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(myDisplayName.charAt(0).toUpperCase()) + '</div>') +
                   '<div><div class="kv-comment-name">' + (state.user ? escapeHtml(myDisplayName) : 'Tulis komentar Anda') + '</div><div class="kv-comment-hint">Komentar dan balasan langsung ditampilkan.</div></div>' +
                 '</div>' +
                 (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
@@ -3562,7 +3570,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                   var own = state.user && c.userId && c.userId === state.user.id;
                   var authorName = own ? myDisplayName : c.authorName;
                   var authorAvatar = own ? myDisplayAvatar : c.authorAvatar;
-                  var avatar = authorAvatar ? '<img src="' + escapeHtml(authorAvatar) + '" alt="" class="kv-comment-avatar"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(String(authorName || '?').charAt(0).toUpperCase()) + '</div>';
+                  var avatar = authorAvatar ? '<img src="' + escapeHtml(authorAvatar) + '" alt="" class="kv-comment-avatar" referrerpolicy="no-referrer"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(String(authorName || '?').charAt(0).toUpperCase()) + '</div>';
                   var rootId = depth === 0 ? c.id : c.parentId;
                   var replyToBadge = c.replyTo ? '<span class="kv-reply-to">@' + escapeHtml(c.replyTo) + '</span>' : '';
                   var contentHtml = renderCommentContent(c.content);
@@ -3811,7 +3819,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       var displayAvatar = override.avatar || state.user.avatar || '';
       var initial = escapeHtml(displayName.charAt(0).toUpperCase());
       var avatar = displayAvatar
-        ? '<img src="' + escapeHtml(displayAvatar) + '" alt="Avatar ' + escapeHtml(displayName) + '" class="kv-account-avatar-img"/>'
+        ? '<img src="' + escapeHtml(displayAvatar) + '" alt="Avatar ' + escapeHtml(displayName) + '" class="kv-account-avatar-img" referrerpolicy="no-referrer"/>'
         : '<div class="kv-account-avatar-fallback">' + initial + '</div>';
       var roleLabel = state.user.role === 'admin' ? 'Administrator' : 'Pembaca';
 
@@ -4844,7 +4852,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           if (name.length < 2) { toast('Nama minimal 2 karakter.', 'warn'); return; }
           var overrideId = state.user && state.user.id;
           if (!overrideId) { toast('Masuk terlebih dahulu untuk menyimpan profil.', 'warn'); return; }
-          try { localStorage.setItem('kv_profile_override_' + overrideId, JSON.stringify({ name: name, avatar: avatar })); } catch (err) { toast('Gagal menyimpan profil di browser.', 'warn'); }
+          try { localStorage.setItem('kv_profile_override_v2_' + overrideId, JSON.stringify({ name: name, avatar: avatar })); } catch (err) { toast('Gagal menyimpan profil di browser.', 'warn'); }
           state.editingProfile = false;
           toast('Profil berhasil disimpan.', 'ok');
           render();

@@ -152,7 +152,7 @@ test('catalog hides pending comments and users from visitors', async () => {
         { id: 'public', status: 'approved' },
         { id: 'private', status: 'pending' }
       ],
-      users: [{ id: 'usr-x', role: 'admin' }]
+      users: [{ id: 'usr-admin', role: 'admin' }]
     }
   });
   try {
@@ -175,7 +175,7 @@ test('admin session sees pending comments but still no users list', async () => 
         { id: 'public', status: 'approved' },
         { id: 'private', status: 'pending' }
       ],
-      users: [{ id: 'usr-x', role: 'admin' }]
+      users: [{ id: 'usr-admin', role: 'admin' }]
     }
   });
   try {
@@ -197,14 +197,26 @@ test('admin write endpoints reject missing or non-admin tokens', async () => {
     email: null,
     provider: 'google'
   });
-  for (const headers of [
-    {},
-    { Authorization: 'Bearer bukan-token' },
-    { Authorization: `Bearer ${member}` }
-  ]) {
-    const res = await call('POST', '/api/admin/save-manga', headers, { id: 'm1' });
-    assert.equal(res.statusCode, 401);
-    assert.match(res.json.error, /Sesi admin/);
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-member', role: 'member' }]
+    }
+  });
+  try {
+    for (const headers of [
+      {},
+      { Authorization: 'Bearer bukan-token' },
+      { Authorization: `Bearer ${member}` }
+    ]) {
+      const res = await call('POST', '/api/admin/save-manga', headers, { id: 'm1' });
+      assert.equal(res.statusCode, 401);
+      assert.match(res.json.error, /Sesi admin/);
+    }
+  } finally {
+    db.restore();
   }
 });
 
@@ -290,15 +302,35 @@ test('auth/me rejects missing session', async () => {
 
 test('auth/me returns profile for valid session', async () => {
   setEnv();
-  const res = await call('GET', '/api/auth/me', { Authorization: `Bearer ${adminToken()}` });
-  assert.equal(res.statusCode, 200);
-  assert.equal(res.json.role, 'admin');
-  assert.equal(res.json.user.id, 'usr-admin');
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-admin', role: 'admin', name: 'Admin', provider: 'google' }]
+    }
+  });
+  try {
+    const res = await call('GET', '/api/auth/me', { Authorization: `Bearer ${adminToken()}` });
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.json.role, 'admin');
+    assert.equal(res.json.user.id, 'usr-admin');
+    assert.equal(res.json.user.name, 'Admin');
+  } finally {
+    db.restore();
+  }
 });
 
 test('admin save-manga persists through Neon snapshot', async () => {
   setEnv();
-  const db = mockDatabase({ catalog: { manga: [], chapters: [], comments: [], users: [] } });
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-admin', role: 'admin' }]
+    }
+  });
   try {
     const manga = {
       id: 'mng-1',
@@ -333,7 +365,7 @@ test('concurrent modification returns 409 after retries', async () => {
       }],
       chapters: [],
       comments: [],
-      users: []
+      users: [{ id: 'usr-admin', role: 'admin' }]
     },
     failCas: true
   });
@@ -354,6 +386,86 @@ test('concurrent modification returns 409 after retries', async () => {
   }
 });
 
+test('demoted admin loses access immediately', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-admin', role: 'member' }]
+    }
+  });
+  try {
+    const manga = {
+      id: 'mng-1',
+      slug: 'judul-baru',
+      title: 'Judul Baru',
+      synopsis: 'Sinopsis yang cukup panjang untuk lolos validasi.',
+      genres: ['Aksi'],
+      rating: 4
+    };
+    const res = await call('POST', '/api/admin/save-manga', { Authorization: `Bearer ${adminToken()}` }, manga);
+    assert.equal(res.statusCode, 401);
+  } finally {
+    db.restore();
+  }
+});
+
+test('promoted member gains access immediately', async () => {
+  setEnv();
+  const member = createSessionToken({
+    id: 'usr-member',
+    role: 'member',
+    name: 'Member',
+    email: null,
+    provider: 'google'
+  });
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-member', role: 'admin', name: 'Member' }]
+    }
+  });
+  try {
+    const manga = {
+      id: 'mng-1',
+      slug: 'judul-baru',
+      title: 'Judul Baru',
+      synopsis: 'Sinopsis yang cukup panjang untuk lolos validasi.',
+      genres: ['Aksi'],
+      rating: 4
+    };
+    const res = await call('POST', '/api/admin/save-manga', { Authorization: `Bearer ${member}` }, manga);
+    assert.equal(res.statusCode, 200);
+  } finally {
+    db.restore();
+  }
+});
+
+test('deleted user session is rejected', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: { manga: [], chapters: [], comments: [], users: [] }
+  });
+  try {
+    const me = await call('GET', '/api/auth/me', { Authorization: `Bearer ${adminToken()}` });
+    assert.equal(me.statusCode, 401);
+    assert.match(me.json.error, /Akun tidak ditemukan/);
+    const res = await call('POST', '/api/comment', { Authorization: `Bearer ${adminToken()}` }, {
+      mangaId: 'm1',
+      authorName: 'Admin',
+      content: 'Komentar yang cukup panjang untuk lolos.'
+    });
+    assert.equal(res.statusCode, 401);
+    assert.match(res.json.error, /Akun tidak ditemukan/);
+  } finally {
+    db.restore();
+  }
+});
+
 test('storage init creates snapshot once and rejects second attempt', async () => {
   setEnv();
   const db = mockDatabase({ initialized: false });
@@ -361,6 +473,7 @@ test('storage init creates snapshot once and rejects second attempt', async () =
     const first = await call('POST', '/api/admin/storage/init', { Authorization: `Bearer ${adminToken()}` });
     assert.equal(first.statusCode, 201);
     assert.ok(db.state.data);
+    db.state.data.users.push({ id: 'usr-admin', role: 'admin' });
     const second = await call('POST', '/api/admin/storage/init', { Authorization: `Bearer ${adminToken()}` });
     assert.equal(second.statusCode, 409);
   } finally {

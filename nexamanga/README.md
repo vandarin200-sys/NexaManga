@@ -112,6 +112,7 @@ Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/h
 - Akun pertama yang berhasil menyelesaikan OAuth menjadi `admin`.
 - Pendaftaran akun berikutnya menjadi `member`.
 - Role ditetapkan backend dan disimpan di database Neon; nilai role dari browser tidak dipercaya.
+- Pada setiap request penting, backend membaca akun langsung dari Neon: perubahan role (promosikan/turunkan) dan penghapusan akun berlaku **langsung**, tanpa menunggu token 8 jam habis. Identitas komentar juga selalu dipaksa dari sesi server.
 - Hanya `admin` yang dapat mengakses endpoint pengelolaan manga, chapter, komentar, dan media.
 
 ## Endpoint
