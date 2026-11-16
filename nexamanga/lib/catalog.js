@@ -139,12 +139,26 @@ function saveChapter(catalog, input) {
 
 function deleteManga(catalog, id) {
   catalog.manga = catalog.manga.filter((manga) => manga.id !== id);
+  const chapterIds = catalog.chapters.filter((chapter) => chapter.mangaId === id).map((chapter) => chapter.id);
   catalog.chapters = catalog.chapters.filter((chapter) => chapter.mangaId !== id);
   catalog.comments = catalog.comments.filter((comment) => comment.mangaId !== id);
+  if (catalog.reactions && typeof catalog.reactions === 'object' && !Array.isArray(catalog.reactions)) {
+    for (const chapterId of chapterIds) delete catalog.reactions[chapterId];
+  }
+  if (catalog.mangaReactions && typeof catalog.mangaReactions === 'object' && !Array.isArray(catalog.mangaReactions)) {
+    delete catalog.mangaReactions[id];
+  }
 }
 
 function deleteChapter(catalog, id) {
+  if (!id) return;
+  for (const comment of catalog.comments) {
+    if (comment && comment.chapterId === id) comment.chapterId = null;
+  }
   catalog.chapters = catalog.chapters.filter((chapter) => chapter.id !== id);
+  if (catalog.reactions && typeof catalog.reactions === 'object' && !Array.isArray(catalog.reactions)) {
+    delete catalog.reactions[id];
+  }
 }
 
 function deleteComment(catalog, id) {
@@ -168,32 +182,24 @@ function enrichCommentsWithUsers(catalog) {
 const REACTION_KEYS = Object.freeze(['fire', 'shock', 'cry', 'laugh', 'angry']);
 
 function addChapterReaction(catalog, input) {
-  return addReaction(catalog, input, 'chapter');
+  return addReaction(catalog, input);
 }
 
-function addMangaReaction(catalog, input) {
-  return addReaction(catalog, input, 'manga');
-}
-
-function addReaction(catalog, input, targetType) {
+function addReaction(catalog, input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new ValidationError('Data reaksi tidak valid.');
   }
-  const targetId = requireText(targetType === 'chapter' ? input.chapterId : input.mangaId, targetType === 'chapter' ? 'ID chapter' : 'ID manga', 100);
+  const chapterId = requireText(input.chapterId, 'ID chapter', 100);
   const voterId = requireText(input.voterId, 'ID voter', 100);
   const reaction = typeof input.reaction === 'string' && input.reaction ? input.reaction : null;
-  const collectionKey = targetType === 'chapter' ? 'reactions' : 'mangaReactions';
-  const exists = targetType === 'chapter'
-    ? catalog.chapters.some((chapter) => chapter.id === targetId)
-    : catalog.manga.some((manga) => manga.id === targetId);
-  if (!exists) {
-    throw new ValidationError(targetType === 'chapter' ? 'Chapter tidak ditemukan.' : 'Manga tidak ditemukan.');
+  if (!catalog.chapters.some((chapter) => chapter.id === chapterId)) {
+    throw new ValidationError('Chapter tidak ditemukan.');
   }
-  if (!catalog[collectionKey] || typeof catalog[collectionKey] !== 'object' || Array.isArray(catalog[collectionKey])) {
-    catalog[collectionKey] = {};
+  if (!catalog.reactions || typeof catalog.reactions !== 'object' || Array.isArray(catalog.reactions)) {
+    catalog.reactions = {};
   }
-  const forTarget = catalog[collectionKey][targetId] && typeof catalog[collectionKey][targetId] === 'object'
-    ? catalog[collectionKey][targetId]
+  const forTarget = catalog.reactions[chapterId] && typeof catalog.reactions[chapterId] === 'object'
+    ? catalog.reactions[chapterId]
     : {};
   for (const key of REACTION_KEYS) {
     if (!Array.isArray(forTarget[key])) forTarget[key] = [];
@@ -218,7 +224,7 @@ function addReaction(catalog, input, targetType) {
       if (forTarget[key].includes(voterId)) userVote = key;
     }
   }
-  catalog[collectionKey][targetId] = forTarget;
+  catalog.reactions[chapterId] = forTarget;
   const counts = {};
   for (const key of REACTION_KEYS) counts[key] = forTarget[key].length;
   return { counts, userVote };
@@ -271,16 +277,30 @@ function addComment(catalog, input) {
   if (!catalog.manga.some((manga) => manga.id === mangaId)) {
     throw new ValidationError('Manga tidak ditemukan.');
   }
-  const parentId = typeof input.parentId === 'string' && input.parentId ? input.parentId : null;
-  if (parentId) {
-    const parent = catalog.comments.find((item) => item.id === parentId && item.mangaId === mangaId);
+  const parentIdInput = typeof input.parentId === 'string' && input.parentId ? input.parentId : null;
+  let parent = null;
+  if (parentIdInput) {
+    parent = catalog.comments.find((item) => item.id === parentIdInput && item.mangaId === mangaId) || null;
     if (!parent) throw new ValidationError('Komentar induk tidak ditemukan.');
   }
+  let chapterId = typeof input.chapterId === 'string' && input.chapterId ? input.chapterId : null;
+  if (chapterId) {
+    const chapter = catalog.chapters.find((item) => item.id === chapterId);
+    if (!chapter) throw new ValidationError('Chapter tidak ditemukan.');
+    if (chapter.mangaId !== mangaId) throw new ValidationError('Chapter bukan bagian dari manga ini.');
+    if (parent && (parent.chapterId || null) !== chapterId) {
+      throw new ValidationError('Balasan harus berada di chapter yang sama dengan komentar induk.');
+    }
+  } else if (parent && typeof parent.chapterId === 'string' && parent.chapterId) {
+    chapterId = parent.chapterId;
+  }
+  const parentId = parentIdInput;
   const imageUrl = typeof input.imageUrl === 'string' && input.imageUrl.trim() ? input.imageUrl.trim().slice(0, 2048) : null;
   const replyTo = typeof input.replyTo === 'string' && input.replyTo.trim() ? input.replyTo.trim().slice(0, 100) : null;
   const comment = {
     id: `c-${crypto.randomUUID()}`,
     mangaId,
+    chapterId,
     parentId,
     replyTo,
     imageUrl,
@@ -315,7 +335,6 @@ module.exports = {
   ValidationError,
   addComment,
   addChapterReaction,
-  addMangaReaction,
   deleteChapter,
   deleteComment,
   deleteManga,

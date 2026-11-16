@@ -269,6 +269,53 @@ test('comment ignores client-sent identity when session exists', async () => {
   }
 });
 
+test('chapter reaction route toggles counts per chapter', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [{ id: 'm1', slug: 'judul', title: 'Judul', synopsis: 'Sinopsis yang cukup panjang untuk lolos validasi.', genres: [] }],
+      chapters: [{ id: 'ch1', mangaId: 'm1', number: 1, pages: [] }],
+      comments: [],
+      users: []
+    }
+  });
+  try {
+    const res = await call('POST', '/api/chapter/reaction', {}, { chapterId: 'ch1', voterId: 'v1', reaction: 'fire' });
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.json.counts.fire, 1);
+    assert.equal(res.json.userVote, 'fire');
+    const again = await call('POST', '/api/chapter/reaction', {}, { chapterId: 'ch1', voterId: 'v1', reaction: 'fire' });
+    assert.equal(again.json.counts.fire, 0);
+    assert.equal(again.json.userVote, null);
+  } finally {
+    db.restore();
+  }
+});
+
+test('comment accepts chapterId and stores it', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [{ id: 'm1', slug: 'judul', title: 'Judul', synopsis: 'Sinopsis yang cukup panjang untuk lolos validasi.', genres: [] }],
+      chapters: [{ id: 'ch1', mangaId: 'm1', number: 1, pages: [] }],
+      comments: [],
+      users: []
+    }
+  });
+  try {
+    const res = await call('POST', '/api/comment', {}, {
+      mangaId: 'm1',
+      chapterId: 'ch1',
+      authorName: 'Pembaca',
+      content: 'Komentar untuk chapter 1 yang cukup panjang.'
+    });
+    assert.equal(res.statusCode, 201);
+    assert.equal(res.json.comment.chapterId, 'ch1');
+  } finally {
+    db.restore();
+  }
+});
+
 test('catalog returns empty payload when database not yet initialized', async () => {
   setEnv();
   const db = mockDatabase({ initialized: false });

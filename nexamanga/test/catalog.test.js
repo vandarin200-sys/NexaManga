@@ -4,8 +4,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   ValidationError,
+  addChapterReaction,
   addComment,
-  addMangaReaction,
   deleteManga,
   registerOAuthUser,
   saveChapter,
@@ -84,20 +84,34 @@ test('first OAuth account is admin, later accounts are members, and logins reuse
   assert.equal(second.role, 'member');
 });
 
-test('manga reactions toggle per voter and reject unknown manga/reactions', () => {
+test('chapter reactions toggle per voter and reject unknown chapter/reaction', () => {
   const data = catalog();
   saveManga(data, manga());
-  const first = addMangaReaction(data, { mangaId: 'm1', voterId: 'v1', reaction: 'fire' });
+  saveChapter(data, { id: 'ch1', mangaId: 'm1', number: 1, title: '', pages: [] });
+  const first = addChapterReaction(data, { chapterId: 'ch1', voterId: 'v1', reaction: 'fire' });
   assert.equal(first.counts.fire, 1);
   assert.equal(first.userVote, 'fire');
-  addMangaReaction(data, { mangaId: 'm1', voterId: 'v2', reaction: 'fire' });
-  const switched = addMangaReaction(data, { mangaId: 'm1', voterId: 'v1', reaction: 'laugh' });
+  addChapterReaction(data, { chapterId: 'ch1', voterId: 'v2', reaction: 'fire' });
+  const switched = addChapterReaction(data, { chapterId: 'ch1', voterId: 'v1', reaction: 'laugh' });
   assert.equal(switched.counts.fire, 1);
   assert.equal(switched.counts.laugh, 1);
   assert.equal(switched.userVote, 'laugh');
-  const toggledOff = addMangaReaction(data, { mangaId: 'm1', voterId: 'v1', reaction: 'laugh' });
+  const toggledOff = addChapterReaction(data, { chapterId: 'ch1', voterId: 'v1', reaction: 'laugh' });
   assert.equal(toggledOff.counts.laugh, 0);
   assert.equal(toggledOff.userVote, null);
-  assert.throws(() => addMangaReaction(data, { mangaId: 'tidak-ada', voterId: 'v1', reaction: 'fire' }), ValidationError);
-  assert.throws(() => addMangaReaction(data, { mangaId: 'm1', voterId: 'v1', reaction: 'rock' }), ValidationError);
+  assert.throws(() => addChapterReaction(data, { chapterId: 'tidak-ada', voterId: 'v1', reaction: 'fire' }), ValidationError);
+  assert.throws(() => addChapterReaction(data, { chapterId: 'ch1', voterId: 'v1', reaction: 'rock' }), ValidationError);
+});
+
+test('chapter comments are scoped to their chapter and replies inherit it', () => {
+  const data = catalog();
+  saveManga(data, manga());
+  saveChapter(data, { id: 'ch1', mangaId: 'm1', number: 1, title: '', pages: [] });
+  saveChapter(data, { id: 'ch2', mangaId: 'm1', number: 2, title: '', pages: [] });
+  const comment = addComment(data, { mangaId: 'm1', chapterId: 'ch1', authorName: 'Pembaca', content: 'Komentar untuk chapter 1.' });
+  assert.equal(comment.chapterId, 'ch1');
+  const reply = addComment(data, { mangaId: 'm1', parentId: comment.id, authorName: 'Pembaca', content: 'Balasan tanpa chapterId.' });
+  assert.equal(reply.chapterId, 'ch1');
+  assert.throws(() => addComment(data, { mangaId: 'm1', chapterId: 'ch2', parentId: comment.id, authorName: 'X', content: 'Balasan beda chapter.' }), ValidationError);
+  assert.throws(() => addComment(data, { mangaId: 'm1', chapterId: 'tidak-ada', authorName: 'X', content: 'Chapter hantu.' }), ValidationError);
 });

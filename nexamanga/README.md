@@ -122,7 +122,8 @@ Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/h
 - `GET /api/auth/me` — mengembalikan profil dan role sesi aktif.
 - `POST /api/admin/storage/init` — inisialisasi sekali, memerlukan sesi admin; biasanya tidak diperlukan karena pendaftaran pertama menginisialisasi otomatis.
 - `GET /api/catalog` — katalog publik; hanya komentar disetujui yang dikirim ke pengunjung. Sesi admin juga menerima komentar untuk moderasi.
-- `POST /api/manga/reaction` — reaksi manga (`fire`, `shock`, `cry`, `laugh`, `angry`); toggle per `voterId`.
+- `POST /api/chapter/reaction` — reaksi chapter (`fire`, `shock`, `cry`, `laugh`, `angry`); toggle per `voterId`.
+- `POST /api/comment` — kirim komentar. `chapterId` opsional; isi untuk komentar di halaman chapter. Balasan mewarisi chapter induk.
 - `POST /api/comment` — kirim komentar untuk moderasi.
 - `POST /api/admin/save-manga`, `/api/admin/save-chapter`
 - `POST /api/admin/delete-manga`, `/api/admin/delete-chapter`
