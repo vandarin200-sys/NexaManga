@@ -261,24 +261,6 @@
     .kv-chapter-row:hover { background: var(--kv-surface-2); }
 
     /* Reader */
-    .kv-reader-bar {
-      position: sticky; top: 0; z-index: 50;
-      background: var(--kv-surface); border-bottom: 1px solid var(--kv-border);
-      padding: 10px 20px; display: flex; flex-wrap: wrap; align-items: center;
-      justify-content: space-between; gap: 12px;
-    }
-    .kv-reader-progress {
-      position: sticky; top: 0; height: 3px; background: var(--kv-neon);
-      z-index: 49; transition: width 0.12s linear;
-    }
-    .kv-reader-canvas {
-      margin: 0 auto; padding: 20px 12px 64px; display: flex; flex-direction: column;
-      align-items: center; gap: 8px;
-    }
-    .kv-reader-canvas img {
-      width: 100%; height: auto; display: block; border-radius: 4px;
-      background: var(--kv-surface-2);
-    }
 
     /* Admin Panel */
     .kv-admin-grid {
@@ -507,12 +489,6 @@
     }
     .kv-chapter-row:last-child { margin-bottom: 0; }
     .kv-chapter-row:hover { border-color: var(--kv-accent); background: var(--kv-surface-2); }
-    .kv-reader-progress { background: linear-gradient(90deg, var(--kv-accent), var(--kv-neon)); }
-    .kv-reader-bar {
-      background: var(--kv-surface);
-      background: color-mix(in srgb, var(--kv-surface) 86%, transparent);
-      backdrop-filter: blur(12px);
-    }
     table.kv-table th { text-transform: uppercase; letter-spacing: 0.05em; }
     table.kv-table tbody tr { transition: background-color 0.12s ease; }
     table.kv-table tbody tr:hover { background: var(--kv-surface-2); }
@@ -809,29 +785,6 @@
       border-radius: 13px;
       box-shadow: 0 12px 30px -20px rgba(25, 30, 55, 0.5);
     }
-    .kv-reader-app { --kv-reader-bg: #171923; }
-    .kv-reader-app[data-theme="light"] { --kv-reader-bg: #F4F5F9; }
-    .kv-reader-app[data-theme="sepia"] { --kv-reader-bg: #F2EBDD; }
-    .kv-reader-header { box-shadow: 0 10px 28px -26px rgba(0, 0, 0, 0.5); }
-    .kv-reader-back, .kv-reader-chapter-link { border-radius: 11px; }
-    .kv-reader-chapter-link.next {
-      color: #FFFFFF;
-      background: var(--kv-accent);
-    }
-    .kv-reader-chapter-link.next:hover { background: var(--kv-accent-hover); filter: none; }
-    .kv-reader-tools .kv-btn-ghost, .kv-reader-tools .kv-select,
-    .kv-reader-page-controls .kv-btn-ghost {
-      border-radius: 10px;
-    }
-    .kv-reader-canvas { gap: 10px; }
-    .kv-reader-canvas img {
-      border-radius: 5px;
-      box-shadow: 0 12px 35px -22px rgba(0, 0, 0, 0.55);
-    }
-    .kv-reader-end-nav {
-      border-radius: 15px;
-      background: color-mix(in srgb, var(--kv-reader-text) 4%, transparent);
-    }
     @media (max-width: 960px) {
       .kv-container { padding-right: 24px; padding-left: 24px; }
       .kv-admin-side { padding: 18px 20px; }
@@ -1063,185 +1016,6 @@
     .kv-stat-card, .kv-qa { border-radius: 16px; }
     .kv-qa:hover { box-shadow: 0 16px 34px -24px rgba(101, 88, 245, 0.5); }
     .kv-modal-box { border-radius: 18px; box-shadow: 0 28px 80px -28px rgba(0, 0, 0, 0.7); }
-    .kv-reader-app {
-      --kv-reader-bg: #080A10;
-      --kv-reader-text: #F1F3FA;
-      --kv-reader-muted: #9AA4B9;
-      min-height: 100vh;
-      background: var(--kv-reader-bg);
-      color: var(--kv-reader-text);
-    }
-    .kv-reader-app[data-theme="light"] {
-      --kv-reader-bg: #F3F5FA;
-      --kv-reader-text: #171B2C;
-      --kv-reader-muted: #69738A;
-    }
-    .kv-reader-app[data-theme="sepia"] {
-      --kv-reader-bg: #F1E8D5;
-      --kv-reader-text: #3B2F2F;
-      --kv-reader-muted: #76695B;
-    }
-    .kv-reader-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: color-mix(in srgb, var(--kv-reader-bg) 88%, transparent);
-      border-bottom: 1px solid color-mix(in srgb, var(--kv-reader-muted) 20%, transparent);
-      backdrop-filter: blur(18px);
-    }
-    .kv-reader-top, .kv-reader-tools {
-      width: min(1120px, 100%);
-      margin: 0 auto;
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-    .kv-reader-top { min-height: 76px; }
-    .kv-reader-heading { display: flex; align-items: center; gap: 14px; min-width: 0; }
-    .kv-reader-back {
-      width: 40px;
-      height: 40px;
-      flex: 0 0 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid color-mix(in srgb, var(--kv-reader-muted) 24%, transparent);
-      border-radius: 12px;
-      color: var(--kv-reader-text);
-      font-size: 1.15rem;
-      transition: background-color 0.16s ease, border-color 0.16s ease;
-    }
-    .kv-reader-back:hover, .kv-reader-chapter-link:hover {
-      background: color-mix(in srgb, var(--kv-reader-text) 8%, transparent);
-      border-color: color-mix(in srgb, var(--kv-accent) 60%, transparent);
-    }
-    .kv-reader-eyebrow {
-      display: block;
-      margin-bottom: 2px;
-      color: var(--kv-reader-muted);
-      font-size: 0.625rem;
-      font-weight: 750;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-    .kv-reader-title {
-      margin: 0;
-      overflow: hidden;
-      color: var(--kv-reader-text);
-      font-size: 0.95rem;
-      font-weight: 750;
-      letter-spacing: -0.025em;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .kv-reader-subtitle { margin: 2px 0 0; color: var(--kv-reader-muted); font-size: 0.75rem; }
-    .kv-reader-chapter-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .kv-reader-chapter-link {
-      min-height: 38px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 7px 12px;
-      border: 1px solid color-mix(in srgb, var(--kv-reader-muted) 24%, transparent);
-      border-radius: 10px;
-      color: var(--kv-reader-text);
-      font-size: 0.75rem;
-      font-weight: 650;
-      transition: background-color 0.16s ease, border-color 0.16s ease;
-    }
-    .kv-reader-chapter-link.next {
-      color: #FFFFFF;
-      border-color: transparent;
-      background: linear-gradient(120deg, var(--kv-accent), #7669F7 65%, var(--kv-neon));
-    }
-    .kv-reader-chapter-link.next:hover { filter: brightness(1.08); }
-    .kv-reader-tools {
-      justify-content: flex-start;
-      flex-wrap: wrap;
-      min-height: 58px;
-      padding-top: 8px;
-      padding-bottom: 12px;
-      border-top: 1px solid color-mix(in srgb, var(--kv-reader-muted) 12%, transparent);
-    }
-    .kv-reader-tool-label {
-      margin-right: auto;
-      color: var(--kv-reader-muted);
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .kv-reader-tools .kv-btn, .kv-reader-tools .kv-select {
-      min-height: 36px;
-      padding-top: 6px;
-      padding-bottom: 6px;
-      border-radius: 9px;
-      font-size: 0.75rem;
-    }
-    .kv-reader-tools .kv-btn-ghost, .kv-reader-tools .kv-select {
-      color: var(--kv-reader-text);
-      border-color: color-mix(in srgb, var(--kv-reader-muted) 24%, transparent);
-      background-color: color-mix(in srgb, var(--kv-reader-text) 5%, transparent);
-    }
-    .kv-reader-tools .kv-select { min-width: 100px; }
-    .kv-reader-stage { min-height: calc(100vh - 134px); background: var(--kv-reader-bg); }
-    .kv-reader-canvas {
-      width: 100%;
-      padding: 24px 16px 56px;
-      gap: 0;
-    }
-    .kv-reader-canvas img {
-      border-radius: 0;
-      box-shadow: 0 12px 35px -22px rgba(0, 0, 0, 0.8);
-    }
-    .kv-reader-placeholder {
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      border: 1px solid color-mix(in srgb, var(--kv-reader-muted) 24%, transparent);
-      border-radius: 12px;
-      background: color-mix(in srgb, var(--kv-reader-text) 4%, transparent);
-      color: var(--kv-reader-muted);
-      text-align: center;
-    }
-    .kv-reader-placeholder-title { margin-bottom: 6px; color: var(--kv-reader-text); font-weight: 700; }
-    .kv-reader-page-controls {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin: 18px 0 28px;
-      color: var(--kv-reader-muted);
-    }
-    .kv-reader-page-count {
-      min-width: 68px;
-      text-align: center;
-      color: var(--kv-reader-text);
-      font-size: 0.8125rem;
-    }
-    .kv-reader-page-controls .kv-btn-ghost {
-      color: var(--kv-reader-text);
-      border-color: color-mix(in srgb, var(--kv-reader-muted) 24%, transparent);
-      background: color-mix(in srgb, var(--kv-reader-text) 5%, transparent);
-    }
-    .kv-reader-end-nav {
-      width: min(760px, 100%);
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 28px auto 0;
-      padding: 18px;
-      border: 1px solid color-mix(in srgb, var(--kv-reader-muted) 20%, transparent);
-      border-radius: 16px;
-      background: color-mix(in srgb, var(--kv-reader-text) 4%, transparent);
-    }
-    .kv-reader-end-nav .kv-reader-chapter-link { min-height: 44px; }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         scroll-behavior: auto !important;
@@ -1287,19 +1061,6 @@
       .kv-qa-grid { grid-template-columns: 1fr; }
       .kv-admin-main { padding: 16px 14px 40px; }
       .kv-admin-title { font-size: 1.25rem; }
-      .kv-reader-top, .kv-reader-tools { padding-right: 14px; padding-left: 14px; }
-      .kv-reader-top { min-height: 66px; gap: 8px; }
-      .kv-reader-heading { gap: 9px; }
-      .kv-reader-title { max-width: 36vw; font-size: 0.84rem; }
-      .kv-reader-subtitle { font-size: 0.6875rem; }
-      .kv-reader-chapter-link { min-height: 36px; padding: 6px 9px; }
-      .kv-reader-chapter-link .kv-reader-link-label { display: none; }
-      .kv-reader-tools { gap: 7px; }
-      .kv-reader-tool-label { width: 100%; margin: 0 0 2px; }
-      .kv-reader-tools .kv-select { min-width: 0; max-width: 31%; flex: 1; }
-      .kv-reader-canvas { padding: 12px 0 36px; }
-      .kv-reader-page-controls { padding: 0 12px; }
-      .kv-reader-end-nav { border-radius: 0; border-right: 0; border-left: 0; padding: 14px; }
     }
     @media (max-width: 420px) {
       .kv-container { padding-right: 14px; padding-left: 14px; }
@@ -1313,12 +1074,6 @@
       .kv-hero { padding: 20px; }
       .kv-hero .kv-cover-wrap { max-width: 180px !important; }
       .kv-admin-grid { grid-template-columns: minmax(0, 1fr); }
-      .kv-reader-back { width: 36px; height: 36px; flex-basis: 36px; }
-      .kv-reader-title { max-width: 32vw; font-size: 0.78rem; }
-      .kv-reader-eyebrow { font-size: 0.55rem; }
-      .kv-reader-chapter-nav { gap: 5px; }
-      .kv-reader-chapter-link { padding: 6px 8px; font-size: 0.7rem; }
-      .kv-reader-tools .kv-btn, .kv-reader-tools .kv-select { font-size: 0.6875rem; }
     }
 
     /* Keep the refreshed visual system after legacy theme rules. */
@@ -1359,12 +1114,12 @@
       background: color-mix(in srgb, var(--kv-accent) 8%, var(--kv-surface));
       border-color: color-mix(in srgb, var(--kv-accent) 22%, var(--kv-border));
     }
-    .kv-btn-primary, .kv-reader-chapter-link.next {
+    .kv-btn-primary {
       color: #FFFFFF;
       background: var(--kv-accent);
       box-shadow: 0 7px 18px -12px var(--kv-accent);
     }
-    .kv-btn-primary:hover, .kv-reader-chapter-link.next:hover {
+    .kv-btn-primary:hover {
       background: var(--kv-accent-hover);
       box-shadow: 0 10px 24px -14px var(--kv-accent);
       filter: none;
@@ -1428,10 +1183,6 @@
       border-color: color-mix(in srgb, var(--kv-accent) 36%, var(--kv-border));
       box-shadow: 0 14px 28px -24px color-mix(in srgb, var(--kv-accent) 40%, transparent);
     }
-    .kv-reader-app { --kv-reader-bg: #171923; }
-    .kv-reader-app[data-theme="light"] { --kv-reader-bg: #F4F5F9; }
-    .kv-reader-app[data-theme="sepia"] { --kv-reader-bg: #F2EBDD; }
-    .kv-reader-end-nav { border-radius: 15px; }
     @media (max-width: 680px) {
       .kv-container { padding-right: 18px; padding-left: 18px; }
       .kv-hero { padding: 25px; margin-top: 22px; border-radius: 20px; }
@@ -2002,90 +1753,61 @@
         html:not(.dark) body.kv-detail-route .kv-detail-chapter-tools { width: 100%; justify-content: space-between; }
         html:not(.dark) body.kv-detail-route .kv-detail-search-wrap { flex: 1; width: auto; }
       }
-    body.kv-reader-route .kv-reader-site-header {
-      position: static;
-      background: var(--kv-bg);
-      border-bottom: 1px solid var(--kv-border);
-      box-shadow: none;
-      backdrop-filter: none;
-      z-index: auto;
-    }
-    body.kv-reader-route .kv-reader-toolbar {
-      position: static;
-      height: 54px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 0 14px;
-      background: var(--kv-surface);
-      border-bottom: 1px solid var(--kv-border);
-    }
-      html:not(.dark) body.kv-reader-route { background:#f8fafc; color:#0f172a; --kv-bg:#f8fafc; --kv-surface:#ffffff; --kv-surface-2:#f1f5f9; --kv-border:#e2e8f0; --kv-text:#0f172a; --kv-text-muted:#64748b; --kv-accent:#6366f1; --kv-success:#10b981; }
-
-html:not(.dark) body.kv-reader-route .kv-reader-shell { min-height:100vh; background:#f8fafc; color:#0f172a; font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
-html:not(.dark) body.kv-reader-route .kv-reader-top-left { display:flex; align-items:center; gap:10px; min-width:0; }
-html:not(.dark) body.kv-reader-route .kv-reader-back { display:flex; align-items:center; gap:8px; color:#475569; text-decoration:none; min-width:0; }
-html:not(.dark) body.kv-reader-route .kv-reader-back:hover { color:#0f172a; }
-html:not(.dark) body.kv-reader-route .kv-reader-back-text { max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.8rem; }
-html:not(.dark) body.kv-reader-route .kv-reader-chapter-picker { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-html:not(.dark) body.kv-reader-route .kv-reader-nav-btn { width:30px; height:30px; border-radius:6px; display:grid; place-items:center; color:#475569; text-decoration:none; border:1px solid #e2e8f0; background:#ffffff; font-size:1rem; }
-html:not(.dark) body.kv-reader-route .kv-reader-nav-btn:hover { color:#0f172a; background:#f1f5f9; border-color:#6366f1; }
-html:not(.dark) body.kv-reader-route .kv-reader-nav-disabled { opacity:.35; pointer-events:none; }
-html:not(.dark) body.kv-reader-route .kv-reader-current { display:flex; align-items:center; gap:8px; background:#ffffff; border:1px solid #e2e8f0; padding:5px 10px; border-radius:8px; min-width:0; }
-html:not(.dark) body.kv-reader-route .kv-reader-current-num { color:#4f46e5; font-family:'JetBrains Mono',monospace; font-size:.72rem; white-space:nowrap; }
-html:not(.dark) body.kv-reader-route .kv-reader-current-title { color:#475569; font-size:.74rem; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:none; }
-      @media (min-width:1100px) { .kv-reader-current-title { display:inline; } }
-html:not(.dark) body.kv-reader-route .kv-reader-top-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
-html:not(.dark) body.kv-reader-route .kv-reader-pill, .kv-reader-icon-btn, .kv-reader-select { background:#ffffff; color:#475569; border:1px solid #e2e8f0; border-radius:8px; font-size:.72rem; padding:7px 10px; cursor:pointer; height:32px; }
-html:not(.dark) body.kv-reader-route .kv-reader-pill { display:inline-flex; align-items:center; gap:6px; }
-html:not(.dark) body.kv-reader-route .kv-reader-pill:hover, .kv-reader-icon-btn:hover, .kv-reader-select:hover { background:#f1f5f9; color:#0f172a; }
-html:not(.dark) body.kv-reader-route .kv-reader-icon-btn { min-width:32px; display:grid; place-items:center; }
-      html:not(.dark) body.kv-reader-route .kv-reader-progress { position:sticky; top:0; height:3px; width:0%; background:linear-gradient(90deg,#6366f1,#8b5cf6); z-index:49; transition:width .12s linear; }
-html:not(.dark) body.kv-reader-route .kv-reader-main { padding-top:0; display:flex; flex-direction:column; align-items:center; width:100%; }
-html:not(.dark) body.kv-reader-route .kv-reader-strip { width:100%; margin:0 auto; background:#f8fafc; }
-html:not(.dark) body.kv-reader-route .kv-reader-page { position:relative; width:100%; margin:0; background:#f8fafc; }
-html:not(.dark) body.kv-reader-route .kv-reader-page img { display:block; width:100%; height:auto; user-select:none; pointer-events:none; }
-html:not(.dark) body.kv-reader-route .kv-reader-page-badge { position:absolute; bottom:10px; right:12px; background:rgba(255,255,255,.85); backdrop-filter:blur(6px); padding:3px 8px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:.62rem; color:#4f46e5; border:1px solid rgba(15,23,42,.08); }
-html:not(.dark) body.kv-reader-route .kv-reader-placeholder { min-height:320px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; color:#64748b; padding:24px; border-top:1px solid #e2e8f0; }
-html:not(.dark) body.kv-reader-route .kv-reader-page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:#4f46e5; }
-html:not(.dark) body.kv-reader-route .kv-reader-placeholder-title { font-size:1rem; color:#0f172a; font-weight:600; }
-html:not(.dark) body.kv-reader-route .kv-reader-placeholder-id { font-family:'JetBrains Mono',monospace; font-size:.68rem; }
-html:not(.dark) body.kv-reader-route .kv-reader-page-controls { display:flex; align-items:center; justify-content:center; gap:12px; padding:22px; }
-html:not(.dark) body.kv-reader-route .kv-reader-page-count { color:#475569; font-family:'JetBrains Mono',monospace; font-size:.8rem; }
-html:not(.dark) body.kv-reader-route .kv-reader-empty { text-align:center; padding:48px; color:#64748b; }
-
-html:not(.dark) body.kv-reader-route .kv-reader-statusbar { width:100%; max-width:1000px; display:flex; align-items:center; justify-content:center; gap:12px; padding:14px 16px; color:#64748b; font-family:'JetBrains Mono',monospace; font-size:.68rem; border-top:1px solid #e2e8f0; }
-html:not(.dark) body.kv-reader-route .kv-reader-status-dot { width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; }
-html:not(.dark) body.kv-reader-route .kv-reader-endhub { width:100%; background:#ffffff; border-top:1px solid #e2e8f0; padding:46px 16px; }
-html:not(.dark) body.kv-reader-route .kv-reader-endhub-inner { max-width:900px; margin:0 auto; display:flex; flex-direction:column; gap:18px; }
-html:not(.dark) body.kv-reader-route .kv-reader-complete { position:relative; overflow:hidden; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:18px; padding:24px; }
-html:not(.dark) body.kv-reader-route .kv-reader-complete-badge { display:inline-flex; align-items:center; gap:8px; padding:4px 12px; border-radius:999px; background:#ecfdf5; color:#047857; font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:10px; }
-html:not(.dark) body.kv-reader-route .kv-reader-complete h2 { font-size:1.35rem; font-weight:700; color:#0f172a; margin:0 0 8px; letter-spacing:-0.01em; }
-html:not(.dark) body.kv-reader-route .kv-reader-complete p { color:#64748b; font-size:.85rem; margin:0 0 14px; }
-html:not(.dark) body.kv-reader-route .kv-reader-complete-actions { display:flex; gap:10px; flex-wrap:wrap; }
-html:not(.dark) body.kv-reader-route .kv-reader-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px; font-size:.8rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; }
-html:not(.dark) body.kv-reader-route .kv-reader-btn-primary { background:#6366f1; color:#ffffff; }
-html:not(.dark) body.kv-reader-route .kv-reader-btn-primary:hover { background:#4f46e5; }
-html:not(.dark) body.kv-reader-route .kv-reader-btn-ghost { background:#ffffff; color:#0f172a; border:1px solid #e2e8f0; }
-html:not(.dark) body.kv-reader-route .kv-reader-btn-ghost:hover { background:#e2e8f0; border-color:#6366f1; }
-html:not(.dark) body.kv-reader-route .kv-reader-reactions-label { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:#64748b; text-transform:uppercase; letter-spacing:.08em; margin:0 0 8px; }
-html:not(.dark) body.kv-reader-route .kv-reader-reaction-grid { display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:10px; }
-html:not(.dark) body.kv-reader-route .kv-reader-reaction { display:flex; flex-direction:column; align-items:center; gap:2px; padding:12px 8px; background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; cursor:pointer; color:#475569; transition: transform .15s ease, border-color .15s ease, background .15s ease; }
-html:not(.dark) body.kv-reader-route .kv-reader-reaction:hover, .kv-reader-reaction.active { background:#f1f5f9; border-color:#6366f1; transform:translateY(-2px); }
-html:not(.dark) body.kv-reader-route .kv-reader-reaction-emoji { font-size:1.4rem; }
-html:not(.dark) body.kv-reader-route .kv-reader-reaction-count { font-size:.75rem; font-weight:700; color:#0f172a; }
-html:not(.dark) body.kv-reader-route .kv-reader-reaction-text { font-size:.62rem; color:#64748b; }
-html:not(.dark) body.kv-reader-route .kv-reader-stepper { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-html:not(.dark) body.kv-reader-route .kv-reader-step { display:flex; align-items:center; gap:12px; padding:14px; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; text-decoration:none; color:#475569; transition: border-color .15s ease, background .15s ease; }
-html:not(.dark) body.kv-reader-route .kv-reader-step:not(.kv-reader-step-disabled):hover { background:#f1f5f9; border-color:#6366f1; }
-html:not(.dark) body.kv-reader-route .kv-reader-step-next { justify-content:flex-end; text-align:right; }
-html:not(.dark) body.kv-reader-route .kv-reader-step-disabled { opacity:.45; }
-html:not(.dark) body.kv-reader-route .kv-reader-step-label { display:block; font-family:'JetBrains Mono',monospace; font-size:.6rem; color:#64748b; text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
-html:not(.dark) body.kv-reader-route .kv-reader-step-title { display:block; font-size:.82rem; font-weight:600; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-html:not(.dark) body.kv-reader-route .kv-reader-step-icon { font-size:1.3rem; color:#4f46e5; flex-shrink:0; }
-      @media (max-width: 760px) {
-html:not(.dark) body.kv-reader-route .kv-reader-back-text, .kv-reader-current-title { display:none !important; }
-html:not(.dark) body.kv-reader-route .kv-reader-top-right { display:none; }
-html:not(.dark) body.kv-reader-route .kv-reader-reaction-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
-html:not(.dark) body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; }
+      body.kv-reader-route { background: var(--kv-bg); color: var(--kv-text); font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif; }
+      html:not(.dark) body.kv-reader-route { --kv-bg:#f4f4f7; --kv-surface:#ffffff; --kv-surface-2:#f0f0f4; --kv-border:#dedee5; --kv-text:#17171d; --kv-text-muted:#686875; --kv-accent:#6366f1; --kv-accent-hover:#4f46e5; --kv-reader-bg:#e6e6eb; background:var(--kv-bg); }
+      html.dark body.kv-reader-route { --kv-bg:#101014; --kv-surface:#19191f; --kv-surface-2:#22222a; --kv-border:#30303a; --kv-text:#f4f4f6; --kv-text-muted:#a3a3ad; --kv-accent:#8b5cf6; --kv-accent-hover:#7c3aed; --kv-reader-bg:#08080a; background:var(--kv-bg); }
+      body.kv-reader-route .kv-reader-shell { min-height:100vh; background:var(--kv-bg); }
+      body.kv-reader-route .kv-reader-page { max-width:1180px; margin:0 auto; padding:25px 18px 60px; }
+      body.kv-reader-route .kv-reader-crumbs { display:flex; align-items:center; gap:7px; flex-wrap:wrap; color:var(--kv-text-muted); font-size:13px; margin-bottom:18px; }
+      body.kv-reader-route .kv-reader-crumbs a { color:inherit; text-decoration:none; }
+      body.kv-reader-route .kv-reader-crumbs a:hover { color:var(--kv-accent); }
+      body.kv-reader-route .kv-reader-crumbs-sep { color:#666671; }
+      body.kv-reader-route .kv-reader-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+      body.kv-reader-route .kv-reader-title { margin:0; font-size:clamp(22px,4vw,30px); letter-spacing:-.02em; font-weight:800; }
+      body.kv-reader-route .kv-reader-subtitle { color:var(--kv-text-muted); margin:8px 0 0; font-size:14px; }
+      body.kv-reader-route .kv-reader-actions { display:flex; gap:8px; flex-wrap:wrap; }
+      body.kv-reader-route .kv-reader-ctl { border:1px solid var(--kv-border); color:var(--kv-text); background:var(--kv-surface); border-radius:10px; min-height:38px; padding:0 12px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; transition:border-color .15s ease; }
+      body.kv-reader-route .kv-reader-ctl:hover { border-color:var(--kv-accent); }
+      body.kv-reader-route .kv-reader-ctl[aria-pressed="true"] { border-color:var(--kv-accent); color:var(--kv-accent); }
+      body.kv-reader-route .kv-reader-ctl-primary { background:var(--kv-accent); border-color:var(--kv-accent); color:#ffffff; }
+      body.kv-reader-route .kv-reader-ctl-primary:hover { filter:brightness(1.08); }
+      body.kv-reader-route .kv-reader-ctl:disabled, body.kv-reader-route .kv-reader-ctl.is-disabled { opacity:.4; cursor:not-allowed; pointer-events:none; }
+      body.kv-reader-route .kv-reader-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:var(--kv-surface); border:1px solid var(--kv-border); border-radius:14px; padding:12px; margin:22px 0 16px; }
+      body.kv-reader-route .kv-reader-toolbar-group { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+      body.kv-reader-route .kv-reader-select { color:var(--kv-text); background:var(--kv-surface-2); border:1px solid var(--kv-border); border-radius:9px; padding:9px 28px 9px 10px; max-width:170px; }
+      body.kv-reader-route .kv-reader-modes { display:inline-flex; border:1px solid var(--kv-border); border-radius:10px; overflow:hidden; }
+      body.kv-reader-route .kv-reader-mode { border:0; background:var(--kv-surface-2); color:var(--kv-text-muted); min-height:34px; padding:0 12px; font-size:13px; cursor:pointer; }
+      body.kv-reader-route .kv-reader-mode.is-active { background:var(--kv-accent); color:#ffffff; }
+      body.kv-reader-route .kv-reader-frame { background:var(--kv-reader-bg); border:1px solid var(--kv-border); border-radius:14px; overflow:hidden; min-height:360px; text-align:center; }
+      body.kv-reader-route .kv-reader-frame.vertical .manga-page { display:block; }
+      body.kv-reader-route .kv-reader-frame.horizontal { display:flex; align-items:flex-start; justify-content:center; }
+      body.kv-reader-route .kv-reader-frame.horizontal .manga-page { display:none; }
+      body.kv-reader-route .kv-reader-frame.horizontal .manga-page.is-active { display:block; }
+      body.kv-reader-route .manga-page { position:relative; display:block; width:100%; max-width:850px; height:auto; margin:0 auto; background:var(--kv-surface-2); }
+      body.kv-reader-route .manga-page img { display:block; width:100%; height:auto; user-select:none; pointer-events:none; }
+      body.kv-reader-route .kv-reader-page-badge { position:absolute; bottom:10px; right:12px; background:rgba(20,20,26,.7); backdrop-filter:blur(6px); padding:3px 8px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:.62rem; color:#f4f4f6; border:1px solid rgba(255,255,255,.12); }
+      body.kv-reader-route .kv-reader-placeholder { min-height:560px; display:grid; place-items:center; padding:30px; color:var(--kv-text-muted); }
+      body.kv-reader-route .kv-reader-placeholder-inner { text-align:center; }
+      body.kv-reader-route .kv-reader-placeholder-inner strong { display:block; color:var(--kv-text); margin-bottom:8px; }
+      body.kv-reader-route .kv-reader-placeholder-inner small { line-height:1.6; }
+      body.kv-reader-route .kv-reader-page-footer { display:flex; justify-content:center; align-items:center; gap:12px; padding:14px; background:var(--kv-surface); border:1px solid var(--kv-border); border-radius:0 0 14px 14px; border-top:0; }
+      body.kv-reader-route .kv-reader-page-count { color:var(--kv-text-muted); font-size:13px; min-width:110px; text-align:center; font-variant-numeric:tabular-nums; }
+      body.kv-reader-route .kv-reader-bottom-nav { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px; }
+      body.kv-reader-route .kv-reader-nav-card { border:1px solid var(--kv-border); background:var(--kv-surface); border-radius:12px; padding:14px 16px; min-width:0; text-decoration:none; color:var(--kv-text); text-align:left; }
+      body.kv-reader-route .kv-reader-nav-card small { color:var(--kv-text-muted); display:block; margin-bottom:5px; }
+      body.kv-reader-route .kv-reader-nav-card strong { font-size:14px; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      body.kv-reader-route .kv-reader-nav-card.is-next { text-align:right; }
+      body.kv-reader-route .kv-reader-nav-card.is-disabled { opacity:.4; pointer-events:none; }
+      body.kv-reader-route .kv-reader-notice { color:var(--kv-text-muted); text-align:center; font-size:12px; margin-top:20px; }
+      @media (max-width:640px) {
+        body.kv-reader-route .kv-reader-page { padding:18px 10px 40px; }
+        body.kv-reader-route .kv-reader-heading { display:block; }
+        body.kv-reader-route .kv-reader-actions { margin-top:14px; }
+        body.kv-reader-route .kv-reader-toolbar { margin-top:16px; }
+        body.kv-reader-route .kv-reader-mode { display:none; }
+        body.kv-reader-route .kv-reader-placeholder { min-height:420px; }
+        body.kv-reader-route .kv-reader-frame { border-radius:9px; }
+        body.kv-reader-route .kv-reader-bottom-nav { grid-template-columns:1fr; }
       }
       html:not(.dark) body.kv-home-route .kv-catalog-page { padding-top: 10px; padding-bottom: 48px; }
       html:not(.dark) body.kv-home-route .kv-catalog-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 0 6px; }
@@ -2461,75 +2183,6 @@ html:not(.dark) body.kv-reader-route .kv-reader-stepper { grid-template-columns:
         html.dark body.kv-detail-route .kv-detail-metrics { grid-template-columns: 1fr 1fr; gap: 8px; }
         html.dark body.kv-detail-route .kv-detail-chapter-tools { width: 100%; justify-content: space-between; }
         html.dark body.kv-detail-route .kv-detail-search-wrap { flex: 1; width: auto; }
-      }
-      html.dark body.kv-reader-route { background:#0f111a; color:#dee1fe; --kv-bg:#0f111a; --kv-surface:#171a27; --kv-surface-2:#20243a; --kv-border:#2b304c; --kv-text:#dee1fe; --kv-text-muted:#a0a7b8; --kv-accent:#6558d9; --kv-success:#22c55e; }
-
-html.dark body.kv-reader-route .kv-reader-shell { min-height:100vh; background:#0f111a; color:#dee1fe; font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
-html.dark body.kv-reader-route .kv-reader-top-left { display:flex; align-items:center; gap:10px; min-width:0; }
-html.dark body.kv-reader-route .kv-reader-back { display:flex; align-items:center; gap:8px; color:#a0a7b8; text-decoration:none; min-width:0; }
-html.dark body.kv-reader-route .kv-reader-back:hover { color:#dee1fe; }
-html.dark body.kv-reader-route .kv-reader-back-text { max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.8rem; }
-html.dark body.kv-reader-route .kv-reader-chapter-picker { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-html.dark body.kv-reader-route .kv-reader-nav-btn { width:30px; height:30px; border-radius:6px; display:grid; place-items:center; color:#a0a7b8; text-decoration:none; border:1px solid #2b304c; background:#171a27; font-size:1rem; }
-html.dark body.kv-reader-route .kv-reader-nav-btn:hover { color:#dee1fe; background:#20243a; border-color:#6558d9; }
-html.dark body.kv-reader-route .kv-reader-nav-disabled { opacity:.35; pointer-events:none; }
-html.dark body.kv-reader-route .kv-reader-current { display:flex; align-items:center; gap:8px; background:#171a27; border:1px solid #2b304c; padding:5px 10px; border-radius:8px; min-width:0; }
-html.dark body.kv-reader-route .kv-reader-current-num { color:#6558d9; font-family:'JetBrains Mono',monospace; font-size:.72rem; white-space:nowrap; }
-html.dark body.kv-reader-route .kv-reader-current-title { color:#a0a7b8; font-size:.74rem; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:none; }
-      @media (min-width:1100px) { .kv-reader-current-title { display:inline; } }
-html.dark body.kv-reader-route .kv-reader-top-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
-html.dark body.kv-reader-route .kv-reader-pill, .kv-reader-icon-btn, .kv-reader-select { background:#171a27; color:#a0a7b8; border:1px solid #2b304c; border-radius:8px; font-size:.72rem; padding:7px 10px; cursor:pointer; height:32px; }
-html.dark body.kv-reader-route .kv-reader-pill { display:inline-flex; align-items:center; gap:6px; }
-html.dark body.kv-reader-route .kv-reader-pill:hover, .kv-reader-icon-btn:hover, .kv-reader-select:hover { background:#20243a; color:#dee1fe; }
-html.dark body.kv-reader-route .kv-reader-icon-btn { min-width:32px; display:grid; place-items:center; }
-      html.dark body.kv-reader-route .kv-reader-progress { position:sticky; top:0; height:3px; width:0%; background:linear-gradient(90deg,#6558d9,#7a6fe0); z-index:49; transition:width .12s linear; }
-html.dark body.kv-reader-route .kv-reader-main { padding-top:0; display:flex; flex-direction:column; align-items:center; width:100%; }
-html.dark body.kv-reader-route .kv-reader-strip { width:100%; margin:0 auto; background:#0f111a; }
-html.dark body.kv-reader-route .kv-reader-page { position:relative; width:100%; margin:0; background:#0f111a; }
-html.dark body.kv-reader-route .kv-reader-page img { display:block; width:100%; height:auto; user-select:none; pointer-events:none; }
-html.dark body.kv-reader-route .kv-reader-page-badge { position:absolute; bottom:10px; right:12px; background:rgba(34,38,52,.85); backdrop-filter:blur(6px); padding:3px 8px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:.62rem; color:#6558d9; border:1px solid rgba(255,255,255,.08); }
-html.dark body.kv-reader-route .kv-reader-placeholder { min-height:320px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; color:#a0a7b8; padding:24px; border-top:1px solid #2b304c; }
-html.dark body.kv-reader-route .kv-reader-page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:#6558d9; }
-html.dark body.kv-reader-route .kv-reader-placeholder-title { font-size:1rem; color:#dee1fe; font-weight:600; }
-html.dark body.kv-reader-route .kv-reader-placeholder-id { font-family:'JetBrains Mono',monospace; font-size:.68rem; }
-html.dark body.kv-reader-route .kv-reader-page-controls { display:flex; align-items:center; justify-content:center; gap:12px; padding:22px; }
-html.dark body.kv-reader-route .kv-reader-page-count { color:#a0a7b8; font-family:'JetBrains Mono',monospace; font-size:.8rem; }
-html.dark body.kv-reader-route .kv-reader-empty { text-align:center; padding:48px; color:#a0a7b8; }
-
-html.dark body.kv-reader-route .kv-reader-statusbar { width:100%; max-width:1000px; display:flex; align-items:center; justify-content:center; gap:12px; padding:14px 16px; color:#a0a7b8; font-family:'JetBrains Mono',monospace; font-size:.68rem; border-top:1px solid #2b304c; }
-html.dark body.kv-reader-route .kv-reader-status-dot { width:8px; height:8px; border-radius:50%; background:#22c55e; display:inline-block; }
-html.dark body.kv-reader-route .kv-reader-endhub { width:100%; background:#171a27; border-top:1px solid #2b304c; padding:46px 16px; }
-html.dark body.kv-reader-route .kv-reader-endhub-inner { max-width:900px; margin:0 auto; display:flex; flex-direction:column; gap:18px; }
-html.dark body.kv-reader-route .kv-reader-complete { position:relative; overflow:hidden; background:#20243a; border:1px solid #2b304c; border-radius:18px; padding:24px; }
-html.dark body.kv-reader-route .kv-reader-complete-badge { display:inline-flex; align-items:center; gap:8px; padding:4px 12px; border-radius:999px; background:#064e3b; color:#34d399; font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:10px; }
-html.dark body.kv-reader-route .kv-reader-complete h2 { font-size:1.35rem; font-weight:700; color:#dee1fe; margin:0 0 8px; letter-spacing:-0.01em; }
-html.dark body.kv-reader-route .kv-reader-complete p { color:#a0a7b8; font-size:.85rem; margin:0 0 14px; }
-html.dark body.kv-reader-route .kv-reader-complete-actions { display:flex; gap:10px; flex-wrap:wrap; }
-html.dark body.kv-reader-route .kv-reader-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px; font-size:.8rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; }
-html.dark body.kv-reader-route .kv-reader-btn-primary { background:#6558d9; color:#efebff; }
-html.dark body.kv-reader-route .kv-reader-btn-primary:hover { background:#6558d9; }
-html.dark body.kv-reader-route .kv-reader-btn-ghost { background:#171a27; color:#dee1fe; border:1px solid #2b304c; }
-html.dark body.kv-reader-route .kv-reader-btn-ghost:hover { background:#2b304c; border-color:#6558d9; }
-html.dark body.kv-reader-route .kv-reader-reactions-label { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:#a0a7b8; text-transform:uppercase; letter-spacing:.08em; margin:0 0 8px; }
-html.dark body.kv-reader-route .kv-reader-reaction-grid { display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:10px; }
-html.dark body.kv-reader-route .kv-reader-reaction { display:flex; flex-direction:column; align-items:center; gap:2px; padding:12px 8px; background:#171a27; border:1px solid #2b304c; border-radius:14px; cursor:pointer; color:#a0a7b8; transition: transform .15s ease, border-color .15s ease, background .15s ease; }
-html.dark body.kv-reader-route .kv-reader-reaction:hover, .kv-reader-reaction.active { background:#20243a; border-color:#6558d9; transform:translateY(-2px); }
-html.dark body.kv-reader-route .kv-reader-reaction-emoji { font-size:1.4rem; }
-html.dark body.kv-reader-route .kv-reader-reaction-count { font-size:.75rem; font-weight:700; color:#dee1fe; }
-html.dark body.kv-reader-route .kv-reader-reaction-text { font-size:.62rem; color:#a0a7b8; }
-html.dark body.kv-reader-route .kv-reader-stepper { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-html.dark body.kv-reader-route .kv-reader-step { display:flex; align-items:center; gap:12px; padding:14px; background:#171a27; border:1px solid #2b304c; border-radius:12px; text-decoration:none; color:#a0a7b8; transition: border-color .15s ease, background .15s ease; }
-html.dark body.kv-reader-route .kv-reader-step:not(.kv-reader-step-disabled):hover { background:#20243a; border-color:#6558d9; }
-html.dark body.kv-reader-route .kv-reader-step-next { justify-content:flex-end; text-align:right; }
-html.dark body.kv-reader-route .kv-reader-step-disabled { opacity:.45; }
-html.dark body.kv-reader-route .kv-reader-step-label { display:block; font-family:'JetBrains Mono',monospace; font-size:.6rem; color:#a0a7b8; text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
-html.dark body.kv-reader-route .kv-reader-step-title { display:block; font-size:.82rem; font-weight:600; color:#dee1fe; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-html.dark body.kv-reader-route .kv-reader-step-icon { font-size:1.3rem; color:#6558d9; flex-shrink:0; }
-      @media (max-width: 760px) {
-html.dark body.kv-reader-route .kv-reader-back-text, .kv-reader-current-title { display:none !important; }
-html.dark body.kv-reader-route .kv-reader-top-right { display:none; }
-html.dark body.kv-reader-route .kv-reader-reaction-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
-html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; }
       }
       html.dark body.kv-home-route .kv-catalog-page { padding-top: 10px; padding-bottom: 48px; }
       html.dark body.kv-home-route .kv-catalog-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 0 6px; }
@@ -3253,7 +2906,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
        RENDER HEADER & FOOTER
        ========================================================================= */
     function renderHeader() {
-      if (state.route === 'admin') return '';
+      if (state.route === 'admin' || state.route === 'reader') return '';
        var navItems = [
          { path: '/', label: 'Beranda', key: 'home' },
          { path: '/archive', label: 'Archive', key: 'catalog' },
@@ -3270,8 +2923,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>'
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>';
 
-      var headerClass = state.route === 'reader' ? 'kv-header kv-reader-site-header' : 'kv-header';
-      return '<header class="' + headerClass + '">' +
+      return '<header class="kv-header">' +
         '<div class="kv-container kv-header-inner">' +
           '<a class="kv-brand" href="#/" aria-label="' + escapeHtml(siteName()) + ' - beranda">' +
             renderBrandInner() +
@@ -3790,64 +3442,72 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           return renderReaderPage(p, manga.title, chapter.number, index + 1, pageTotal);
         }).join('');
       } else {
+        if (state.currentPageIdx >= pageTotal) state.currentPageIdx = 0;
         var page = chapter.pages[state.currentPageIdx] || chapter.pages[0];
-        pagesHtml = page ? renderReaderPage(page, manga.title, chapter.number, state.currentPageIdx + 1, pageTotal) : '<p class="kv-reader-empty">Belum ada halaman.</p>';
-        pagesHtml += '<div class="kv-reader-page-controls">' +
-          '<button type="button" class="kv-reader-btn kv-reader-btn-ghost" data-action="prev-page">Halaman Sebelumnya</button>' +
-          '<span class="kv-reader-page-count">' + (state.currentPageIdx + 1) + ' / ' + pageTotal + '</span>' +
-          '<button type="button" class="kv-reader-btn kv-reader-btn-ghost" data-action="next-page" data-max="' + pageTotal + '">Halaman Berikutnya</button>' +
-        '</div>';
+        pagesHtml = page ? renderReaderPage(page, manga.title, chapter.number, state.currentPageIdx + 1, pageTotal, true) : '<div class="kv-reader-placeholder"><div class="kv-reader-placeholder-inner"><strong>Belum ada halaman</strong><small>Chapter ini belum memiliki halaman.</small></div></div>';
       }
 
-      var prevButton = prevCh
-        ? '<a class="kv-reader-step kv-reader-step-prev" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '"><span class="kv-reader-step-icon">&#8592;</span><span class="kv-reader-step-body"><span class="kv-reader-step-label">Bab Sebelumnya</span><span class="kv-reader-step-title">Ch. ' + prevCh.number + (prevCh.title ? ': ' + escapeHtml(prevCh.title) : '') + '</span></span></a>'
-        : '<div class="kv-reader-step kv-reader-step-disabled"><span class="kv-reader-step-icon">&#8592;</span><span class="kv-reader-step-body"><span class="kv-reader-step-label">Bab Sebelumnya</span><span class="kv-reader-step-title">Tidak ada</span></span></div>';
-      var nextButton = nextCh
-        ? '<a class="kv-reader-step kv-reader-step-next" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '"><span class="kv-reader-step-body"><span class="kv-reader-step-label">Bab Selanjutnya</span><span class="kv-reader-step-title">Ch. ' + nextCh.number + (nextCh.title ? ': ' + escapeHtml(nextCh.title) : '') + '</span></span><span class="kv-reader-step-icon">&#8594;</span></a>'
-        : '<div class="kv-reader-step kv-reader-step-disabled"><span class="kv-reader-step-body"><span class="kv-reader-step-label">Bab Selanjutnya</span><span class="kv-reader-step-title">Belum tersedia</span></span><span class="kv-reader-step-icon">&#8594;</span></div>';
+      var isVertical = state.readerMode === 'vertical';
+      var chapterUpdated = chapter.updatedAt || chapter.publishedAt || '';
+      var crumbs = '<nav class="kv-reader-crumbs" aria-label="Jejak navigasi">' +
+        '<a href="#/">Beranda</a><span class="kv-reader-crumbs-sep">/</span>' +
+        '<a href="#/manga/' + escapeHtml(manga.slug) + '">' + escapeHtml(manga.title) + '</a><span class="kv-reader-crumbs-sep">/</span>' +
+        '<span>Chapter ' + escapeHtml(chapter.number) + '</span>' +
+      '</nav>';
+      var heading = '<section class="kv-reader-heading">' +
+        '<div><h1 class="kv-reader-title">' + escapeHtml(manga.title) + ' — Chapter ' + escapeHtml(chapter.number) + '</h1>' +
+        '<p class="kv-reader-subtitle">' + (chapter.title ? escapeHtml(chapter.title) + ' &middot; ' : '') + (chapterUpdated ? 'Diperbarui ' + escapeHtml(chapterUpdated) + ' &middot; ' : '') + (pageTotal || 0) + ' halaman</p></div>' +
+        '<div class="kv-reader-actions">' +
+          '<button type="button" class="kv-reader-ctl" data-action="toggle-bookmark" data-id="' + escapeHtml(manga.id) + '" aria-pressed="' + (isBookmarked ? 'true' : 'false') + '">' + (isBookmarked ? '&#9829; Tersimpan' : '&#9825; Simpan') + '</button>' +
+          '<button type="button" class="kv-reader-ctl" data-action="share-manga">&#8599; Bagikan</button>' +
+        '</div>' +
+      '</section>';
+      var toolbar = '<section class="kv-reader-toolbar" aria-label="Navigasi halaman">' +
+        '<div class="kv-reader-toolbar-group">' +
+          '<button type="button" class="kv-reader-ctl" data-action="prev-page"' + (isVertical ? ' disabled' : '') + '>&#8592; Sebelumnya</button>' +
+          '<button type="button" class="kv-reader-ctl kv-reader-ctl-primary" data-action="next-page" data-max="' + pageTotal + '"' + (isVertical ? ' disabled' : '') + '>Selanjutnya &#8594;</button>' +
+        '</div>' +
+        '<div class="kv-reader-toolbar-group">' +
+          '<div class="kv-reader-modes" role="group" aria-label="Mode baca">' +
+            '<button type="button" class="kv-reader-mode' + (isVertical ? ' is-active' : '') + '" data-action="toggle-reader-mode" data-mode="vertical" aria-pressed="' + (isVertical ? 'true' : 'false') + '">Webtoon</button>' +
+            '<button type="button" class="kv-reader-mode' + (!isVertical ? ' is-active' : '') + '" data-action="toggle-reader-mode" data-mode="paged" aria-pressed="' + (!isVertical ? 'true' : 'false') + '">Tunggal</button>' +
+          '</div>' +
+          '<select id="kv-reader-width" class="kv-reader-select" aria-label="Lebar panel"><option value="800"' + (state.readerWidth === 800 ? ' selected' : '') + '>800px</option><option value="1000"' + (state.readerWidth === 1000 ? ' selected' : '') + '>1000px</option><option value="1200"' + (state.readerWidth === 1200 ? ' selected' : '') + '>Fit</option></select>' +
+          '<button type="button" class="kv-reader-ctl" data-action="toggle-fullscreen" title="Layar penuh">&#9974; Layar Penuh</button>' +
+        '</div>' +
+      '</section>';
+      var frame = '<section class="kv-reader-frame ' + (isVertical ? 'vertical' : 'horizontal') + '" aria-label="Halaman manga">' +
+        pagesHtml +
+      '</section>';
+      var frameFooter = '<div class="kv-reader-page-footer">' +
+        '<button type="button" class="kv-reader-ctl" data-action="prev-page" aria-label="Halaman sebelumnya"' + (isVertical ? ' disabled' : '') + '>&#8592;</button>' +
+        '<span class="kv-reader-page-count">Halaman ' + (state.currentPageIdx + 1) + ' / ' + pageTotal + '</span>' +
+        '<button type="button" class="kv-reader-ctl" data-action="next-page" data-max="' + pageTotal + '" aria-label="Halaman selanjutnya"' + (isVertical ? ' disabled' : '') + '>&#8594;</button>' +
+      '</div>';
+      var bottomNav = '<nav class="kv-reader-bottom-nav" aria-label="Navigasi chapter">' +
+        (prevCh
+          ? '<a class="kv-reader-nav-card" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '"><small>&#8592; Chapter sebelumnya</small><strong>Chapter ' + escapeHtml(prevCh.number) + (prevCh.title ? ' &middot; ' + escapeHtml(prevCh.title) : '') + '</strong></a>'
+          : '<div class="kv-reader-nav-card is-disabled"><small>&#8592; Chapter sebelumnya</small><strong>Tidak ada</strong></div>') +
+        (nextCh
+          ? '<a class="kv-reader-nav-card is-next" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '"><small>Chapter selanjutnya &#8594;</small><strong>Chapter ' + escapeHtml(nextCh.number) + (nextCh.title ? ' &middot; ' + escapeHtml(nextCh.title) : '') + '</strong></a>'
+          : '<div class="kv-reader-nav-card is-next is-disabled"><small>Chapter selanjutnya &#8594;</small><strong>Belum tersedia</strong></div>') +
+      '</nav>';
+      var notice = '<p class="kv-reader-notice">Jika gambar tidak muncul, muat ulang halaman atau coba beberapa saat lagi.</p>';
 
       return '<div class="kv-reader-shell">' +
-        '<div class="kv-reader-progress" id="kv-progress-bar" style="width:0%" aria-hidden="true"></div>' +
-        '<div class="kv-reader-toolbar" role="toolbar" aria-label="Navigasi chapter">' +
-          '<div class="kv-reader-top-left">' +
-            '<a class="kv-reader-back" href="#/manga/' + escapeHtml(manga.slug) + '" title="Kembali ke daftar chapter">&#8592;<span class="kv-reader-back-text">' + escapeHtml(manga.title) + '</span></a>' +
-          '</div>' +
-          '<div class="kv-reader-chapter-picker">' +
-            (prevCh ? '<a class="kv-reader-nav-btn" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" title="Bab sebelumnya">&#8249;</a>' : '<span class="kv-reader-nav-btn kv-reader-nav-disabled">&#8249;</span>') +
-            '<div class="kv-reader-current"><span class="kv-reader-current-num">Ch. ' + escapeHtml(chapter.number) + '</span>' + (chapter.title ? '<span class="kv-reader-current-title">' + escapeHtml(chapter.title) + '</span>' : '') + '</div>' +
-            (nextCh ? '<a class="kv-reader-nav-btn" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" title="Bab selanjutnya">&#8250;</a>' : '<span class="kv-reader-nav-btn kv-reader-nav-disabled">&#8250;</span>') +
-          '</div>' +
-          '<div class="kv-reader-top-right">' +
-            '<button type="button" class="kv-reader-pill" data-action="toggle-reader-mode">' + (state.readerMode === 'vertical' ? 'Webtoon' : 'Tunggal') + '</button>' +
-            '<select id="kv-reader-width" class="kv-reader-select" aria-label="Lebar panel"><option value="800"' + (state.readerWidth === 800 ? ' selected' : '') + '>800px</option><option value="1000"' + (state.readerWidth === 1000 ? ' selected' : '') + '>1000px</option><option value="1200"' + (state.readerWidth === 1200 ? ' selected' : '') + '>Fit</option></select>' +
-            '<button type="button" class="kv-reader-icon-btn" data-action="toggle-fullscreen" title="Layar penuh">&#9974;</button>' +
-          '</div>' +
-        '</div>' +
-        '<main class="kv-reader-main">' +
-          '<div class="kv-reader-strip" id="readerCanvas" style="max-width:' + state.readerWidth + 'px">' +
-            pagesHtml +
-          '</div>' +
-          '<div class="kv-reader-statusbar"><span>Panel ' + pageTotal + ' dari ' + pageTotal + '</span><span class="kv-reader-status-dot"></span><span>CDN Stabil</span></div>' +
+        '<main class="kv-reader-page">' +
+          crumbs +
+          heading +
+          toolbar +
+          frame +
+          frameFooter +
+          bottomNav +
+          notice +
         '</main>' +
-        '<section class="kv-reader-endhub">' +
-          '<div class="kv-reader-endhub-inner">' +
-            '<div class="kv-reader-complete">' +
-              '<div class="kv-reader-complete-badge">Bab Selesai Dibaca</div>' +
-              '<h2>Kamu telah menyelesaikan Chapter ' + escapeHtml(chapter.number) + '!</h2>' +
-              '<p>Bagaimana menurutmu tentang chapter ini? Bagikan komentarmu di halaman detail.</p>' +
-              '<div class="kv-reader-complete-actions">' +
-                '<button type="button" class="kv-reader-btn kv-reader-btn-primary" data-action="toggle-bookmark" data-id="' + escapeHtml(manga.id) + '">' + (isBookmarked ? 'Tersimpan ✓' : 'Simpan ke Favorit') + '</button>' +
-                '<button type="button" class="kv-reader-btn kv-reader-btn-ghost" data-action="share-manga">Bagikan</button>' +
-                '<a class="kv-reader-btn kv-reader-btn-ghost" href="#/manga/' + escapeHtml(manga.slug) + '">Diskusi Chapter</a>' +
-              '</div>' +
-            '</div>' +
-            '<div class="kv-reader-stepper">' + prevButton + nextButton + '</div>' +
-          '</div>' +
-        '</section>' +
       '</div>';
     }
 
-    function renderReaderPage(p, title, chNum, pageIndex, pageTotal) {
+    function renderReaderPage(p, title, chNum, pageIndex, pageTotal, isActive) {
       var badge = '<span class="kv-reader-page-badge">' + pageIndex + ' / ' + pageTotal + '</span>';
       var mediaUrl = '';
       if (p.bloggerUrl) {
@@ -3855,15 +3515,14 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       } else if (CONFIG.API_BASE_URL && p.telegramFileId) {
         mediaUrl = CONFIG.API_BASE_URL + '/api/media/' + encodeURIComponent(p.telegramFileId);
       }
+      var figureClass = 'manga-page' + (isActive ? ' is-active' : '');
       if (!mediaUrl) {
-        return '<div class="kv-reader-page kv-reader-placeholder">' +
-          '<div class="kv-reader-page-eyebrow">Chapter ' + escapeHtml(chNum) + ' &middot; Halaman ' + escapeHtml(p.order || pageIndex) + '</div>' +
-          '<div class="kv-reader-placeholder-title">Halaman belum memiliki URL media</div>' +
-          '<div class="kv-reader-placeholder-id">Telegram file_id: ' + escapeHtml(p.telegramFileId || '-') + '</div>' +
+        return '<div class="' + figureClass + ' kv-reader-placeholder">' +
+          '<div class="kv-reader-placeholder-inner"><strong>Halaman ' + pageIndex + ' belum tersedia</strong><small>Halaman ini belum memiliki URL media di database.</small></div>' +
           badge +
         '</div>';
       }
-      return '<figure class="kv-reader-page"><img src="' + escapeHtml(mediaUrl) + '" alt="' + escapeHtml(title) + ' Chapter ' + chNum + ' Halaman ' + p.order + '" loading="lazy" referrerpolicy="no-referrer"/>' + badge + '</figure>';
+      return '<figure class="' + figureClass + '"><img src="' + escapeHtml(mediaUrl) + '" alt="' + escapeHtml(title) + ' Chapter ' + chNum + ' Halaman ' + escapeHtml(p.order || pageIndex) + '" loading="lazy" referrerpolicy="no-referrer"/>' + badge + '</figure>';
     }
 
     function saveHistory(mangaId, chapterId, chapterNumber) {
@@ -4134,7 +3793,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
             '<div class="kv-admin-side-foot">' +
               '<a class="kv-admin-quicklink" href="#/">' + kvIcon('globe') + ' Lihat Situs</a>' +
               '<a class="kv-admin-quicklink" href="#/archive">' + kvIcon('book') + ' Archive</a>' +
-              '<a class="kv-admin-quicklink" href="#/akun">' + kvIcon('users') + ' Pustaka Pembaca</a>' +
+              '<a class="kv-admin-quicklink" href="#/akun">' + kvIcon('users') + ' Pustaka</a>' +
             '</div>' +
           '</aside>' +
           '<div class="kv-admin-content">' +
@@ -5241,7 +4900,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       else if (act === 'open-reader') { navigate('#/baca/' + el.getAttribute('data-slug') + '/' + el.getAttribute('data-cid')); }
       else if (act === 'quick-genre') { state.filterGenre = el.getAttribute('data-genre'); navigate('#/archive'); }
       else if (act === 'toggle-ch-sort') { state.chapterSortAsc = !state.chapterSortAsc; render(); }
-      else if (act === 'toggle-reader-mode') { state.readerMode = state.readerMode === 'vertical' ? 'paged' : 'vertical'; render(); }
+      else if (act === 'toggle-reader-mode') { var mode = el.getAttribute('data-mode'); state.readerMode = (mode === 'vertical' || mode === 'paged') ? mode : (state.readerMode === 'vertical' ? 'paged' : 'vertical'); state.currentPageIdx = 0; render(); }
       else if (act === 'toggle-fullscreen') {
         if (document.fullscreenElement) { document.exitFullscreen().catch(function () {}); }
         else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(function () {}); }
@@ -5345,7 +5004,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       else if (act === 'cancel-delete') { state.pendingDelete = null; render(); }
     });
 
-    // Shortcut reader: j/k untuk gulir, f untuk layar penuh
+    // Shortcut reader: j/k untuk gulir, panah untuk ganti halaman, f untuk layar penuh
     document.addEventListener('keydown', function (e) {
       if (state.route !== 'reader') return;
       var t = e.target;
@@ -5353,6 +5012,14 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       var key = e.key.toLowerCase();
       if (key === 'j' || e.key === 'ArrowDown') { window.scrollBy({ top: 400, behavior: 'smooth' }); }
       else if (key === 'k' || e.key === 'ArrowUp') { window.scrollBy({ top: -400, behavior: 'smooth' }); }
+      else if ((key === 'arrowleft' || key === 'arrowright' || e.key === ' ') && state.readerMode === 'paged') {
+        var ch = chapterById(state.params && state.params.chapterId);
+        var max = ch ? Math.max(0, (ch.pages || []).length - 1) : 0;
+        if (key === 'arrowleft') state.currentPageIdx = Math.max(0, state.currentPageIdx - 1);
+        else { state.currentPageIdx = Math.min(max, state.currentPageIdx + 1); if (e.key === ' ') e.preventDefault(); }
+        render();
+        window.scrollTo(0, 0);
+      }
       else if (key === 'f') {
         if (document.fullscreenElement) { document.exitFullscreen().catch(function () {}); }
         else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(function () {}); }
@@ -5370,13 +5037,6 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
       t.click();
     });
 
-    window.addEventListener('scroll', function () {
-      var bar = document.getElementById('kv-progress-bar');
-      if (!bar) return;
-      var doc = document.documentElement;
-      var pct = Math.min(100, Math.round((doc.scrollTop / Math.max(1, doc.scrollHeight - doc.clientHeight)) * 100));
-      bar.style.width = pct + '%';
-    });
 
     function handleRouteChange() {
       state.mobileMenuOpen = false;
