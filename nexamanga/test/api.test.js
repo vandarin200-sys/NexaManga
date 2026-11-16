@@ -64,6 +64,9 @@ function mockDatabase({ catalog, initialized = true, failCas = false } = {}) {
       if (/CREATE TABLE IF NOT EXISTS/i.test(query)) {
         return neonResult([], []);
       }
+      if (/CREATE OR REPLACE VIEW/i.test(query)) {
+        return neonResult([], []);
+      }
       if (/SELECT data, version FROM nexamanga_snapshot/i.test(query)) {
         if (!state.data) return neonResult([], textFields(['data', 'version']));
         return neonResult([[JSON.stringify(state.data), String(state.version)]], textFields(['data', 'version']));

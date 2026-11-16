@@ -29,6 +29,14 @@ CREATE TABLE IF NOT EXISTS nexamanga_snapshot (
 );
 ```
 
+Selain itu, aplikasi membuat view opsional `nexamanga_users` (gagal membuat view tidak mematikan API) sehingga daftar akun bisa ditanyakan seperti tabel biasa:
+
+```sql
+SELECT * FROM nexamanga_users ORDER BY created_at;
+```
+
+View ini hanya membaca dokumen JSONB — tidak ada tabel akun terpisah; data tetap satu sumber di `nexamanga_snapshot`.
+
 ### Migrasi dari Telegram (opsional, untuk instalasi lama)
 
 Jika sebelumnya katalog disimpan sebagai snapshot di chat Telegram, salin sekali ke Neon:

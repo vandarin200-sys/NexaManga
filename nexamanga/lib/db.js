@@ -47,12 +47,28 @@ let schemaPromise = null;
 
 function ensureSchema() {
   if (!schemaPromise) {
-    schemaPromise = sql()`CREATE TABLE IF NOT EXISTS nexamanga_snapshot (
-      id smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1),
-      data jsonb NOT NULL,
-      version bigint NOT NULL DEFAULT 1,
-      updated_at timestamptz NOT NULL DEFAULT now()
-    )`.then(() => undefined).catch((error) => {
+    schemaPromise = (async () => {
+      await sql()`CREATE TABLE IF NOT EXISTS nexamanga_snapshot (
+        id smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+        data jsonb NOT NULL,
+        version bigint NOT NULL DEFAULT 1,
+        updated_at timestamptz NOT NULL DEFAULT now()
+      )`;
+      try {
+        await sql()`CREATE OR REPLACE VIEW nexamanga_users AS
+          SELECT (u.item->>'id') AS id,
+                 (u.item->>'name') AS name,
+                 (u.item->>'email') AS email,
+                 (u.item->>'avatar') AS avatar,
+                 (u.item->>'provider') AS provider,
+                 (u.item->>'role') AS role,
+                 (u.item->>'createdAt') AS created_at
+          FROM nexamanga_snapshot,
+               LATERAL jsonb_array_elements(data->'users') AS u(item)`;
+      } catch (error) {
+        console.error('View nexamanga_users gagal dibuat (opsional, tidak memengaruhi API):', error && error.message ? error.message : error);
+      }
+    })().catch((error) => {
       schemaPromise = null;
       throw error;
     });
