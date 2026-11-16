@@ -29,6 +29,7 @@ function setEnv() {
   process.env.TOKEN_SECRET = 'test-secret-with-more-than-32-characters';
   process.env.ALLOWED_ORIGINS = 'https://nexa.example';
   process.env.PUBLIC_API_URL = 'https://nexa.example';
+  process.env.DATABASE_URL = 'postgresql://test:test@localhost/testdb';
 }
 
 function adminToken() {
@@ -41,54 +42,62 @@ function adminToken() {
   });
 }
 
-function mockTelegram({ catalog, pinned = true, fileId = 'AgACAgUAAxkBAAM_catalog-file-id' }) {
+function neonResult(rows, fields) {
+  return Response.json({ command: 'OK', fields, rows, rowCount: rows.length });
+}
+
+function textFields(names) {
+  return names.map((name) => ({ name, dataTypeID: 25 }));
+}
+
+function mockDatabase({ catalog, initialized = true, failCas = false } = {}) {
+  const state = {
+    data: initialized && catalog ? structuredClone(catalog) : null,
+    version: 1
+  };
   const realFetch = global.fetch;
-  const snapshot = Buffer.from(JSON.stringify(catalog));
   global.fetch = async (input, init = {}) => {
     const url = String(input);
-    if (url.endsWith('/getChat')) {
-      return Response.json({
-        ok: true,
-        result: {
-          id: -100123,
-          pinned_message: pinned
-            ? {
-                message_id: 321,
-                caption: 'NexaManga database snapshot',
-                document: { file_id: fileId, file_size: snapshot.length }
-              }
-            : null
-        }
-      });
-    }
-    if (url.endsWith('/getFile')) {
-      return Response.json({
-        ok: true,
-        result: { file_path: 'documents/catalog.json', file_size: snapshot.length }
-      });
-    }
-    if (url.includes('/file/bot')) {
-      return new Response(snapshot, { status: 200 });
-    }
-    if (url.endsWith('/sendDocument')) {
-      const name = init.body && typeof init.body.get === 'function' ? init.body.get('document').name : '';
-      if (name === 'nexamanga-catalog.json') {
-        return Response.json({ ok: true, result: { message_id: 321, document: { file_id: fileId } } });
+    if (url.endsWith('/sql')) {
+      const body = JSON.parse(init.body);
+      const query = String(body.query || '');
+      if (/CREATE TABLE IF NOT EXISTS/i.test(query)) {
+        return neonResult([], []);
       }
-      return Response.json({ ok: true, result: { message_id: 400, document: { file_id: 'AgACAgUAAxkBAAM_image-file-id' } } });
-    }
-    if (url.endsWith('/editMessageMedia')) {
-      return Response.json({ ok: true, result: { message_id: 321 } });
-    }
-    if (url.endsWith('/pinChatMessage')) {
-      return Response.json({ ok: true, result: true });
+      if (/SELECT data, version FROM nexamanga_snapshot/i.test(query)) {
+        if (!state.data) return neonResult([], textFields(['data', 'version']));
+        return neonResult([[JSON.stringify(state.data), String(state.version)]], textFields(['data', 'version']));
+      }
+      if (/SELECT id FROM nexamanga_snapshot/i.test(query)) {
+        return neonResult(state.data ? [['1']] : [], textFields(['id']));
+      }
+      if (/INSERT INTO nexamanga_snapshot/i.test(query)) {
+        if (state.data) return neonResult([], textFields(['id']));
+        state.data = JSON.parse(body.params[0]);
+        state.version = 1;
+        return neonResult([['1']], textFields(['id']));
+      }
+      if (/UPDATE nexamanga_snapshot/i.test(query)) {
+        if (failCas) return neonResult([], textFields(['version']));
+        const expectedVersion = Number(body.params[1]);
+        if (state.data && state.version === expectedVersion) {
+          state.data = JSON.parse(body.params[0]);
+          state.version += 1;
+          return neonResult([[String(state.version)]], textFields(['version']));
+        }
+        return neonResult([], textFields(['version']));
+      }
+      return Response.json({ message: `unexpected query: ${query}` }, { status: 400 });
     }
     return Response.json({ ok: false, description: 'unexpected ' + url }, { status: 400 });
   };
-  return () => { global.fetch = realFetch; };
+  return {
+    state,
+    restore() { global.fetch = realFetch; }
+  };
 }
 
-test('health endpoint responds without Telegram', async () => {
+test('health endpoint responds without database access', async () => {
   setEnv();
   const res = await call('GET', '/api/health');
   assert.equal(res.statusCode, 200);
@@ -132,7 +141,7 @@ test('oauth start rejects origin not in ALLOWED_ORIGINS', async () => {
 
 test('catalog hides pending comments and users from visitors', async () => {
   setEnv();
-  const restore = mockTelegram({
+  const db = mockDatabase({
     catalog: {
       manga: [],
       chapters: [],
@@ -149,13 +158,13 @@ test('catalog hides pending comments and users from visitors', async () => {
     assert.deepEqual(res.json.comments.map((c) => c.id), ['public']);
     assert.equal(res.json.users, undefined);
   } finally {
-    restore();
+    db.restore();
   }
 });
 
 test('admin session sees pending comments but still no users list', async () => {
   setEnv();
-  const restore = mockTelegram({
+  const db = mockDatabase({
     catalog: {
       manga: [],
       chapters: [],
@@ -172,7 +181,7 @@ test('admin session sees pending comments but still no users list', async () => 
     assert.deepEqual(res.json.comments.map((c) => c.id), ['public', 'private']);
     assert.equal(res.json.users, undefined);
   } finally {
-    restore();
+    db.restore();
   }
 });
 
@@ -198,7 +207,7 @@ test('admin write endpoints reject missing or non-admin tokens', async () => {
 
 test('comment rejects unknown manga with validation error', async () => {
   setEnv();
-  const restore = mockTelegram({ catalog: { manga: [], chapters: [], comments: [], users: [] } });
+  const db = mockDatabase({ catalog: { manga: [], chapters: [], comments: [], users: [] } });
   try {
     const res = await call('POST', '/api/comment', {}, {
       mangaId: 'tidak-ada',
@@ -208,19 +217,19 @@ test('comment rejects unknown manga with validation error', async () => {
     assert.equal(res.statusCode, 400);
     assert.equal(res.json.error, 'Manga tidak ditemukan.');
   } finally {
-    restore();
+    db.restore();
   }
 });
 
-test('catalog returns empty payload when storage not yet initialized', async () => {
+test('catalog returns empty payload when database not yet initialized', async () => {
   setEnv();
-  const restore = mockTelegram({ catalog: null, pinned: false });
+  const db = mockDatabase({ initialized: false });
   try {
     const res = await call('GET', '/api/catalog');
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.json, { manga: [], chapters: [], comments: [] });
   } finally {
-    restore();
+    db.restore();
   }
 });
 
@@ -230,6 +239,7 @@ test('CORS allows configured blog origin even with quoted env value', async () =
   process.env.TOKEN_SECRET = 'test-secret-with-more-than-32-characters';
   process.env.ALLOWED_ORIGINS = '"https://nexa.example/"';
   process.env.PUBLIC_API_URL = 'https://nexa.example';
+  process.env.DATABASE_URL = 'postgresql://test:test@localhost/testdb';
   const res = await call('GET', '/api/health', { Origin: 'https://nexa.example' });
   assert.equal(res.statusCode, 200);
   assert.equal(res.headers['access-control-allow-origin'], 'https://nexa.example');
@@ -250,37 +260,9 @@ test('auth/me returns profile for valid session', async () => {
   assert.equal(res.json.user.id, 'usr-admin');
 });
 
-test('admin save-manga persists through Telegram snapshot', async () => {
+test('admin save-manga persists through Neon snapshot', async () => {
   setEnv();
-  let stored = { manga: [], chapters: [], comments: [], users: [] };
-  const realFetch = global.fetch;
-  global.fetch = async (input, init = {}) => {
-    const url = String(input);
-    if (url.endsWith('/getChat')) {
-      return Response.json({
-        ok: true,
-        result: {
-          id: -100123,
-          pinned_message: {
-            message_id: 321,
-            caption: 'NexaManga database snapshot',
-            document: { file_id: 'AgACAgUAAxkBAAM_catalog-file-id', file_size: 10 }
-          }
-        }
-      });
-    }
-    if (url.endsWith('/getFile')) {
-      return Response.json({ ok: true, result: { file_path: 'documents/catalog.json', file_size: 10 } });
-    }
-    if (url.includes('/file/bot')) {
-      return new Response(Buffer.from(JSON.stringify(stored)), { status: 200 });
-    }
-    if (url.endsWith('/editMessageMedia')) {
-      stored = JSON.parse(Buffer.from(await init.body.get('snapshot').arrayBuffer()).toString('utf8'));
-      return Response.json({ ok: true, result: { message_id: 321 } });
-    }
-    return Response.json({ ok: false, description: 'unexpected' }, { status: 400 });
-  };
+  const db = mockDatabase({ catalog: { manga: [], chapters: [], comments: [], users: [] } });
   try {
     const manga = {
       id: 'mng-1',
@@ -293,9 +275,59 @@ test('admin save-manga persists through Telegram snapshot', async () => {
     const res = await call('POST', '/api/admin/save-manga', { Authorization: `Bearer ${adminToken()}` }, manga);
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.json, { ok: true });
-    assert.equal(stored.manga.length, 1);
-    assert.equal(stored.manga[0].slug, 'judul-baru');
+    assert.equal(db.state.data.manga.length, 1);
+    assert.equal(db.state.data.manga[0].slug, 'judul-baru');
+    assert.equal(db.state.version, 2);
   } finally {
-    global.fetch = realFetch;
+    db.restore();
+  }
+});
+
+test('concurrent modification returns 409 after retries', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [{
+        id: 'mng-1',
+        slug: 'judul-lama',
+        title: 'Judul Lama',
+        synopsis: 'Sinopsis yang cukup panjang untuk lolos validasi.',
+        genres: ['Aksi'],
+        rating: 4
+      }],
+      chapters: [],
+      comments: [],
+      users: []
+    },
+    failCas: true
+  });
+  try {
+    const manga = {
+      id: 'mng-1',
+      slug: 'judul-baru',
+      title: 'Judul Baru',
+      synopsis: 'Sinopsis yang cukup panjang untuk lolos validasi.',
+      genres: ['Aksi'],
+      rating: 4
+    };
+    const res = await call('POST', '/api/admin/save-manga', { Authorization: `Bearer ${adminToken()}` }, manga);
+    assert.equal(res.statusCode, 409);
+    assert.match(res.json.error, /request lain/);
+  } finally {
+    db.restore();
+  }
+});
+
+test('storage init creates snapshot once and rejects second attempt', async () => {
+  setEnv();
+  const db = mockDatabase({ initialized: false });
+  try {
+    const first = await call('POST', '/api/admin/storage/init', { Authorization: `Bearer ${adminToken()}` });
+    assert.equal(first.statusCode, 201);
+    assert.ok(db.state.data);
+    const second = await call('POST', '/api/admin/storage/init', { Authorization: `Bearer ${adminToken()}` });
+    assert.equal(second.statusCode, 409);
+  } finally {
+    db.restore();
   }
 });

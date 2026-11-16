@@ -1,41 +1,14 @@
 'use strict';
 
-const { EMPTY_CATALOG, validateCatalog } = require('./catalog');
+const { config } = require('./env');
 
-const MAX_SNAPSHOT_BYTES = 18 * 1024 * 1024;
 const MAX_MEDIA_BYTES = 3 * 1024 * 1024;
-const CATALOG_CAPTION = 'NexaManga database snapshot';
 
 class TelegramError extends Error {
   constructor(message) {
     super(message);
     this.name = 'TelegramError';
   }
-}
-
-class StorageAlreadyInitializedError extends Error {
-  constructor() {
-    super('Database NexaManga sudah diinisialisasi pada pesan yang dipin.');
-    this.name = 'StorageAlreadyInitializedError';
-  }
-}
-
-class CatalogNotInitializedError extends Error {
-  constructor() {
-    super('Database NexaManga belum diinisialisasi. Jalankan /api/admin/storage/init dan pin pesan snapshot.');
-    this.name = 'CatalogNotInitializedError';
-  }
-}
-
-function config(name) {
-  const rawValue = process.env[name];
-  const value = typeof rawValue === 'string' && rawValue.length >= 2 &&
-    ((rawValue.startsWith('"') && rawValue.endsWith('"')) ||
-      (rawValue.startsWith("'") && rawValue.endsWith("'")))
-    ? rawValue.slice(1, -1)
-    : rawValue;
-  if (!value) throw new Error(`Environment variable ${name} is required.`);
-  return value;
 }
 
 function botToken() {
@@ -76,15 +49,6 @@ function storageChatId() {
   return config('TELEGRAM_STORAGE_CHAT_ID');
 }
 
-async function getPinnedCatalogMessage() {
-  const chat = await telegramCall('getChat', { chat_id: storageChatId() });
-  const message = chat.pinned_message;
-  if (!message || !message.document || !message.document.file_id || message.caption !== CATALOG_CAPTION) {
-    return null;
-  }
-  return message;
-}
-
 async function telegramFileInfo(fileId) {
   if (typeof fileId !== 'string' || !/^[A-Za-z0-9_=-]{10,512}$/.test(fileId)) {
     throw new Error('Telegram file ID tidak valid.');
@@ -102,80 +66,6 @@ async function downloadTelegramFile(filePath, maxBytes) {
   const bytes = Buffer.from(await response.arrayBuffer());
   if (bytes.length > maxBytes) throw new Error('Ukuran file Telegram melebihi batas yang didukung.');
   return bytes;
-}
-
-async function readCatalog() {
-  const message = await getPinnedCatalogMessage();
-  if (!message) {
-    throw new CatalogNotInitializedError();
-  }
-  if (message.document.file_size > MAX_SNAPSHOT_BYTES) {
-    throw new Error('Snapshot katalog Telegram melebihi batas 18 MiB.');
-  }
-  const file = await telegramFileInfo(message.document.file_id);
-  const bytes = await downloadTelegramFile(file.file_path, MAX_SNAPSHOT_BYTES);
-  let catalog;
-  try {
-    catalog = JSON.parse(bytes.toString('utf8'));
-  } catch {
-    throw new Error('Dokumen katalog Telegram bukan JSON yang valid.');
-  }
-  return validateCatalog(catalog);
-}
-
-async function ensureCatalogInitialized() {
-  try {
-    await readCatalog();
-  } catch (error) {
-    if (!(error instanceof CatalogNotInitializedError)) throw error;
-    try {
-      await initializeCatalog(EMPTY_CATALOG);
-    } catch (initializeError) {
-      if (!(initializeError instanceof StorageAlreadyInitializedError)) throw initializeError;
-    }
-  }
-}
-
-async function writeCatalog(catalog) {
-  validateCatalog(catalog);
-  const bytes = Buffer.from(JSON.stringify(catalog), 'utf8');
-  if (bytes.length > MAX_SNAPSHOT_BYTES) {
-    throw new Error('Katalog melebihi batas 18 MiB yang didukung Telegram.');
-  }
-  const message = await getPinnedCatalogMessage();
-  if (!message) {
-    throw new Error('Dokumen katalog tidak ditemukan pada pesan yang dipin di chat Telegram.');
-  }
-  return telegramMultipart('editMessageMedia', {
-    chat_id: storageChatId(),
-    message_id: String(message.message_id),
-    media: {
-      type: 'document',
-      media: 'attach://snapshot',
-      caption: CATALOG_CAPTION
-    }
-  }, 'snapshot', 'nexamanga-catalog.json', 'application/json', bytes);
-}
-
-async function initializeCatalog(catalog) {
-  if (await getPinnedCatalogMessage()) {
-    throw new StorageAlreadyInitializedError();
-  }
-  validateCatalog(catalog);
-  const bytes = Buffer.from(JSON.stringify(catalog), 'utf8');
-  if (bytes.length > MAX_SNAPSHOT_BYTES) {
-    throw new Error('Katalog melebihi batas 18 MiB yang didukung Telegram.');
-  }
-  const message = await telegramMultipart('sendDocument', {
-    chat_id: storageChatId(),
-    caption: CATALOG_CAPTION
-  }, 'document', 'nexamanga-catalog.json', 'application/json', bytes);
-  await telegramCall('pinChatMessage', {
-    chat_id: storageChatId(),
-    message_id: message.message_id,
-    disable_notification: true
-  });
-  return message.message_id;
 }
 
 async function saveMedia(fileName, mimeType, bytes) {
@@ -212,15 +102,8 @@ async function getMedia(fileId) {
 }
 
 module.exports = {
-  CatalogNotInitializedError,
   MAX_MEDIA_BYTES,
-  MAX_SNAPSHOT_BYTES,
-  StorageAlreadyInitializedError,
   TelegramError,
   getMedia,
-  ensureCatalogInitialized,
-  initializeCatalog,
-  readCatalog,
-  saveMedia,
-  writeCatalog
+  saveMedia
 };

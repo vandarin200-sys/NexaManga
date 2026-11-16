@@ -20,20 +20,24 @@ const {
   saveChapter,
   saveManga,
   saveSettings,
+  addChapterReaction,
   upvoteComment
 } = require('../lib/catalog');
 const {
   MAX_MEDIA_BYTES,
-  CatalogNotInitializedError,
-  StorageAlreadyInitializedError,
   TelegramError,
-  ensureCatalogInitialized,
   getMedia,
-  initializeCatalog,
-  readCatalog,
-  saveMedia,
-  writeCatalog
+  saveMedia
 } = require('../lib/telegram');
+const {
+  CatalogNotInitializedError,
+  ConcurrentUpdateError,
+  StorageAlreadyInitializedError,
+  ensureCatalogInitialized,
+  initializeCatalog,
+  modifyCatalog,
+  readCatalog
+} = require('../lib/db');
 
 class HttpError extends Error {
   constructor(status, message) {
@@ -245,10 +249,7 @@ async function fetchOAuthIdentity(provider, code) {
 }
 
 async function updateCatalog(change) {
-  const current = await readCatalog();
-  const draft = structuredClone(current);
-  change(draft);
-  await writeCatalog(draft);
+  return modifyCatalog(change);
 }
 
 function decodeUpload(dataUrl) {
@@ -356,10 +357,10 @@ async function handler(req, res) {
 
     if (route === 'admin/storage/init' && req.method === 'POST') {
       requireAdmin(req);
-      const messageId = await initializeCatalog(EMPTY_CATALOG);
+      const rowId = await initializeCatalog(EMPTY_CATALOG);
       return sendJson(res, 201, {
-        messageId,
-        instruction: 'Dokumen katalog sudah dipin di chat Telegram. Tidak perlu menyimpan ID tambahan.'
+        rowId,
+        instruction: 'Baris snapshot awal sudah tersimpan di tabel nexamanga_snapshot pada database Neon.'
       });
     }
 
@@ -562,11 +563,12 @@ async function handler(req, res) {
     if (error instanceof ValidationError) return sendJson(res, 400, { error: error.message });
     if (error instanceof StorageAlreadyInitializedError) return sendJson(res, 409, { error: error.message });
     if (error instanceof CatalogNotInitializedError) return sendJson(res, 409, { error: error.message });
+    if (error instanceof ConcurrentUpdateError) return sendJson(res, 409, { error: error.message });
     if (error instanceof TelegramError) {
       console.error(error.message);
       return sendJson(res, 502, { error: error.message });
     }
-    if (/Environment variable|TOKEN_SECRET|TELEGRAM_STORAGE_CHAT_ID|PUBLIC_API_URL|GOOGLE_CLIENT|DISCORD_CLIENT/.test(error.message)) {
+    if (/Environment variable|TOKEN_SECRET|DATABASE_URL|PUBLIC_API_URL|GOOGLE_CLIENT|DISCORD_CLIENT/.test(error.message)) {
       console.error(error.message);
       return sendJson(res, 500, { error: error.message });
     }

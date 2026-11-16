@@ -165,6 +165,53 @@ function enrichCommentsWithUsers(catalog) {
   return catalog;
 }
 
+const REACTION_KEYS = Object.freeze(['fire', 'shock', 'cry', 'laugh', 'angry']);
+
+function addChapterReaction(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data reaksi tidak valid.');
+  }
+  const chapterId = requireText(input.chapterId, 'ID chapter', 100);
+  const voterId = requireText(input.voterId, 'ID voter', 100);
+  const reaction = typeof input.reaction === 'string' && input.reaction ? input.reaction : null;
+  if (!catalog.chapters.some((chapter) => chapter.id === chapterId)) {
+    throw new ValidationError('Chapter tidak ditemukan.');
+  }
+  if (!catalog.reactions || typeof catalog.reactions !== 'object' || Array.isArray(catalog.reactions)) {
+    catalog.reactions = {};
+  }
+  const forChapter = catalog.reactions[chapterId] && typeof catalog.reactions[chapterId] === 'object'
+    ? catalog.reactions[chapterId]
+    : {};
+  for (const key of REACTION_KEYS) {
+    if (!Array.isArray(forChapter[key])) forChapter[key] = [];
+  }
+  let userVote = null;
+  if (reaction) {
+    if (!REACTION_KEYS.includes(reaction)) throw new ValidationError('Reaksi tidak valid.');
+    const current = forChapter[reaction].indexOf(voterId);
+    if (current !== -1) {
+      forChapter[reaction].splice(current, 1);
+      userVote = null;
+    } else {
+      for (const key of REACTION_KEYS) {
+        const idx = forChapter[key].indexOf(voterId);
+        if (idx !== -1) forChapter[key].splice(idx, 1);
+      }
+      forChapter[reaction].push(voterId);
+      userVote = reaction;
+    }
+  } else {
+    for (const key of REACTION_KEYS) {
+      if (forChapter[key].includes(voterId)) userVote = key;
+    }
+  }
+  catalog.reactions[chapterId] = forChapter;
+  const counts = {};
+  for (const key of REACTION_KEYS) counts[key] = forChapter[key].length;
+  return { counts, userVote };
+}
+
 function incrementMangaViews(catalog, id) {
   const manga = catalog.manga.find((item) => item.id === id || item.slug === id);
   if (!manga) throw new ValidationError('Manga tidak ditemukan.');
@@ -255,6 +302,7 @@ module.exports = {
   EMPTY_CATALOG,
   ValidationError,
   addComment,
+  addChapterReaction,
   deleteChapter,
   deleteComment,
   deleteManga,

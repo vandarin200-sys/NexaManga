@@ -2572,25 +2572,6 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
     ]]></b:skin>
 </head>
 <body>
-  <!-- Blogger Required Main Section (Hidden when SPA active, preserved for valid Blogger XML) -->
-  <div style='display:none' aria-hidden='true'>
-    <b:section id='nexamanga-main' maxwidgets='1' showaddelement='no'>
-      <b:widget id='Blog1' locked='true' title='Postingan Blog' type='Blog' version='2'>
-        <b:includable id='main' var='top'>
-          <b:loop values='data:posts' var='post'>
-            <article class='blogger-post-seed' expr:data-id='data:post.id' expr:data-title='data:post.title' expr:data-url='data:post.url'></article>
-          </b:loop>
-        </b:includable>
-      </b:widget>
-    </b:section>
-  </div>
-
-  <noscript>
-    <div style='padding:32px;text-align:center;font-family:system-ui,sans-serif;'>
-      <strong>NexaManga</strong> memerlukan JavaScript untuk menampilkan archive, detail manga, dan reader. Aktifkan JavaScript di browser Anda.
-    </div>
-  </noscript>
-
   <!-- Root Container untuk Aplikasi SPA NexaManga di Blogger -->
   <div id='kv-app'></div>
 
@@ -2611,9 +2592,11 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
        1. BLOGGER (frontend): file XML ini. Menayangkan SPA pembaca. Blogger TIDAK
           bisa menjalankan kode server - semua rahasia HARUS di environment Vercel.
        2. VERCEL FUNCTIONS (folder proyek: api/) menyimpan secrets:
-          TELEGRAM_BOT_TOKEN, TELEGRAM_STORAGE_CHAT_ID, TOKEN_SECRET,
-          PUBLIC_API_URL, ALLOWED_ORIGINS, dan credential OAuth Google/Discord.
-          Backend ini tidak memakai database selain Telegram.
+           DATABASE_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_STORAGE_CHAT_ID,
+           TOKEN_SECRET, PUBLIC_API_URL, ALLOWED_ORIGINS,
+           dan credential OAuth Google/Discord.
+           Backend ini memakai Neon Postgres untuk katalog/akun/komentar,
+           dan Telegram hanya untuk penyimpanan gambar.
           Pemetaan ke tema Blogger:
           - CONFIG.API_BASE_URL  = PUBLIC_API_URL  (origin Vercel yang sama)
           - return_to OAuth      = origin blog      (harus terdaftar di ALLOWED_ORIGINS)
@@ -2630,15 +2613,16 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
           - POST /api/admin/delete-comment  -> { id }
           - POST /api/admin/comment-status  -> { id, status }
           Semua endpoint admin memverifikasi header: Authorization: Bearer <token>.
-       3. TELEGRAM menjadi penyimpanan tunggal: archive, chapter, dan komentar
-          tersimpan sebagai dokumen JSON yang dipin; gambar tersimpan sebagai
-          dokumen di chat Telegram yang sama. Backend membaca pointer melalui
-          pesan yang dipin dan mem-proxy
-          gambar lewat /api/media/{file_id}. Bot token tidak dikirim ke browser.
+       3. NEON POSTGRES menjadi database katalog/akun/komentar: archive
+          disimpan sebagai dokumen JSONB pada tabel nexamanga_snapshot di
+          database Neon (DATABASE_URL). Gambar tersimpan sebagai dokumen
+          di chat Telegram; backend mem-proxy
+          gambar lewat /api/media/{file_id}. Bot token dan connection string
+          Neon tidak dikirim ke browser.
        BATASAN:
-       - Snapshot disimpan sebagai dokumen JSON Telegram (maks. 18 MiB),
-          dan diperbarui pada pesan dokumen yang sama.
-       - Dokumen snapshot archive harus menjadi pesan yang dipin di chat Telegram.
+       - Snapshot disimpan sebagai dokumen JSONB di Neon (limit praktis 50 MiB),
+          diperbarui dengan optimistic concurrency control (kolom version).
+       - Tabel nexamanga_snapshot dibuat otomatis pada request pertama.
        - Gunakan satu sesi admin untuk mencegah perubahan serentak saling menimpa.
        - Upload JPEG/PNG/WebP maksimal 3 MiB per berkas (batas request Vercel).
        CATATAN JUJUR:
@@ -2652,8 +2636,8 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
      var CONFIG = {
       SITE_NAME: 'NexaManga',                 /* UBAH: nama website Anda */
       SITE_TAGLINE: 'Platform baca manga berbahasa Indonesia cepat & nyaman.',
-      /* Harus identik dengan PUBLIC_API_URL di .env / Vercel Environment Variables.
-         Contoh: 'https://nexamanga-nexamanga.vercel.app' (tanpa slash di akhir).
+      /* Cara tercepat: edit langsung nilai API_BASE_URL di bawah ini (Tema > Edit HTML).
+         Harus identik dengan PUBLIC_API_URL di .env / Vercel Environment Variables.
          Kosongkan hanya jika ingin mode lokal tanpa backend. */
       API_BASE_URL: 'https://nexamanga-nexamanga.vercel.app',
       DEFAULT_THEME: 'light', /* 'dark' atau 'light' */
@@ -2713,6 +2697,8 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         editingProfile: false,
         replyingTo: null,
         imageTargetForm: null,
+        commentImageIndex: 0,
+        commentImageMap: {},
         viewedChapters: {}
       };
 
@@ -2791,6 +2777,17 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
         if (o.avatar) return o.avatar;
         if (state.user && state.user.avatar) return state.user.avatar;
         return fallback || null;
+      }
+
+      function replaceImageTokens(content) {
+        var map = state.commentImageMap || {};
+        Object.keys(map).forEach(function (token) {
+          var url = map[token];
+          var md = '![gambar](' + url + ')';
+          content = content.split(token).join(md);
+        });
+        state.commentImageMap = {};
+        return content;
       }
 
      function upvoteCommentLocal(id) {
@@ -3454,7 +3451,6 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                 '</div>' +
                 (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
                 '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis komentar. Dukung **tebal**, *miring*, ||spoiler||, dan gambar." required rows="3"></textarea>' +
-                '<input type="hidden" name="imageUrl" value=""/>' +
                 '<div class="kv-comment-form-foot">' +
                   '<span class="kv-comment-hint">Gunakan **tebal**, *miring*, ||spoiler||</span>' +
                   '<button type="button" class="kv-btn kv-btn-ghost kv-comment-image-btn" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>' +
@@ -3490,7 +3486,6 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                     ? '<form class="kv-reply-form kv-comment-reply-form" data-manga-id="' + escapeHtml(manga.id) + '" data-parent-id="' + escapeHtml(rootId) + '" data-reply-to="' + escapeHtml(authorName) + '">' +
                         (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
                         '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis balasan..." required rows="3"></textarea>' +
-                        '<input type="hidden" name="imageUrl" value=""/>' +
                         '<div class="kv-comment-reply-actions">' +
                           '<button type="button" class="kv-btn kv-btn-ghost kv-comment-image-btn" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>' +
                           '<button type="button" class="kv-btn kv-btn-ghost" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Batal</button>' +
@@ -4820,7 +4815,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
             var authorName = state.user ? state.user.name : String(fd.get('author') || '').trim();
             var authorAvatar = state.user ? (state.user.avatar || null) : null;
             var userId = state.user ? state.user.id : null;
-            var imageUrl = String(fd.get('imageUrl') || '').trim();
+            var content = replaceImageTokens(String(fd.get('content') || ''));
             state.data.comments.unshift({
               id: 'c-' + Date.now(),
               mangaId: mangaId,
@@ -4828,8 +4823,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
               userId: userId,
               authorName: authorName,
               authorAvatar: authorAvatar,
-              content: fd.get('content'),
-              imageUrl: imageUrl || null,
+              content: content,
               createdAt: new Date().toISOString().slice(0, 10),
               status: 'approved',
               upvotes: []
@@ -4843,7 +4837,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
               fetch(CONFIG.API_BASE_URL + '/api/comment', {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({ mangaId: mangaId, parentId: parentId, replyTo: null, imageUrl: imageUrl || null, authorName: authorName, authorAvatar: authorAvatar, content: fd.get('content') })
+                body: JSON.stringify({ mangaId: mangaId, parentId: parentId, replyTo: null, authorName: authorName, authorAvatar: authorAvatar, content: content })
               }).catch(function () { toast('Komentar tersimpan lokal, gagal terkirim ke server.', 'warn'); });
            }
            render();
@@ -4860,17 +4854,16 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
             var authorAvatar = state.user ? (state.user.avatar || null) : null;
             var userId = state.user ? state.user.id : null;
             var replyTo = rf.getAttribute('data-reply-to') || null;
-            var imageUrl = String(fd.get('imageUrl') || '').trim();
+            var content = replaceImageTokens(String(fd.get('content') || ''));
             state.data.comments.unshift({
               id: 'c-' + Date.now(),
               mangaId: mangaId,
               parentId: parentId,
               replyTo: replyTo,
-              imageUrl: imageUrl || null,
               userId: userId,
               authorName: authorName,
               authorAvatar: authorAvatar,
-              content: fd.get('content'),
+              content: content,
               createdAt: new Date().toISOString().slice(0, 10),
               status: 'approved',
               upvotes: []
@@ -4884,7 +4877,7 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
               fetch(CONFIG.API_BASE_URL + '/api/comment', {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({ mangaId: mangaId, parentId: parentId, replyTo: replyTo, imageUrl: imageUrl || null, authorName: authorName, authorAvatar: authorAvatar, content: fd.get('content') })
+                body: JSON.stringify({ mangaId: mangaId, parentId: parentId, replyTo: replyTo, authorName: authorName, authorAvatar: authorAvatar, content: content })
               }).catch(function () { toast('Balasan tersimpan lokal, gagal terkirim ke server.', 'warn'); });
            }
            render();
@@ -4912,11 +4905,24 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
                  if (!r.ok) throw new Error(res.error || ('HTTP ' + r.status));
                  return res;
                });
-             }).then(function (res) {
-               var input = targetForm.querySelector('input[name="imageUrl"]');
-               if (input) input.value = res.url || '';
-               toast('Gambar diunggah.', 'ok');
-             }).catch(function (err) { toast('Gagal upload gambar: ' + err.message, 'error'); });
+              }).then(function (res) {
+                var textarea = targetForm.querySelector('textarea');
+                state.commentImageIndex = (state.commentImageIndex || 0) + 1;
+                var token = '[gambar' + state.commentImageIndex + ']';
+                if (textarea) {
+                  var start = textarea.selectionStart || 0;
+                  var end = textarea.selectionEnd || textarea.value.length;
+                  var before = textarea.value.slice(0, start);
+                  var after = textarea.value.slice(end);
+                  textarea.value = before + token + after;
+                  var pos = before.length + token.length;
+                  textarea.focus();
+                  textarea.setSelectionRange(pos, pos);
+                }
+                state.commentImageMap = state.commentImageMap || {};
+                state.commentImageMap[token] = res.url || '';
+                toast('Gambar diunggah dan disisipkan ke komentar.', 'ok');
+              }).catch(function (err) { toast('Gagal upload gambar: ' + err.message, 'error'); });
            };
            reader.readAsDataURL(file);
          };
@@ -5169,5 +5175,24 @@ html.dark body.kv-reader-route .kv-reader-stepper { grid-template-columns: 1fr; 
   })();
   //]]>
   </script>
+  <!-- Blogger Required Main Section (Hidden when SPA active, preserved for valid Blogger XML) -->
+  <div style='display:none' aria-hidden='true'>
+    <b:section id='nexamanga-main' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Blog1' locked='true' title='Postingan Blog' type='Blog' version='2'>
+        <b:includable id='main' var='top'>
+          <b:loop values='data:posts' var='post'>
+            <article class='blogger-post-seed' expr:data-id='data:post.id' expr:data-title='data:post.title' expr:data-url='data:post.url'></article>
+          </b:loop>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+
+  <noscript>
+    <div style='padding:32px;text-align:center;font-family:system-ui,sans-serif;'>
+      <strong>NexaManga</strong> memerlukan JavaScript untuk menampilkan archive, detail manga, dan reader. Aktifkan JavaScript di browser Anda.
+    </div>
+  </noscript>
+
 </body>
 </html>
