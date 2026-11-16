@@ -1482,40 +1482,41 @@
         .kv-admin-pagehead { align-items: flex-start; }
         .kv-admin-shell .kv-kpi-grid, .kv-admin-shell .kv-qa-grid, .kv-admin-shell .kv-form-grid, .kv-admin-shell .kv-manga-grid { grid-template-columns: 1fr; }
       }
-      html:not(.dark) body.kv-home-route {
-        --kv-bg: #f8fafc;
-        --kv-surface: #ffffff;
-        --kv-surface-2: #eef2f7;
-        --kv-border: #e2e8f0;
-        --kv-text: #0f172a;
-        --kv-text-muted: #64748b;
-        --kv-accent: #6366f1;
-        --kv-accent-hover: #4f46e5;
-        --kv-success: #10b981;
-        --kv-warning: #f59e0b;
-        --kv-danger: #ef4444;
-        --kv-radius: 16px;
-        background: #f8fafc;
+       html:not(.dark) body.kv-home-route {
+         --kv-bg: #f4ecd8;
+         --kv-surface: #faf3e0;
+         --kv-surface-2: #efe4c8;
+         --kv-border: #d8c8a0;
+         --kv-text: #3b2f1e;
+         --kv-text-muted: #6b5b3e;
+         --kv-accent: #8b5a2b;
+         --kv-accent-hover: #6b4423;
+         --kv-success: #10b981;
+         --kv-warning: #f59e0b;
+         --kv-danger: #ef4444;
+         --kv-radius: 16px;
+         background: #f4ecd8;
+
         -webkit-font-smoothing: antialiased;
       }
       html:not(.dark) body.kv-home-route .kv-container { max-width: 1280px; }
       html:not(.dark) body.kv-home-route .kv-header {
-        background: rgba(255,255,255,.96); backdrop-filter: blur(14px); border-bottom: 1px solid #e2e8f0;
-        position: sticky; top: 0; z-index: 30; box-shadow: 0 1px 2px rgba(15,23,42,.04);
+        background: rgba(250, 243, 224,.96); backdrop-filter: blur(14px); border-bottom: 1px solid #d8c8a0;
+        position: sticky; top: 0; z-index: 30; box-shadow: 0 1px 2px rgba(59, 47, 30,.04);
       }
       html:not(.dark) body.kv-home-route .kv-header-inner { height: 64px; }
-      html:not(.dark) body.kv-home-route .kv-brand { color: #0f172a; gap: 10px; }
-      html:not(.dark) body.kv-home-route .kv-brand-mark { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; font-size:1.1rem; box-shadow: 0 8px 18px -10px rgba(99,102,241,.7); }
+      html:not(.dark) body.kv-home-route .kv-brand { color: #3b2f1e; gap: 10px; }
+      html:not(.dark) body.kv-home-route .kv-brand-mark { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg,#8b5a2b,#a06a3a); color:#fff; font-size:1.1rem; box-shadow: 0 8px 18px -10px rgba(139, 90, 43,.7); }
       html:not(.dark) body.kv-home-route .kv-brand span:last-child { font-weight: 800; letter-spacing: -0.02em; }
       html:not(.dark) body.kv-home-route .kv-nav { gap: 2px; }
-      html:not(.dark) body.kv-home-route .kv-nav a { color: #475569; font-weight: 600; border: none; padding: 8px 12px; border-radius: 10px; font-size: .85rem; }
-      html:not(.dark) body.kv-home-route .kv-nav a:hover { background: #eef2ff; color: #6366f1; }
-      html:not(.dark) body.kv-home-route .kv-nav a.active { background: #eef2ff; color: #6366f1; }
-      html:not(.dark) body.kv-home-route .kv-theme-toggle, html:not(.dark) body.kv-home-route .kv-mobile-btn { background: transparent; border: none; color: #64748b; }
-      html:not(.dark) body.kv-home-route .kv-theme-toggle:hover, html:not(.dark) body.kv-home-route .kv-mobile-btn:hover { background: #f1f5f9; color: #6366f1; }
-      html:not(.dark) body.kv-home-route .kv-footer { background: #ffffff; border-top: 1px solid #e2e8f0; color: #475569; }
-      html:not(.dark) body.kv-home-route .kv-footer a { color: #475569; }
-      html:not(.dark) body.kv-home-route .kv-footer a:hover { color: #6366f1; }
+      html:not(.dark) body.kv-home-route .kv-nav a { color: #5a4a32; font-weight: 600; border: none; padding: 8px 12px; border-radius: 10px; font-size: .85rem; }
+      html:not(.dark) body.kv-home-route .kv-nav a:hover { background: #f0e6cc; color: #8b5a2b; }
+      html:not(.dark) body.kv-home-route .kv-nav a.active { background: #f0e6cc; color: #8b5a2b; }
+      html:not(.dark) body.kv-home-route .kv-theme-toggle, html:not(.dark) body.kv-home-route .kv-mobile-btn { background: transparent; border: none; color: #6b5b3e; }
+      html:not(.dark) body.kv-home-route .kv-theme-toggle:hover, html:not(.dark) body.kv-home-route .kv-mobile-btn:hover { background: #efe4c8; color: #8b5a2b; }
+      html:not(.dark) body.kv-home-route .kv-footer { background: #faf3e0; border-top: 1px solid #d8c8a0; color: #5a4a32; }
+      html:not(.dark) body.kv-home-route .kv-footer a { color: #5a4a32; }
+      html:not(.dark) body.kv-home-route .kv-footer a:hover { color: #8b5a2b; }
       body.kv-home-route .kv-home-banner { position: relative; margin: 14px 0 18px; }
       body.kv-home-route .kv-home-banner-track { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 4px 2px 10px; scrollbar-width: none; -ms-overflow-style: none; border-radius: 24px; }
       body.kv-home-route .kv-home-banner-track::-webkit-scrollbar { display: none; }
@@ -1544,48 +1545,48 @@
       }
       html:not(.dark) body.kv-home-route .kv-home-genres { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin: 22px 0 10px; }
       html:not(.dark) body.kv-home-route .kv-home-genres::-webkit-scrollbar { height: 6px; }
-      html:not(.dark) body.kv-home-route .kv-home-genres::-webkit-scrollbar-track { background: #eef2f7; border-radius: 999px; }
-      html:not(.dark) body.kv-home-route .kv-home-genres::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
-      html:not(.dark) body.kv-home-route .kv-home-genre { white-space: nowrap; padding: 8px 14px; border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; color: #475569; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .15s ease; }
-      html:not(.dark) body.kv-home-route .kv-home-genre:hover { background: #eef2ff; color: #6366f1; border-color: #c7d2fe; }
-      html:not(.dark) body.kv-home-route .kv-home-genre.active { background: #6366f1; color: #fff; border-color: #6366f1; box-shadow: 0 8px 18px -12px rgba(99,102,241,.8); }
+      html:not(.dark) body.kv-home-route .kv-home-genres::-webkit-scrollbar-track { background: #efe4c8; border-radius: 999px; }
+      html:not(.dark) body.kv-home-route .kv-home-genres::-webkit-scrollbar-thumb { background: #c9b892; border-radius: 999px; }
+      html:not(.dark) body.kv-home-route .kv-home-genre { white-space: nowrap; padding: 8px 14px; border-radius: 12px; border: 1px solid #d8c8a0; background: #fff; color: #5a4a32; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .15s ease; }
+      html:not(.dark) body.kv-home-route .kv-home-genre:hover { background: #f0e6cc; color: #8b5a2b; border-color: #d8c8a0; }
+      html:not(.dark) body.kv-home-route .kv-home-genre.active { background: #8b5a2b; color: #fff; border-color: #8b5a2b; box-shadow: 0 8px 18px -12px rgba(139, 90, 43,.8); }
       html:not(.dark) body.kv-home-route .kv-home-section { margin-top: 38px; }
       html:not(.dark) body.kv-home-route .kv-home-section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
-      html:not(.dark) body.kv-home-route .kv-home-kicker { font-size: .7rem; font-weight: 800; color: #6366f1; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
-      html:not(.dark) body.kv-home-route .kv-home-section-title { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; }
-      html:not(.dark) body.kv-home-route .kv-home-link { color: #6366f1; font-size: .82rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
+      html:not(.dark) body.kv-home-route .kv-home-kicker { font-size: .7rem; font-weight: 800; color: #8b5a2b; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+      html:not(.dark) body.kv-home-route .kv-home-section-title { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; color: #3b2f1e; }
+      html:not(.dark) body.kv-home-route .kv-home-link { color: #8b5a2b; font-size: .82rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
       html:not(.dark) body.kv-home-route .kv-home-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
-      html:not(.dark) body.kv-home-route .kv-home-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 9px; display: flex; flex-direction: column; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; text-decoration: none; }
-      html:not(.dark) body.kv-home-route .kv-home-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px -18px rgba(99,102,241,.28); border-color: #c7d2fe; }
-      html:not(.dark) body.kv-home-route .kv-home-card-cover { position: relative; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden; background: #eef2f7; }
+      html:not(.dark) body.kv-home-route .kv-home-card { background: #fff; border: 1px solid #d8c8a0; border-radius: 14px; padding: 9px; display: flex; flex-direction: column; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; text-decoration: none; }
+      html:not(.dark) body.kv-home-route .kv-home-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px -18px rgba(139, 90, 43,.28); border-color: #d8c8a0; }
+      html:not(.dark) body.kv-home-route .kv-home-card-cover { position: relative; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden; background: #efe4c8; }
       html:not(.dark) body.kv-home-route .kv-home-card-cover img { width: 100%; height: 100%; object-fit: cover; }
-      html:not(.dark) body.kv-home-route .kv-home-card-badge { position: absolute; bottom: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: rgba(99,102,241,.94); color: #fff; font-size: .62rem; font-weight: 700; letter-spacing: .02em; }
+      html:not(.dark) body.kv-home-route .kv-home-card-badge { position: absolute; bottom: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: rgba(139, 90, 43,.94); color: #fff; font-size: .62rem; font-weight: 700; letter-spacing: .02em; }
       html:not(.dark) body.kv-home-route .kv-home-card-tags { display: flex; gap: 5px; margin: 8px 0 6px; }
-      html:not(.dark) body.kv-home-route .kv-home-card-tag { font-size: .6rem; font-weight: 700; padding: 3px 7px; border-radius: 5px; background: #eef2ff; color: #6366f1; }
-      html:not(.dark) body.kv-home-route .kv-home-card-tag.status { background: #f1f5f9; color: #64748b; }
-      html:not(.dark) body.kv-home-route .kv-home-card-title { font-size: .78rem; font-weight: 700; line-height: 1.35; color: #0f172a; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.1em; }
+      html:not(.dark) body.kv-home-route .kv-home-card-tag { font-size: .6rem; font-weight: 700; padding: 3px 7px; border-radius: 5px; background: #f0e6cc; color: #8b5a2b; }
+      html:not(.dark) body.kv-home-route .kv-home-card-tag.status { background: #efe4c8; color: #6b5b3e; }
+      html:not(.dark) body.kv-home-route .kv-home-card-title { font-size: .78rem; font-weight: 700; line-height: 1.35; color: #3b2f1e; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.1em; }
       html:not(.dark) body.kv-home-route .kv-home-popular { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
-      html:not(.dark) body.kv-home-route .kv-home-rank { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px; text-decoration: none; color: inherit; transition: border-color .15s ease, box-shadow .15s ease; } .kv-home-rank:hover { border-color: #c7d2fe; box-shadow: 0 12px 28px -18px rgba(99,102,241,.28); }
-      html:not(.dark) body.kv-home-route .kv-home-rank-cover { position: relative; width: 72px; flex-shrink: 0; aspect-ratio: 3/4; border-radius: 10px; overflow: hidden; background: #eef2f7; }
+      html:not(.dark) body.kv-home-route .kv-home-rank { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #d8c8a0; border-radius: 14px; padding: 12px; text-decoration: none; color: inherit; transition: border-color .15s ease, box-shadow .15s ease; } .kv-home-rank:hover { border-color: #d8c8a0; box-shadow: 0 12px 28px -18px rgba(139, 90, 43,.28); }
+      html:not(.dark) body.kv-home-route .kv-home-rank-cover { position: relative; width: 72px; flex-shrink: 0; aspect-ratio: 3/4; border-radius: 10px; overflow: hidden; background: #efe4c8; }
       html:not(.dark) body.kv-home-route .kv-home-rank-cover img { width:100%; height:100%; object-fit: cover; }
-      html:not(.dark) body.kv-home-route .kv-home-rank-num { position:absolute; top:0; left:0; width:24px; height:24px; display:grid; place-items:center; background:#6366f1; color:#fff; font-size:.65rem; font-weight:800; border-bottom-right-radius:8px; }
+      html:not(.dark) body.kv-home-route .kv-home-rank-num { position:absolute; top:0; left:0; width:24px; height:24px; display:grid; place-items:center; background:#8b5a2b; color:#fff; font-size:.65rem; font-weight:800; border-bottom-right-radius:8px; }
       html:not(.dark) body.kv-home-route .kv-home-rank:nth-child(1) .kv-home-rank-num { background:#f59e0b; }
-      html:not(.dark) body.kv-home-route .kv-home-rank:nth-child(2) .kv-home-rank-num { background:#475569; }
+      html:not(.dark) body.kv-home-route .kv-home-rank:nth-child(2) .kv-home-rank-num { background:#5a4a32; }
       html:not(.dark) body.kv-home-route .kv-home-rank:nth-child(3) .kv-home-rank-num { background:#b45309; }
-      html:not(.dark) body.kv-home-route .kv-home-rank-title { font-size:.82rem; font-weight:700; color:#0f172a; line-height:1.3; }
-      html:not(.dark) body.kv-home-route .kv-home-rank-meta { font-size:.68rem; color:#64748b; margin-top:2px; }
+      html:not(.dark) body.kv-home-route .kv-home-rank-title { font-size:.82rem; font-weight:700; color:#3b2f1e; line-height:1.3; }
+      html:not(.dark) body.kv-home-route .kv-home-rank-meta { font-size:.68rem; color:#6b5b3e; margin-top:2px; }
       html:not(.dark) body.kv-home-route .kv-home-rank-stat { font-size:.68rem; font-weight:700; color:#f59e0b; margin-top:4px; }
       html:not(.dark) body.kv-home-route .kv-home-curated { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
-      html:not(.dark) body.kv-home-route .kv-home-curated-card { display: flex; gap: 14px; align-items: stretch; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; text-decoration: none; color: inherit; transition: border-color .15s ease, box-shadow .15s ease; cursor: pointer; } .kv-home-curated-card:hover { border-color: #c7d2fe; box-shadow: 0 12px 28px -18px rgba(99,102,241,.28); }
-      html:not(.dark) body.kv-home-route .kv-home-curated-card:hover { border-color: #c7d2fe; }
-      html:not(.dark) body.kv-home-route .kv-home-curated-cover { width: 104px; flex-shrink: 0; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden; background: #eef2f7; }
+      html:not(.dark) body.kv-home-route .kv-home-curated-card { display: flex; gap: 14px; align-items: stretch; background: #fff; border: 1px solid #d8c8a0; border-radius: 16px; padding: 16px; text-decoration: none; color: inherit; transition: border-color .15s ease, box-shadow .15s ease; cursor: pointer; } .kv-home-curated-card:hover { border-color: #d8c8a0; box-shadow: 0 12px 28px -18px rgba(139, 90, 43,.28); }
+      html:not(.dark) body.kv-home-route .kv-home-curated-card:hover { border-color: #d8c8a0; }
+      html:not(.dark) body.kv-home-route .kv-home-curated-cover { width: 104px; flex-shrink: 0; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden; background: #efe4c8; }
       html:not(.dark) body.kv-home-route .kv-home-curated-cover img { width:100%; height:100%; object-fit: cover; }
-      html:not(.dark) body.kv-home-route .kv-home-curated-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; background: #eef2ff; color: #6366f1; font-size: .65rem; font-weight: 800; margin-bottom: 6px; }
-      html:not(.dark) body.kv-home-route .kv-home-curated-title { font-size: .92rem; font-weight: 700; color: #0f172a; line-height: 1.3; }
-      html:not(.dark) body.kv-home-route .kv-home-curated-desc { font-size: .72rem; color: #64748b; line-height: 1.45; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-      html:not(.dark) body.kv-home-route .kv-home-curated-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: .72rem; color: #64748b; }
-      html:not(.dark) body.kv-home-route .kv-home-curated-foot a { color: #6366f1; font-weight: 700; text-decoration: none; } .kv-home-curated-link { color: #6366f1; font-weight: 700; }
-      html:not(.dark) body.kv-home-route .kv-theme-toggle { color: #475569; }
+      html:not(.dark) body.kv-home-route .kv-home-curated-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; background: #f0e6cc; color: #8b5a2b; font-size: .65rem; font-weight: 800; margin-bottom: 6px; }
+      html:not(.dark) body.kv-home-route .kv-home-curated-title { font-size: .92rem; font-weight: 700; color: #3b2f1e; line-height: 1.3; }
+      html:not(.dark) body.kv-home-route .kv-home-curated-desc { font-size: .72rem; color: #6b5b3e; line-height: 1.45; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      html:not(.dark) body.kv-home-route .kv-home-curated-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: .72rem; color: #6b5b3e; }
+      html:not(.dark) body.kv-home-route .kv-home-curated-foot a { color: #8b5a2b; font-weight: 700; text-decoration: none; } .kv-home-curated-link { color: #8b5a2b; font-weight: 700; }
+      html:not(.dark) body.kv-home-route .kv-theme-toggle { color: #5a4a32; }
       @media (max-width: 1100px) {
         html:not(.dark) body.kv-home-route .kv-home-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
         html:not(.dark) body.kv-home-route .kv-home-popular { grid-template-columns: 1fr; }
@@ -1598,138 +1599,139 @@
         html:not(.dark) body.kv-home-route .kv-home-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
         html:not(.dark) body.kv-home-route .kv-home-section-title { font-size: 1.2rem; }
       }
-      html:not(.dark) body.kv-detail-route {
-        --kv-bg: #ffffff;
-        --kv-surface: #ffffff;
-        --kv-surface-2: #f1f5f9;
-        --kv-border: #e2e8f0;
-        --kv-text: #0f172a;
-        --kv-text-muted: #64748b;
-        --kv-accent: #6366f1;
-        --kv-accent-hover: #4f46e5;
-        --kv-success: #10b981;
-        --kv-warning: #f59e0b;
-        --kv-danger: #ef4444;
-        --kv-radius: 12px;
-        background: #f8fafc;
+       html:not(.dark) body.kv-detail-route {
+         --kv-bg: #f4ecd8;
+         --kv-surface: #faf3e0;
+         --kv-surface-2: #efe4c8;
+         --kv-border: #d8c8a0;
+         --kv-text: #3b2f1e;
+         --kv-text-muted: #6b5b3e;
+         --kv-accent: #8b5a2b;
+         --kv-accent-hover: #6b4423;
+         --kv-success: #10b981;
+         --kv-warning: #f59e0b;
+         --kv-danger: #ef4444;
+         --kv-radius: 12px;
+         background: #f4ecd8;
+
         -webkit-font-smoothing: antialiased;
       }
       html:not(.dark) body.kv-detail-route .kv-container { max-width: 1280px; }
-      html:not(.dark) body.kv-detail-route .kv-header { background: rgba(255,255,255,.96); backdrop-filter: blur(14px); border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 30; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+      html:not(.dark) body.kv-detail-route .kv-header { background: rgba(250, 243, 224,.96); backdrop-filter: blur(14px); border-bottom: 1px solid #d8c8a0; position: sticky; top: 0; z-index: 30; box-shadow: 0 1px 2px rgba(59, 47, 30,.04); }
       html:not(.dark) body.kv-detail-route .kv-header-inner { height: 64px; }
-      html:not(.dark) body.kv-detail-route .kv-brand { color: #0f172a; gap: 10px; }
-      html:not(.dark) body.kv-detail-route .kv-brand-mark { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#ffffff; font-size:1.1rem; box-shadow: 0 8px 18px -10px rgba(101,88,217,.7); }
+      html:not(.dark) body.kv-detail-route .kv-brand { color: #3b2f1e; gap: 10px; }
+      html:not(.dark) body.kv-detail-route .kv-brand-mark { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg,#8b5a2b,#a06a3a); color:#faf3e0; font-size:1.1rem; box-shadow: 0 8px 18px -10px rgba(139, 90, 43,.7); }
       html:not(.dark) body.kv-detail-route .kv-brand span:last-child { font-weight: 800; letter-spacing: -0.02em; }
-      html:not(.dark) body.kv-detail-route .kv-nav a { color: #475569; font-weight: 600; border: none; padding: 8px 12px; border-radius: 10px; font-size: .85rem; }
-      html:not(.dark) body.kv-detail-route .kv-nav a:hover { background: #f1f5f9; color: #0f172a; }
-      html:not(.dark) body.kv-detail-route .kv-theme-toggle, html:not(.dark) body.kv-detail-route .kv-mobile-btn { background: transparent; border: none; color: #475569; }
-      html:not(.dark) body.kv-detail-route .kv-theme-toggle:hover, html:not(.dark) body.kv-detail-route .kv-mobile-btn:hover { background: #f1f5f9; color: #0f172a; }
-      html:not(.dark) body.kv-detail-route .kv-footer { background: #ffffff; border-top: 1px solid #e2e8f0; color: #475569; }
-      html:not(.dark) body.kv-detail-route .kv-footer a { color: #475569; }
-      html:not(.dark) body.kv-detail-route .kv-footer a:hover { color: #4f46e5; }
+      html:not(.dark) body.kv-detail-route .kv-nav a { color: #5a4a32; font-weight: 600; border: none; padding: 8px 12px; border-radius: 10px; font-size: .85rem; }
+      html:not(.dark) body.kv-detail-route .kv-nav a:hover { background: #efe4c8; color: #3b2f1e; }
+      html:not(.dark) body.kv-detail-route .kv-theme-toggle, html:not(.dark) body.kv-detail-route .kv-mobile-btn { background: transparent; border: none; color: #5a4a32; }
+      html:not(.dark) body.kv-detail-route .kv-theme-toggle:hover, html:not(.dark) body.kv-detail-route .kv-mobile-btn:hover { background: #efe4c8; color: #3b2f1e; }
+      html:not(.dark) body.kv-detail-route .kv-footer { background: #faf3e0; border-top: 1px solid #d8c8a0; color: #5a4a32; }
+      html:not(.dark) body.kv-detail-route .kv-footer a { color: #5a4a32; }
+      html:not(.dark) body.kv-detail-route .kv-footer a:hover { color: #6b4423; }
       html:not(.dark) body.kv-detail-route .kv-detail-page { padding-top: 18px; padding-bottom: 48px; }
       html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb { margin-bottom: 14px; }
-      html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb ol { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: .78rem; color: #475569; list-style: none; padding: 0; margin: 0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb a { color: #475569; text-decoration: none; }
-      html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb a:hover { color: #4f46e5; }
-      html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb [aria-current] { color: #0f172a; font-weight: 600; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      html:not(.dark) body.kv-detail-route .kv-detail-hero { position: relative; overflow: hidden; border-radius: 20px; padding: 24px; background: linear-gradient(135deg,#ffffff 0%,#eef2ff 55%,#f1f5f9 100%); border: 1px solid #e2e8f0; box-shadow: 0 24px 48px -30px rgba(99,102,241,.12); color:#0f172a; }
-      html:not(.dark) body.kv-detail-route .kv-detail-hero::before { content:""; position: absolute; right:-80px; top:-80px; width:320px; height:320px; border-radius:999px; background: rgba(101,88,217,.18); filter: blur(70px); pointer-events:none; }
-      html:not(.dark) body.kv-detail-route .kv-detail-hero-cover { position: relative; width: 100%; max-width: 260px; margin: 0 auto 20px; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden; background: #ffffff; box-shadow: 0 18px 38px -22px rgba(15,23,42,.18); }
+      html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb ol { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: .78rem; color: #5a4a32; list-style: none; padding: 0; margin: 0; }
+      html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb a { color: #5a4a32; text-decoration: none; }
+      html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb a:hover { color: #6b4423; }
+      html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb [aria-current] { color: #3b2f1e; font-weight: 600; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      html:not(.dark) body.kv-detail-route .kv-detail-hero { position: relative; overflow: hidden; border-radius: 20px; padding: 24px; background: linear-gradient(135deg,#faf3e0 0%,#f0e6cc 55%,#efe4c8 100%); border: 1px solid #d8c8a0; box-shadow: 0 24px 48px -30px rgba(139, 90, 43,.12); color:#3b2f1e; }
+      html:not(.dark) body.kv-detail-route .kv-detail-hero::before { content:""; position: absolute; right:-80px; top:-80px; width:320px; height:320px; border-radius:999px; background: rgba(139, 90, 43,.18); filter: blur(70px); pointer-events:none; }
+      html:not(.dark) body.kv-detail-route .kv-detail-hero-cover { position: relative; width: 100%; max-width: 260px; margin: 0 auto 20px; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden; background: #faf3e0; box-shadow: 0 18px 38px -22px rgba(59, 47, 30,.18); }
       html:not(.dark) body.kv-detail-route .kv-detail-hero-cover img { width:100%; height:100%; object-fit: cover; }
-      html:not(.dark) body.kv-detail-route .kv-detail-hero-cover > div { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#64748b; padding: 20px; text-align:center; font-size:.9rem; }
+      html:not(.dark) body.kv-detail-route .kv-detail-hero-cover > div { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#6b5b3e; padding: 20px; text-align:center; font-size:.9rem; }
       html:not(.dark) body.kv-detail-route .kv-detail-hero-body { position: relative; }
       html:not(.dark) body.kv-detail-route .kv-detail-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 12px; }
       html:not(.dark) body.kv-detail-route .kv-detail-badge { display:inline-flex; align-items:center; padding:5px 12px; border-radius:999px; font-size:.7rem; font-weight:700; letter-spacing:.02em; }
-      html:not(.dark) body.kv-detail-route .kv-detail-badge-primary { background:#6366f1; color:#ffffff; }
-      html:not(.dark) body.kv-detail-route .kv-detail-badge-status { background:#a7f3d0; color:#047857; }
-      html:not(.dark) body.kv-detail-route .kv-detail-badge-pick { background:#eef2ff; color:#4f46e5; }
-      html:not(.dark) body.kv-detail-route .kv-detail-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color:#0f172a; margin: 0 0 6px; }
-      html:not(.dark) body.kv-detail-route .kv-detail-alt { font-size: .85rem; color:#475569; margin: 0 0 16px; font-style: italic; }
+      html:not(.dark) body.kv-detail-route .kv-detail-badge-primary { background:#8b5a2b; color:#faf3e0; }
+      html:not(.dark) body.kv-detail-route .kv-detail-badge-status { background:#d8e6c8; color:#3b6b3e; }
+      html:not(.dark) body.kv-detail-route .kv-detail-badge-pick { background:#f0e6cc; color:#6b4423; }
+      html:not(.dark) body.kv-detail-route .kv-detail-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color:#3b2f1e; margin: 0 0 6px; }
+      html:not(.dark) body.kv-detail-route .kv-detail-alt { font-size: .85rem; color:#5a4a32; margin: 0 0 16px; font-style: italic; }
       html:not(.dark) body.kv-detail-route .kv-detail-metrics { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 16px; }
-      html:not(.dark) body.kv-detail-route .kv-detail-metric { background:#ffffff; border-radius:10px; padding:10px 12px; display:flex; flex-direction:column; gap:4px; min-width:0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-metric-label { font-size:.62rem; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.04em; color:#64748b; }
-      html:not(.dark) body.kv-detail-route .kv-detail-metric-value { font-size:.9rem; font-weight:600; color:#0f172a; display:flex; align-items:center; gap:6px; }
+      html:not(.dark) body.kv-detail-route .kv-detail-metric { background:#faf3e0; border-radius:10px; padding:10px 12px; display:flex; flex-direction:column; gap:4px; min-width:0; }
+      html:not(.dark) body.kv-detail-route .kv-detail-metric-label { font-size:.62rem; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.04em; color:#6b5b3e; }
+      html:not(.dark) body.kv-detail-route .kv-detail-metric-value { font-size:.9rem; font-weight:600; color:#3b2f1e; display:flex; align-items:center; gap:6px; }
       html:not(.dark) body.kv-detail-route .kv-detail-metric-truncate { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; }
       html:not(.dark) body.kv-detail-route .kv-detail-metric-accent { color:#f59e0b; }
       html:not(.dark) body.kv-detail-route .kv-detail-genres { display:flex; flex-wrap:wrap; gap:6px; margin-bottom: 16px; }
-      html:not(.dark) body.kv-detail-route .kv-detail-genre { padding:6px 12px; border-radius:8px; background:#f1f5f9; color:#4f46e5; font-size:.72rem; font-weight:600; border:0; cursor:pointer; transition: background .15s ease, transform .15s ease, box-shadow .15s ease; }
-      html:not(.dark) body.kv-detail-route .kv-detail-genre:hover { background:#e2eafc; transform: translateY(-1px); box-shadow: 0 6px 14px -10px rgba(79,70,229,.45); }
+      html:not(.dark) body.kv-detail-route .kv-detail-genre { padding:6px 12px; border-radius:8px; background:#efe4c8; color:#6b4423; font-size:.72rem; font-weight:600; border:0; cursor:pointer; transition: background .15s ease, transform .15s ease, box-shadow .15s ease; }
+      html:not(.dark) body.kv-detail-route .kv-detail-genre:hover { background:#e2eafc; transform: translateY(-1px); box-shadow: 0 6px 14px -10px rgba(107, 68, 35,.45); }
       html:not(.dark) body.kv-detail-route .kv-detail-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
-      html:not(.dark) body.kv-detail-route .kv-detail-primary { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:12px; background:#6366f1; color:#ffffff; font-size:.85rem; font-weight:700; text-decoration:none; box-shadow:0 10px 24px -16px rgba(101,88,217,.8); }
-      html:not(.dark) body.kv-detail-route .kv-detail-primary:hover { background:#4f46e5; }
-      html:not(.dark) body.kv-detail-route .kv-detail-secondary { display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px; background:#f1f5f9; color:#0f172a; font-size:.82rem; font-weight:600; text-decoration:none; border:1px solid #e2e8f0; cursor:pointer; }
-      html:not(.dark) body.kv-detail-route .kv-detail-secondary:hover { background:#e2e8f0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-icon-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:12px; background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; cursor:pointer; }
-      html:not(.dark) body.kv-detail-route .kv-detail-icon-btn:hover { background:#e2e8f0; color:#0f172a; }
+      html:not(.dark) body.kv-detail-route .kv-detail-primary { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:12px; background:#8b5a2b; color:#faf3e0; font-size:.85rem; font-weight:700; text-decoration:none; box-shadow:0 10px 24px -16px rgba(139, 90, 43,.8); }
+      html:not(.dark) body.kv-detail-route .kv-detail-primary:hover { background:#6b4423; }
+      html:not(.dark) body.kv-detail-route .kv-detail-secondary { display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px; background:#efe4c8; color:#3b2f1e; font-size:.82rem; font-weight:600; text-decoration:none; border:1px solid #d8c8a0; cursor:pointer; }
+      html:not(.dark) body.kv-detail-route .kv-detail-secondary:hover { background:#d8c8a0; }
+      html:not(.dark) body.kv-detail-route .kv-detail-icon-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:12px; background:#efe4c8; color:#5a4a32; border:1px solid #d8c8a0; cursor:pointer; }
+      html:not(.dark) body.kv-detail-route .kv-detail-icon-btn:hover { background:#d8c8a0; color:#3b2f1e; }
       html:not(.dark) body.kv-detail-route .kv-detail-layout { display:grid; grid-template-columns: minmax(0,1.65fr) minmax(300px,.85fr); gap: 18px; margin-top: 20px; }
       html:not(.dark) body.kv-detail-route .kv-detail-main { display:flex; flex-direction:column; gap:16px; min-width:0; }
       html:not(.dark) body.kv-detail-route .kv-detail-sidebar { display:flex; flex-direction:column; gap:16px; min-width:0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-card { background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; padding:20px; color:#0f172a; box-shadow: 0 16px 32px -24px rgba(15,23,42,.12); }
+      html:not(.dark) body.kv-detail-route .kv-detail-card { background:#faf3e0; border:1px solid #d8c8a0; border-radius:16px; padding:20px; color:#3b2f1e; box-shadow: 0 16px 32px -24px rgba(59, 47, 30,.12); }
       html:not(.dark) body.kv-detail-route .kv-detail-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
-      html:not(.dark) body.kv-detail-route .kv-detail-card-title { display:flex; align-items:center; gap:10px; font-size:1.05rem; font-weight:700; color:#0f172a; }
-      html:not(.dark) body.kv-detail-route .kv-detail-dot { width:10px; height:10px; border-radius:999px; background:#6366f1; display:inline-block; }
-      html:not(.dark) body.kv-detail-route .kv-detail-card-note { font-size:.68rem; color:#64748b; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.04em; }
+      html:not(.dark) body.kv-detail-route .kv-detail-card-title { display:flex; align-items:center; gap:10px; font-size:1.05rem; font-weight:700; color:#3b2f1e; }
+      html:not(.dark) body.kv-detail-route .kv-detail-dot { width:10px; height:10px; border-radius:999px; background:#8b5a2b; display:inline-block; }
+      html:not(.dark) body.kv-detail-route .kv-detail-card-note { font-size:.68rem; color:#6b5b3e; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.04em; }
       html:not(.dark) body.kv-detail-route .kv-detail-link { text-decoration:none; }
-      html:not(.dark) body.kv-detail-route .kv-detail-link:hover { color:#4f46e5; }
-      html:not(.dark) body.kv-detail-route .kv-detail-synopsis { font-size:.92rem; line-height:1.65; color:#475569; white-space:pre-wrap; }
-      html:not(.dark) body.kv-detail-route .kv-detail-count { margin-left:6px; padding:2px 10px; border-radius:999px; background:#f1f5f9; color:#4f46e5; font-size:.72rem; font-weight:700; }
+      html:not(.dark) body.kv-detail-route .kv-detail-link:hover { color:#6b4423; }
+      html:not(.dark) body.kv-detail-route .kv-detail-synopsis { font-size:.92rem; line-height:1.65; color:#5a4a32; white-space:pre-wrap; }
+      html:not(.dark) body.kv-detail-route .kv-detail-count { margin-left:6px; padding:2px 10px; border-radius:999px; background:#efe4c8; color:#6b4423; font-size:.72rem; font-weight:700; }
       html:not(.dark) body.kv-detail-route .kv-detail-chapter-tools { display:flex; gap:8px; align-items:center; }
       html:not(.dark) body.kv-detail-route .kv-detail-search-wrap { position:relative; width: 220px; }
-      html:not(.dark) body.kv-detail-route .kv-detail-search-wrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#64748b; }
-      html:not(.dark) body.kv-detail-route .kv-detail-search-wrap input { width:100%; background:#ffffff; border:1px solid #e2e8f0; border-radius:10px; color:#0f172a; padding:9px 12px 9px 34px; font-size:.8rem; }
-      html:not(.dark) body.kv-detail-route .kv-detail-search-wrap input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 3px rgba(101,88,217,.22); }
+      html:not(.dark) body.kv-detail-route .kv-detail-search-wrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#6b5b3e; }
+      html:not(.dark) body.kv-detail-route .kv-detail-search-wrap input { width:100%; background:#faf3e0; border:1px solid #d8c8a0; border-radius:10px; color:#3b2f1e; padding:9px 12px 9px 34px; font-size:.8rem; }
+      html:not(.dark) body.kv-detail-route .kv-detail-search-wrap input:focus { outline:none; border-color:#8b5a2b; box-shadow:0 0 0 3px rgba(139, 90, 43,.22); }
       html:not(.dark) body.kv-detail-route .kv-detail-chapter-list { display:flex; flex-direction:column; gap:8px; max-height: 560px; overflow-y:auto; }
-      html:not(.dark) body.kv-detail-route .kv-detail-chapter-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-radius:10px; background:#f1f5f9; color:#0f172a; cursor:pointer; transition: background .12s ease; }
-      html:not(.dark) body.kv-detail-route .kv-detail-chapter-item:hover { background:#e2e8f0; }
+      html:not(.dark) body.kv-detail-route .kv-detail-chapter-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-radius:10px; background:#efe4c8; color:#3b2f1e; cursor:pointer; transition: background .12s ease; }
+      html:not(.dark) body.kv-detail-route .kv-detail-chapter-item:hover { background:#d8c8a0; }
       html:not(.dark) body.kv-detail-route .kv-detail-chapter-info { display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
-      html:not(.dark) body.kv-detail-route .kv-detail-chapter-title { font-size:.85rem; font-weight:600; color:#0f172a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-      html:not(.dark) body.kv-detail-route .kv-detail-chapter-title span { font-weight:400; color:#475569; }
-      html:not(.dark) body.kv-detail-route .kv-detail-chapter-new { font-size:.6rem; font-weight:700; text-transform:uppercase; padding:2px 8px; border-radius:6px; background:#a7f3d0; color:#047857; flex-shrink:0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-chapter-date { font-size:.7rem; color:#64748b; white-space:nowrap; flex-shrink:0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-empty { color:#64748b; font-size:.85rem; margin:8px 0 0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-notice { margin-bottom:12px; padding:10px 12px; border-radius:10px; background:#ecfdf5; color:#047857; font-size:.78rem; border:1px solid #a7f3d0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-comment-form { background:#f1f5f9; border:1px solid #e2e8f0; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+      html:not(.dark) body.kv-detail-route .kv-detail-chapter-title { font-size:.85rem; font-weight:600; color:#3b2f1e; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      html:not(.dark) body.kv-detail-route .kv-detail-chapter-title span { font-weight:400; color:#5a4a32; }
+      html:not(.dark) body.kv-detail-route .kv-detail-chapter-new { font-size:.6rem; font-weight:700; text-transform:uppercase; padding:2px 8px; border-radius:6px; background:#d8e6c8; color:#3b6b3e; flex-shrink:0; }
+      html:not(.dark) body.kv-detail-route .kv-detail-chapter-date { font-size:.7rem; color:#6b5b3e; white-space:nowrap; flex-shrink:0; }
+      html:not(.dark) body.kv-detail-route .kv-detail-empty { color:#6b5b3e; font-size:.85rem; margin:8px 0 0; }
+      html:not(.dark) body.kv-detail-route .kv-detail-notice { margin-bottom:12px; padding:10px 12px; border-radius:10px; background:#ecfdf5; color:#3b6b3e; font-size:.78rem; border:1px solid #d8e6c8; }
+      html:not(.dark) body.kv-detail-route .kv-detail-comment-form { background:#efe4c8; border:1px solid #d8c8a0; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
       html:not(.dark) body.kv-detail-route .kv-comment-form-head { display:flex; align-items:center; gap:10px; }
-      html:not(.dark) body.kv-detail-route .kv-comment-avatar { width:38px; height:38px; border-radius:50%; object-fit:cover; background:#6366f1; color:#ffffff; display:grid; place-items:center; font-weight:700; font-size:.78rem; flex-shrink:0; }
-      html:not(.dark) body.kv-detail-route .kv-comment-avatar-fallback { background:#6366f1; color:#ffffff; }
-      html:not(.dark) body.kv-detail-route .kv-comment-name { font-size:.85rem; font-weight:700; color:#0f172a; }
-      html:not(.dark) body.kv-detail-route .kv-comment-hint { font-size:.72rem; color:#64748b; }
-      html:not(.dark) body.kv-detail-route .kv-detail-input, html:not(.dark) body.kv-detail-route .kv-detail-textarea { background:#ffffff; border:1px solid #e2e8f0; border-radius:10px; color:#0f172a; padding:10px 12px; font-size:.82rem; width:100%; }
-      html:not(.dark) body.kv-detail-route .kv-detail-input:focus, html:not(.dark) body.kv-detail-route .kv-detail-textarea:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 3px rgba(101,88,217,.22); }
+      html:not(.dark) body.kv-detail-route .kv-comment-avatar { width:38px; height:38px; border-radius:50%; object-fit:cover; background:#8b5a2b; color:#faf3e0; display:grid; place-items:center; font-weight:700; font-size:.78rem; flex-shrink:0; }
+      html:not(.dark) body.kv-detail-route .kv-comment-avatar-fallback { background:#8b5a2b; color:#faf3e0; }
+      html:not(.dark) body.kv-detail-route .kv-comment-name { font-size:.85rem; font-weight:700; color:#3b2f1e; }
+      html:not(.dark) body.kv-detail-route .kv-comment-hint { font-size:.72rem; color:#6b5b3e; }
+      html:not(.dark) body.kv-detail-route .kv-detail-input, html:not(.dark) body.kv-detail-route .kv-detail-textarea { background:#faf3e0; border:1px solid #d8c8a0; border-radius:10px; color:#3b2f1e; padding:10px 12px; font-size:.82rem; width:100%; }
+      html:not(.dark) body.kv-detail-route .kv-detail-input:focus, html:not(.dark) body.kv-detail-route .kv-detail-textarea:focus { outline:none; border-color:#8b5a2b; box-shadow:0 0 0 3px rgba(139, 90, 43,.22); }
       html:not(.dark) body.kv-detail-route .kv-comment-form-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-      html:not(.dark) body.kv-detail-route .kv-detail-submit { background:#6366f1; color:#ffffff; border:none; }
-      html:not(.dark) body.kv-detail-route .kv-detail-submit:hover { background:#4f46e5; }
+      html:not(.dark) body.kv-detail-route .kv-detail-submit { background:#8b5a2b; color:#faf3e0; border:none; }
+      html:not(.dark) body.kv-detail-route .kv-detail-submit:hover { background:#6b4423; }
       html:not(.dark) body.kv-detail-route .kv-detail-comment { margin-bottom:10px; }
-      html:not(.dark) body.kv-detail-route .kv-detail-comment-card { background:#f1f5f9; border:1px solid #e2e8f0; border-radius:12px; padding:12px; }
+      html:not(.dark) body.kv-detail-route .kv-detail-comment-card { background:#efe4c8; border:1px solid #d8c8a0; border-radius:12px; padding:12px; }
       html:not(.dark) body.kv-detail-route .kv-detail-comment-main { display:flex; gap:10px; align-items:flex-start; }
       html:not(.dark) body.kv-detail-route .kv-detail-comment-body { min-width:0; flex:1; }
       html:not(.dark) body.kv-detail-route .kv-detail-comment-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-      html:not(.dark) body.kv-detail-route .kv-detail-comment-head strong { font-size:.82rem; color:#0f172a; }
-      html:not(.dark) body.kv-detail-route .kv-detail-comment-you { font-size:.68rem; color:#4f46e5; }
-      html:not(.dark) body.kv-detail-route .kv-detail-comment-date { font-size:.7rem; color:#64748b; font-family:'JetBrains Mono',monospace; }
-      html:not(.dark) body.kv-detail-route .kv-detail-comment-text { font-size:.82rem; color:#475569; line-height:1.55; white-space:pre-wrap; margin:6px 0 8px; }
+      html:not(.dark) body.kv-detail-route .kv-detail-comment-head strong { font-size:.82rem; color:#3b2f1e; }
+      html:not(.dark) body.kv-detail-route .kv-detail-comment-you { font-size:.68rem; color:#6b4423; }
+      html:not(.dark) body.kv-detail-route .kv-detail-comment-date { font-size:.7rem; color:#6b5b3e; font-family:'JetBrains Mono',monospace; }
+      html:not(.dark) body.kv-detail-route .kv-detail-comment-text { font-size:.82rem; color:#5a4a32; line-height:1.55; white-space:pre-wrap; margin:6px 0 8px; }
       html:not(.dark) body.kv-detail-route .kv-detail-comment-actions { display:flex; gap:8px; }
-      html:not(.dark) body.kv-detail-route .kv-comment-action { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:8px; background:#ffffff; border:1px solid #e2e8f0; color:#475569; font-size:.75rem; cursor:pointer; }
-      html:not(.dark) body.kv-detail-route .kv-comment-action.active { color:#4f46e5; border-color:#6366f1; }
-      html:not(.dark) body.kv-detail-route .kv-comment-reply-form { margin-top:10px; display:flex; flex-direction:column; gap:8px; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#ffffff; }
+      html:not(.dark) body.kv-detail-route .kv-comment-action { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:8px; background:#faf3e0; border:1px solid #d8c8a0; color:#5a4a32; font-size:.75rem; cursor:pointer; }
+      html:not(.dark) body.kv-detail-route .kv-comment-action.active { color:#6b4423; border-color:#8b5a2b; }
+      html:not(.dark) body.kv-detail-route .kv-comment-reply-form { margin-top:10px; display:flex; flex-direction:column; gap:8px; padding:10px; border:1px solid #d8c8a0; border-radius:10px; background:#faf3e0; }
       html:not(.dark) body.kv-detail-route .kv-comment-reply-actions { display:flex; gap:8px; justify-content:flex-end; }
       html:not(.dark) body.kv-detail-route .kv-detail-comment-children { margin-left:24px; margin-top:8px; display:flex; flex-direction:column; gap:8px; }
       html:not(.dark) body.kv-detail-route .kv-detail-info-card { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 6px 24px; }
       html:not(.dark) body.kv-detail-route .kv-detail-info-card .kv-detail-card-title { grid-column: 1 / -1; margin-bottom: 2px; }
       @media (max-width: 900px) { html:not(.dark) body.kv-detail-route .kv-detail-info-card { grid-template-columns: 1fr; } }
-      html:not(.dark) body.kv-detail-route .kv-detail-info-row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #e2e8f0; font-size:.78rem; }
+      html:not(.dark) body.kv-detail-route .kv-detail-info-row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #d8c8a0; font-size:.78rem; }
       html:not(.dark) body.kv-detail-route .kv-detail-info-row:last-child { border-bottom:0; padding-bottom:0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-info-row span { color:#64748b; }
-      html:not(.dark) body.kv-detail-route .kv-detail-info-row strong { color:#0f172a; font-weight:500; text-align:right; }
+      html:not(.dark) body.kv-detail-route .kv-detail-info-row span { color:#6b5b3e; }
+      html:not(.dark) body.kv-detail-route .kv-detail-info-row strong { color:#3b2f1e; font-weight:500; text-align:right; }
       html:not(.dark) body.kv-detail-route .kv-detail-reco-list { display:flex; flex-direction:column; gap:10px; }
       html:not(.dark) body.kv-detail-route .kv-detail-reco-item { display:flex; align-items:center; gap:12px; padding:8px; border-radius:10px; text-decoration:none; transition: background .12s ease; }
-      html:not(.dark) body.kv-detail-route .kv-detail-reco-item:hover { background:#f1f5f9; }
-      html:not(.dark) body.kv-detail-route .kv-detail-reco-cover { width:58px; flex-shrink:0; aspect-ratio:3/4; border-radius:8px; overflow:hidden; background:#ffffff; }
+      html:not(.dark) body.kv-detail-route .kv-detail-reco-item:hover { background:#efe4c8; }
+      html:not(.dark) body.kv-detail-route .kv-detail-reco-cover { width:58px; flex-shrink:0; aspect-ratio:3/4; border-radius:8px; overflow:hidden; background:#faf3e0; }
       html:not(.dark) body.kv-detail-route .kv-detail-reco-cover img { width:100%; height:100%; object-fit: cover; }
       html:not(.dark) body.kv-detail-route .kv-detail-reco-body { flex:1; min-width:0; }
-      html:not(.dark) body.kv-detail-route .kv-detail-reco-body h4 { font-size:.8rem; font-weight:600; color:#0f172a; margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-      html:not(.dark) body.kv-detail-route .kv-detail-reco-meta { font-size:.68rem; color:#64748b; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      html:not(.dark) body.kv-detail-route .kv-detail-reco-body h4 { font-size:.8rem; font-weight:600; color:#3b2f1e; margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      html:not(.dark) body.kv-detail-route .kv-detail-reco-meta { font-size:.68rem; color:#6b5b3e; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
       html:not(.dark) body.kv-detail-route .kv-detail-reco-rating { font-size:.72rem; font-weight:700; color:#f59e0b; white-space:nowrap; }
       @media (min-width: 900px) {
         html:not(.dark) body.kv-detail-route .kv-detail-hero { display: flex; gap: 28px; align-items: center; }
@@ -1750,7 +1752,7 @@
         html:not(.dark) body.kv-detail-route .kv-detail-search-wrap { flex: 1; width: auto; }
       }
       body.kv-reader-route { background: var(--kv-bg); color: var(--kv-text); font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif; }
-      html:not(.dark) body.kv-reader-route { --kv-bg:#f4f4f7; --kv-surface:#ffffff; --kv-surface-2:#f0f0f4; --kv-border:#dedee5; --kv-text:#17171d; --kv-text-muted:#686875; --kv-accent:#6366f1; --kv-accent-hover:#4f46e5; --kv-reader-bg:#e6e6eb; background:var(--kv-bg); }
+      html:not(.dark) body.kv-reader-route { --kv-bg:#f4f4f7; --kv-surface:#faf3e0; --kv-surface-2:#f0f0f4; --kv-border:#dedee5; --kv-text:#17171d; --kv-text-muted:#686875; --kv-accent:#8b5a2b; --kv-accent-hover:#6b4423; --kv-reader-bg:#e6e6eb; background:var(--kv-bg); }
       html.dark body.kv-reader-route { --kv-bg:#101014; --kv-surface:#19191f; --kv-surface-2:#22222a; --kv-border:#30303a; --kv-text:#f4f4f6; --kv-text-muted:#a3a3ad; --kv-accent:#8b5cf6; --kv-accent-hover:#7c3aed; --kv-reader-bg:#08080a; background:var(--kv-bg); }
       body.kv-reader-route .kv-reader-shell { min-height:100vh; background:var(--kv-bg); }
       body.kv-reader-route .kv-reader-page { padding:14px 0 40px; }
@@ -1773,17 +1775,23 @@
       body.kv-reader-route .kv-reader-placeholder-inner { text-align:center; }
       body.kv-reader-route .kv-reader-placeholder-inner strong { display:block; color:var(--kv-text); margin-bottom:8px; }
       body.kv-reader-route .kv-reader-placeholder-inner small { line-height:1.6; }
-      body.kv-reader-route .kv-reader-overlay { position:sticky; bottom:12px; z-index:60; height:0; pointer-events:none; }
-      body.kv-reader-route .kv-reader-side { position:fixed; right:18px; top:34%; display:flex; flex-direction:column; gap:14px; pointer-events:auto; z-index:60; transition:transform .3s ease, opacity .3s ease; }
-      body.kv-reader-route .kv-reader-bottom-controls { position:absolute; left:50%; bottom:0; transform:translateX(-50%); display:flex; align-items:center; gap:clamp(10px,2.2vw,24px); pointer-events:auto; transition:transform .3s ease, opacity .3s ease; }
+       body.kv-reader-route .kv-reader-overlay { position:sticky; bottom:12px; z-index:60; height:0; pointer-events:none; }
+       body.kv-reader-route .kv-reader-side { position:fixed; right:18px; top:34%; display:flex; flex-direction:column; gap:14px; pointer-events:auto; z-index:60; transition:transform .3s ease, opacity .3s ease; }
+       body.kv-reader-route .kv-reader-bottom-controls { position:absolute; left:50%; bottom:0; transform:translateX(-50%); display:flex; align-items:center; gap:clamp(10px,2.2vw,24px); pointer-events:auto; transition:transform .3s ease, opacity .3s ease; }
+
       body.kv-reader-route .kv-reader-overlay-hidden .kv-reader-side { transform:translateX(130%); opacity:0; pointer-events:none; }
       body.kv-reader-route .kv-reader-overlay-hidden .kv-reader-bottom-controls { transform:translate(-50%, 130%); opacity:0; pointer-events:none; }
       body.kv-reader-route .kv-reader-overlay-settled { height:76px; overflow:visible; }
       body.kv-reader-route .kv-reader-overlay-settled .kv-reader-bottom-controls { bottom:auto; top:6px; }
-      body.kv-reader-route .kv-round-btn { width:clamp(52px,7vw,64px); height:clamp(52px,7vw,64px); border:1px solid var(--kv-border); border-radius:999px; background:color-mix(in srgb, var(--kv-surface) 90%, transparent); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:var(--kv-text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; box-shadow:0 8px 22px -12px rgba(0,0,0,.4); transition:transform .15s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color:transparent; }
-      body.kv-reader-route .kv-round-btn svg { width:46%; height:46%; display:block; }
-      body.kv-reader-route .kv-round-btn:hover { border-color:var(--kv-accent); transform:scale(1.06); }
-      body.kv-reader-route .kv-round-btn:active { transform:scale(.94); }
+        body.kv-reader-route .kv-round-btn { width:clamp(48px,6vw,56px); height:clamp(48px,6vw,56px); border:1px solid var(--kv-border); border-radius:14px; background:color-mix(in srgb, var(--kv-surface) 92%, transparent); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:var(--kv-text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; box-shadow:0 8px 22px -12px rgba(0,0,0,.4); transition:transform .15s ease, border-color .15s ease, color .15s ease, background .15s ease; -webkit-tap-highlight-color:transparent; }
+        body.kv-reader-route .kv-round-btn-next { background:var(--kv-accent); color:#faf3e0; border-color:var(--kv-accent); }
+        body.kv-reader-route .kv-round-btn-next:hover { background:var(--kv-accent-hover); border-color:var(--kv-accent-hover); transform:translateY(-2px) scale(1.04); }
+
+
+       body.kv-reader-route .kv-round-btn svg { width:46%; height:46%; display:block; }
+       body.kv-reader-route .kv-round-btn:hover { border-color:var(--kv-accent); transform:scale(1.06); }
+       body.kv-reader-route .kv-round-btn:active { transform:scale(.94); }
+
       body.kv-reader-route .kv-round-btn.is-active { border-color:var(--kv-accent); color:var(--kv-accent); box-shadow:0 10px 26px -14px var(--kv-accent); }
       body.kv-reader-route .kv-round-btn.is-disabled, body.kv-reader-route .kv-round-btn:disabled { opacity:.35; cursor:not-allowed; pointer-events:none; }
       body.kv-reader-route .kv-reader-scrim { position:fixed; inset:0; z-index:61; background:rgba(8,8,12,.55); backdrop-filter:blur(2px); }
@@ -1803,12 +1811,13 @@
       body.kv-reader-route .kv-reader-chapter-row.is-active { background:color-mix(in srgb, var(--kv-accent) 12%, var(--kv-surface)); }
       body.kv-reader-route .kv-reader-chapter-num { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--kv-accent); font-weight:700; min-width:48px; }
       body.kv-reader-route .kv-reader-chapter-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-      @media (max-width:640px) {
-        body.kv-reader-route .kv-reader-side { right:8px; top:30%; gap:10px; }
-        body.kv-reader-route .kv-round-btn { width:52px; height:52px; }
-        body.kv-reader-route .kv-reader-bottom-controls { gap:8px; bottom:max(12px, env(safe-area-inset-bottom)); }
-        body.kv-reader-route .kv-reader-sheet { bottom:12px; }
-      }
+       @media (max-width:640px) {
+         body.kv-reader-route .kv-reader-side { right:8px; top:30%; gap:10px; }
+         body.kv-reader-route .kv-round-btn { width:52px; height:52px; }
+         body.kv-reader-route .kv-reader-bottom-controls { gap:8px; bottom:max(12px, env(safe-area-inset-bottom)); }
+         body.kv-reader-route .kv-reader-sheet { bottom:12px; }
+       }
+
       body.kv-reader-route .kv-reader-notice { color:var(--kv-text-muted); text-align:center; font-size:12px; margin-top:20px; }
       body.kv-reader-route .kv-detail-card { background:var(--kv-surface); border:1px solid var(--kv-border); border-radius:16px; padding:18px; margin:18px 0 0; }
       body.kv-reader-route .kv-detail-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
@@ -1849,8 +1858,8 @@
       }
       html:not(.dark) body.kv-home-route .kv-catalog-page { padding-top: 10px; padding-bottom: 48px; }
       html:not(.dark) body.kv-home-route .kv-catalog-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 0 6px; }
-      html:not(.dark) body.kv-home-route .kv-catalog-sub { color: #64748b; font-size: .9rem; margin: 6px 0 0; }
-      html:not(.dark) body.kv-home-route .kv-catalog-count { background: #eef2ff; color: #4f46e5; border-radius: 999px; padding: 8px 16px; font-size: .78rem; font-weight: 700; }
+      html:not(.dark) body.kv-home-route .kv-catalog-sub { color: #6b5b3e; font-size: .9rem; margin: 6px 0 0; }
+      html:not(.dark) body.kv-home-route .kv-catalog-count { background: #f0e6cc; color: #6b4423; border-radius: 999px; padding: 8px 16px; font-size: .78rem; font-weight: 700; }
       body.kv-home-route .kv-catalog-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 14px; padding: 12px; margin-top: 14px; box-shadow: 0 10px 30px -24px rgba(9, 12, 24, .35); }
       body.kv-home-route .kv-catalog-toolbar .kv-search-wrap { display: flex; align-items: center; position: relative; flex: 1 1 220px; min-width: 180px; }
       body.kv-home-route .kv-catalog-toolbar .kv-search-wrap .kv-search-icon { position: absolute; left: 12px; width: 18px; height: 18px; color: var(--kv-text-muted); pointer-events: none; }
@@ -1908,28 +1917,28 @@
       }
 
       html:not(.dark) body.kv-home-route .kv-catalog-grid { grid-template-columns: repeat(6, minmax(0,1fr)); margin-top: 18px; }
-      html:not(.dark) body.kv-home-route .kv-catalog-empty { margin-top: 28px; text-align: center; background: #ffffff; border: 1px dashed #e2e8f0; border-radius: 14px; padding: 40px 16px; color: #64748b; }
+      html:not(.dark) body.kv-home-route .kv-catalog-empty { margin-top: 28px; text-align: center; background: #faf3e0; border: 1px dashed #d8c8a0; border-radius: 14px; padding: 40px 16px; color: #6b5b3e; }
       @media (max-width: 1100px) { html:not(.dark) body.kv-home-route .kv-catalog-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } }
       @media (max-width: 860px) { html:not(.dark) body.kv-home-route .kv-catalog-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
       @media (max-width: 520px) { html:not(.dark) body.kv-home-route .kv-catalog-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
       html:not(.dark) body.kv-home-route .kv-account-page { padding-top: 16px; padding-bottom: 56px; }
-      html:not(.dark) body.kv-home-route .kv-account-hero { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; box-shadow: 0 16px 40px -28px rgba(15,23,42,.18); }
-      html:not(.dark) body.kv-home-route .kv-account-banner { position: relative; height: 190px; background: linear-gradient(120deg,#4f46e5 0%,#6366f1 55%,#8b5cf6 100%); overflow: hidden; }
-      html:not(.dark) body.kv-home-route .kv-account-banner::before { content:""; position:absolute; inset:0; opacity:.22; background-image: radial-gradient(circle, rgba(255,255,255,.9) 1.5px, transparent 1.5px); background-size: 22px 22px; }
-      html:not(.dark) body.kv-home-route .kv-account-banner::after { content:""; position:absolute; right:-60px; top:-80px; width:300px; height:300px; border-radius:50%; background: rgba(255,255,255,.12); filter: blur(24px); }
-      html:not(.dark) body.kv-home-route .kv-account-banner-badge { position: absolute; top:18px; right:18px; display:inline-flex; align-items:center; gap:8px; background: rgba(255,255,255,.82); backdrop-filter: blur(8px); color:#131b2e; padding:6px 14px; border-radius:999px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+      html:not(.dark) body.kv-home-route .kv-account-hero { background: #faf3e0; border: 1px solid #d8c8a0; border-radius: 20px; overflow: hidden; box-shadow: 0 16px 40px -28px rgba(59, 47, 30,.18); }
+      html:not(.dark) body.kv-home-route .kv-account-banner { position: relative; height: 190px; background: linear-gradient(120deg,#6b4423 0%,#8b5a2b 55%,#a06a3a 100%); overflow: hidden; }
+      html:not(.dark) body.kv-home-route .kv-account-banner::before { content:""; position:absolute; inset:0; opacity:.22; background-image: radial-gradient(circle, rgba(250, 243, 224,.9) 1.5px, transparent 1.5px); background-size: 22px 22px; }
+      html:not(.dark) body.kv-home-route .kv-account-banner::after { content:""; position:absolute; right:-60px; top:-80px; width:300px; height:300px; border-radius:50%; background: rgba(250, 243, 224,.12); filter: blur(24px); }
+      html:not(.dark) body.kv-home-route .kv-account-banner-badge { position: absolute; top:18px; right:18px; display:inline-flex; align-items:center; gap:8px; background: rgba(250, 243, 224,.82); backdrop-filter: blur(8px); color:#131b2e; padding:6px 14px; border-radius:999px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
       html:not(.dark) body.kv-home-route .kv-account-pulse { width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; }
       html:not(.dark) body.kv-home-route .kv-account-identity { display:flex; flex-direction:row; align-items:flex-end; justify-content:space-between; gap:18px; padding: 0 28px 22px; transform: translateY(-56px); margin-bottom: -30px; flex-wrap: wrap; }
       html:not(.dark) body.kv-home-route .kv-account-avatar-wrap { position:relative; }
-      html:not(.dark) body.kv-home-route .kv-account-avatar-img, html:not(.dark) body.kv-home-route .kv-account-avatar-fallback { width:128px; height:128px; border-radius:50%; border:5px solid #ffffff; box-shadow: 0 12px 28px -18px rgba(15,23,42,.35); object-fit: cover; display:grid; place-items:center; background:#eef2ff; color:#4f46e5; font-size:2.4rem; font-weight:800; }
+      html:not(.dark) body.kv-home-route .kv-account-avatar-img, html:not(.dark) body.kv-home-route .kv-account-avatar-fallback { width:128px; height:128px; border-radius:50%; border:5px solid #faf3e0; box-shadow: 0 12px 28px -18px rgba(59, 47, 30,.35); object-fit: cover; display:grid; place-items:center; background:#f0e6cc; color:#6b4423; font-size:2.4rem; font-weight:800; }
       html:not(.dark) body.kv-home-route .kv-account-bio { flex:1; min-width:0; }
       html:not(.dark) body.kv-home-route .kv-account-name-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-      html:not(.dark) body.kv-home-route .kv-account-name-row h1 { font-size:1.5rem; font-weight:800; color:#0f172a; margin:0; }
+      html:not(.dark) body.kv-home-route .kv-account-name-row h1 { font-size:1.5rem; font-weight:800; color:#3b2f1e; margin:0; }
       html:not(.dark) body.kv-home-route .kv-account-role { background:#e2dfff; color:#3323cc; font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; padding:4px 10px; border-radius:999px; }
-      html:not(.dark) body.kv-home-route .kv-account-handle { color:#4f46e5; font-size:.85rem; font-weight:600; margin:4px 0; }
-      html:not(.dark) body.kv-home-route .kv-account-meta { color:#64748b; font-size:.8rem; margin:0; }
+      html:not(.dark) body.kv-home-route .kv-account-handle { color:#6b4423; font-size:.85rem; font-weight:600; margin:4px 0; }
+      html:not(.dark) body.kv-home-route .kv-account-meta { color:#6b5b3e; font-size:.8rem; margin:0; }
       html:not(.dark) body.kv-home-route .kv-account-actions { display:flex; gap:10px; }
-      html:not(.dark) body.kv-home-route .kv-account-primary { display:inline-flex; align-items:center; gap:8px; padding:11px 22px; border-radius:12px; background:#4f46e5; color:#ffffff; font-size:.82rem; font-weight:700; border:none; cursor:pointer; box-shadow: 0 10px 24px -16px rgba(79,70,229,.7); }
+      html:not(.dark) body.kv-home-route .kv-account-primary { display:inline-flex; align-items:center; gap:8px; padding:11px 22px; border-radius:12px; background:#6b4423; color:#faf3e0; font-size:.82rem; font-weight:700; border:none; cursor:pointer; box-shadow: 0 10px 24px -16px rgba(107, 68, 35,.7); }
       html:not(.dark) body.kv-home-route .kv-account-primary:hover { background:#4338ca; }
       html:not(.dark) body.kv-home-route .kv-account-metrics { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:10px; padding: 0 28px 22px; }
       html:not(.dark) body.kv-home-route .kv-account-metric { background:#f2f3ff; border-radius:14px; padding:12px 14px; display:flex; flex-direction:column; gap:4px; min-width:0; }
@@ -1938,42 +1947,42 @@
       html:not(.dark) body.kv-home-route .kv-account-layout { display:grid; grid-template-columns: minmax(0,1.7fr) minmax(280px,.9fr); gap:18px; margin-top:20px; }
       html:not(.dark) body.kv-home-route .kv-account-main { display:flex; flex-direction:column; gap:18px; min-width:0; }
       html:not(.dark) body.kv-home-route .kv-account-sidebar { display:flex; flex-direction:column; gap:14px; min-width:0; }
-      html:not(.dark) body.kv-home-route .kv-account-block { background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; }
+      html:not(.dark) body.kv-home-route .kv-account-block { background:#faf3e0; border:1px solid #d8c8a0; border-radius:16px; padding:18px; }
       html:not(.dark) body.kv-home-route .kv-account-block-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
       html:not(.dark) body.kv-home-route .kv-account-block-title { display:flex; align-items:center; gap:8px; font-size:1rem; font-weight:700; color:#131b2e; }
       html:not(.dark) body.kv-home-route .kv-account-dot { width:9px; height:9px; border-radius:999px; display:inline-block; }
-      html:not(.dark) body.kv-home-route .kv-account-dot-primary { background:#4f46e5; }
+      html:not(.dark) body.kv-home-route .kv-account-dot-primary { background:#6b4423; }
       html:not(.dark) body.kv-home-route .kv-account-dot-secondary { background:#4e45d5; }
       html:not(.dark) body.kv-home-route .kv-account-block-note { font-size:.75rem; color:#777587; font-family:'JetBrains Mono',monospace; }
-      html:not(.dark) body.kv-home-route .kv-account-link { color:#4f46e5; text-decoration:none; font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; }
+      html:not(.dark) body.kv-home-route .kv-account-link { color:#6b4423; text-decoration:none; font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; }
       html:not(.dark) body.kv-home-route .kv-account-link:hover { text-decoration:underline; }
       html:not(.dark) body.kv-home-route .kv-account-empty { color:#777587; font-size:.85rem; margin:8px 0 0; }
-      html:not(.dark) body.kv-home-route .kv-account-history-card { display:flex; gap:14px; padding:12px; border:1px solid #e2e8f0; border-radius:14px; margin-bottom:12px; background:#ffffff; transition: border-color .15s ease, box-shadow .15s ease; }
-      html:not(.dark) body.kv-home-route .kv-account-history-card:hover { border-color:#c3c0ff; box-shadow: 0 10px 24px -18px rgba(79,70,229,.35); }
+      html:not(.dark) body.kv-home-route .kv-account-history-card { display:flex; gap:14px; padding:12px; border:1px solid #d8c8a0; border-radius:14px; margin-bottom:12px; background:#faf3e0; transition: border-color .15s ease, box-shadow .15s ease; }
+      html:not(.dark) body.kv-home-route .kv-account-history-card:hover { border-color:#c3c0ff; box-shadow: 0 10px 24px -18px rgba(107, 68, 35,.35); }
       html:not(.dark) body.kv-home-route .kv-account-history-card:last-child { margin-bottom:0; }
-      html:not(.dark) body.kv-home-route .kv-account-history-cover { width:86px; flex-shrink:0; aspect-ratio:3/4; border-radius:10px; overflow:hidden; background:#eef2f7; }
+      html:not(.dark) body.kv-home-route .kv-account-history-cover { width:86px; flex-shrink:0; aspect-ratio:3/4; border-radius:10px; overflow:hidden; background:#efe4c8; }
       html:not(.dark) body.kv-home-route .kv-account-history-cover img { width:100%; height:100%; object-fit:cover; }
       html:not(.dark) body.kv-home-route .kv-account-history-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
-      html:not(.dark) body.kv-home-route .kv-account-history-type { font-size:.62rem; font-weight:700; color:#4f46e5; text-transform:uppercase; letter-spacing:.05em; }
+      html:not(.dark) body.kv-home-route .kv-account-history-type { font-size:.62rem; font-weight:700; color:#6b4423; text-transform:uppercase; letter-spacing:.05em; }
       html:not(.dark) body.kv-home-route .kv-account-history-body h3 { font-size:.95rem; font-weight:700; color:#131b2e; margin:0; }
-      html:not(.dark) body.kv-home-route .kv-account-history-meta { display:flex; flex-wrap:wrap; gap:8px; font-size:.72rem; color:#64748b; }
-      html:not(.dark) body.kv-home-route .kv-account-history-btn { display:inline-flex; align-items:center; gap:6px; width:fit-content; margin-top:6px; padding:7px 14px; border-radius:8px; background:#4f46e5; color:#ffffff; font-size:.75rem; font-weight:700; text-decoration:none; }
+      html:not(.dark) body.kv-home-route .kv-account-history-meta { display:flex; flex-wrap:wrap; gap:8px; font-size:.72rem; color:#6b5b3e; }
+      html:not(.dark) body.kv-home-route .kv-account-history-btn { display:inline-flex; align-items:center; gap:6px; width:fit-content; margin-top:6px; padding:7px 14px; border-radius:8px; background:#6b4423; color:#faf3e0; font-size:.75rem; font-weight:700; text-decoration:none; }
       html:not(.dark) body.kv-home-route .kv-account-history-btn:hover { background:#4338ca; }
       html:not(.dark) body.kv-home-route .kv-account-fav-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
-      html:not(.dark) body.kv-home-route .kv-account-side-card { background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; padding:16px; }
+      html:not(.dark) body.kv-home-route .kv-account-side-card { background:#faf3e0; border:1px solid #d8c8a0; border-radius:16px; padding:16px; }
       html:not(.dark) body.kv-home-route .kv-account-pref-row { display:flex; align-items:center; gap:12px; margin-top:12px; padding:12px; background:#f2f3ff; border-radius:12px; }
-      html:not(.dark) body.kv-home-route .kv-account-pref-icon { width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background:#e2dfff; color:#4f46e5; font-size:1.1rem; }
+      html:not(.dark) body.kv-home-route .kv-account-pref-icon { width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background:#e2dfff; color:#6b4423; font-size:1.1rem; }
       html:not(.dark) body.kv-home-route .kv-account-pref-row strong { font-size:.82rem; color:#131b2e; display:block; }
-      html:not(.dark) body.kv-home-route .kv-account-pref-row p { color:#64748b; font-size:.72rem; margin:2px 0 0; }
-      html:not(.dark) body.kv-home-route .kv-account-pref-btn { margin-left:auto; background:#ffffff; border:1px solid #e2e8f0; color:#4f46e5; border-radius:8px; padding:6px 12px; font-size:.72rem; font-weight:700; cursor:pointer; }
+      html:not(.dark) body.kv-home-route .kv-account-pref-row p { color:#6b5b3e; font-size:.72rem; margin:2px 0 0; }
+      html:not(.dark) body.kv-home-route .kv-account-pref-btn { margin-left:auto; background:#faf3e0; border:1px solid #d8c8a0; color:#6b4423; border-radius:8px; padding:6px 12px; font-size:.72rem; font-weight:700; cursor:pointer; }
       html:not(.dark) body.kv-home-route .kv-account-links { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
       html:not(.dark) body.kv-home-route .kv-account-links a { display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:10px; background:#f2f3ff; color:#131b2e; font-size:.8rem; font-weight:600; text-decoration:none; }
-      html:not(.dark) body.kv-home-route .kv-account-links a:hover { background:#e2e7ff; color:#4f46e5; }
-      html:not(.dark) body.kv-home-route .kv-account-logout { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:13px; border-radius:12px; background:#f2f3ff; color:#464555; border:1px solid #e2e8f0; font-size:.82rem; font-weight:700; cursor:pointer; }
+      html:not(.dark) body.kv-home-route .kv-account-links a:hover { background:#e2e7ff; color:#6b4423; }
+      html:not(.dark) body.kv-home-route .kv-account-logout { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:13px; border-radius:12px; background:#f2f3ff; color:#464555; border:1px solid #d8c8a0; font-size:.82rem; font-weight:700; cursor:pointer; }
       html:not(.dark) body.kv-home-route .kv-account-logout:hover { background:#ffdad6; color:#93000a; border-color:#ffdad6; }
-      html:not(.dark) body.kv-home-route .kv-account-secondary { display:inline-flex; align-items:center; gap:8px; padding:11px 22px; border-radius:12px; background:#ffffff; color:#4f46e5; border:1px solid #e2e8f0; font-size:.82rem; font-weight:700; cursor:pointer; }
-      html:not(.dark) body.kv-home-route .kv-account-secondary:hover { border-color:#6366f1; background:#eef2ff; }
-      html:not(.dark) body.kv-home-route .kv-account-edit { background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-top:16px; box-shadow: 0 10px 28px -22px rgba(15,23,42,.18); }
+      html:not(.dark) body.kv-home-route .kv-account-secondary { display:inline-flex; align-items:center; gap:8px; padding:11px 22px; border-radius:12px; background:#faf3e0; color:#6b4423; border:1px solid #d8c8a0; font-size:.82rem; font-weight:700; cursor:pointer; }
+      html:not(.dark) body.kv-home-route .kv-account-secondary:hover { border-color:#8b5a2b; background:#f0e6cc; }
+      html:not(.dark) body.kv-home-route .kv-account-edit { background:#faf3e0; border:1px solid #d8c8a0; border-radius:16px; padding:18px; margin-top:16px; box-shadow: 0 10px 28px -22px rgba(59, 47, 30,.18); }
       html:not(.dark) body.kv-home-route .kv-account-edit-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
       html:not(.dark) body.kv-home-route .kv-account-edit-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
       html:not(.dark) body.kv-home-route .kv-account-edit-label { display:flex; flex-direction:column; gap:6px; font-size:.72rem; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.04em; color:#464555; }
@@ -2041,7 +2050,8 @@
       html.dark body.kv-home-route .kv-home-genres::-webkit-scrollbar { height: 6px; }
       html.dark body.kv-home-route .kv-home-genres::-webkit-scrollbar-track { background: #20243a; border-radius: 999px; }
       html.dark body.kv-home-route .kv-home-genres::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
-      html.dark body.kv-home-route .kv-home-genre { white-space: nowrap; padding: 8px 14px; border-radius: 12px; border: 1px solid #2b304c; background: #fff; color: #a0a7b8; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .15s ease; }
+       html.dark body.kv-home-route .kv-home-genre { white-space: nowrap; padding: 8px 14px; border-radius: 12px; border: 1px solid #2b304c; background: #20243a; color: #c8c4d6; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .15s ease; }
+
       html.dark body.kv-home-route .kv-home-genre:hover { background: #20243a; color: #6558d9; border-color: #c7d2fe; }
       html.dark body.kv-home-route .kv-home-genre.active { background: #6558d9; color: #fff; border-color: #6558d9; box-shadow: 0 8px 18px -12px rgba(101,88,217,.5); }
       html.dark body.kv-home-route .kv-home-section { margin-top: 38px; }
@@ -2056,8 +2066,9 @@
       html.dark body.kv-home-route .kv-home-card-cover img { width: 100%; height: 100%; object-fit: cover; }
       html.dark body.kv-home-route .kv-home-card-badge { position: absolute; bottom: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: rgba(99,102,241,.94); color: #fff; font-size: .62rem; font-weight: 700; letter-spacing: .02em; }
       html.dark body.kv-home-route .kv-home-card-tags { display: flex; gap: 5px; margin: 8px 0 6px; }
-      html.dark body.kv-home-route .kv-home-card-tag { font-size: .6rem; font-weight: 700; padding: 3px 7px; border-radius: 5px; background: #20243a; color: #6558d9; }
-      html.dark body.kv-home-route .kv-home-card-tag.status { background: #20243a; color: #a0a7b8; }
+       html.dark body.kv-home-route .kv-home-card-tag { font-size: .6rem; font-weight: 700; padding: 3px 7px; border-radius: 5px; background: #20243a; color: #c8c4d6; }
+       html.dark body.kv-home-route .kv-home-card-tag.status { background: #20243a; color: #a0a7b8; }
+
       html.dark body.kv-home-route .kv-home-card-title { font-size: .78rem; font-weight: 700; line-height: 1.35; color: #dee1fe; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.1em; }
       html.dark body.kv-home-route .kv-home-popular { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
       html.dark body.kv-home-route .kv-home-rank { display: flex; align-items: center; gap: 12px; background: #171a27; border: 1px solid #2b304c; border-radius: 14px; padding: 12px; text-decoration: none; color: inherit; transition: border-color .15s ease, box-shadow .15s ease; }
@@ -2349,17 +2360,22 @@
     .kv-comment-rules-head { display:flex; align-items:center; gap:8px; font-size:.78rem; font-weight:800; color:var(--kv-text); letter-spacing:.04em; text-transform:uppercase; margin-bottom:8px; }
     .kv-comment-rules-head svg { width:16px; height:16px; display:block; color:var(--kv-accent); }
     .kv-comment-rules-list { margin:0; padding-left:18px; display:grid; gap:4px; font-size:.8rem; line-height:1.5; color:var(--kv-text-muted); }
-    .kv-comment-reaction { margin: 12px 0 4px; padding: 12px 14px; border:1px solid var(--kv-border); border-radius:12px; background: var(--kv-surface); }
-    .kv-comment-reaction-label { font-size:.68rem; font-weight:700; color:var(--kv-text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
-    .kv-manga-reaction-row { display:flex; flex-wrap:wrap; gap:8px; }
-    .kv-manga-reaction { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; border:1px solid var(--kv-border); background:var(--kv-surface-2); color:var(--kv-text-muted); cursor:pointer; transition: border-color .15s ease, transform .15s ease, color .15s ease, background-color .15s ease; }
-    .kv-manga-reaction:hover { transform: translateY(-1px); border-color: var(--kv-accent); color: var(--kv-text); }
+    .kv-comment-reaction { margin: 4px 0 12px; padding: 14px 12px; border: 1px solid var(--kv-border); border-radius: 12px; background: var(--kv-surface); }
+    .kv-comment-reaction-label { font-size: .72rem; font-weight: 700; color: var(--kv-text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; text-align: center; }
+    .kv-manga-reaction-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 480px; margin: 0 auto; }
+    .kv-manga-reaction { flex: 0 0 calc(33.333% - 8px); max-width: 150px; min-width: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; border-radius: 14px; border: 1px solid var(--kv-border); background: var(--kv-surface-2); color: var(--kv-text-muted); cursor: pointer; transition: border-color .15s ease, transform .15s ease, color .15s ease, background-color .15s ease; }
+    .kv-manga-reaction:hover { transform: translateY(-2px); border-color: var(--kv-accent); color: var(--kv-text); }
     .kv-manga-reaction.active { border-color: var(--kv-accent); color: var(--kv-accent); background: color-mix(in srgb, var(--kv-accent) 12%, var(--kv-surface)); }
-    .kv-manga-reaction-emoji { font-size:1.05rem; line-height:1; }
-    .kv-manga-reaction-count { font-size:.78rem; font-weight:800; font-variant-numeric:tabular-nums; }
+    .kv-manga-reaction-emoji { font-size: 1.5rem; line-height: 1; }
+    .kv-manga-reaction-count { font-size: .82rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .kv-manga-reaction-label { font-size: .7rem; font-weight: 600; text-align: center; line-height: 1.2; }
+    .kv-manga-reaction-static { cursor: default; }
+    .kv-comment-toggle-replies { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--kv-border); background: transparent; color: var(--kv-accent); font-size: .74rem; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
+    .kv-comment-toggle-replies:hover { background: color-mix(in srgb, var(--kv-accent) 10%, transparent); border-color: var(--kv-accent); }
+    .kv-comment-toggle-replies svg { width: 14px; height: 14px; transition: transform .2s ease; }
+    .kv-comment-toggle-replies.is-open svg { transform: rotate(180deg); }
     .kv-comment-action svg { width:16px; height:16px; }
-    .kv-manga-reaction-label { font-size:.72rem; font-weight:600; }
-    .kv-manga-reaction-static { cursor:default; }
+
     .kv-comment-scope-note { margin:0 0 10px; font-size:.74rem; color:var(--kv-text-muted); }
     .kv-comment-chapter-badge { display:inline-flex; align-items:center; padding:1px 7px; border-radius:6px; background:color-mix(in srgb, var(--kv-accent) 12%, var(--kv-surface)); color:var(--kv-accent); font-size:.64rem; font-weight:700; letter-spacing:.02em; }
     .kv-comment-pinned { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; background:color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface)); color:var(--kv-accent); font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
@@ -2367,8 +2383,7 @@
     .kv-comment-action-danger { color:var(--kv-text-muted); }
     .kv-comment-action-danger:hover { color:#ef4444; border-color:#ef4444; }
     @media (max-width: 520px) {
-      .kv-manga-reaction { padding:6px 10px; gap:6px; }
-      .kv-manga-reaction-label { display:none; }
+
     }
     .kv-comment-image { max-width: 100%; max-height: 360px; border-radius: 12px; display: block; margin-top: 8px; border: 1px solid var(--kv-border); object-fit: cover; }
       .kv-comment-image-btn { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; }
@@ -2381,8 +2396,77 @@
       .kv-spoiler-state-close { display: none; }
       .kv-spoiler.open .kv-spoiler-state-close { display: inline; }
       .kv-spoiler.open .kv-spoiler-state-open { display: none; }
-      .kv-reply-to { display: inline-flex; align-items: center; background: rgba(101,88,217,.18); color: var(--kv-accent); padding: 2px 7px; border-radius: 999px; font-size: .68rem; font-weight: 600; margin-right: 6px; }
-    ]]></b:skin>
+       .kv-reply-to { display: inline-flex; align-items: center; background: rgba(101,88,217,.18); color: var(--kv-accent); padding: 2px 7px; border-radius: 999px; font-size: .68rem; font-weight: 600; margin-right: 6px; }
+       .kv-traffic { margin-top: 20px; }
+       .kv-traffic-toolbar { display: flex; align-items: end; gap: 14px; flex-wrap: wrap; background: var(--kv-surface); padding: 14px 16px; border-radius: 13px; margin-bottom: 20px; border: 1px solid var(--kv-border); }
+       .kv-traffic-field { display: flex; flex-direction: column; gap: 7px; min-width: 150px; flex: 1; }
+       .kv-traffic-field label { font-size: 11px; color: var(--kv-text-muted); letter-spacing: .04em; font-weight: 700; }
+       .kv-traffic-field select, .kv-traffic-field input { height: 38px; border: 1px solid var(--kv-border); background: var(--kv-surface-2); color: var(--kv-text); border-radius: 7px; padding: 0 10px; font-size: 12px; }
+       .kv-traffic-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-bottom: 20px; }
+       .kv-traffic-card { position: relative; overflow: hidden; background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 13px; padding: 22px 22px 18px; min-height: 132px; }
+       .kv-traffic-card:before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--kv-accent); }
+       .kv-traffic-card:nth-child(2):before { background: #9b91ff; }
+       .kv-traffic-card:nth-child(3):before { background: #e3c96a; }
+       .kv-traffic-card:nth-child(4):before { background: #68c9b0; }
+       .kv-traffic-label { font-size: 11px; letter-spacing: .055em; color: var(--kv-text-muted); font-weight: 700; }
+       .kv-traffic-value { font-size: 29px; font-weight: 750; letter-spacing: -.03em; margin: 14px 0 7px; color: var(--kv-text); }
+       .kv-traffic-note { font-size: 10px; color: var(--kv-text-muted); }
+       .kv-traffic-chart { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 14px; padding: 22px; }
+       .kv-traffic-legend { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 25px 0 7px; font-size: 10px; color: var(--kv-text-muted); }
+       .kv-traffic-legend span { display: flex; align-items: center; gap: 6px; }
+       .kv-traffic-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+       .kv-traffic-grid { stroke: var(--kv-border); stroke-width: 1; opacity: .65; }
+       .kv-traffic-axis { fill: var(--kv-text-muted); font-size: 10px; }
+       .kv-traffic-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+       @media (max-width: 800px) { .kv-traffic-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+       @media (max-width: 460px) { .kv-traffic-cards { grid-template-columns: 1fr 1fr; } .kv-traffic-value { font-size: 24px; } }
+       .kv-admin-chapter-card { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+       .kv-admin-chapter-card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+       .kv-admin-chapter-card-title { flex: 1; min-width: 0; font-weight: 600; color: var(--kv-text); font-size: .9rem; overflow-wrap: anywhere; }
+       .kv-admin-chapter-card-date { color: var(--kv-text-muted); font-size: .75rem; }
+       .kv-admin-chapter-card-progress { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+       .kv-admin-chapter-card-bar { flex: 1; min-width: 120px; height: 6px; background: var(--kv-surface-2); border-radius: 999px; overflow: hidden; }
+       .kv-admin-chapter-card-barfill { height: 100%; background: var(--kv-accent); border-radius: 999px; }
+       .kv-admin-chapter-card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+       .kv-admin-chapter-card-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+       .kv-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--kv-border); border-top-color: var(--kv-accent); border-radius: 50%; animation: kv-spin .7s linear infinite; }
+       @keyframes kv-spin { to { transform: rotate(360deg); } }
+       .kv-upload-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+       .kv-upload-box { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 12px; padding: 24px 28px; min-width: 320px; max-width: 90vw; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,.4); }
+       .kv-upload-title { font-weight: 700; font-size: 1.1rem; color: var(--kv-text); margin-bottom: 6px; }
+       .kv-upload-sub { color: var(--kv-text-muted); font-size: .8rem; margin-bottom: 14px; overflow-wrap: anywhere; }
+       .kv-upload-bar { height: 8px; background: var(--kv-surface-2); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+       .kv-upload-bar-fill { height: 100%; background: var(--kv-accent); border-radius: 999px; transition: width .2s ease; }
+       .kv-upload-count { color: var(--kv-text-muted); font-size: .8rem; }
+       .kv-admin-comments { display: flex; flex-direction: column; gap: 14px; }
+       .kv-admin-comment-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+       .kv-admin-comment-count { opacity: .7; font-size: .7rem; }
+       .kv-admin-comment-list { display: flex; flex-direction: column; gap: 10px; }
+       .kv-admin-comment-card { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+       .kv-admin-comment-card.is-pinned { border-color: var(--kv-accent); box-shadow: 0 0 0 1px rgba(101,88,217,.25); }
+       .kv-admin-comment-head { display: flex; align-items: center; gap: 10px; }
+       .kv-admin-comment-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex: 0 0 36px; }
+       .kv-admin-comment-avatar-fallback { display: flex; align-items: center; justify-content: center; background: var(--kv-surface-2); color: var(--kv-text); font-weight: 700; }
+       .kv-admin-comment-meta { flex: 1; min-width: 0; }
+       .kv-admin-comment-author { font-weight: 600; color: var(--kv-text); font-size: .875rem; }
+       .kv-admin-comment-sub { color: var(--kv-text-muted); font-size: .75rem; overflow-wrap: anywhere; }
+       .kv-admin-comment-body { color: var(--kv-text); font-size: .875rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+       .kv-admin-comment-img { max-width: 200px; max-height: 120px; border-radius: 8px; margin-top: 6px; object-fit: cover; border: 1px solid var(--kv-border); }
+       .kv-admin-comment-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+       .kv-admin-leader-list { display: flex; flex-direction: column; gap: 8px; }
+       .kv-admin-leader-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--kv-border); border-radius: 10px; background: var(--kv-surface); }
+       .kv-admin-leader-rank { font-weight: 700; color: var(--kv-accent); width: 28px; text-align: center; }
+       .kv-admin-leader-cover { width: 40px; height: 56px; border-radius: 6px; overflow: hidden; flex: 0 0 40px; }
+       .kv-admin-leader-cover img { width: 100%; height: 100%; object-fit: cover; }
+       .kv-admin-leader-body { flex: 1; min-width: 0; }
+       .kv-admin-leader-title { font-weight: 600; color: var(--kv-text); font-size: .875rem; }
+       .kv-admin-leader-meta { color: var(--kv-text-muted); font-size: .75rem; }
+       .kv-admin-leader-barwrap { height: 6px; background: var(--kv-surface-2); border-radius: 999px; margin-top: 6px; overflow: hidden; }
+       .kv-admin-leader-bar { height: 100%; background: var(--kv-accent); border-radius: 999px; }
+       .kv-admin-leader-views { font-weight: 700; color: var(--kv-text); font-size: .875rem; white-space: nowrap; }
+       .kv-admin-leader-views span { color: var(--kv-text-muted); font-weight: 400; font-size: .7rem; }
+       .kv-admin-leader-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+     ]]></b:skin>
 </head>
 <body>
   <!-- Root Container untuk Aplikasi SPA NexaManga di Blogger -->
@@ -2492,9 +2576,14 @@
       readerTheme: 'dark',
       readerDir: 'ltr', // 'ltr' | 'rtl'
       currentPageIdx: 0,
-      readerMenuOpen: false,
+       readerMenuOpen: false,
+       readerChapterSearch: '',
+       readerChapterSearchRefocus: false,
+
       readerSettingsOpen: false,
-      autoScroll: false,
+       autoScroll: false,
+       autoScrollSpeed: 2.5,
+
       readerDockTimer: null,
       user: null,
       bookmarks: JSON.parse(localStorage.getItem('kv_bookmarks') || '[]'),
@@ -2506,10 +2595,15 @@
       adminTab: 'dashboard',
       adminForm: null,            // form manga aktif (objek) atau null = daftar
       adminChapterForm: null,     // form chapter aktif (objek) atau null
-      adminChapterMangaId: '',
+       adminChapterMangaId: '',
+       adminChapterFullId: null,
+
       adminSearch: '',
       adminRefocusSearch: false,
-      adminExpandedManga: null,
+       adminExpandedManga: null,
+       uploadProgress: null,
+       analyticsData: undefined,
+
       commentFilter: 'Semua',
       commentNotice: '',
        pendingDelete: null,        // { type, id, label, confirmLabel }
@@ -2768,7 +2862,8 @@
           render();
           return;
         }
-        window.scrollBy(0, 2.5);
+         window.scrollBy(0, state.autoScrollSpeed || 2.5);
+
       }, 16);
       render();
     }
@@ -2923,19 +3018,34 @@
       state.route = '404'; state.params = {};
     }
 
-    function navigate(path) {
-      var routePath = String(path || '/').replace(/^#/, '');
-      if (routePath.charAt(0) !== '/') routePath = '/' + routePath;
-      var routeHash = '#' + routePath;
-      if (window.location.hash !== routeHash) {
-        window.history.pushState(null, '', routeHash);
-      }
-      state.mobileMenuOpen = false;
-      state.commentNotice = null;
-      parseRoute();
-      render();
-      window.scrollTo(0, 0);
-    }
+     function trackPageview() {
+       if (!CONFIG.API_BASE_URL) return;
+       try {
+         var vid = localStorage.getItem('kv_visitor_id');
+         if (!vid) { vid = 'v-' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('kv_visitor_id', vid); }
+         fetch(CONFIG.API_BASE_URL + '/api/track', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ visitorId: vid })
+         }).catch(function () {});
+       } catch (e) {}
+     }
+
+     function navigate(path) {
+       var routePath = String(path || '/').replace(/^#/, '');
+       if (routePath.charAt(0) !== '/') routePath = '/' + routePath;
+       var routeHash = '#' + routePath;
+       if (window.location.hash !== routeHash) {
+         window.history.pushState(null, '', routeHash);
+       }
+       state.mobileMenuOpen = false;
+       state.commentNotice = null;
+       parseRoute();
+       render();
+       window.scrollTo(0, 0);
+       trackPageview();
+     }
+
 
     function syncFromApi() {
       if (!CONFIG.API_BASE_URL) return;
@@ -3201,14 +3311,14 @@
         '</div>' +
         '<section class="kv-home-section" aria-labelledby="heading-updates">' +
           '<div class="kv-home-section-head">' +
-            '<div><h2 class="kv-home-section-title" id="heading-updates">Pembaruan Terbaru</h2></div>' +
+            '<div><h2 class="kv-home-section-title" id="heading-updates">Update Terbaru</h2></div>' +
             '<a class="kv-home-link" href="#/archive">Lihat Semua &rarr;</a>' +
           '</div>' +
           '<div class="kv-home-grid">' + latestCards + '</div>' +
         '</section>' +
         '<section class="kv-home-section" aria-labelledby="heading-popular">' +
           '<div class="kv-home-section-head">' +
-            '<div><h2 class="kv-home-section-title" id="heading-popular">Manga Populer &amp; Trending</h2></div>' +
+            '<div><h2 class="kv-home-section-title" id="heading-popular">Komik Populer &amp; Trending</h2></div>' +
             '<a class="kv-home-link" href="#/archive">Lihat Semua &rarr;</a>' +
           '</div>' +
           '<div class="kv-home-popular">' + popular.map(rankingCard).join('') + '</div>' +
@@ -3394,7 +3504,7 @@
       var myDisplayAvatar = state.user ? currentDisplayAvatar(state.user.avatar || null) : null;
       return '<section class="kv-detail-card">' +
               '<div class="kv-detail-card-head">' +
-                '<div class="kv-detail-card-title">Komentar Pembaca <span class="kv-detail-count">' + comments.length + '</span></div>' +
+                '<div class="kv-detail-card-title">Komentar <span class="kv-detail-count">' + comments.length + '</span></div>' +
                 '<span class="kv-detail-card-note">Hormati sesama pembaca</span>' +
               '</div>' +
               '<p class="kv-comment-scope-note">' + escapeHtml(sectionNote) + '</p>' +
@@ -3408,21 +3518,6 @@
                   '<li>Komentar dapat dimoderasi atau dihapus admin jika melanggar aturan.</li>' +
                 '</ul>' +
               '</div>' +
-              (state.commentNotice ? '<div class="kv-detail-notice">' + escapeHtml(state.commentNotice) + '</div>' : '') +
-              '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" data-chapter-id="' + escapeHtml(chapterId || '') + '" class="kv-comment-form kv-detail-comment-form">' +
-                '<div class="kv-comment-form-head">' +
-                  (myDisplayAvatar ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="kv-comment-avatar" referrerpolicy="no-referrer"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(myDisplayName.charAt(0).toUpperCase()) + '</div>') +
-                  '<div><div class="kv-comment-name">' + (state.user ? escapeHtml(myDisplayName) : 'Tulis komentar Anda') + '</div><div class="kv-comment-hint">Komentar dan balasan langsung ditampilkan.</div></div>' +
-                '</div>' +
-                (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
-                '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis komentar. Dukung **tebal**, *miring*, ||spoiler||, dan gambar." required rows="3"></textarea>' +
-                '<div class="kv-comment-form-foot">' +
-                  '<span class="kv-comment-hint">Gunakan **tebal**, *miring*, ||spoiler||</span>' +
-                  '<button type="button" class="kv-btn kv-btn-ghost kv-comment-image-btn" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>' +
-                  '<button class="kv-btn kv-btn-primary kv-detail-submit" type="submit">Kirim Komentar</button>' +
-                '</div>' +
-              '</form>' +
-              '<input type="file" id="kv-comment-image-file" accept="image/jpeg,image/png,image/webp" style="display:none;"/>' +
               (function () {
                 var summary = aggregated ? aggregateChapterReactions(manga) : chapterReactionSummary(chapterId);
                 var reactions = [
@@ -3434,8 +3529,8 @@
                 ];
                 if (aggregated) {
                   return '<div class="kv-comment-reaction">' +
-                    '<div class="kv-comment-reaction-label">Reaksi gabungan semua chapter</div>' +
-                    '<div class="kv-manga-reaction-row" role="status" aria-label="Reaksi gabungan semua chapter">' +
+                    '<div class="kv-comment-reaction-label">Reaksi</div>' +
+                    '<div class="kv-manga-reaction-row" role="status" aria-label="Reaksi">' +
                       reactions.map(function (item) {
                         var total = summary.counts[item.key] || 0;
                         return '<span class="kv-manga-reaction kv-manga-reaction-static" title="' + item.label + '">' +
@@ -3444,9 +3539,9 @@
                           '<span class="kv-manga-reaction-label">' + item.label + '</span>' +
                         '</span>';
                       }).join('') +
-                    '</div>' +
-                  '</div>';
-                }
+          '</div>';
+     }
+
                 return '<div class="kv-comment-reaction">' +
                   '<div class="kv-comment-reaction-label">Reaksi untuk chapter ini</div>' +
                   '<div class="kv-manga-reaction-row" role="group" aria-label="Reaksi chapter">' +
@@ -3461,6 +3556,21 @@
                   '</div>' +
                 '</div>';
               })() +
+              (state.commentNotice ? '<div class="kv-detail-notice">' + escapeHtml(state.commentNotice) + '</div>' : '') +
+              '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" data-chapter-id="' + escapeHtml(chapterId || '') + '" class="kv-comment-form kv-detail-comment-form">' +
+                '<div class="kv-comment-form-head">' +
+                  (myDisplayAvatar ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="kv-comment-avatar" referrerpolicy="no-referrer"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(myDisplayName.charAt(0).toUpperCase()) + '</div>') +
+                  '<div><div class="kv-comment-name">' + (state.user ? escapeHtml(myDisplayName) : 'Tulis komentar Anda') + '</div><div class="kv-comment-hint">Profile kamu.</div></div>' +
+                '</div>' +
+                (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
+                '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis komentar..." required rows="3"></textarea>' +
+                '<div class="kv-comment-form-foot">' +
+                  '<span class="kv-comment-hint">Gunakan **tebal**, *miring*, ||spoiler||</span>' +
+                  '<button type="button" class="kv-btn kv-btn-ghost kv-comment-image-btn" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>' +
+                  '<button class="kv-btn kv-btn-primary kv-detail-submit" type="submit">Kirim Komentar</button>' +
+                '</div>' +
+              '</form>' +
+              '<input type="file" id="kv-comment-image-file" accept="image/jpeg,image/png,image/webp" style="display:none;"/>' +
               (function () {
                 var voterKey = state.user ? state.user.id : voterId();
                 var byParent = {};
@@ -3515,6 +3625,14 @@
                       '</form>'
                     : '';
                   var children = depth === 0 ? oldestFirst(byParent[c.id] || []) : [];
+                  var isExpanded = state.expandedComments && state.expandedComments[c.id] === true;
+                  var repliesToggle = children.length > 0
+                    ? '<button type="button" class="kv-comment-toggle-replies' + (isExpanded ? ' is-open' : '') + '" data-action="toggle-replies" data-id="' + escapeHtml(c.id) + '" aria-expanded="' + (isExpanded ? 'true' : 'false') + '">' +
+                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+                        (isExpanded ? 'Tutup ' : 'Tampilkan balasan (') + children.length + (isExpanded ? '' : ')') +
+                      '</button>'
+                    : '';
+                  var childrenHtml = (isExpanded && children.length) ? '<div class="kv-detail-comment-children">' + children.map(function (k) { return renderComment(k, 1); }).join('') + '</div>' : '';
                   return '<div class="kv-detail-comment' + (depth ? ' kv-detail-comment-child' : '') + '">' +
                     '<div class="kv-detail-comment-card">' +
                       '<div class="kv-detail-comment-main">' + avatar +
@@ -3528,16 +3646,18 @@
                           '</div>' +
                           '<div class="kv-detail-comment-text">' + contentHtml + '</div>' +
                           imageHtml +
-                          '<div class="kv-detail-comment-actions">' +
-                            '<button type="button" class="kv-comment-action' + (voted ? ' active' : '') + '" data-action="upvote-comment" data-id="' + escapeHtml(c.id) + '" aria-pressed="' + (voted ? 'true' : 'false') + '" title="' + (voted ? 'Batalkan suka' : 'Suka') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v10h11.28a2 2 0 0 0 2-1.7l.96-6.5A2 2 0 0 0 19.28 10H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>' + ' ' + upvotes.length + '</button>' +
-                            '<button type="button" class="kv-comment-action" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Balas</button>' +
-                            adminCommentActions(c) +
-                          '</div>' +
-                          replyForm +
+                           '<div class="kv-detail-comment-actions">' +
+                             '<button type="button" class="kv-comment-action' + (voted ? ' active' : '') + '" data-action="upvote-comment" data-id="' + escapeHtml(c.id) + '" aria-pressed="' + (voted ? 'true' : 'false') + '" title="' + (voted ? 'Batalkan suka' : 'Suka') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v10h11.28a2 2 0 0 0 2-1.7l.96-6.5A2 2 0 0 0 19.28 10H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>' + ' ' + upvotes.length + '</button>' +
+                             '<button type="button" class="kv-comment-action" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Balas</button>' +
+                             adminCommentActions(c) +
+                           '</div>' +
+                           (repliesToggle ? '<div class="kv-comment-replies-toggle-wrap">' + repliesToggle + '</div>' : '') +
+                           replyForm +
+
                         '</div>' +
                       '</div>' +
                     '</div>' +
-                    (children.length ? '<div class="kv-detail-comment-children">' + children.map(function (k) { return renderComment(k, 1); }).join('') + '</div>' : '') +
+                    childrenHtml +
                   '</div>';
                 }
                 var topLevel = (byParent[''] || []).slice().sort(function (a, b) {
@@ -3723,15 +3843,23 @@
         pagesHtml +
       '</section>';
       var isPlaying = !!state.autoScroll;
-      var chapterRows = allCh.map(function (c) {
-        var active = c.id === chapter.id;
+       var chQuery = String(state.readerChapterSearch || '').toLowerCase();
+       var filteredCh = allCh.filter(function (c) {
+         if (!chQuery) return true;
+         var hay = (String(c.number) + ' ' + (c.title || '')).toLowerCase();
+         return hay.indexOf(chQuery) !== -1;
+       });
+       var chapterRows = filteredCh.map(function (c) {
+         var active = c.id === chapter.id;
+
         return '<a class="kv-reader-chapter-row' + (active ? ' is-active' : '') + '" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(c.id) + '">' +
           '<span class="kv-reader-chapter-num">Ch. ' + escapeHtml(c.number) + '</span>' +
           '<span class="kv-reader-chapter-name">' + (c.title ? escapeHtml(c.title) : 'Chapter ' + escapeHtml(c.number)) + '</span>' +
         '</a>';
       }).join('');
       var gearIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.7v2.8M12 18.5v2.8M5.5 5.5l2 2M16.5 16.5l2 2M2.7 12h2.8M18.5 12h2.8M5.5 18.5l2-2M16.5 7.5l2-2"/></svg>';
-      var prevIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>';
+       var prevIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>';
+       var nextIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
       var menuIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
       var homeIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11L12 3L21 11"/><path d="M5 10V21H19V10"/></svg>';
       var playIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
@@ -3739,19 +3867,22 @@
 
       var settingsSheet = '<div class="kv-reader-sheet" role="dialog" aria-modal="true" aria-label="Pengaturan pembaca">' +
         '<div class="kv-reader-sheet-head"><span>Pengaturan Pembaca</span><button type="button" class="kv-reader-sheet-close" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div>' +
-        '<div class="kv-reader-sheet-body">' +
-          '<div class="kv-reader-sheet-row"><span class="kv-reader-sheet-label">Mode baca</span>' +
-            '<div class="kv-reader-modes" role="group" aria-label="Mode baca">' +
-              '<button type="button" class="kv-reader-mode' + (isVertical ? ' is-active' : '') + '" data-action="toggle-reader-mode" data-mode="vertical" aria-pressed="' + (isVertical ? 'true' : 'false') + '">Webtoon</button>' +
-              '<button type="button" class="kv-reader-mode' + (!isVertical ? ' is-active' : '') + '" data-action="toggle-reader-mode" data-mode="paged" aria-pressed="' + (!isVertical ? 'true' : 'false') + '">Tunggal</button>' +
-            '</div>' +
-          '</div>' +
-          '<div class="kv-reader-sheet-row"><label class="kv-reader-sheet-label" for="kv-reader-width">Lebar panel</label>' +
-            '<select id="kv-reader-width" class="kv-reader-select"><option value="800"' + (state.readerWidth === 800 ? ' selected' : '') + '>800px</option><option value="1000"' + (state.readerWidth === 1000 ? ' selected' : '') + '>1000px</option><option value="1200"' + (state.readerWidth === 1200 ? ' selected' : '') + '>Fit</option></select>' +
-          '</div>' +
-          '<div class="kv-reader-sheet-row"><span class="kv-reader-sheet-label">Layar penuh</span>' +
-            '<button type="button" class="kv-reader-ctl kv-reader-ctl-primary" data-action="toggle-fullscreen">&#9974; Layar Penuh</button>' +
-          '</div>' +
+         '<div class="kv-reader-sheet-body">' +
+           '<div class="kv-reader-sheet-row"><span class="kv-reader-sheet-label">Tema</span>' +
+             '<button type="button" class="kv-btn kv-btn-ghost kv-theme-toggle" data-action="toggle-theme" aria-label="' + (state.theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap') + '" title="' + (state.theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap') + '" style="width:44px;height:44px;flex-basis:44px;">' +
+               (state.theme === 'dark'
+                 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>'
+                 : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>') +
+             '</button>' +
+           '</div>' +
+           '<div class="kv-reader-sheet-row"><label class="kv-reader-sheet-label" for="kv-reader-speed">Kecepatan gulir (px/tick)</label>' +
+             '<input id="kv-reader-speed" class="kv-input kv-mono" type="number" min="0.5" max="20" step="0.5" value="' + (state.autoScrollSpeed || 2.5) + '" style="width:90px;" data-action="reader-speed-input"/>' +
+           '</div>' +
+           '<div class="kv-reader-sheet-row"><span class="kv-reader-sheet-label">Layar penuh</span>' +
+             '<button type="button" class="kv-reader-ctl kv-reader-ctl-primary" data-action="toggle-fullscreen">&#9974; Layar Penuh</button>' +
+           '</div>' +
+
+
         '</div>' +
       '</div>';
 
@@ -3759,12 +3890,14 @@
       var menuSheet = '<div class="kv-reader-sheet" role="dialog" aria-modal="true" aria-label="Daftar chapter">' +
         '<div class="kv-reader-sheet-head"><span>' + escapeHtml(manga.title) + ' &middot; Ch. ' + escapeHtml(chapter.number) + '</span><button type="button" class="kv-reader-sheet-close" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div>' +
         '<div class="kv-reader-sheet-body">' +
-          '<div class="kv-reader-sheet-actions">' +
-            '<button type="button" class="kv-reader-ctl" data-action="toggle-bookmark" data-id="' + escapeHtml(manga.id) + '" aria-pressed="' + (menuBookmarked ? 'true' : 'false') + '">' + (menuBookmarked ? '&#9829; Tersimpan' : '&#9825; Simpan') + '</button>' +
-            '<button type="button" class="kv-reader-ctl" data-action="share-manga">&#8599; Bagikan</button>' +
-            '<a class="kv-reader-ctl" href="#/manga/' + escapeHtml(manga.slug) + '">&#8618; Diskusi</a>' +
-          '</div>' +
-          '<div class="kv-reader-chapter-list" role="list">' + (chapterRows || '<p class="kv-reader-chapter-name">Belum ada chapter.</p>') + '</div>' +
+           '<div class="kv-reader-sheet-actions">' +
+              '<a class="kv-reader-ctl" href="#/manga/' + escapeHtml(manga.slug) + '">&#8592; ' + escapeHtml(manga.title) + '</a>' +
+           '</div>' +
+           '<div class="kv-reader-sheet-row">' +
+             '<input id="kv-reader-chapter-search" class="kv-input" type="search" placeholder="Cari chapter..." value="' + escapeHtml(state.readerChapterSearch || '') + '" aria-label="Cari chapter"/>' +
+           '</div>' +
+           '<div class="kv-reader-chapter-list" role="list">' + (chapterRows || '<p class="kv-reader-chapter-name">Belum ada chapter.</p>') + '</div>' +
+
         '</div>' +
       '</div>';
 
@@ -3774,9 +3907,13 @@
           '<button type="button" class="kv-round-btn" data-action="scroll-reader-down" aria-label="Gulir ke bawah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9L12 16L19 9"/></svg></button>' +
         '</div>' +
         '<div class="kv-reader-bottom-controls">' +
-          (prevCh
-            ? '<a class="kv-round-btn" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '</a>'
-            : '<button type="button" class="kv-round-btn is-disabled" disabled aria-label="Tidak ada chapter sebelumnya">' + prevIcon + '</button>') +
+           (prevCh
+             ? '<a class="kv-round-btn" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '</a>'
+             : '<button type="button" class="kv-round-btn is-disabled" disabled aria-label="Tidak ada chapter sebelumnya">' + prevIcon + '</button>') +
+           (nextCh
+             ? '<a class="kv-round-btn kv-round-btn-next" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" aria-label="Chapter berikutnya">' + nextIcon + '</a>'
+             : '<button type="button" class="kv-round-btn is-disabled" disabled aria-label="Tidak ada chapter berikutnya">' + nextIcon + '</button>') +
+
           '<button type="button" class="kv-round-btn" data-action="toggle-reader-settings" aria-label="Pengaturan pembaca" aria-expanded="' + (state.readerSettingsOpen ? 'true' : 'false') + '">' + gearIcon + '</button>' +
           '<button type="button" class="kv-round-btn kv-round-btn-play' + (isPlaying ? ' is-active' : '') + '" data-action="toggle-auto-scroll" aria-label="' + (isPlaying ? 'Hentikan' : 'Mulai') + ' gulir otomatis" aria-pressed="' + (isPlaying ? 'true' : 'false') + '">' + (isPlaying ? pauseIcon : playIcon) + '</button>' +
           '<button type="button" class="kv-round-btn" data-action="toggle-reader-menu" aria-label="Daftar chapter" aria-expanded="' + (state.readerMenuOpen ? 'true' : 'false') + '">' + menuIcon + '</button>' +
@@ -3999,19 +4136,26 @@
       var pending = state.data.comments.filter(function (c) { return c.status === 'pending'; }).length;
       var body;
        if (tab === 'manga') {
-         if (state.adminChapterForm) body = renderAdminChapterForm();
-         else if (state.adminForm) body = renderAdminMangaForm();
-         else body = renderAdminMangaList();
+        if (state.adminChapterForm) body = renderAdminChapterForm();
+        else if (state.adminForm) body = renderAdminMangaForm();
+        else if (state.adminChapterFullId) body = renderAdminChapterList();
+        else body = renderAdminMangaList();
+
        }
-       else if (tab === 'komentar') body = renderAdminComments();
-       else if (tab === 'pengguna') body = renderAdminUsers();
-       else if (tab === 'pengaturan') body = renderAdminSettings();
-       else body = renderAdminDashboard();
+        else if (tab === 'komentar') body = renderAdminComments();
+        else if (tab === 'analytics') body = renderAdminAnalytics();
+        else if (tab === 'leaderboard') body = renderAdminLeaderboard();
+        else if (tab === 'pengguna') body = renderAdminUsers();
+        else if (tab === 'pengaturan') body = renderAdminSettings();
+        else body = renderAdminDashboard();
+
 
        var titles = {
          dashboard: ['Dashboard Analitik', 'KPI, grafik, dan pintasan cepat.'],
          manga: ['Manajemen Manga & Chapter', 'Tambah, ubah, hapus manga dan kelola chapter per judul.'],
-         komentar: ['Moderasi Komentar', 'Setujui, tolak, atau hapus komentar pembaca.'],
+          komentar: ['Moderasi Komentar', 'Setujui, tolak, atau hapus komentar pembaca.'],
+          analytics: ['Analitik Traffic', 'Rincian traffic situs dari awal bulan ini sampai hari ini.'],
+          leaderboard: ['Leaderboard Judul', 'Semua judul diurutkan berdasarkan jumlah pembaca.'],
          pengguna: ['Manajemen Pengguna', 'Daftar akun, ubah role, dan hapus pengguna.'],
          pengaturan: ['Pengaturan', 'Konfigurasi tema, integrasi backend, dan zona bahaya.']
        };
@@ -4033,10 +4177,14 @@
       }
 
        var navMain = [
-         { key: 'dashboard', label: 'Dashboard', icon: 'grid' },
-         { key: 'manga', label: 'Manga', icon: 'book' },
-         { key: 'komentar', label: 'Komentar', icon: 'chat', badge: pending },
-         { key: 'pengguna', label: 'Pengguna', icon: 'users' },
+          { key: 'dashboard', label: 'Dashboard', icon: 'grid' },
+          { key: 'analytics', label: 'Analitik', icon: 'trend' },
+          { key: 'manga', label: 'Manga', icon: 'book' },
+
+          { key: 'komentar', label: 'Komentar', icon: 'chat', badge: pending },
+          { key: 'leaderboard', label: 'Leaderboard', icon: 'trend' },
+          { key: 'pengguna', label: 'Pengguna', icon: 'users' },
+
          { key: 'pengaturan', label: 'Pengaturan', icon: 'gear' }
        ];
       var navHtml = navMain.map(function (n) {
@@ -4055,11 +4203,10 @@
         ? '<a class="kv-admin-logo" href="#/"><span' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</span> <span>Console</span></a>'
         : '';
 
-      var quickHtml = [
-        { label: 'Tambah Manga', icon: 'plus', act: 'admin-new-manga' },
-        { label: 'Tambah Chapter', icon: 'layers', act: 'admin-new-chapter' },
-        { label: 'Moderasi Komentar', icon: 'chat', act: 'admin-tab', tab: 'komentar' }
-      ].map(function (n) {
+       var quickHtml = [
+         { label: 'Tambah Manga', icon: 'plus', act: 'admin-new-manga' },
+         { label: 'Tambah Chapter', icon: 'layers', act: 'admin-new-chapter' }
+       ].map(function (n) {
         return '<button type="button" class="kv-admin-nav-item" data-action="' + n.act + '"' + (n.tab ? ' data-tab="' + n.tab + '"' : '') + '>' + kvIcon(n.icon) + '<span>' + n.label + '</span></button>';
       }).join('');
 
@@ -4089,7 +4236,7 @@
           '<div class="kv-admin-content">' +
             '<header class="kv-admin-topbar kv-admin-topbar-new">' +
               '<button type="button" class="kv-admin-hamburger" data-action="toggle-admin-drawer" aria-label="Buka menu admin" aria-expanded="' + (state.adminDrawerOpen ? 'true' : 'false') + '"><span class="material-symbols-outlined">menu</span></button>' +
-              '<div class="kv-admin-search"><span class="material-symbols-outlined">search</span><input placeholder="Cari judul, slug, atau ID chapter..."/></div>' +
+
               '<div class="kv-admin-top-actions">' +
                 '<a class="kv-admin-avatar" href="#/akun" aria-label="Akun saya">' + (state.user.avatar ? '<img src="' + escapeHtml(state.user.avatar) + '" alt=""/>' : escapeHtml(String(state.user.name || 'A').charAt(0).toUpperCase())) + '</a>' +
                 '<button type="button" class="kv-btn kv-btn-ghost" data-action="logout-admin">' + kvIcon('out') + ' Keluar</button>' +
@@ -4100,9 +4247,9 @@
                 '<div><h1 class="kv-admin-title">' + t[0] + '</h1><p class="kv-admin-sub">' + t[1] + '</p></div>' +
                 '<div class="kv-admin-top-actions">' + topActions + '</div>' +
               '</div>' +
-              body +
-              (state.pendingDelete ? renderConfirmModal() : '') +
-            '</main>' +
+               body +
+             '</main>' +
+
           '</div>' +
           (state.adminDrawerOpen ? '<div class="kv-admin-overlay" data-action="close-admin-drawer" aria-hidden="true"></div>' : '') +
         '</div>';
@@ -4130,8 +4277,9 @@
           '<div class="kv-bar-label">' + escapeHtml(c.title) + '</div>' +
         '</div>';
       }).join('');
-      var chart = '<div class="kv-chart-card"><h3 class="kv-chart-title">View per Manga</h3><p class="kv-chart-sub">Top 8 manga berdasarkan jumlah pembaca.</p>' +
-        (bars ? '<div class="kv-bar-chart">' + bars + '</div>' : '<p style="color:var(--kv-text-muted);">Belum ada data.</p>') + '</div>';
+       var chart = '<div class="kv-chart-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;"><h3 class="kv-chart-title" style="margin:0;">View per Manga</h3><button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-open-leaderboard">Lihat Semua &rarr;</button></div><p class="kv-chart-sub">Top 8 manga berdasarkan jumlah pembaca.</p>' +
+         (bars ? '<div class="kv-bar-chart">' + bars + '</div>' : '<p style="color:var(--kv-text-muted);">Belum ada data.</p>') + '</div>';
+
       var qas = [
         { icon: 'plus', t: 'Tambah Manga', d: 'Publikasikan judul baru ke archive.', act: 'admin-new-manga' },
         { icon: 'layers', t: 'Tambah Chapter', d: 'Unggah halaman ke penyimpanan Telegram.', act: 'admin-new-chapter' },
@@ -4145,28 +4293,99 @@
           '<span><span class="kv-qa-title">' + q.t + '</span><span class="kv-qa-desc">' + q.d + '</span></span>' +
         '</button>';
       }).join('');
-      var recent = state.data.chapters.slice()
-        .sort(function (a, b) { return b.publishedAt.localeCompare(a.publishedAt); })
-        .slice(0, 5).map(function (c) {
-          var m = mangaById(c.mangaId);
-          if (!m) return '';
-          return '<div class="kv-chapter-row" data-action="admin-preview-chapter" data-slug="' + escapeHtml(m.slug) + '" data-cid="' + escapeHtml(c.id) + '" tabindex="0" role="button" aria-label="Preview ' + escapeHtml(m.title) + ' Chapter ' + c.number + '">' +
-            '<div><strong>' + escapeHtml(m.title) + '</strong> &middot; Chapter ' + c.number + ' <span style="color:var(--kv-text-muted);">(' + c.pages.length + ' hal.)</span></div>' +
-            '<div class="kv-mono" style="color:var(--kv-text-muted);font-size:0.8125rem;">' + escapeHtml(c.publishedAt) + '</div>' +
+
+       return '<div class="kv-kpi-grid">' + kpis + '</div>' +
+         '<div class="kv-two-col">' + chart +
+           '<div class="kv-card"><h3>Aksi Cepat</h3><div class="kv-qa-grid">' + qas + '</div></div>' +
+         '</div>' +
+         '</div>';
+     }
+
+
+      function renderAdminLeaderboard() {
+        var sorted = state.data.manga.slice().sort(function (a, b) { return (b.views || 0) - (a.views || 0); });
+        var maxV = sorted.reduce(function (a, m) { return Math.max(a, m.views || 0); }, 1) || 1;
+        var rows = sorted.map(function (m, i) {
+          var v = m.views || 0;
+          var w = Math.round((v / maxV) * 100);
+          var chs = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
+          return '<div class="kv-admin-leader-row">' +
+            '<div class="kv-admin-leader-rank">' + (i + 1) + '</div>' +
+            '<div class="kv-admin-leader-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</div>' +
+            '<div class="kv-admin-leader-body">' +
+              '<div class="kv-admin-leader-title">' + escapeHtml(m.title) + '</div>' +
+              '<div class="kv-admin-leader-meta">' + escapeHtml(m.type || 'Manga') + ' · ' + escapeHtml(m.status || 'Ongoing') + ' · ' + chs + ' chapter' + (m.rating ? ' · ★ ' + escapeHtml(m.rating) : '') + '</div>' +
+              '<div class="kv-admin-leader-barwrap"><div class="kv-admin-leader-bar" style="width:' + w + '%;"></div></div>' +
+            '</div>' +
+            '<div class="kv-admin-leader-views">' + v.toLocaleString('id-ID') + ' <span>views</span></div>' +
+            '<div class="kv-admin-leader-actions">' +
+              '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-preview-manga" data-slug="' + escapeHtml(m.slug) + '">Preview</button>' +
+              '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-edit-manga" data-id="' + escapeHtml(m.id) + '">Ubah</button>' +
+            '</div>' +
           '</div>';
         }).join('');
-      return '<div class="kv-kpi-grid">' + kpis + '</div>' +
-        '<div class="kv-two-col">' + chart +
-          '<div class="kv-card"><h3>Aksi Cepat</h3><div class="kv-qa-grid">' + qas + '</div></div>' +
-        '</div>' +
-        '<div class="kv-card" style="margin-top:4px;">' +
-          '<h3>Aktivitas Chapter Terbaru</h3>' +
-          '<p class="kv-mono" style="color:var(--kv-text-muted);font-size:0.8125rem;margin:0 0 12px;">Klik untuk preview langsung di reader</p>' +
-          (recent ? '<div class="kv-table-wrap">' + recent + '</div>' : '<p style="color:var(--kv-text-muted);">Belum ada chapter.</p>') +
+        return '<div class="kv-card">' +
+          '<div class="kv-toolbar" style="justify-content:space-between;align-items:center;">' +
+            '<h3 style="margin:0;">Leaderboard Semua Judul</h3>' +
+            '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-tab" data-tab="dashboard">Kembali ke Dashboard</button>' +
+          '</div>' +
+          '<p style="color:var(--kv-text-muted);font-size:0.8125rem;margin:8px 0 16px;">' + sorted.length + ' judul, diurutkan dari views tertinggi ke terendah.</p>' +
+          (rows ? '<div class="kv-admin-leader-list">' + rows + '</div>' : '<p class="kv-admin-empty">Belum ada manga.</p>') +
         '</div>';
-    }
+      }
 
-     function renderAdminMangaList() {
+      function renderAdminAnalytics() {
+        var now = new Date();
+        var toStr = now.toISOString().slice(0, 10);
+        var fromStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01';
+        if (!state.analyticsFrom) state.analyticsFrom = fromStr;
+        if (!state.analyticsTo) state.analyticsTo = toStr;
+        fromStr = state.analyticsFrom;
+        toStr = state.analyticsTo;
+        if (state.analyticsData === undefined) {
+          state.analyticsData = null;
+          loadAdminAnalytics(fromStr, toStr);
+          return '<div class="kv-card" style="margin-top:16px;"><p style="color:var(--kv-text-muted);">Memuat analitik...</p></div>';
+        }
+        var d = state.analyticsData || {};
+        var t = (d.totals) || { pageviews: 0, visitors: 0, visits: 0, average: 0 };
+        return '<div class="kv-card" style="margin-bottom:16px;">' +
+          '<h3 class="kv-section-title" style="margin:0 0 8px;">Analitik Traffic</h3>' +
+          '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Halaman ini menampilkan rincian traffic situs. Tanggal otomatis dari awal bulan ini sampai hari ini. Ubah rentang tanggal lalu tekan Refresh.</p>' +
+          '</div>' +
+          '<section class="kv-traffic">' +
+            '<div class="kv-traffic-toolbar">' +
+              '<div class="kv-traffic-field"><label>DARI</label><input type="date" id="kv-traffic-from" value="' + fromStr + '"/></div>' +
+              '<div class="kv-traffic-field"><label>SAMPAI</label><input type="date" id="kv-traffic-to" value="' + toStr + '"/></div>' +
+              '<button type="button" class="kv-btn kv-btn-primary" data-action="kv-traffic-refresh">&#8635; Refresh</button>' +
+            '</div>' +
+            '<div class="kv-traffic-cards">' +
+              '<article class="kv-traffic-card"><div class="kv-traffic-label">TOTAL PAGEVIEWS</div><div class="kv-traffic-value" id="kv-traffic-pageviews">' + (t.pageviews || 0).toLocaleString('id-ID') + '</div><div class="kv-traffic-note" id="kv-traffic-period">Period: ' + fromStr + ' to ' + toStr + '</div></article>' +
+              '<article class="kv-traffic-card"><div class="kv-traffic-label">UNIQUE VISITORS</div><div class="kv-traffic-value" id="kv-traffic-visitors">' + (t.visitors || 0).toLocaleString('id-ID') + '</div><div class="kv-traffic-note">Distinct visitor hashes</div></article>' +
+              '<article class="kv-traffic-card"><div class="kv-traffic-label">TOTAL VISITS</div><div class="kv-traffic-value" id="kv-traffic-visits">' + (t.visits || 0).toLocaleString('id-ID') + '</div><div class="kv-traffic-note">Session-based estimate</div></article>' +
+              '<article class="kv-traffic-card"><div class="kv-traffic-label">AVG. PAGES/VISIT</div><div class="kv-traffic-value" id="kv-traffic-average">' + (t.average || 0) + '</div><div class="kv-traffic-note">Engagement metric</div></article>' +
+            '</div>' +
+            '<div class="kv-traffic-chart">' +
+              '<h3 class="kv-chart-title">&#9635; Traffic Overview</h3>' +
+              '<p class="kv-chart-sub">Pageviews, visitors, and visits over time</p>' +
+              '<div class="kv-traffic-legend"><span><i class="kv-traffic-dot" style="background:#62a5ff"></i>Pageviews</span><span><i class="kv-traffic-dot" style="background:#d77aa9"></i>Unique Visitors</span><span><i class="kv-traffic-dot" style="background:#e6d36f"></i>Visits</span></div>' +
+              '<svg viewBox="0 0 1100 355" role="img" aria-label="Grafik traffic"><title>Traffic Overview: Pageviews, Unique Visitors, Visits</title><g>' +
+                '<line class="kv-traffic-grid" x1="55" y1="35" x2="1080" y2="35"/><line class="kv-traffic-grid" x1="55" y1="95" x2="1080" y2="95"/><line class="kv-traffic-grid" x1="55" y1="155" x2="1080" y2="155"/><line class="kv-traffic-grid" x1="55" y1="215" x2="1080" y2="215"/><line class="kv-traffic-grid" x1="55" y1="275" x2="1080" y2="275"/>' +
+                '<text class="kv-traffic-axis" x="28" y="39">120</text><text class="kv-traffic-axis" x="28" y="99">90</text><text class="kv-traffic-axis" x="28" y="159">60</text><text class="kv-traffic-axis" x="28" y="219">30</text><text class="kv-traffic-axis" x="38" y="279">0</text>' +
+              '</g>' +
+              '<path d="M55 205 C95 195 130 177 170 180 S245 218 285 202 S365 126 410 132 S485 190 525 170 S600 52 650 48 S720 100 755 172 S815 258 855 274 S940 274 975 274 S1040 220 1080 205" class="kv-traffic-line" stroke="#62a5ff"><title>Pageviews</title></path>' +
+              '<path d="M55 270 C105 265 130 260 170 264 S250 270 285 268 S370 255 410 258 S485 264 525 260 S610 268 650 267 S730 273 755 275 S850 276 900 275 S1030 275 1080 274" class="kv-traffic-line" stroke="#d77aa9"><title>Unique Visitors</title></path>' +
+              '<path d="M55 264 C100 252 130 247 170 250 S245 259 285 255 S370 245 410 248 S485 252 525 249 S610 247 650 253 S730 269 755 273 S850 275 900 275 S1030 272 1080 270" class="kv-traffic-line" stroke="#e6d36f"><title>Visits</title></path>' +
+              '<g class="kv-traffic-axis" text-anchor="middle">' +
+                 '<text x="55" y="302">1 Jan</text><text x="170" y="302">2 Jan</text><text x="285" y="302">3 Jan</text><text x="400" y="302">4 Jan</text><text x="515" y="302">5 Jan</text><text x="630" y="302">6 Jan</text><text x="745" y="302">7 Jan</text><text x="860" y="302">8 Jan</text><text x="975" y="302">9 Jan</text><text x="1080" y="302">10 Jan</text>' +
+
+              '</g>' +
+            '</svg>' +
+            '</div>' +
+          '</section>';
+      }
+
+      function renderAdminMangaList() {
        var q = state.adminSearch.toLowerCase();
        var list = state.data.manga.filter(function (m) {
          return !q || m.title.toLowerCase().indexOf(q) !== -1 || m.slug.indexOf(q) !== -1;
@@ -4290,30 +4509,34 @@
         state.data.manga.map(function (m) { return '<option value="' + escapeHtml(m.id) + '"' + (m.id === sel ? ' selected' : '') + '>' + escapeHtml(m.title) + '</option>'; }).join('') +
       '</select>';
       var chs = state.data.chapters.filter(function (c) { return c.mangaId === sel; }).sort(function (a, b) { return a.number - b.number; });
-      var rows = chs.map(function (c, i) {
+      var cards = chs.map(function (c, i) {
         var uploaded = c.pages.filter(function (p) { return p.bloggerUrl; }).length;
-        return '<tr>' +
-          '<td class="kv-mono"><strong>Ch. ' + c.number + '</strong></td>' +
-          '<td>' + escapeHtml(c.title || '(tanpa judul)') + '</td>' +
-          '<td class="kv-mono">' + escapeHtml(c.publishedAt) + '</td>' +
-          '<td class="kv-mono">' + uploaded + '/' + c.pages.length + ' halaman siap baca</td>' +
-          '<td><div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        var pct = c.pages.length ? Math.round((uploaded / c.pages.length) * 100) : 0;
+        return '<div class="kv-admin-chapter-card">' +
+          '<div class="kv-admin-chapter-card-head">' +
+            '<span class="kv-badge kv-mono">Ch. ' + c.number + '</span>' +
+            '<span class="kv-admin-chapter-card-title">' + escapeHtml(c.title || '(tanpa judul)') + '</span>' +
+            '<span class="kv-admin-chapter-card-date">' + escapeHtml(c.publishedAt || '-') + '</span>' +
+          '</div>' +
+          '<div class="kv-admin-chapter-card-progress">' +
+            '<div class="kv-admin-chapter-card-bar"><div class="kv-admin-chapter-card-barfill" style="width:' + pct + '%;"></div></div>' +
+            '<span class="kv-mono">' + uploaded + '/' + c.pages.length + ' halaman (' + pct + '%)</span>' +
+          '</div>' +
+          '<div class="kv-admin-chapter-card-actions">' +
             '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-move-chapter" data-mid="' + escapeHtml(sel) + '" data-id="' + escapeHtml(c.id) + '" data-dir="up"' + (i === 0 ? ' disabled' : '') + ' aria-label="Naikkan urutan chapter">Naik</button>' +
             '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-move-chapter" data-mid="' + escapeHtml(sel) + '" data-id="' + escapeHtml(c.id) + '" data-dir="down"' + (i === chs.length - 1 ? ' disabled' : '') + ' aria-label="Turunkan urutan chapter">Turun</button>' +
             '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-edit-chapter" data-id="' + escapeHtml(c.id) + '">Ubah</button>' +
             '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-preview-chapter" data-slug="' + escapeHtml((mangaById(sel) || {}).slug || '') + '" data-cid="' + escapeHtml(c.id) + '">Preview</button>' +
             '<button type="button" class="kv-btn kv-btn-sm kv-btn-danger-ghost" data-action="admin-delete-chapter" data-id="' + escapeHtml(c.id) + '">Hapus</button>' +
-          '</div></td>' +
-        '</tr>';
+          '</div>' +
+        '</div>';
       }).join('');
       return '<div class="kv-toolbar">' +
+          (state.adminChapterFullId ? '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-close-chapters">Kembali ke Daftar Manga</button>' : '') +
           mangaSelect +
           '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-chapter">+ Tambah Chapter</button>' +
         '</div>' +
-        '<div class="kv-table-wrap" style="margin-top:16px;">' +
-          '<table class="kv-table"><thead><tr><th>No.</th><th>Judul</th><th>Tanggal</th><th>Progres Gambar</th><th>Aksi</th></tr></thead><tbody>' +
-          (rows || '<tr><td colspan="5" style="text-align:center;color:var(--kv-text-muted);">Belum ada chapter untuk manga ini.</td></tr>') +
-          '</tbody></table></div>';
+        (cards ? '<div class="kv-admin-chapter-card-list">' + cards + '</div>' : '<p class="kv-admin-empty" style="margin-top:16px;">Belum ada chapter untuk manga ini.</p>');
     }
 
     function renderAdminChapterForm() {
@@ -4370,35 +4593,58 @@
       var myDisplayName = state.user ? currentDisplayName(state.user.name) : 'Pengguna';
       var opts = [['Semua', 'Semua'], ['pending', 'Menunggu'], ['approved', 'Disetujui'], ['rejected', 'Ditolak']];
       var list = state.data.comments.filter(function (c) { return state.commentFilter === 'Semua' || c.status === state.commentFilter; });
-      var rows = list.map(function (c) {
+      var cards = list.map(function (c) {
         var m = mangaById(c.mangaId);
+        var ch = c.chapterId ? state.data.chapters.filter(function (x) { return x.id === c.chapterId; })[0] : null;
+        var authorName = (state.user && c.userId === state.user.id) ? myDisplayName : (c.authorName || 'Anonim');
+        var avatar = c.authorAvatar ? '<img src="' + escapeHtml(c.authorAvatar) + '" alt="" class="kv-admin-comment-avatar" referrerpolicy="no-referrer"/>' : '<div class="kv-admin-comment-avatar kv-admin-comment-avatar-fallback">' + escapeHtml(String(authorName || '?').charAt(0).toUpperCase()) + '</div>';
         var badge = c.status === 'approved' ? '<span class="kv-badge kv-badge-ok">Disetujui</span>'
           : c.status === 'pending' ? '<span class="kv-badge kv-badge-pending">Menunggu</span>'
           : '<span class="kv-badge kv-badge-reject">Ditolak</span>';
-        return '<tr>' +
-          '<td>' + escapeHtml(m ? m.title : '(manga dihapus)') + '</td>' +
-          '<td><strong>' + escapeHtml(state.user && c.userId === state.user.id ? myDisplayName : c.authorName) + '</strong><div class="kv-mono" style="color:var(--kv-text-muted);font-size:0.75rem;">' + escapeHtml(c.createdAt) + '</div></td>' +
-          '<td style="max-width:280px;">' + escapeHtml(c.content) + '</td>' +
-          '<td>' + badge + '</td>' +
-          '<td><div style="display:flex;gap:6px;flex-wrap:wrap;">' +
-            (c.status !== 'approved' ? '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-set-comment" data-id="' + escapeHtml(c.id) + '" data-status="approved">Setujui</button>' : '') +
-            (c.status !== 'rejected' ? '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-set-comment" data-id="' + escapeHtml(c.id) + '" data-status="rejected">Tolak</button>' : '') +
-            '<button type="button" class="kv-btn kv-btn-sm kv-btn-danger-ghost" data-action="admin-delete-comment" data-id="' + escapeHtml(c.id) + '">Hapus</button>' +
-          '</div></td>' +
-        '</tr>';
+        var pinBtn = '<button type="button" class="kv-btn kv-btn-sm ' + (c.pinned ? 'kv-btn-primary' : 'kv-btn-ghost') + '" data-action="admin-pin-comment" data-id="' + escapeHtml(c.id) + '">' + (c.pinned ? 'Lepas Pin' : 'Sematkan') + '</button>';
+        var actions = '<div class="kv-admin-comment-actions">' +
+          (c.status !== 'approved' ? '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-set-comment" data-id="' + escapeHtml(c.id) + '" data-status="approved">Setujui</button>' : '') +
+          (c.status !== 'rejected' ? '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-set-comment" data-id="' + escapeHtml(c.id) + '" data-status="rejected">Tolak</button>' : '') +
+          pinBtn +
+          '<button type="button" class="kv-btn kv-btn-sm kv-btn-danger-ghost" data-action="admin-delete-comment" data-id="' + escapeHtml(c.id) + '">Hapus</button>' +
+        '</div>';
+        return '<div class="kv-admin-comment-card' + (c.pinned ? ' is-pinned' : '') + '">' +
+          '<div class="kv-admin-comment-head">' +
+            avatar +
+            '<div class="kv-admin-comment-meta">' +
+              '<div class="kv-admin-comment-author">' + escapeHtml(authorName) + (c.pinned ? ' <span class="kv-comment-pinned">Disematkan</span>' : '') + '</div>' +
+              '<div class="kv-admin-comment-sub">' + escapeHtml(m ? m.title : '(manga dihapus)') + (ch ? ' · Ch. ' + escapeHtml(ch.number) : '') + ' · ' + escapeHtml(c.createdAt || '') + '</div>' +
+            '</div>' +
+            badge +
+          '</div>' +
+          '<div class="kv-admin-comment-body">' + escapeHtml(c.content) + (c.imageUrl ? '<div><img class="kv-admin-comment-img" src="' + escapeHtml(c.imageUrl) + '" alt="" loading="lazy" referrerpolicy="no-referrer"/></div>' : '') + '</div>' +
+          actions +
+        '</div>';
       }).join('');
-      return '<div class="kv-toolbar">' +
-          '<select id="kv-comment-filter" class="kv-select" aria-label="Filter status komentar">' +
-            opts.map(function (o) { return '<option value="' + o[0] + '"' + (state.commentFilter === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
-          '</select>' +
-        '</div>' +
-        '<div class="kv-table-wrap" style="margin-top:16px;">' +
-          '<table class="kv-table"><thead><tr><th>Manga</th><th>Penulis</th><th>Isi</th><th>Status</th><th>Aksi</th></tr></thead><tbody>' +
-          (rows || '<tr><td colspan="5" style="text-align:center;color:var(--kv-text-muted);">Tidak ada komentar.</td></tr>') +
-          '</tbody></table></div>';
+      var filterButtons = '<div class="kv-admin-comment-filters">' +
+        opts.map(function (o) {
+          return '<button type="button" class="kv-btn kv-btn-sm ' + (state.commentFilter === o[0] ? 'kv-btn-primary' : 'kv-btn-ghost') + '" data-action="admin-comment-filter" data-filter="' + o[0] + '">' + o[1] + ' <span class="kv-admin-comment-count">' + state.data.comments.filter(function (c) { return o[0] === 'Semua' || c.status === o[0]; }).length + '</span></button>';
+        }).join('') +
+      '</div>';
+      return '<div class="kv-admin-comments">' +
+        filterButtons +
+        (cards ? '<div class="kv-admin-comment-list">' + cards + '</div>' : '<p class="kv-admin-empty">Tidak ada komentar.</p>') +
+      '</div>';
     }
 
-    function loadAdminUsers() {
+     function loadAdminAnalytics(from, to) {
+       if (!CONFIG.API_BASE_URL || !state.adminToken) return;
+       var f = from || (state.analyticsFrom || '');
+       var t = to || (state.analyticsTo || '');
+       if (!f || !t) return;
+       fetch(CONFIG.API_BASE_URL + '/api/analytics?from=' + encodeURIComponent(f) + '&to=' + encodeURIComponent(t), { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
+         .then(function (r) { if (!r.ok) throw new Error('Gagal memuat analitik.'); return r.json(); })
+         .then(function (res) { state.analyticsData = res; render(); })
+         .catch(function () { state.analyticsData = null; });
+     }
+
+     function loadAdminUsers() {
+
       if (!CONFIG.API_BASE_URL || !state.adminToken) return;
       fetch(CONFIG.API_BASE_URL + '/api/admin/users', { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
         .then(function (r) { if (!r.ok) throw new Error('Gagal memuat pengguna.'); return r.json(); })
@@ -4749,22 +4995,88 @@
 
     /* Unggah satu berkas per request; gambar disimpan di Telegram dan
        ditayangkan oleh URL proxy Vercel. */
-    function uploadPageFiles(files) {
-      var f = state.adminChapterForm;
-      if (!f) return;
-      Array.prototype.forEach.call(files, function (file) {
+    function mimeFromName(name) {
+      var ext = String(name || '').split('.').pop().toLowerCase();
+      return ({ jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif' })[ext] || 'image/jpeg';
+    }
+    function findEocd(bytes) {
+      for (var i = bytes.length - 22; i >= 0; i--) {
+        if (bytes[i] === 0x50 && bytes[i + 1] === 0x4b && bytes[i + 2] === 0x05 && bytes[i + 3] === 0x06) return i;
+      }
+      return -1;
+    }
+    async function extractZipImages(file) {
+      var buf = await file.arrayBuffer();
+      var bytes = new Uint8Array(buf);
+      var eocd = findEocd(bytes);
+      if (eocd < 0) throw new Error('ZIP tidak valid');
+      var dv = new DataView(bytes.buffer);
+      var numEntries = dv.getUint16(eocd + 10, true);
+      var cdSize = dv.getUint32(eocd + 12, true);
+      var cdOffset = dv.getUint32(eocd + 16, true);
+      var pos = cdOffset;
+      var entries = [];
+      for (var i = 0; i < numEntries; i++) {
+        if (dv.getUint32(pos, true) !== 0x02014b50) break;
+        var method = dv.getUint16(pos + 10, true);
+        var csize = dv.getUint32(pos + 20, true);
+        var usize = dv.getUint32(pos + 24, true);
+        var fnLen = dv.getUint16(pos + 28, true);
+        var extraLen = dv.getUint16(pos + 30, true);
+        var commentLen = dv.getUint16(pos + 32, true);
+        var localOffset = dv.getUint32(pos + 42, true);
+        var name = new TextDecoder().decode(bytes.slice(pos + 46, pos + 46 + fnLen));
+        pos += 46 + fnLen + extraLen + commentLen;
+        if (name.endsWith('/')) continue;
+        var ext = name.split('.').pop().toLowerCase();
+        if (['jpg', 'jpeg', 'png', 'webp', 'gif'].indexOf(ext) === -1) continue;
+        entries.push({ name: name, method: method, csize: csize, usize: usize, localOffset: localOffset });
+      }
+      var out = [];
+      for (var j = 0; j < entries.length; j++) {
+        var e = entries[j];
+        var lpos = e.localOffset;
+        if (dv.getUint32(lpos, true) !== 0x04034b50) continue;
+        var lfnLen = dv.getUint16(lpos + 26, true);
+        var lextraLen = dv.getUint16(lpos + 28, true);
+        var dataStart = lpos + 30 + lfnLen + lextraLen;
+        var cdata = bytes.slice(dataStart, dataStart + e.csize);
+        var blob = null;
+        if (e.method === 0) {
+          blob = new Blob([cdata], { type: mimeFromName(e.name) });
+        } else if (e.method === 8) {
+          try {
+            var ds = new DecompressionStream('deflate-raw');
+            var stream = new Blob([cdata]).stream().pipeThrough(ds);
+            var ab = await new Response(stream).arrayBuffer();
+            blob = new Blob([ab], { type: mimeFromName(e.name) });
+          } catch (err) {
+            continue;
+          }
+        } else {
+          continue;
+        }
+        if (!blob) continue;
+        out.push(new File([blob], e.name.split('/').pop(), { type: blob.type }));
+      }
+      return out;
+    }
+    function uploadOneFile(file, f) {
+      return new Promise(function (resolve) {
         var page = { order: f.pages.length + 1, fileName: file.name, bloggerUrl: '', telegramFileId: '', status: 'menunggu unggah' };
         f.pages.push(page);
         if (file.size > 3 * 1024 * 1024) {
           page.status = 'gagal: ukuran maksimal 3 MiB';
           toast('Ukuran ' + file.name + ' melebihi batas 3 MiB untuk backend Vercel.', 'err');
           render();
+          resolve();
           return;
         }
         render();
         if (!CONFIG.API_BASE_URL) {
           page.status = 'siap (mode lokal - proxy belum diatur)';
           render();
+          resolve();
           return;
         }
         page.status = 'mengunggah ke proxy...';
@@ -4774,7 +5086,7 @@
           fetch(CONFIG.API_BASE_URL + '/api/admin/upload-dual', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
-            body: JSON.stringify({ fileName: file.name, mimeType: file.type, dataBase64: fr.result })
+            body: JSON.stringify({ fileName: file.name, mimeType: file.type || mimeFromName(file.name), dataBase64: fr.result })
           }).then(function (r) {
             return r.json().then(function (res) {
               if (!r.ok) throw new Error(res.error || 'HTTP ' + r.status);
@@ -4788,14 +5100,55 @@
               toast('Sebagian tujuan gagal untuk ' + file.name + ' - periksa status lalu unggah ulang.', 'warn');
             }
             render();
+            resolve();
           }).catch(function (err) {
             page.status = 'gagal: ' + err.message;
             toast('Gagal mengunggah ' + file.name + ': ' + err.message, 'err');
             render();
+            resolve();
           });
         };
         fr.readAsDataURL(file);
       });
+    }
+    async function uploadPageFiles(files) {
+      var f = state.adminChapterForm;
+      if (!f) return;
+      var collected = [];
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var name = String(file.name || '').toLowerCase();
+        if (name.endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed') {
+          try {
+            var extracted = await extractZipImages(file);
+            if (!extracted.length) toast('ZIP tidak berisi gambar yang didukung.', 'warn');
+            collected = collected.concat(extracted);
+          } catch (err) {
+            toast('Gagal mengekstrak ZIP ' + file.name + ': ' + err.message, 'err');
+          }
+        } else {
+          collected.push(file);
+        }
+      }
+      if (!collected.length) {
+        toast('Tidak ada gambar untuk diunggah.', 'warn');
+        render();
+        return;
+      }
+      state.uploadProgress = { active: true, total: collected.length, done: 0, current: collected[0].name };
+      render();
+      for (var j = 0; j < collected.length; j++) {
+        state.uploadProgress.current = collected[j].name;
+        state.uploadProgress.done = j;
+        render();
+        await uploadOneFile(collected[j], f);
+        state.uploadProgress.done = j + 1;
+        render();
+      }
+      state.uploadProgress.active = false;
+      state.uploadProgress = null;
+      render();
+      toast('Unggah selesai: ' + collected.length + ' gambar.', 'ok');
     }
 
     function renderInfo() {
@@ -4854,6 +5207,19 @@
         else if (state.route === 'info') bodyHtml = renderInfo();
         else bodyHtml = render404();
       }
+      if (state.uploadProgress && state.uploadProgress.active) {
+        var up = state.uploadProgress;
+        var pct = up.total ? Math.round((up.done / up.total) * 100) : 0;
+        bodyHtml += '<div class="kv-upload-overlay" role="dialog" aria-modal="true" aria-label="Proses unggah">' +
+          '<div class="kv-upload-box">' +
+            '<div class="kv-upload-title">Mengunggah Gambar</div>' +
+            '<div class="kv-upload-sub">' + escapeHtml(up.current || '') + '</div>' +
+            '<div class="kv-upload-bar"><div class="kv-upload-bar-fill" style="width:' + pct + '%;"></div></div>' +
+            '<div class="kv-upload-count">' + up.done + ' / ' + up.total + ' selesai (' + pct + '%)</div>' +
+          '</div>' +
+        '</div>';
+      }
+      if (state.pendingDelete) bodyHtml += renderConfirmModal();
       app.innerHTML = renderHeader() + bodyHtml + renderFooter();
       bindEvents();
     }
@@ -5005,8 +5371,19 @@
         }
         bindBannerTrack(bTrack);
       }
-      var rWidth = document.getElementById('kv-reader-width');
-      if (rWidth) rWidth.onchange = function (e) { state.readerWidth = Number(e.target.value); render(); };
+       var rWidth = document.getElementById('kv-reader-width');
+       if (rWidth) rWidth.onchange = function (e) { state.readerWidth = Number(e.target.value); render(); };
+        var rSpeed = document.getElementById('kv-reader-speed');
+        if (rSpeed) rSpeed.onchange = function (e) { var v = parseFloat(e.target.value); if (isNaN(v) || v <= 0) v = 2.5; state.autoScrollSpeed = v; render(); };
+        var rChSearch = document.getElementById('kv-reader-chapter-search');
+        if (rChSearch) rChSearch.oninput = function (e) { state.readerChapterSearch = e.target.value; state.readerChapterSearchRefocus = true; render(); };
+        if (rChSearch && state.readerChapterSearchRefocus) {
+          state.readerChapterSearchRefocus = false;
+          rChSearch.focus();
+          var rcl = rChSearch.value.length;
+          rChSearch.setSelectionRange(rcl, rcl);
+        }
+
       var rTheme = document.getElementById('kv-reader-theme');
       if (rTheme) rTheme.onchange = function (e) { state.readerTheme = e.target.value; render(); };
       var rDir = document.getElementById('kv-reader-dir');
@@ -5183,9 +5560,12 @@
            var file = e.target.files && e.target.files[0];
            var targetForm = state.imageTargetForm;
            state.imageTargetForm = null;
-           if (!file || !targetForm) return;
-           if (!CONFIG.API_BASE_URL) { toast('Upload gambar butuh backend yang terhubung.', 'warn'); return; }
-           var reader = new FileReader();
+            if (!file || !targetForm) return;
+            if (!CONFIG.API_BASE_URL) { toast('Upload gambar butuh backend yang terhubung.', 'warn'); return; }
+            var btn = state.commentImageUploadingBtn;
+            if (btn) { btn.disabled = true; btn.innerHTML = '<span class="kv-spinner"></span>'; }
+            var reader = new FileReader();
+
            reader.onload = function () {
              var headers = { 'Content-Type': 'application/json' };
              if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
@@ -5215,7 +5595,13 @@
                 state.commentImageMap = state.commentImageMap || {};
                 state.commentImageMap[token] = res.url || '';
                 toast('Gambar diunggah dan disisipkan ke komentar.', 'ok');
-              }).catch(function (err) { toast('Gagal upload gambar: ' + err.message, 'error'); });
+               }).catch(function (err) { toast('Gagal upload gambar: ' + err.message, 'error'); })
+               .finally(function () {
+                 var btn = state.commentImageUploadingBtn;
+                 if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>'; }
+                 state.commentImageUploadingBtn = null;
+               });
+
            };
            reader.readAsDataURL(file);
          };
@@ -5321,6 +5707,12 @@
       else if (act === 'open-manga') { navigate('#/manga/' + el.getAttribute('data-slug')); }
       else if (act === 'reply-comment') { var rid = el.getAttribute('data-id'); state.replyingTo = state.replyingTo === rid ? null : rid; render(); }
       else if (act === 'upvote-comment') { upvoteCommentLocal(el.getAttribute('data-id')); }
+      else if (act === 'toggle-replies') {
+        var rid = el.getAttribute('data-id');
+        if (!state.expandedComments) state.expandedComments = {};
+        state.expandedComments[rid] = !state.expandedComments[rid];
+        render();
+      }
       else if (act === 'admin-pin-comment') { adminPinComment(el.getAttribute('data-id')); }
       else if (act === 'admin-delete-comment') {
         var dc = state.data.comments.filter(function (x) { return x.id === el.getAttribute('data-id'); })[0];
@@ -5338,7 +5730,9 @@
       else if (act === 'toggle-reader-mode') { var mode = el.getAttribute('data-mode'); state.readerMode = (mode === 'vertical' || mode === 'paged') ? mode : (state.readerMode === 'vertical' ? 'paged' : 'vertical'); state.currentPageIdx = 0; render(); }
       else if (act === 'scroll-reader-up') { window.scrollBy({ top: -Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
       else if (act === 'scroll-reader-down') { window.scrollBy({ top: Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
-      else if (act === 'toggle-auto-scroll') { toggleAutoScroll(); }
+       else if (act === 'toggle-auto-scroll') { toggleAutoScroll(); }
+       else if (act === 'set-reader-theme') { state.theme = el.getAttribute('data-theme'); applyTheme(); render(); }
+       else if (act === 'set-scroll-speed') { state.autoScrollSpeed = parseFloat(el.getAttribute('data-speed')) || 2.5; render(); }
       else if (act === 'toggle-reader-settings') { state.readerSettingsOpen = !state.readerSettingsOpen; state.readerMenuOpen = false; render(); }
       else if (act === 'scroll-banner-dot') {
         var bTrack = document.getElementById('kv-banner-track');
@@ -5365,12 +5759,14 @@
         render();
       }
       else if (act === 'retry-api') { state.error = null; syncFromApi(); }
-      else if (act === 'comment-image') {
-        if (!state.user) { toast('Masuk terlebih dahulu untuk mengunggah gambar.', 'warn'); return; }
-        state.imageTargetForm = el.closest('form');
-        var fileInput = document.getElementById('kv-comment-image-file');
-        if (fileInput) fileInput.click();
-      }
+       else if (act === 'comment-image') {
+         if (!state.user) { toast('Masuk terlebih dahulu untuk mengunggah gambar.', 'warn'); return; }
+         state.imageTargetForm = el.closest('form');
+         state.commentImageUploadingBtn = el;
+         var fileInput = document.getElementById('kv-comment-image-file');
+         if (fileInput) fileInput.click();
+       }
+
       else if (act === 'admin-settings-reset') { resetSiteSettings(); }
       else if (act === 'toggle-admin-drawer') { state.adminDrawerOpen = !state.adminDrawerOpen; render(); }
       else if (act === 'close-admin-drawer') { state.adminDrawerOpen = false; render(); }
@@ -5395,7 +5791,18 @@
         syncFromApi();
       }
       /* --- Aksi panel admin --- */
-      else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; state.adminDrawerOpen = false; if (state.adminTab === 'pengguna') state.usersCache = undefined; render(); }
+       else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; state.adminChapterFullId = null; state.adminDrawerOpen = false; if (state.adminTab === 'pengguna') state.usersCache = undefined; render(); }
+       else if (act === 'admin-comment-filter') { state.commentFilter = el.getAttribute('data-filter'); render(); }
+       else if (act === 'admin-open-leaderboard') { state.adminTab = 'leaderboard'; state.adminDrawerOpen = false; render(); }
+       else if (act === 'kv-traffic-refresh') {
+         var from = document.getElementById('kv-traffic-from');
+         var to = document.getElementById('kv-traffic-to');
+         if (from && to && from.value && to.value && from.value > to.value) { alert('Tanggal awal tidak boleh melewati tanggal akhir.'); return; }
+         state.analyticsFrom = from && from.value ? from.value : state.analyticsFrom;
+         state.analyticsTo = to && to.value ? to.value : state.analyticsTo;
+         state.analyticsData = undefined;
+         loadAdminAnalytics(state.analyticsFrom, state.analyticsTo);
+       }
       else if (act === 'admin-delete-user') { deleteUserAdmin(el.getAttribute('data-id')); }
       else if (act === 'admin-new-manga') { state.adminForm = blankManga(); state.adminTab = 'manga'; state.adminDrawerOpen = false; render(); }
       else if (act === 'admin-edit-manga') {
@@ -5418,13 +5825,20 @@
         state.adminExpandedManga = state.adminExpandedManga === expId ? null : expId;
         render();
       }
-       else if (act === 'admin-open-chapters') {
-         state.adminChapterMangaId = el.getAttribute('data-id');
-         state.adminChapterForm = null;
-         state.adminExpandedManga = el.getAttribute('data-id');
-         state.adminTab = 'manga';
-         render();
-       }
+        else if (act === 'admin-open-chapters') {
+          state.adminChapterMangaId = el.getAttribute('data-id');
+          state.adminChapterFullId = el.getAttribute('data-id');
+          state.adminChapterForm = null;
+          state.adminExpandedManga = el.getAttribute('data-id');
+          state.adminTab = 'manga';
+          state.adminDrawerOpen = false;
+          render();
+        }
+        else if (act === 'admin-close-chapters') {
+          state.adminChapterFullId = null;
+          render();
+        }
+
       else if (act === 'admin-edit-chapter') {
         var ec = chapterById(el.getAttribute('data-id'));
         if (ec) {
@@ -5519,10 +5933,12 @@
     window.addEventListener('popstate', handleRouteChange);
     window.addEventListener('hashchange', handleRouteChange);
 
-    applyTheme();
-    parseRoute();
-    initializeAuth();
-  })();
+     applyTheme();
+     parseRoute();
+     initializeAuth();
+     trackPageview();
+   })();
+
   //]]>
   </script>
   <!-- Blogger Required Main Section (Hidden when SPA active, preserved for valid Blogger XML) -->

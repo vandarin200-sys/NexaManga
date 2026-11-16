@@ -48,12 +48,19 @@ let schemaPromise = null;
 function ensureSchema() {
   if (!schemaPromise) {
     schemaPromise = (async () => {
-      await sql()`CREATE TABLE IF NOT EXISTS nexamanga_snapshot (
-        id smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1),
-        data jsonb NOT NULL,
-        version bigint NOT NULL DEFAULT 1,
-        updated_at timestamptz NOT NULL DEFAULT now()
-      )`;
+       await sql()`CREATE TABLE IF NOT EXISTS nexamanga_snapshot (
+         id smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+         data jsonb NOT NULL,
+         version bigint NOT NULL DEFAULT 1,
+         updated_at timestamptz NOT NULL DEFAULT now()
+       )`;
+       await sql()`CREATE TABLE IF NOT EXISTS nexamanga_analytics (
+         day date PRIMARY KEY,
+         pageviews bigint NOT NULL DEFAULT 0,
+         visits bigint NOT NULL DEFAULT 0,
+         visitors jsonb NOT NULL DEFAULT '[]'::jsonb
+       )`;
+
       try {
         await sql()`CREATE OR REPLACE VIEW nexamanga_users AS
           SELECT (u.item->>'id') AS id,
@@ -150,6 +157,34 @@ async function modifyCatalog(change) {
   }
 }
 
+async function recordTrack(visitorId) {
+  await ensureSchema();
+  const day = new Date().toISOString().slice(0, 10);
+  const rows = await sql()`SELECT pageviews, visits, visitors FROM nexamanga_analytics WHERE day = ${day}`;
+  let pageviews = 1;
+  let visitors = [];
+  if (rows.length) {
+    pageviews = Number(rows[0].pageviews) + 1;
+    visitors = Array.isArray(rows[0].visitors) ? rows[0].visitors.slice() : [];
+  }
+  if (visitorId && !visitors.includes(visitorId)) visitors.push(visitorId);
+  const visits = visitors.length;
+  await sql()`INSERT INTO nexamanga_analytics (day, pageviews, visits, visitors)
+    VALUES (${day}, ${pageviews}, ${visits}, ${JSON.stringify(visitors)}::jsonb)
+    ON CONFLICT (day) DO UPDATE SET pageviews = ${pageviews}, visits = ${visits}, visitors = ${JSON.stringify(visitors)}::jsonb`;
+}
+
+async function readAnalytics(from, to) {
+  await ensureSchema();
+  const rows = await sql()`SELECT day, pageviews, visits, visitors FROM nexamanga_analytics WHERE day >= ${from} AND day <= ${to} ORDER BY day ASC`;
+  return rows.map((row) => ({
+    date: row.day,
+    pageviews: Number(row.pageviews),
+    visits: Number(row.visits),
+    visitors: Array.isArray(row.visitors) ? row.visitors.length : 0
+  }));
+}
+
 module.exports = {
   CatalogNotInitializedError,
   ConcurrentUpdateError,
@@ -158,5 +193,7 @@ module.exports = {
   ensureCatalogInitialized,
   initializeCatalog,
   modifyCatalog,
-  readCatalog
+  readCatalog,
+  recordTrack,
+  readAnalytics
 };

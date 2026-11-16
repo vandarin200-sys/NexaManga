@@ -37,7 +37,9 @@ const {
   ensureCatalogInitialized,
   initializeCatalog,
   modifyCatalog,
-  readCatalog
+  readCatalog,
+  recordTrack,
+  readAnalytics
 } = require('../lib/db');
 
 class HttpError extends Error {
@@ -405,6 +407,29 @@ async function handler(req, res) {
       let updated;
       await updateCatalog((catalog) => { updated = incrementMangaViews(catalog, id); });
       return sendJson(res, 200, { ok: true, views: updated.views });
+    }
+
+    if (route === 'track' && req.method === 'POST') {
+      const body = await readBody(req);
+      const visitorId = typeof body.visitorId === 'string' ? body.visitorId.slice(0, 100) : '';
+      await recordTrack(visitorId);
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (route === 'analytics' && req.method === 'GET') {
+      await requireAdmin(req);
+      const url = new URL(req.url, 'http://localhost');
+      const from = url.searchParams.get('from') || new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
+      const to = url.searchParams.get('to') || new Date().toISOString().slice(0, 10);
+      const rows = await readAnalytics(from, to);
+      const totals = rows.reduce((acc, r) => {
+        acc.pageviews += r.pageviews;
+        acc.visitors += r.visitors;
+        acc.visits += r.visits;
+        return acc;
+      }, { pageviews: 0, visitors: 0, visits: 0 });
+      const avg = totals.visits ? (totals.pageviews / totals.visits) : 0;
+      return sendJson(res, 200, { from, to, totals: { pageviews: totals.pageviews, visitors: totals.visitors, visits: totals.visits, average: Number(avg.toFixed(1)) }, daily: rows });
     }
 
     if (route === 'chapter/reaction' && req.method === 'POST') {
