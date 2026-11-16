@@ -68,7 +68,7 @@ Selain pengaturan penyimpanan, tambahkan variabel aplikasi dan OAuth berikut:
 | Variable | Nilai |
 |---|---|
 | `TOKEN_SECRET` | Secret acak minimal 32 karakter |
-| `PUBLIC_API_URL` | URL HTTPS deployment, misalnya `https://nexamanga-nexamanga.vercel.app` |
+| `PUBLIC_API_URL` | URL HTTPS deployment, misalnya `https://nexamanga.vercel.app` |
 | `ALLOWED_ORIGINS` | Origin Blogger yang tepat, misalnya `https://nama-blog.blogspot.com`; pisahkan beberapa origin dengan koma |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth client credentials Google |
 | `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` | OAuth application credentials Discord |

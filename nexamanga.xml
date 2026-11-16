@@ -1516,33 +1516,32 @@
       html:not(.dark) body.kv-home-route .kv-footer { background: #ffffff; border-top: 1px solid #e2e8f0; color: #475569; }
       html:not(.dark) body.kv-home-route .kv-footer a { color: #475569; }
       html:not(.dark) body.kv-home-route .kv-footer a:hover { color: #6366f1; }
-      html:not(.dark) body.kv-home-route .kv-home-hero {
-        position: relative; overflow: hidden; border-radius: 24px; padding: 28px; margin: 16px 0 20px;
-        background: linear-gradient(135deg, #eef2ff 0%, #ffffff 55%, #faf5ff 100%);
-        border: 1px solid rgba(226,232,240,.9); box-shadow: 0 20px 40px -18px rgba(99,102,241,.18);
+      body.kv-home-route .kv-home-banner { position: relative; margin: 14px 0 18px; }
+      body.kv-home-route .kv-home-banner-track { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 4px 2px 10px; scrollbar-width: none; -ms-overflow-style: none; border-radius: 24px; }
+      body.kv-home-route .kv-home-banner-track::-webkit-scrollbar { display: none; }
+      body.kv-home-route .kv-home-banner-card { position: relative; flex: 0 0 100%; height: clamp(240px, 34vw, 360px); border-radius: 22px; overflow: hidden; text-decoration: none; color: #f4f4f6; scroll-snap-align: center; background: #14141c; box-shadow: 0 26px 60px -30px rgba(6,6,12,.65); display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 100%; }
+      body.kv-home-route .kv-home-banner-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      body.kv-home-route .kv-home-banner-img-empty { background: linear-gradient(135deg,#111827 0%,#1e1b4b 100%); }
+      body.kv-home-route .kv-home-banner-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,10,16,.88) 0%, rgba(10,10,16,.55) 55%, rgba(10,10,16,0) 100%); }
+      body.kv-home-route .kv-home-banner-body { position: relative; z-index: 1; grid-column: 1 / 2; align-self: center; display: flex; flex-direction: column; gap: 10px; padding: 26px; text-shadow: 0 4px 18px rgba(0,0,0,.55); max-width: 100%; }
+      body.kv-home-route .kv-home-banner-title { margin: 0; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; color: #fff; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+      body.kv-home-route .kv-home-banner-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: .8rem; color: rgba(255,255,255,.88); }
+      body.kv-home-route .kv-home-banner-cta { display: inline-flex; align-items: center; gap: 8px; width: max-content; margin-top: 2px; padding: 11px 20px; border-radius: 12px; background: var(--kv-accent); color: #fff; font-size: .85rem; font-weight: 700; text-decoration: none; box-shadow: 0 14px 28px -14px rgba(99,102,241,.75); transition: transform .15s ease, filter .15s ease; }
+      body.kv-home-route .kv-home-banner-cta:hover { transform: translateY(-2px); filter: brightness(1.08); }
+      body.kv-home-route .kv-home-banner-track:focus-visible { outline: 2px solid var(--kv-accent); outline-offset: 2px; }
+      body.kv-home-route .kv-home-banner-dots { display: flex; justify-content: center; gap: 10px; padding: 12px 0 6px; }
+      body.kv-home-route .kv-home-banner-dot { width: 10px; height: 10px; border-radius: 999px; border: 0; padding: 0; background: color-mix(in srgb, var(--kv-text-muted) 32%, transparent); cursor: pointer; transition: width .3s cubic-bezier(.4,0,.2,1), background-color .3s ease, box-shadow .3s ease; -webkit-tap-highlight-color: transparent; }
+      body.kv-home-route .kv-home-banner-dot:hover { background: color-mix(in srgb, var(--kv-accent) 55%, transparent); }
+      body.kv-home-route .kv-home-banner-dot.is-active { width: 36px; background: var(--kv-accent); box-shadow: 0 6px 16px -8px var(--kv-accent); }
+      body.kv-home-route .kv-home-banner-poster { position: static; grid-column: 2 / 3; height: calc(100% - 28px); margin: 14px 14px 14px 0; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 16px; border: 1px solid rgba(255,255,255,.2); box-shadow: 0 20px 46px -16px rgba(0,0,0,.7); z-index: 1; }
+      body.kv-home-route .kv-home-banner-poster-empty { display: grid; place-items: center; background: linear-gradient(135deg,#1f2937 0%,#374151 100%); color: rgba(255,255,255,.55); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+      @media (max-width: 760px) {
+        body.kv-home-route .kv-home-banner-card { height: clamp(190px, 56vw, 300px); border-radius: 16px; }
+        body.kv-home-route .kv-home-banner-body { padding: 14px; gap: 6px; }
+        body.kv-home-route .kv-home-banner-poster { height: calc(100% - 20px); margin: 10px 10px 10px 0; border-radius: 12px; }
+        body.kv-home-route .kv-home-banner-title { font-size: clamp(1.1rem, 5.2vw, 1.5rem); -webkit-line-clamp: 2; }
+        body.kv-home-route .kv-home-banner-cta { padding: 9px 14px; font-size: .78rem; max-width: 100%; }
       }
-      html:not(.dark) body.kv-home-route .kv-home-hero::before { content: ""; position: absolute; right: -90px; top: -90px; width: 320px; height: 320px; border-radius: 999px; background: rgba(99,102,241,.18); filter: blur(60px); pointer-events: none; }
-      html:not(.dark) body.kv-home-route .kv-home-hero::after { content: ""; position: absolute; left: -80px; bottom: -80px; width: 280px; height: 280px; border-radius: 999px; background: rgba(168,85,247,.14); filter: blur(50px); pointer-events: none; }
-      html:not(.dark) body.kv-home-route .kv-home-hero-grid { position: relative; display: grid; grid-template-columns: minmax(0,1.25fr) minmax(220px,.75fr); gap: 28px; align-items: center; }
-      html:not(.dark) body.kv-home-route .kv-home-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-      html:not(.dark) body.kv-home-route .kv-home-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .02em; }
-      html:not(.dark) body.kv-home-route .kv-home-badge-editor { background: #6366f1; color: #fff; }
-      html:not(.dark) body.kv-home-route .kv-home-badge-type { background: #eef2f7; color: #334155; border: 1px solid #e2e8f0; }
-      html:not(.dark) body.kv-home-route .kv-home-badge-status { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-      html:not(.dark) body.kv-home-route .kv-home-badge-status::before { content: ""; width: 7px; height: 7px; border-radius: 999px; background: #10b981; display: inline-block; animation: kvPulse 1.4s ease-in-out infinite; }
-      @keyframes kvPulse { 0%,100% { opacity: .55; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
-      html:not(.dark) body.kv-home-route .kv-home-title { font-size: 2.15rem; line-height: 1.12; letter-spacing: -0.02em; font-weight: 800; color: #0f172a; margin: 0 0 14px; }
-      html:not(.dark) body.kv-home-route .kv-home-synopsis { font-size: .92rem; line-height: 1.65; color: #475569; max-width: 620px; margin: 0 0 18px; }
-      html:not(.dark) body.kv-home-route .kv-home-metrics { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-      html:not(.dark) body.kv-home-route .kv-home-metric { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.82); border: 1px solid #e2e8f0; padding: 7px 12px; border-radius: 10px; font-size: .75rem; font-weight: 600; color: #334155; }
-      html:not(.dark) body.kv-home-route .kv-home-metric strong { color: #f59e0b; font-weight: 800; }
-      html:not(.dark) body.kv-home-route .kv-home-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-      html:not(.dark) body.kv-home-route .kv-home-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 12px; background: #6366f1; color: #fff; font-size: .85rem; font-weight: 700; text-decoration: none; box-shadow: 0 14px 28px -16px rgba(99,102,241,.65); transition: transform .18s ease, background .18s ease; }
-      html:not(.dark) body.kv-home-route .kv-home-primary:hover { background: #4f46e5; }
-      html:not(.dark) body.kv-home-route .kv-home-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 12px; background: #fff; color: #475569; font-size: .85rem; font-weight: 600; text-decoration: none; border: 1px solid #e2e8f0; }
-      html:not(.dark) body.kv-home-route .kv-home-secondary:hover { background: #f8fafc; color: #6366f1; }
-      html:not(.dark) body.kv-home-route .kv-home-cover { justify-self: end; width: 100%; max-width: 250px; }
-      html:not(.dark) body.kv-home-route .kv-home-cover .kv-cover-wrap { border: 2px solid #ffffff; border-radius: 18px; box-shadow: 0 24px 48px -20px rgba(15,23,42,.35); }
       html:not(.dark) body.kv-home-route .kv-home-genres { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin: 22px 0 10px; }
       html:not(.dark) body.kv-home-route .kv-home-genres::-webkit-scrollbar { height: 6px; }
       html:not(.dark) body.kv-home-route .kv-home-genres::-webkit-scrollbar-track { background: #eef2f7; border-radius: 999px; }
@@ -1592,14 +1591,10 @@
         html:not(.dark) body.kv-home-route .kv-home-popular { grid-template-columns: 1fr; }
       }
       @media (max-width: 860px) {
-        html:not(.dark) body.kv-home-route .kv-home-hero-grid { grid-template-columns: 1fr; }
-        html:not(.dark) body.kv-home-route .kv-home-title { font-size: 1.7rem; }
-        html:not(.dark) body.kv-home-route .kv-home-cover { justify-self: start; max-width: 210px; }
         html:not(.dark) body.kv-home-route .kv-home-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
         html:not(.dark) body.kv-home-route .kv-home-curated { grid-template-columns: 1fr; }
       }
       @media (max-width: 520px) {
-        html:not(.dark) body.kv-home-route .kv-home-hero { padding: 20px; border-radius: 18px; }
         html:not(.dark) body.kv-home-route .kv-home-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
         html:not(.dark) body.kv-home-route .kv-home-section-title { font-size: 1.2rem; }
       }
@@ -1658,7 +1653,8 @@
       html:not(.dark) body.kv-detail-route .kv-detail-metric-truncate { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; }
       html:not(.dark) body.kv-detail-route .kv-detail-metric-accent { color:#f59e0b; }
       html:not(.dark) body.kv-detail-route .kv-detail-genres { display:flex; flex-wrap:wrap; gap:6px; margin-bottom: 16px; }
-      html:not(.dark) body.kv-detail-route .kv-detail-genre { padding:6px 12px; border-radius:8px; background:#f1f5f9; color:#4f46e5; font-size:.72rem; font-weight:600; }
+      html:not(.dark) body.kv-detail-route .kv-detail-genre { padding:6px 12px; border-radius:8px; background:#f1f5f9; color:#4f46e5; font-size:.72rem; font-weight:600; border:0; cursor:pointer; transition: background .15s ease, transform .15s ease, box-shadow .15s ease; }
+      html:not(.dark) body.kv-detail-route .kv-detail-genre:hover { background:#e2eafc; transform: translateY(-1px); box-shadow: 0 6px 14px -10px rgba(79,70,229,.45); }
       html:not(.dark) body.kv-detail-route .kv-detail-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
       html:not(.dark) body.kv-detail-route .kv-detail-primary { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:12px; background:#6366f1; color:#ffffff; font-size:.85rem; font-weight:700; text-decoration:none; box-shadow:0 10px 24px -16px rgba(101,88,217,.8); }
       html:not(.dark) body.kv-detail-route .kv-detail-primary:hover { background:#4f46e5; }
@@ -1855,9 +1851,62 @@
       html:not(.dark) body.kv-home-route .kv-catalog-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 0 6px; }
       html:not(.dark) body.kv-home-route .kv-catalog-sub { color: #64748b; font-size: .9rem; margin: 6px 0 0; }
       html:not(.dark) body.kv-home-route .kv-catalog-count { background: #eef2ff; color: #4f46e5; border-radius: 999px; padding: 8px 16px; font-size: .78rem; font-weight: 700; }
-      html:not(.dark) body.kv-home-route .kv-catalog-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px; margin-top: 14px; box-shadow: 0 8px 24px -20px rgba(15,23,42,.18); }
-      html:not(.dark) body.kv-home-route .kv-catalog-toolbar .kv-input { flex: 1 1 220px; }
-      html:not(.dark) body.kv-home-route .kv-catalog-toolbar .kv-select { flex: 0 1 160px; }
+      body.kv-home-route .kv-catalog-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 14px; padding: 12px; margin-top: 14px; box-shadow: 0 10px 30px -24px rgba(9, 12, 24, .35); }
+      body.kv-home-route .kv-catalog-toolbar .kv-search-wrap { display: flex; align-items: center; position: relative; flex: 1 1 220px; min-width: 180px; }
+      body.kv-home-route .kv-catalog-toolbar .kv-search-wrap .kv-search-icon { position: absolute; left: 12px; width: 18px; height: 18px; color: var(--kv-text-muted); pointer-events: none; }
+      body.kv-home-route .kv-catalog-toolbar .kv-search-input { padding-left: 38px; width: 100%; }
+      body.kv-home-route .kv-catalog-toolbar .kv-input { min-width: 0; flex: 1; }
+      body.kv-home-route .kv-catalog-toolbar .kv-search-wrap .kv-input { display: block; width: 100%; padding: 11px 12px 11px 38px; border-radius: 10px; border: 1px solid var(--kv-border); background: var(--kv-surface); color: var(--kv-text); font-size: .875rem; font-family: inherit; transition: border-color .15s ease, box-shadow .15s ease; outline: none; min-width: 0; flex: 1 1 auto; }
+      body.kv-home-route .kv-catalog-toolbar .kv-search-wrap .kv-input:focus { border-color: var(--kv-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kv-accent) 20%, transparent); }
+
+
+      body.kv-home-route .kv-dropdown { position: relative; }
+      body.kv-home-route .kv-dropdown-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--kv-border); background: var(--kv-surface); color: var(--kv-text); font-size: .82rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
+      body.kv-home-route .kv-dropdown-btn:hover { border-color: var(--kv-accent); }
+      body.kv-home-route .kv-dropdown-btn[aria-expanded="true"] { border-color: var(--kv-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kv-accent) 18%, transparent); }
+      body.kv-home-route .kv-dropdown-label { color: var(--kv-text-muted); font-weight: 500; }
+      body.kv-home-route .kv-dropdown-value { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      body.kv-home-route .kv-dropdown-chevron { width: 16px; height: 16px; color: var(--kv-text-muted); }
+      body.kv-home-route .kv-dropdown-btn[aria-expanded="true"] .kv-dropdown-chevron { transform: rotate(180deg); color: var(--kv-accent); }
+      body.kv-home-route .kv-dropdown-chevron { transition: transform .2s ease; }
+
+      body.kv-home-route .kv-dropdown-panel { position: absolute; top: calc(100% + 10px); left: 0; z-index: 60; min-width: 280px; max-width: min(92vw, 520px); background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 16px; box-shadow: 0 26px 56px -20px rgba(9, 12, 24, .55); padding: 14px; display: none; }
+      body.kv-home-route .kv-dropdown-panel.is-open { display: block; animation: kv-panel-in .18s ease; }
+      body.kv-home-route .kv-dropdown-right .kv-dropdown-panel { left: auto; right: 0; }
+      @keyframes kv-panel-in { from { opacity: 0; transform: translateY(-6px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+      body.kv-home-route .kv-filter-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--kv-text-muted); }
+      body.kv-home-route .kv-filter-panel-head span:first-child { color: var(--kv-text); letter-spacing: .02em; text-transform: none; font-size: .9rem; font-weight: 700; }
+      body.kv-home-route .kv-filter-panel-hint { font-size: .72rem; color: var(--kv-accent); font-weight: 700; background: color-mix(in srgb, var(--kv-accent) 12%, transparent); padding: 3px 8px; border-radius: 999px; }
+      body.kv-home-route .kv-filter-panel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 48vh; overflow-y: auto; margin-bottom: 12px; }
+      body.kv-home-route .kv-check-chip { display: flex; align-items: center; gap: 8px; padding: 10px; border-radius: 10px; border: 1px solid var(--kv-border); background: var(--kv-surface-2); color: var(--kv-text); font-size: .8rem; font-weight: 600; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; user-select: none; }
+      body.kv-home-route .kv-check-chip:hover { border-color: var(--kv-accent); }
+      body.kv-home-route .kv-check-chip.is-checked { border-color: var(--kv-accent); background: color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface)); color: var(--kv-accent); }
+      body.kv-home-route .kv-check-chip input { accent-color: var(--kv-accent); width: 16px; height: 16px; flex: 0 0 16px; margin: 0; }
+      body.kv-home-route .kv-check-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.3; }
+      body.kv-home-route .kv-filter-panel-foot { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--kv-border); padding-top: 12px; }
+      body.kv-home-route .kv-filter-options { display: flex; flex-direction: column; gap: 4px; min-width: 180px; }
+      body.kv-home-route .kv-filter-option { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; border: 0; background: transparent; color: var(--kv-text); font-size: .85rem; font-weight: 600; font-family: inherit; cursor: pointer; text-align: left; transition: background-color .15s ease, color .15s ease; }
+      body.kv-home-route .kv-filter-option:hover { background: var(--kv-surface-2); }
+      body.kv-home-route .kv-filter-option.is-selected { background: color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface)); color: var(--kv-accent); }
+      body.kv-home-route .kv-check-dot { width: 18px; height: 18px; border-radius: 999px; border: 2px solid var(--kv-border); display: grid; place-items: center; flex: 0 0 18px; }
+      body.kv-home-route .kv-filter-option.is-selected .kv-check-dot { border-color: var(--kv-accent); background: var(--kv-accent); }
+      body.kv-home-route .kv-filter-option.is-selected .kv-check-dot::after { content: ""; width: 8px; height: 8px; border-radius: 999px; background: #ffffff; }
+      body.kv-home-route .kv-sort-icon { width: 18px; height: 18px; color: var(--kv-text-muted); flex: 0 0 auto; }
+      body.kv-home-route .kv-dropdown-btn[aria-expanded="true"] .kv-sort-icon { color: var(--kv-accent); }
+
+      body.kv-home-route .kv-search-icon { display: block; }
+
+      @media (max-width: 520px) {
+        body.kv-home-route .kv-filter-panel-grid { grid-template-columns: repeat(3, 1fr); }
+        body.kv-home-route .kv-dropdown-btn .kv-dropdown-value { max-width: 84px; }
+        body.kv-home-route .kv-catalog-toolbar { flex-direction: column; align-items: stretch; }
+        body.kv-home-route .kv-catalog-toolbar .kv-dropdown { width: 100%; }
+        body.kv-home-route .kv-catalog-toolbar .kv-dropdown-btn { width: 100%; justify-content: space-between; }
+        body.kv-home-route .kv-catalog-toolbar .kv-dropdown-panel { left: 50%; right: auto; margin-left: calc(-0.5 * min(92vw, 360px)); width: min(92vw, 360px); min-width: 0; }
+        body.kv-home-route .kv-dropdown-right .kv-dropdown-panel { left: 50%; right: auto; margin-left: calc(-0.5 * min(92vw, 360px)); width: min(92vw, 360px); }
+      }
+
       html:not(.dark) body.kv-home-route .kv-catalog-grid { grid-template-columns: repeat(6, minmax(0,1fr)); margin-top: 18px; }
       html:not(.dark) body.kv-home-route .kv-catalog-empty { margin-top: 28px; text-align: center; background: #ffffff; border: 1px dashed #e2e8f0; border-radius: 14px; padding: 40px 16px; color: #64748b; }
       @media (max-width: 1100px) { html:not(.dark) body.kv-home-route .kv-catalog-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } }
@@ -1988,33 +2037,6 @@
       html.dark body.kv-home-route .kv-footer { background: #171a27; border-top: 1px solid #2b304c; color: #a0a7b8; }
       html.dark body.kv-home-route .kv-footer a { color: #a0a7b8; }
       html.dark body.kv-home-route .kv-footer a:hover { color: #6558d9; }
-      html.dark body.kv-home-route .kv-home-hero {
-        position: relative; overflow: hidden; border-radius: 24px; padding: 28px; margin: 16px 0 20px;
-        background: linear-gradient(135deg, #171a27 0%, #20243a 55%, #171a27 100%);
-        border: 1px solid #2b304c; box-shadow: 0 20px 40px -18px rgba(101,88,217,.35);
-      }
-      html.dark body.kv-home-route .kv-home-hero::before { content: ""; position: absolute; right: -90px; top: -90px; width: 320px; height: 320px; border-radius: 999px; background: rgba(101,88,217,.25); filter: blur(60px); pointer-events: none; }
-      html.dark body.kv-home-route .kv-home-hero::after { content: ""; position: absolute; left: -80px; bottom: -80px; width: 280px; height: 280px; border-radius: 999px; background: rgba(168,85,247,.14); filter: blur(50px); pointer-events: none; }
-      html.dark body.kv-home-route .kv-home-hero-grid { position: relative; display: grid; grid-template-columns: minmax(0,1.25fr) minmax(220px,.75fr); gap: 28px; align-items: center; }
-      html.dark body.kv-home-route .kv-home-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-      html.dark body.kv-home-route .kv-home-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .02em; }
-      html.dark body.kv-home-route .kv-home-badge-editor { background: #6558d9; color: #fff; }
-      html.dark body.kv-home-route .kv-home-badge-type { background: #20243a; color: #334155; border: 1px solid #2b304c; }
-      html.dark body.kv-home-route .kv-home-badge-status { background: #064e3b; color: #34d399; border: 1px solid #007b54; }
-      html.dark body.kv-home-route .kv-home-badge-status::before { content: ""; width: 7px; height: 7px; border-radius: 999px; background: #22c55e; display: inline-block; animation: kvPulse 1.4s ease-in-out infinite; }
-      @keyframes kvPulse { 0%,100% { opacity: .55; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
-      html.dark body.kv-home-route .kv-home-title { font-size: 2.15rem; line-height: 1.12; letter-spacing: -0.02em; font-weight: 800; color: #dee1fe; margin: 0 0 14px; }
-      html.dark body.kv-home-route .kv-home-synopsis { font-size: .92rem; line-height: 1.65; color: #a0a7b8; max-width: 620px; margin: 0 0 18px; }
-      html.dark body.kv-home-route .kv-home-metrics { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-      html.dark body.kv-home-route .kv-home-metric { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.82); border: 1px solid #2b304c; padding: 7px 12px; border-radius: 10px; font-size: .75rem; font-weight: 600; color: #334155; }
-      html.dark body.kv-home-route .kv-home-metric strong { color: #f59e0b; font-weight: 800; }
-      html.dark body.kv-home-route .kv-home-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-      html.dark body.kv-home-route .kv-home-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 12px; background: #6558d9; color: #fff; font-size: .85rem; font-weight: 700; text-decoration: none; box-shadow: 0 14px 28px -16px rgba(99,102,241,.65); transition: transform .18s ease, background .18s ease; }
-      html.dark body.kv-home-route .kv-home-primary:hover { background: #6558d9; }
-      html.dark body.kv-home-route .kv-home-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 12px; background: #fff; color: #a0a7b8; font-size: .85rem; font-weight: 600; text-decoration: none; border: 1px solid #2b304c; }
-      html.dark body.kv-home-route .kv-home-secondary:hover { background: #0f111a; color: #6558d9; }
-      html.dark body.kv-home-route .kv-home-cover { justify-self: end; width: 100%; max-width: 250px; }
-      html.dark body.kv-home-route .kv-home-cover .kv-cover-wrap { border: 2px solid #171a27; border-radius: 18px; box-shadow: 0 24px 48px -20px rgba(0,0,0,.6); }
       html.dark body.kv-home-route .kv-home-genres { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin: 22px 0 10px; }
       html.dark body.kv-home-route .kv-home-genres::-webkit-scrollbar { height: 6px; }
       html.dark body.kv-home-route .kv-home-genres::-webkit-scrollbar-track { background: #20243a; border-radius: 999px; }
@@ -2065,14 +2087,10 @@
         html.dark body.kv-home-route .kv-home-popular { grid-template-columns: 1fr; }
       }
       @media (max-width: 860px) {
-        html.dark body.kv-home-route .kv-home-hero-grid { grid-template-columns: 1fr; }
-        html.dark body.kv-home-route .kv-home-title { font-size: 1.7rem; }
-        html.dark body.kv-home-route .kv-home-cover { justify-self: start; max-width: 210px; }
         html.dark body.kv-home-route .kv-home-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
         html.dark body.kv-home-route .kv-home-curated { grid-template-columns: 1fr; }
       }
       @media (max-width: 520px) {
-        html.dark body.kv-home-route .kv-home-hero { padding: 20px; border-radius: 18px; }
         html.dark body.kv-home-route .kv-home-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
         html.dark body.kv-home-route .kv-home-section-title { font-size: 1.2rem; }
       }
@@ -2131,7 +2149,8 @@
       html.dark body.kv-detail-route .kv-detail-metric-truncate { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; }
       html.dark body.kv-detail-route .kv-detail-metric-accent { color:#f59e0b; }
       html.dark body.kv-detail-route .kv-detail-genres { display:flex; flex-wrap:wrap; gap:6px; margin-bottom: 16px; }
-      html.dark body.kv-detail-route .kv-detail-genre { padding:6px 12px; border-radius:8px; background:#20243a; color:#6558d9; font-size:.72rem; font-weight:600; }
+      html.dark body.kv-detail-route .kv-detail-genre { padding:6px 12px; border-radius:8px; background:#20243a; color:#6558d9; font-size:.72rem; font-weight:600; border:0; cursor:pointer; transition: background .15s ease, transform .15s ease, box-shadow .15s ease; }
+      html.dark body.kv-detail-route .kv-detail-genre:hover { background:#292e4e; transform: translateY(-1px); box-shadow: 0 6px 14px -10px rgba(101,88,217,.45); }
       html.dark body.kv-detail-route .kv-detail-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
       html.dark body.kv-detail-route .kv-detail-primary { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:12px; background:#6558d9; color:#efebff; font-size:.85rem; font-weight:700; text-decoration:none; box-shadow:0 10px 24px -16px rgba(101,88,217,.8); }
       html.dark body.kv-detail-route .kv-detail-primary:hover { background:#6558d9; }
@@ -2230,9 +2249,6 @@
       html.dark body.kv-home-route .kv-catalog-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 0 6px; }
       html.dark body.kv-home-route .kv-catalog-sub { color: #a0a7b8; font-size: .9rem; margin: 6px 0 0; }
       html.dark body.kv-home-route .kv-catalog-count { background: #20243a; color: #6558d9; border-radius: 999px; padding: 8px 16px; font-size: .78rem; font-weight: 700; }
-      html.dark body.kv-home-route .kv-catalog-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: #171a27; border: 1px solid #2b304c; border-radius: 14px; padding: 12px; margin-top: 14px; box-shadow: 0 8px 24px -20px rgba(0,0,0,.5); }
-      html.dark body.kv-home-route .kv-catalog-toolbar .kv-input { flex: 1 1 220px; }
-      html.dark body.kv-home-route .kv-catalog-toolbar .kv-select { flex: 0 1 160px; }
       html.dark body.kv-home-route .kv-catalog-grid { grid-template-columns: repeat(6, minmax(0,1fr)); margin-top: 18px; }
       html.dark body.kv-home-route .kv-catalog-empty { margin-top: 28px; text-align: center; background: #171a27; border: 1px dashed #2b304c; border-radius: 14px; padding: 40px 16px; color: #a0a7b8; }
       @media (max-width: 1100px) { html.dark body.kv-home-route .kv-catalog-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } }
@@ -2463,10 +2479,11 @@
       loading: false,
       error: null,
       search: '',
-      filterGenre: 'Semua',
+      filterGenres: [],
       filterStatus: 'Semua',
       filterType: 'Semua',
       sortBy: 'terbaru',
+      openCatalogDropdown: null,
       page: 1,
        chapterSortAsc: false,
        chapterSearch: '',
@@ -3137,28 +3154,44 @@
         '</a>';
       }).join('');
 
+      var bannerItems = state.data.manga.slice().sort(function (a, b) {
+        var af = a.featured ? 1 : 0;
+        var bf = b.featured ? 1 : 0;
+        if (af !== bf) return bf - af;
+        return String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')) || String(a.title || '').localeCompare(String(b.title || ''));
+      }).slice(0, 8);
+      var bannerCards = bannerItems.map(function (m) {
+        var latest = latestChapter(m);
+        var rating = Number(m.rating || 0).toFixed(1);
+        var chCount = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
+        var views = (m.views || 0).toLocaleString('id-ID');
+        return '<a class="kv-home-banner-card" href="#/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
+          (m.coverBloggerUrl
+            ? '<img class="kv-home-banner-img" src="' + escapeHtml(m.coverBloggerUrl) + '" alt="" aria-hidden="true" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';"/>'
+            : '<div class="kv-home-banner-img kv-home-banner-img-empty"></div>') +
+          '<div class="kv-home-banner-overlay"></div>' +
+          '<div class="kv-home-banner-body">' +
+            '<h2 class="kv-home-banner-title">' + escapeHtml(m.title) + '</h2>' +
+            '<div class="kv-home-banner-meta"><span>&#9733; ' + escapeHtml(rating) + '</span><span>' + (chCount || 0) + ' chapter</span><span>' + escapeHtml(views) + ' dibaca</span></div>' +
+            '<span class="kv-home-banner-cta">Baca Sekarang &rarr;</span>' +
+          '</div>' +
+          (m.coverBloggerUrl
+            ? '<img class="kv-home-banner-poster" src="' + escapeHtml(m.coverBloggerUrl) + '" alt="Sampul ' + escapeHtml(m.title) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';"/>'
+            : '<div class="kv-home-banner-poster kv-home-banner-poster-empty"><span>Sampul</span></div>') +
+        '</a>';
+      }).join('');
+      var bannerMiddleIndex = Math.floor(bannerItems.length / 2);
+      var bannerDots = bannerItems.map(function (m, index) {
+        var active = index === bannerMiddleIndex;
+        return '<button type="button" class="kv-home-banner-dot' + (active ? ' is-active' : '') + '" data-action="scroll-banner-dot" data-index="' + index + '" role="tab" aria-selected="' + (active ? 'true' : 'false') + '" aria-label="Banner ' + (index + 1) + ': ' + escapeHtml(m.title) + '"></button>';
+      }).join('');
       return '<main class="kv-container kv-home-light">' +
-        '<section class="kv-home-hero" aria-label="Manga Sorotan">' +
-          '<div class="kv-home-hero-grid">' +
-            '<div>' +
-              '<div class="kv-home-badges">' +
-                '<span class="kv-home-badge kv-home-badge-editor">Pilihan Editor</span>' +
-                '<span class="kv-home-badge kv-home-badge-type">' + escapeHtml(featured.type || 'Manga') + '</span>' +
-                '<span class="kv-home-badge kv-home-badge-status">' + escapeHtml(featured.status || 'Ongoing') + '</span>' +
-              '</div>' +
-              '<h1 class="kv-home-title">' + escapeHtml(featured.title) + '</h1>' +
-              '<p class="kv-home-synopsis">' + escapeHtml(featured.synopsis) + '</p>' +
-              '<div class="kv-home-metrics">' +
-                '<span class="kv-home-metric"><strong>&#9733; ' + escapeHtml(featuredRating) + '</strong> /10</span>' +
-                '<span class="kv-home-metric">Chapter ' + escapeHtml(chCount) + '</span>' +
-                '<span class="kv-home-metric">' + escapeHtml(featuredViews) + ' Dibaca</span>' +
-              '</div>' +
-              '<div class="kv-home-actions">' +
-                '<a class="kv-home-primary" href="#/manga/' + escapeHtml(featured.slug) + '">Baca Sekarang</a>' +
-                '<a class="kv-home-secondary" href="#/archive">Archive</a>' +
-              '</div>' +
-            '</div>' +
-            '<div class="kv-home-cover">' + renderCover(featured.coverBloggerUrl, featured.title) + '</div>' +
+        '<section class="kv-home-banner" aria-label="Manga Sorotan">' +
+          '<div class="kv-home-banner-track" id="kv-banner-track" tabindex="0" role="region" aria-label="Banner manga yang bisa digeser">' +
+            bannerCards +
+          '</div>' +
+          '<div class="kv-home-banner-dots" id="kv-banner-dots" role="tablist" aria-label="Pilih banner">' +
+            bannerDots +
           '</div>' +
         '</section>' +
         '<div class="kv-home-genres" aria-label="Kategori populer">' +
@@ -3203,20 +3236,27 @@
     /* =========================================================================
        HALAMAN ARCHIVE
        ========================================================================= */
+    function sortLabel(sortBy) {
+      if (sortBy === 'populer') return 'Terpopuler';
+      if (sortBy === 'rating') return 'Rating Tertinggi';
+      if (sortBy === 'abjad') return 'A - Z';
+      return 'Terbaru';
+    }
+
     function renderCatalog() {
-       var genreOptions = ['Semua Genre'].concat(collectGenres());
+       var allGenres = collectGenres();
        var typeOptions = ['Semua Tipe'].concat(collectTypes());
        var statusOptions = ['Semua Status', 'Ongoing', 'Tamat', 'Hiatus'];
-       if (state.filterGenre === 'Semua') state.filterGenre = 'Semua Genre';
+       if (!Array.isArray(state.filterGenres)) state.filterGenres = [];
+       state.filterGenres = state.filterGenres.filter(function (genre) { return allGenres.indexOf(genre) !== -1; });
        if (state.filterType === 'Semua') state.filterType = 'Semua Tipe';
        if (state.filterStatus === 'Semua') state.filterStatus = 'Semua Status';
-       if (genreOptions.indexOf(state.filterGenre) === -1) state.filterGenre = 'Semua Genre';
        if (typeOptions.indexOf(state.filterType) === -1) state.filterType = 'Semua Tipe';
        if (statusOptions.indexOf(state.filterStatus) === -1) state.filterStatus = 'Semua Status';
 
       var list = state.data.manga.filter(function (m) {
         var matchQ = !state.search || m.title.toLowerCase().indexOf(state.search.toLowerCase()) !== -1;
-         var matchG = state.filterGenre === 'Semua Genre' || (m.genres || []).indexOf(state.filterGenre) !== -1;
+         var matchG = state.filterGenres.length === 0 || (m.genres || []).some(function (genre) { return state.filterGenres.indexOf(genre) !== -1; });
          var matchS = state.filterStatus === 'Semua Status' || m.status === state.filterStatus;
          var matchT = state.filterType === 'Semua Tipe' || m.type === state.filterType;
         return matchQ && matchG && matchS && matchT;
@@ -3251,29 +3291,88 @@
           '</div>' +
           '<span class="kv-catalog-count">' + list.length + ' judul</span>' +
         '</section>' +
-        '<div class="kv-catalog-toolbar">' +
-          '<input id="kv-search-input" class="kv-input" type="search" placeholder="Cari judul manga..." value="' + escapeHtml(state.search) + '" aria-label="Cari judul manga"/>' +
-          '<select id="kv-filter-genre" class="kv-select" aria-label="Filter genre">' +
-            genreOptions.map(function (g) {
-              return '<option value="' + escapeHtml(g) + '"' + (state.filterGenre === g ? ' selected' : '') + '>' + escapeHtml(g) + '</option>';
-            }).join('') +
-          '</select>' +
-          '<select id="kv-filter-type" class="kv-select" aria-label="Filter tipe">' +
-            typeOptions.map(function (t) {
-              return '<option value="' + escapeHtml(t) + '"' + (state.filterType === t ? ' selected' : '') + '>' + escapeHtml(t) + '</option>';
-            }).join('') +
-          '</select>' +
-          '<select id="kv-filter-status" class="kv-select" aria-label="Filter status">' +
-            statusOptions.map(function (s) {
-              return '<option value="' + escapeHtml(s) + '"' + (state.filterStatus === s ? ' selected' : '') + '>' + escapeHtml(s) + '</option>';
-            }).join('') +
-          '</select>' +
-           '<select id="kv-sort-by" class="kv-select" aria-label="Urutkan">' +
-             '<option value="terbaru"' + (state.sortBy === 'terbaru' ? ' selected' : '') + '>Terbaru</option>' +
-             '<option value="populer"' + (state.sortBy === 'populer' ? ' selected' : '') + '>Terpopuler</option>' +
-             '<option value="rating"' + (state.sortBy === 'rating' ? ' selected' : '') + '>Rating Tertinggi</option>' +
-             '<option value="abjad"' + (state.sortBy === 'abjad' ? ' selected' : '') + '>A - Z</option>' +
-           '</select>' +
+        '<div class="kv-catalog-toolbar" data-catalog-toolbar="1" aria-label="Filter koleksi manga">' +
+          '<label class="kv-search-wrap">' +
+            '<svg class="kv-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>' +
+            '<input id="kv-search-input" class="kv-input kv-search-input" type="search" placeholder="Cari judul manga..." value="' + escapeHtml(state.search) + '" aria-label="Cari judul manga"/>' +
+          '</label>' +
+          '<div class="kv-dropdown" data-dropdown="genre">' +
+            '<button type="button" class="kv-dropdown-btn" id="kv-filter-genre-btn" aria-haspopup="dialog" aria-expanded="' + (state.openCatalogDropdown === 'genre' ? 'true' : 'false') + '" aria-controls="kv-filter-genre-panel">' +
+              '<span class="kv-dropdown-label">Genre</span>' +
+              '<span class="kv-dropdown-value">' + (state.filterGenres.length ? state.filterGenres.length + ' dipilih' : 'Semua Genre') + '</span>' +
+              '<svg class="kv-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+            '</button>' +
+            '<div class="kv-dropdown-panel kv-filter-panel' + (state.openCatalogDropdown === 'genre' ? ' is-open' : '') + '" id="kv-filter-genre-panel" role="dialog" aria-label="Pilih genre">' +
+              '<div class="kv-filter-panel-head"><span>Pilih Genre</span><span class="kv-filter-panel-hint">' + state.filterGenres.length + ' dipilih</span></div>' +
+              '<div class="kv-filter-panel-grid">' +
+                allGenres.map(function (g) {
+                  var active = state.filterGenres.indexOf(g) !== -1;
+                  return '<label class="kv-check-chip' + (active ? ' is-checked' : '') + '"><input type="checkbox" class="kv-filter-check" data-genre="' + escapeHtml(g) + '"' + (active ? ' checked' : '') + '/><span>' + escapeHtml(g) + '</span></label>';
+                }).join('') +
+              '</div>' +
+              '<div class="kv-filter-panel-foot">' +
+                '<button type="button" class="kv-btn kv-btn-ghost" data-action="clear-genres">Hapus</button>' +
+                '<button type="button" class="kv-btn kv-btn-primary" data-action="close-catalog-dropdowns">Selesai</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="kv-dropdown" data-dropdown="type">' +
+            '<button type="button" class="kv-dropdown-btn" id="kv-filter-type-btn" aria-haspopup="dialog" aria-expanded="' + (state.openCatalogDropdown === 'type' ? 'true' : 'false') + '" aria-controls="kv-filter-type-panel">' +
+              '<span class="kv-dropdown-label">Tipe</span>' +
+              '<span class="kv-dropdown-value">' + escapeHtml(state.filterType) + '</span>' +
+              '<svg class="kv-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+            '</button>' +
+            '<div class="kv-dropdown-panel' + (state.openCatalogDropdown === 'type' ? ' is-open' : '') + '" id="kv-filter-type-panel" role="dialog" aria-label="Pilih tipe manga">' +
+              '<div class="kv-filter-panel-head"><span>Tipe</span></div>' +
+              '<div class="kv-filter-options">' +
+                typeOptions.map(function (t) {
+                  var active = state.filterType === t;
+                  return '<button type="button" class="kv-filter-option' + (active ? ' is-selected' : '') + '" data-action="set-filter-type" data-value="' + escapeHtml(t) + '"><span class="kv-check-dot"></span>' + escapeHtml(t) + '</button>';
+                }).join('') +
+              '</div>' +
+              '<div class="kv-filter-panel-foot">' +
+                '<button type="button" class="kv-btn kv-btn-primary" data-action="close-catalog-dropdowns">Selesai</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="kv-dropdown" data-dropdown="status">' +
+            '<button type="button" class="kv-dropdown-btn" id="kv-filter-status-btn" aria-haspopup="dialog" aria-expanded="' + (state.openCatalogDropdown === 'status' ? 'true' : 'false') + '" aria-controls="kv-filter-status-panel">' +
+              '<span class="kv-dropdown-label">Status</span>' +
+              '<span class="kv-dropdown-value">' + escapeHtml(state.filterStatus) + '</span>' +
+              '<svg class="kv-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+            '</button>' +
+            '<div class="kv-dropdown-panel' + (state.openCatalogDropdown === 'status' ? ' is-open' : '') + '" id="kv-filter-status-panel" role="dialog" aria-label="Pilih status manga">' +
+              '<div class="kv-filter-panel-head"><span>Status</span></div>' +
+              '<div class="kv-filter-options">' +
+                statusOptions.map(function (st) {
+                  var active = state.filterStatus === st;
+                  return '<button type="button" class="kv-filter-option' + (active ? ' is-selected' : '') + '" data-action="set-filter-status" data-value="' + escapeHtml(st) + '"><span class="kv-check-dot"></span>' + escapeHtml(st) + '</button>';
+                }).join('') +
+              '</div>' +
+              '<div class="kv-filter-panel-foot">' +
+                '<button type="button" class="kv-btn kv-btn-primary" data-action="close-catalog-dropdowns">Selesai</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="kv-dropdown kv-dropdown-right" data-dropdown="sort">' +
+            '<button type="button" class="kv-dropdown-btn" id="kv-sort-by-btn" aria-haspopup="dialog" aria-expanded="' + (state.openCatalogDropdown === 'sort' ? 'true' : 'false') + '" aria-controls="kv-sort-by-panel">' +
+              '<svg class="kv-sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16"/><path d="M4 17l3 3 3-3"/><path d="M17 20V4"/><path d="M20 7l-3-3-3 3"/></svg>' +
+              '<span class="kv-dropdown-value">' + escapeHtml(sortLabel(state.sortBy)) + '</span>' +
+              '<svg class="kv-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+            '</button>' +
+            '<div class="kv-dropdown-panel' + (state.openCatalogDropdown === 'sort' ? ' is-open' : '') + '" id="kv-sort-by-panel" role="dialog" aria-label="Urutkan koleksi">' +
+              '<div class="kv-filter-panel-head"><span>Urutkan</span></div>' +
+              '<div class="kv-filter-options">' +
+                [['terbaru', 'Terbaru'], ['populer', 'Terpopuler'], ['rating', 'Rating Tertinggi'], ['abjad', 'A - Z']].map(function (item) {
+                  var active = state.sortBy === item[0];
+                  return '<button type="button" class="kv-filter-option' + (active ? ' is-selected' : '') + '" data-action="set-sort" data-value="' + item[0] + '"><span class="kv-check-dot"></span>' + item[1] + '</button>';
+                }).join('') +
+              '</div>' +
+              '<div class="kv-filter-panel-foot">' +
+                '<button type="button" class="kv-btn kv-btn-primary" data-action="close-catalog-dropdowns">Selesai</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
         (paged.length === 0
           ? '<div class="kv-catalog-empty">Tidak ada manga yang cocok dengan filter Anda.</div>'
@@ -3498,7 +3597,7 @@
               '<div class="kv-detail-metric"><span class="kv-detail-metric-label">Author</span><span class="kv-detail-metric-value kv-detail-metric-truncate">' + escapeHtml(manga.author || '-') + '</span></div>' +
               '<div class="kv-detail-metric"><span class="kv-detail-metric-label">Rilis &amp; Status</span><span class="kv-detail-metric-value">' + escapeHtml(manga.status || 'Ongoing') + '</span></div>' +
             '</div>' +
-            '<div class="kv-detail-genres">' + (manga.genres || []).map(function (g) { return '<span class="kv-detail-genre">' + escapeHtml(g) + '</span>'; }).join('') + '</div>' +
+            '<div class="kv-detail-genres">' + (manga.genres || []).map(function (g) { return '<button type="button" class="kv-detail-genre kv-detail-genre-link" data-action="quick-genre" data-genre="' + escapeHtml(g) + '">' + escapeHtml(g) + '</button>'; }).join('') + '</div>' +
             '<div class="kv-detail-actions">' +
               (latestChapter ? '<a class="kv-detail-primary" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(latestChapter.id) + '">Baca Chapter Terbaru (Ch. ' + latestChapter.number + ')</a>' : '') +
               (firstCh && firstCh.id !== (latestChapter && latestChapter.id) ? '<a class="kv-detail-secondary" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(firstCh.id) + '">Chapter Pertama (Ch. ' + firstCh.number + ')</a>' : '') +
@@ -3762,7 +3861,7 @@
               '<h2 class="kv-login-card-title">Masuk ke akunmu</h2>' +
               '<p class="kv-login-card-sub">Pilih penyedia akun. Kamu akan diarahkan sebentar ke halaman resmi Google atau Discord lalu kembali ke sini.</p>' +
               '<div class="kv-login-providers">' + renderOAuthButtons() + '</div>' +
-              '<p class="kv-login-foot"><strong>Catatan:</strong> pendaftaran pertama menjadi <strong>admin</strong>; akun berikutnya otomatis <strong>member</strong>. Login lewat OAuth resmi — kami tidak pernah melihat password kamu.</p>' +
+              '<p class="kv-login-foot">Masuk menggunakan akun Google atau Discord. Kata sandi dikelola sepenuhnya oleh penyedia layanan tersebut dan tidak disimpan maupun diakses oleh sistem kami.</p>' +
             '</div>' +
           '</section>' +
         '</main>';
@@ -4742,7 +4841,7 @@
       }
       var bodyHtml = '';
       if (state.loading) {
-        bodyHtml = '<div class="kv-container" style="margin-top:40px;"><div class="kv-stat-box">Memuat archive manga...</div></div>';
+        bodyHtml = '<div class="kv-container" style="margin-top:40px;"><div class="kv-stat-box">Memuat...</div></div>';
       } else if (state.error) {
         bodyHtml = '<div class="kv-container" style="margin-top:40px;"><div class="kv-stat-box"><strong>Terjadi Kesalahan:</strong> ' + escapeHtml(state.error) + '<div style="margin-top:12px;"><button type="button" class="kv-btn kv-btn-ghost" data-action="retry-api">Coba Lagi</button></div></div></div>';
       } else {
@@ -4757,6 +4856,66 @@
       }
       app.innerHTML = renderHeader() + bodyHtml + renderFooter();
       bindEvents();
+    }
+
+    function setBannerDotsActive(index) {
+      var dots = document.querySelectorAll('#kv-banner-dots .kv-home-banner-dot');
+      for (var i = 0; i < dots.length; i++) {
+        var active = i === index;
+        dots[i].classList.toggle('is-active', active);
+        dots[i].setAttribute('aria-selected', active ? 'true' : 'false');
+      }
+    }
+
+    function bindBannerTrack(track) {
+      if (track.dataset.keysBound === '1') return;
+      track.dataset.keysBound = '1';
+      var syncDots = function () {
+        var center = track.scrollLeft + track.clientWidth / 2;
+        var bestIndex = 0;
+        var bestDistance = Infinity;
+        for (var i = 0; i < track.children.length; i++) {
+          var child = track.children[i];
+          var childCenter = child.offsetLeft + child.offsetWidth / 2;
+          var distance = Math.abs(childCenter - center);
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            bestIndex = i;
+          }
+        }
+        setBannerDotsActive(bestIndex);
+      };
+      var loopTicking = false;
+      var loopCooldownUntil = 0;
+      var ticking = false;
+      track.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(function () {
+          syncDots();
+          ticking = false;
+        });
+      }, { passive: true });
+      track.addEventListener('scroll', function () {
+        if (loopTicking) return;
+        loopTicking = true;
+        window.requestAnimationFrame(function () {
+          loopTicking = false;
+          if (Date.now() < loopCooldownUntil) return;
+          var max = track.scrollWidth - track.clientWidth;
+          if (max <= 0) return;
+          var sl = track.scrollLeft;
+          if (sl >= max - 1) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+            loopCooldownUntil = Date.now() + 350;
+          }
+        });
+      }, { passive: true });
+      track.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); track.scrollBy({ left: -Math.max(320, Math.round(track.clientWidth * 0.72)), behavior: 'smooth' }); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); track.scrollBy({ left: Math.max(320, Math.round(track.clientWidth * 0.72)), behavior: 'smooth' }); }
+      });
+      syncDots();
     }
 
     function toggleOverlayVisibility() {
@@ -4802,18 +4961,29 @@
         var len = sInput.value.length;
         sInput.setSelectionRange(len, len);
       }
-      var fGenre = document.getElementById('kv-filter-genre');
-      if (fGenre) fGenre.onchange = function (e) { state.filterGenre = e.target.value; state.page = 1; render(); };
-      var fType = document.getElementById('kv-filter-type');
-      if (fType) fType.onchange = function (e) { state.filterType = e.target.value; state.page = 1; render(); };
+      var catalogToolbar = document.querySelector('[data-catalog-toolbar]');
+      if (catalogToolbar) {
+        var genreChecks = catalogToolbar.querySelectorAll('.kv-filter-check');
+        genreChecks.forEach(function (checkbox) {
+          checkbox.onchange = function () {
+            var genre = checkbox.getAttribute('data-genre') || '';
+            if (!Array.isArray(state.filterGenres)) state.filterGenres = [];
+            if (checkbox.checked) {
+              if (state.filterGenres.indexOf(genre) === -1) state.filterGenres.push(genre);
+            } else {
+              state.filterGenres = state.filterGenres.filter(function (item) { return item !== genre; });
+            }
+            state.openCatalogDropdown = 'genre';
+            state.page = 1;
+            render();
+          };
+        });
+      }
       var pPrev = document.getElementById('kv-page-prev');
       if (pPrev) pPrev.onclick = function () { if (state.page > 1) { state.page--; render(); window.scrollTo(0, 0); } };
       var pNext = document.getElementById('kv-page-next');
       if (pNext) pNext.onclick = function () { state.page++; render(); window.scrollTo(0, 0); };
-      var fStatus = document.getElementById('kv-filter-status');
-      if (fStatus) fStatus.onchange = function (e) { state.filterStatus = e.target.value; state.page = 1; render(); };
-       var sortBy = document.getElementById('kv-sort-by');
-       if (sortBy) sortBy.onchange = function (e) { state.sortBy = e.target.value; render(); };
+
        var chSearch = document.getElementById('chapter-search');
        if (chSearch) chSearch.oninput = function (e) { state.chapterSearch = e.target.value; state.chapterRefocus = true; render(); };
        if (chSearch && state.chapterRefocus) {
@@ -4822,6 +4992,19 @@
          var chLen = chSearch.value.length;
          chSearch.setSelectionRange(chLen, chLen);
        }
+      var bTrack = document.getElementById('kv-banner-track');
+      if (bTrack) {
+        if (bTrack.dataset.centered !== '1') {
+          var middleChild = bTrack.children[Math.floor(bTrack.children.length / 2)] || bTrack.children[0];
+          if (middleChild && typeof middleChild.scrollIntoView === 'function') {
+            middleChild.scrollIntoView({ inline: 'center', block: 'nearest' });
+          } else {
+            bTrack.scrollLeft = Math.max(0, (bTrack.scrollWidth - bTrack.clientWidth) / 2);
+          }
+          bTrack.dataset.centered = '1';
+        }
+        bindBannerTrack(bTrack);
+      }
       var rWidth = document.getElementById('kv-reader-width');
       if (rWidth) rWidth.onchange = function (e) { state.readerWidth = Number(e.target.value); render(); };
       var rTheme = document.getElementById('kv-reader-theme');
@@ -5109,6 +5292,20 @@
     });
 
     document.addEventListener('click', function (e) {
+      var insideDropdown = e.target && e.target.closest ? e.target.closest('.kv-dropdown, .kv-dropdown-btn') : null;
+      if (!insideDropdown && state.openCatalogDropdown) {
+        state.openCatalogDropdown = null;
+        render();
+        return;
+      }
+      var trigger = e.target.closest && e.target.closest('.kv-dropdown-btn');
+      if (trigger) {
+        var container = trigger.closest('.kv-dropdown');
+        var name = container ? container.getAttribute('data-dropdown') : null;
+        state.openCatalogDropdown = state.openCatalogDropdown === name ? null : name;
+        render();
+        return;
+      }
       var el = e.target.closest('[data-action]');
       if (!el) return;
       var act = el.getAttribute('data-action');
@@ -5131,13 +5328,26 @@
       }
       else if (act === 'chapter-reaction') { chapterReactionLocal(el.getAttribute('data-id'), el.getAttribute('data-reaction')); }
       else if (act === 'open-reader') { navigate('#/baca/' + el.getAttribute('data-slug') + '/' + el.getAttribute('data-cid')); }
-      else if (act === 'quick-genre') { state.filterGenre = el.getAttribute('data-genre'); navigate('#/archive'); }
+      else if (act === 'quick-genre') { var genre = el.getAttribute('data-genre'); state.filterGenres = genre && genre !== 'Semua' ? [genre] : []; state.openCatalogDropdown = 'genre'; state.page = 1; navigate('#/archive'); }
       else if (act === 'toggle-ch-sort') { state.chapterSortAsc = !state.chapterSortAsc; render(); }
+      else if (act === 'clear-genres') { state.filterGenres = []; state.page = 1; state.openCatalogDropdown = 'genre'; render(); }
+      else if (act === 'close-catalog-dropdowns') { state.openCatalogDropdown = null; render(); }
+      else if (act === 'set-filter-type') { state.filterType = el.getAttribute('data-value') || 'Semua Tipe'; state.page = 1; state.openCatalogDropdown = null; render(); }
+      else if (act === 'set-filter-status') { state.filterStatus = el.getAttribute('data-value') || 'Semua Status'; state.page = 1; state.openCatalogDropdown = null; render(); }
+      else if (act === 'set-sort') { state.sortBy = el.getAttribute('data-value') || 'terbaru'; state.openCatalogDropdown = null; render(); }
       else if (act === 'toggle-reader-mode') { var mode = el.getAttribute('data-mode'); state.readerMode = (mode === 'vertical' || mode === 'paged') ? mode : (state.readerMode === 'vertical' ? 'paged' : 'vertical'); state.currentPageIdx = 0; render(); }
       else if (act === 'scroll-reader-up') { window.scrollBy({ top: -Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
       else if (act === 'scroll-reader-down') { window.scrollBy({ top: Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
       else if (act === 'toggle-auto-scroll') { toggleAutoScroll(); }
       else if (act === 'toggle-reader-settings') { state.readerSettingsOpen = !state.readerSettingsOpen; state.readerMenuOpen = false; render(); }
+      else if (act === 'scroll-banner-dot') {
+        var bTrack = document.getElementById('kv-banner-track');
+        var dotIndex = Number(el.getAttribute('data-index') || 0);
+        if (bTrack && bTrack.children[dotIndex]) {
+          bTrack.children[dotIndex].scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+          setBannerDotsActive(dotIndex);
+        }
+      }
       else if (act === 'toggle-reader-menu') { state.readerMenuOpen = !state.readerMenuOpen; state.readerSettingsOpen = false; render(); }
       else if (act === 'close-reader-panels') { state.readerMenuOpen = false; state.readerSettingsOpen = false; render(); }
       else if (act === 'toggle-fullscreen') {
@@ -5268,6 +5478,11 @@
 
     // Aksesibilitas: elemen interaktif custom (kartu/baris) dapat diaktifkan via Enter/Spasi
     document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && state.openCatalogDropdown) {
+        state.openCatalogDropdown = null;
+        render();
+        return;
+      }
       if (e.key !== 'Enter' && e.key !== ' ') return;
       var t = e.target;
       if (!t || !t.getAttribute) return;
