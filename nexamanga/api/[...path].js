@@ -22,6 +22,7 @@ const {
   saveManga,
   saveSettings,
   addChapterReaction,
+  addMangaReaction,
   upvoteComment
 } = require('../lib/catalog');
 const {
@@ -509,6 +510,14 @@ async function handler(req, res) {
       if (typeof body.voterId !== 'string' || !body.voterId) throw new HttpError(400, 'ID voter tidak valid.');
       let result;
       await updateCatalog((catalog) => { result = addChapterReaction(catalog, body); });
+      return sendJson(res, 200, result);
+    }
+
+    if (route === 'manga/reaction' && req.method === 'POST') {
+      const body = await readBody(req);
+      if (typeof body.voterId !== 'string' || !body.voterId) throw new HttpError(400, 'ID voter tidak valid.');
+      let result;
+      await updateCatalog((catalog) => { result = addMangaReaction(catalog, body); });
       return sendJson(res, 200, result);
     }
 

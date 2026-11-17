@@ -1755,7 +1755,8 @@
       body.kv-reader-route { background: var(--kv-bg); color: var(--kv-text); font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif; }
       html:not(.dark) body.kv-reader-route { --kv-bg:#f4f4f7; --kv-surface:#faf3e0; --kv-surface-2:#f0f0f4; --kv-border:#dedee5; --kv-text:#17171d; --kv-text-muted:#686875; --kv-accent:#8b5a2b; --kv-accent-hover:#6b4423; --kv-reader-bg:#e6e6eb; background:var(--kv-bg); }
       html.dark body.kv-reader-route { --kv-bg:#101014; --kv-surface:#19191f; --kv-surface-2:#22222a; --kv-border:#30303a; --kv-text:#f4f4f6; --kv-text-muted:#a3a3ad; --kv-accent:#8b5cf6; --kv-accent-hover:#7c3aed; --kv-reader-bg:#08080a; background:var(--kv-bg); }
-      body.kv-reader-route .kv-reader-shell { min-height:100vh; background:var(--kv-bg); }
+      body.kv-reader-route .kv-reader-shell { min-height:100vh; background:var(--kv-bg); -webkit-tap-highlight-color:transparent; }
+      body.kv-reader-route * { -webkit-tap-highlight-color: transparent; }
       body.kv-reader-route .kv-reader-page { padding:14px 0 40px; }
       body.kv-reader-route .kv-reader-top-spacer { height:14px; background:var(--kv-reader-bg); }
       body.kv-reader-route .kv-reader-ctl { border:1px solid var(--kv-border); color:var(--kv-text); background:var(--kv-surface); border-radius:10px; min-height:38px; padding:0 12px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; transition:border-color .15s ease; }
@@ -1764,7 +1765,9 @@
       body.kv-reader-route .kv-reader-ctl-primary { background:var(--kv-accent); border-color:var(--kv-accent); color:#ffffff; }
       body.kv-reader-route .kv-reader-ctl-primary:hover { filter:brightness(1.08); }
       body.kv-reader-route .kv-reader-ctl:disabled, body.kv-reader-route .kv-reader-ctl.is-disabled { opacity:.4; cursor:not-allowed; pointer-events:none; }
-      body.kv-reader-route .kv-reader-frame { background:var(--kv-reader-bg); border:0; border-radius:0; min-height:0; }
+      body.kv-reader-route .kv-reader-frame { background:var(--kv-reader-bg); border:0; 
+border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
+      body.kv-reader-route .kv-reader-page, body.kv-reader-route .manga-page { -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-reader-frame.vertical .manga-page { display:block; height:auto; }
       body.kv-reader-route .kv-reader-frame.vertical .manga-page img { height:auto; object-fit:contain; }
       body.kv-reader-route .kv-reader-frame.horizontal { display:flex; align-items:center; justify-content:center; height:100vh; height:100svh; }
@@ -2825,6 +2828,54 @@
        render();
      }
 
+     function mangaReactionSummary(mangaId) {
+       var all = (state.data && state.data.mangaReactions) || {};
+       var forManga = (all[mangaId] && typeof all[mangaId] === 'object' && !Array.isArray(all[mangaId])) ? all[mangaId] : {};
+       var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
+       var key = state.user ? state.user.id : voterId();
+       var counts = {};
+       var userVote = null;
+       for (var i = 0; i < keys.length; i++) {
+         var list = Array.isArray(forManga[keys[i]]) ? forManga[keys[i]] : [];
+         counts[keys[i]] = list.length;
+         if (list.indexOf(key) !== -1) userVote = keys[i];
+       }
+       return { counts: counts, userVote: userVote };
+     }
+
+     function mangaReactionLocal(mangaId, reaction) {
+       var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
+       if (keys.indexOf(reaction) === -1) return;
+       if (!state.data.mangaReactions || typeof state.data.mangaReactions !== 'object' || Array.isArray(state.data.mangaReactions)) {
+         state.data.mangaReactions = {};
+       }
+       var forManga = state.data.mangaReactions[mangaId];
+       if (!forManga || typeof forManga !== 'object' || Array.isArray(forManga)) forManga = {};
+       for (var i = 0; i < keys.length; i++) {
+         if (!Array.isArray(forManga[keys[i]])) forManga[keys[i]] = [];
+       }
+       var key = state.user ? state.user.id : voterId();
+       var removeOnly = false;
+       for (var j = 0; j < keys.length; j++) {
+         var idx = forManga[keys[j]].indexOf(key);
+         if (idx !== -1) {
+           forManga[keys[j]].splice(idx, 1);
+           if (keys[j] === reaction) removeOnly = true;
+         }
+       }
+       if (!removeOnly) forManga[reaction].push(key);
+       state.data.mangaReactions[mangaId] = forManga;
+       persistData();
+       if (CONFIG.API_BASE_URL) {
+         fetch(CONFIG.API_BASE_URL + '/api/manga/reaction', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ mangaId: mangaId, voterId: key, reaction: reaction })
+         }).then(function (r) { return r.ok ? r.json() : null; }).then(function () { render(); }).catch(function () {});
+       }
+       render();
+     }
+
      function aggregateChapterReactions(manga) {
        var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
        var counts = {};
@@ -3562,7 +3613,7 @@
         return c.mangaId === manga.id && (chapterId ? c.chapterId === chapterId : true);
       });
       var aggregated = !chapterId;
-      var sectionNote = aggregated ? 'Semua reaksi dari seluruh chapter digabung di sini. Beri reaksi di halaman chapter agar tercatat per-chapter.' : 'Komentar ini khusus chapter ini.';
+      var sectionNote = aggregated ? 'Reaksi di sini berlaku untuk manga ini. Komentar dari semua chapter ditampilkan.' : 'Komentar ini khusus chapter ini.';
       var myDisplayName = state.user ? currentDisplayName(state.user.name) : 'Pengguna';
       var myDisplayAvatar = state.user ? currentDisplayAvatar(state.user.avatar || null) : null;
       return '<section class="kv-detail-card">' +
@@ -3582,7 +3633,7 @@
                 '</ul>' +
               '</div>' +
               (function () {
-                var summary = aggregated ? aggregateChapterReactions(manga) : chapterReactionSummary(chapterId);
+                var summary = aggregated ? mangaReactionSummary(manga.id) : chapterReactionSummary(chapterId);
                 var reactions = [
                   { key: 'fire', emoji: '&#128293;', label: 'Semangat' },
                   { key: 'shock', emoji: '&#128562;', label: 'Kaget' },
@@ -3592,18 +3643,19 @@
                 ];
                 if (aggregated) {
                   return '<div class="kv-comment-reaction">' +
-                    '<div class="kv-comment-reaction-label">Reaksi</div>' +
-                    '<div class="kv-manga-reaction-row" role="status" aria-label="Reaksi">' +
+                    '<div class="kv-comment-reaction-label">Berikan reaksi untuk manga ini</div>' +
+                    '<div class="kv-manga-reaction-row" role="group" aria-label="Reaksi manga">' +
                       reactions.map(function (item) {
-                        var total = summary.counts[item.key] || 0;
-                        return '<span class="kv-manga-reaction kv-manga-reaction-static" title="' + item.label + '">' +
+                        var active = summary.userVote === item.key;
+                        return '<button type="button" class="kv-manga-reaction' + (active ? ' active' : '') + '" data-action="manga-reaction" data-id="' + escapeHtml(manga.id) + '" data-reaction="' + item.key + '" aria-pressed="' + (active ? 'true' : 'false') + '" title="' + item.label + '">' +
                           '<span class="kv-manga-reaction-emoji" aria-hidden="true">' + item.emoji + '</span>' +
-                          '<span class="kv-manga-reaction-count">' + total + '</span>' +
+                          '<span class="kv-manga-reaction-count">' + (summary.counts[item.key] || 0) + '</span>' +
                           '<span class="kv-manga-reaction-label">' + item.label + '</span>' +
-                        '</span>';
+                        '</button>';
                       }).join('') +
-          '</div>';
-     }
+                    '</div>' +
+                  '</div>';
+                }
 
                 return '<div class="kv-comment-reaction">' +
                   '<div class="kv-comment-reaction-label">Reaksi untuk chapter ini</div>' +
@@ -6199,6 +6251,7 @@
         if (dc) confirmDelete('comment', dc.id, 'Hapus komentar dari ' + (dc.authorName || 'Pembaca') + '?', 'Hapus Komentar');
       }
       else if (act === 'chapter-reaction') { chapterReactionLocal(el.getAttribute('data-id'), el.getAttribute('data-reaction')); }
+      else if (act === 'manga-reaction') { mangaReactionLocal(el.getAttribute('data-id'), el.getAttribute('data-reaction')); }
       else if (act === 'open-reader') { navigate('#/baca/' + el.getAttribute('data-slug') + '/' + el.getAttribute('data-cid')); }
       else if (act === 'quick-genre') { var genre = el.getAttribute('data-genre'); state.filterGenres = genre && genre !== 'Semua' ? [genre] : []; state.openCatalogDropdown = 'genre'; state.page = 1; navigate('#/archive'); }
       else if (act === 'toggle-ch-sort') { state.chapterSortAsc = !state.chapterSortAsc; render(); }

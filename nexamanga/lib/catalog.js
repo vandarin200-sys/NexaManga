@@ -195,24 +195,36 @@ function enrichCommentsWithUsers(catalog) {
 const REACTION_KEYS = Object.freeze(['fire', 'shock', 'cry', 'laugh', 'angry']);
 
 function addChapterReaction(catalog, input) {
-  return addReaction(catalog, input);
+  return addReaction(catalog, input, 'chapter');
 }
 
-function addReaction(catalog, input) {
+function addMangaReaction(catalog, input) {
+  return addReaction(catalog, input, 'manga');
+}
+
+function addReaction(catalog, input, targetType = 'chapter') {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new ValidationError('Data reaksi tidak valid.');
   }
-  const chapterId = requireText(input.chapterId, 'ID chapter', 100);
+  const targetId = requireText(
+    targetType === 'chapter' ? input.chapterId : input.mangaId,
+    targetType === 'chapter' ? 'ID chapter' : 'ID manga',
+    100
+  );
   const voterId = requireText(input.voterId, 'ID voter', 100);
   const reaction = typeof input.reaction === 'string' && input.reaction ? input.reaction : null;
-  if (!catalog.chapters.some((chapter) => chapter.id === chapterId)) {
-    throw new ValidationError('Chapter tidak ditemukan.');
+  const collectionKey = targetType === 'chapter' ? 'reactions' : 'mangaReactions';
+  const exists = targetType === 'chapter'
+    ? catalog.chapters.some((chapter) => chapter.id === targetId)
+    : catalog.manga.some((manga) => manga.id === targetId);
+  if (!exists) {
+    throw new ValidationError(targetType === 'chapter' ? 'Chapter tidak ditemukan.' : 'Manga tidak ditemukan.');
   }
-  if (!catalog.reactions || typeof catalog.reactions !== 'object' || Array.isArray(catalog.reactions)) {
-    catalog.reactions = {};
+  if (!catalog[collectionKey] || typeof catalog[collectionKey] !== 'object' || Array.isArray(catalog[collectionKey])) {
+    catalog[collectionKey] = {};
   }
-  const forTarget = catalog.reactions[chapterId] && typeof catalog.reactions[chapterId] === 'object'
-    ? catalog.reactions[chapterId]
+  const forTarget = catalog[collectionKey][targetId] && typeof catalog[collectionKey][targetId] === 'object'
+    ? catalog[collectionKey][targetId]
     : {};
   for (const key of REACTION_KEYS) {
     if (!Array.isArray(forTarget[key])) forTarget[key] = [];
@@ -237,7 +249,7 @@ function addReaction(catalog, input) {
       if (forTarget[key].includes(voterId)) userVote = key;
     }
   }
-  catalog.reactions[chapterId] = forTarget;
+  catalog[collectionKey][targetId] = forTarget;
   const counts = {};
   for (const key of REACTION_KEYS) counts[key] = forTarget[key].length;
   return { counts, userVote };
@@ -348,6 +360,7 @@ module.exports = {
   ValidationError,
   addComment,
   addChapterReaction,
+  addMangaReaction,
   deleteChapter,
   deleteComment,
   deleteManga,
