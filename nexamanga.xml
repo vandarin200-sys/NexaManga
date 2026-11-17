@@ -2590,7 +2590,11 @@
     var state = {
       route: 'home',
       params: {},
-      theme: localStorage.getItem('kv_theme') || CONFIG.DEFAULT_THEME,
+       theme: localStorage.getItem('kv_theme') || CONFIG.DEFAULT_THEME,
+       imageCompressionEnabled: localStorage.getItem('kv_img_compress_enabled') !== '0',
+       imageCompressionQuality: parseFloat(localStorage.getItem('kv_img_compress_quality') || '0.85') || 0.85,
+       imageCompressionMaxDim: parseInt(localStorage.getItem('kv_img_compress_maxdim') || '2000', 10) || 2000,
+
       /* Data dimuat dari: backend API -> data lokal admin -> data contoh */
        data: JSON.parse(localStorage.getItem('kv_local_data') || 'null') || { manga: [], chapters: [], comments: [] },
       loading: false,
@@ -2635,7 +2639,8 @@
       adminRefocusSearch: false,
        adminExpandedManga: null,
        uploadProgress: null,
-       analyticsData: undefined,
+        analyticsData: undefined,
+
        mdUrl: '',
        mdLang: 'en',
        mdQuery: '',
@@ -4558,7 +4563,8 @@
               reader.readAsDataURL(compressed);
             });
             mime = compressed.type || mime;
-            fileName = fileName.replace(/\.[^.]+$/, '.webp');
+            var ext = (mime === 'image/webp') ? '.webp' : (mime === 'image/jpeg' ? '.jpg' : '');
+            if (ext) fileName = fileName.replace(/\.[^.]+$/, ext);
           }
         } catch (e) { /* keep original */ }
         var upRes = await fetch(CONFIG.API_BASE_URL + '/api/admin/upload-dual', {
@@ -5130,9 +5136,22 @@
               '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-settings-reset">Kembalikan ke Default</button>' +
             '</div>' +
           '</form>' +
-         '</div>' +
-         '<div class="kv-card" style="margin-top:16px;">' +
-           '<h2 class="kv-section-title" style="margin-bottom:4px;">Halaman Info</h2>' +
+          '</div>' +
+          '<div class="kv-card" style="margin-top:16px;">' +
+            '<h2 class="kv-section-title" style="margin-bottom:4px;">Kompresi Gambar</h2>' +
+            '<p class="kv-admin-sub" style="margin-bottom:14px;">Atur kompresi sebelum upload ke Telegram (WebP/JPEG). Berlaku untuk upload chapter, scrape MangaDex, dan gambar komentar.</p>' +
+            '<form id="kv-compress-settings-form" class="kv-form-grid" novalidate>' +
+              '<label style="display:flex;align-items:center;gap:8px;grid-column:1/-1;"><input type="checkbox" name="enabled"' + (state.imageCompressionEnabled ? ' checked' : '') + '/> Aktifkan kompresi gambar</label>' +
+              '<label>Kualitas (0.1 - 1.0)<input class="kv-input" name="quality" type="number" min="0.1" max="1" step="0.05" value="' + (state.imageCompressionQuality || 0.85) + '"/></label>' +
+              '<label>Dimensi maks (px)<input class="kv-input" name="maxDim" type="number" min="500" max="4000" step="100" value="' + (state.imageCompressionMaxDim || 2000) + '"/></label>' +
+              '<div style="grid-column:1/-1; display:flex; justify-content:flex-end;">' +
+                '<button type="submit" class="kv-btn kv-btn-primary">Simpan Pengaturan Kompresi</button>' +
+              '</div>' +
+            '</form>' +
+          '</div>' +
+          '<div class="kv-card" style="margin-top:16px;">' +
+            '<h2 class="kv-section-title" style="margin-bottom:4px;">Halaman Info</h2>' +
+
            '<p class="kv-admin-sub" style="margin-bottom:14px;">Kelola isi halaman Tentang, Kontak, Kebijakan Privasi, dan Ketentuan.</p>' +
            '<form id="kv-info-settings-form" class="kv-form-grid" novalidate>' +
              '<label style="grid-column:1/-1;">Tentang<textarea class="kv-textarea" name="aboutContent" rows="5" placeholder="Tulis tentang situs...">' + escapeHtml(siteSetting('aboutContent', '')) + '</textarea></label>' +
@@ -5338,6 +5357,7 @@
      function compressImageBlob(blob, fileName) {
        return new Promise(function (resolve) {
          if (!blob || !blob.type || blob.type.indexOf('image/') !== 0) { resolve(blob); return; }
+         if (state.imageCompressionEnabled === false) { resolve(blob); return; }
          var img = new Image();
          var url = URL.createObjectURL(blob);
          img.onload = function () {
@@ -5356,9 +5376,13 @@
            var ctx = canvas.getContext('2d');
            ctx.drawImage(img, 0, 0, w, h);
            canvas.toBlob(function (out) {
-             if (!out || out.size >= blob.size) { resolve(blob); return; }
-             resolve(out);
-           }, 'image/webp', 0.9);
+             if (!out) { resolve(blob); return; }
+             if (out.type === 'image/webp') { resolve(out); return; }
+             canvas.toBlob(function (out2) {
+               if (!out2 || out2.size >= blob.size) { resolve(blob); return; }
+               resolve(out2);
+             }, 'image/jpeg', 0.85);
+           }, 'image/webp', 0.85);
          };
          img.onerror = function () { URL.revokeObjectURL(url); resolve(blob); };
          img.src = url;
@@ -5368,8 +5392,10 @@
        if (!file || !file.type || file.type.indexOf('image/') !== 0) return Promise.resolve(file);
        return compressImageBlob(file, file.name).then(function (blob) {
          if (blob === file) return file;
-         var name = String(file.name || 'image').replace(/\.[^.]+$/, '.webp');
-         try { return new File([blob], name, { type: blob.type || 'image/webp', lastModified: Date.now() }); }
+         var ext = (blob.type === 'image/webp') ? '.webp' : (blob.type === 'image/jpeg' ? '.jpg' : '');
+         var base = String(file.name || 'image').replace(/\.[^.]+$/, '');
+         var name = ext ? (base + ext) : file.name;
+         try { return new File([blob], name, { type: blob.type || file.type, lastModified: Date.now() }); }
          catch (e) { return file; }
        });
      }
@@ -5856,11 +5882,33 @@
             contactContent: String(fd.get('contactContent') || '').trim(),
             privacyContent: String(fd.get('privacyContent') || '').trim(),
             termsContent: String(fd.get('termsContent') || '').trim()
-          });
-        };
-      }
+           });
+         };
+       }
 
-      var logoBtn = document.getElementById('kv-logo-upload-btn');
+       var compressForm = document.getElementById('kv-compress-settings-form');
+       if (compressForm) {
+         compressForm.onsubmit = function (e) {
+           e.preventDefault();
+           var fd = new FormData(compressForm);
+           var enabled = fd.get('enabled') === 'on';
+           var q = parseFloat(fd.get('quality'));
+           if (isNaN(q) || q < 0.1 || q > 1) q = 0.85;
+           var md = parseInt(fd.get('maxDim'), 10);
+           if (isNaN(md) || md < 500) md = 2000;
+           state.imageCompressionEnabled = enabled;
+           state.imageCompressionQuality = q;
+           state.imageCompressionMaxDim = md;
+           localStorage.setItem('kv_img_compress_enabled', enabled ? '1' : '0');
+           localStorage.setItem('kv_img_compress_quality', String(q));
+           localStorage.setItem('kv_img_compress_maxdim', String(md));
+           toast('Pengaturan kompresi disimpan.', 'ok');
+           render();
+         };
+       }
+
+       var logoBtn = document.getElementById('kv-logo-upload-btn');
+
       var logoFile = document.getElementById('kv-logo-file');
       if (logoBtn && logoFile) {
         logoBtn.onclick = function () {
