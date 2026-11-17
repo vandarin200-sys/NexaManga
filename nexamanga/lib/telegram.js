@@ -83,7 +83,7 @@ async function saveMedia(fileName, mimeType, bytes) {
   const message = await telegramMultipart('sendDocument', {
     chat_id: storageChatId()
   }, 'document', filename, mimeType, bytes);
-  const document = message.document;
+  const document = message.document || (Array.isArray(message.photo) ? message.photo[message.photo.length - 1] : null) || message.sticker;
   if (!document || !document.file_id) {
     throw new TelegramError('Telegram tidak mengembalikan ID file gambar.');
   }

@@ -4023,7 +4023,7 @@
           '<div class="kv-reader-placeholder-inner"><strong>Halaman ' + pageIndex + ' belum tersedia</strong><small>Halaman ini belum memiliki URL media di database.</small></div>' +
         '</div>';
       }
-       return '<figure class="' + figureClass + '"><img data-src="' + escapeHtml(mediaUrl) + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="' + escapeHtml(title) + ' Chapter ' + chNum + ' Halaman ' + escapeHtml(p.order || pageIndex) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"/></figure>';
+       return '<figure class="' + figureClass + '"><img src="' + escapeHtml(mediaUrl) + '" alt="' + escapeHtml(title) + ' Chapter ' + chNum + ' Halaman ' + escapeHtml(p.order || pageIndex) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"/></figure>';
 
     }
 
@@ -5671,7 +5671,6 @@
       if (state.pendingDelete) bodyHtml += renderConfirmModal();
       app.innerHTML = renderHeader() + bodyHtml + renderFooter();
       bindEvents();
-      if (state.route === 'reader') batchLoadReaderImages();
     }
 
     function setBannerDotsActive(index) {
