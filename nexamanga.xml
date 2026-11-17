@@ -2592,8 +2592,8 @@
       params: {},
        theme: localStorage.getItem('kv_theme') || CONFIG.DEFAULT_THEME,
        imageCompressionEnabled: localStorage.getItem('kv_img_compress_enabled') !== '0',
-       imageCompressionQuality: parseFloat(localStorage.getItem('kv_img_compress_quality') || '0.85') || 0.85,
-       imageCompressionMaxDim: parseInt(localStorage.getItem('kv_img_compress_maxdim') || '2000', 10) || 2000,
+       imageCompressionQuality: (function () { if (localStorage.getItem('kv_img_compress_ver') !== '2') { localStorage.setItem('kv_img_compress_ver', '2'); localStorage.setItem('kv_img_compress_quality', '0.8'); localStorage.setItem('kv_img_compress_maxdim', '1600'); localStorage.setItem('kv_img_compress_enabled', '1'); return 0.8; } return parseFloat(localStorage.getItem('kv_img_compress_quality') || '0.8') || 0.8; })(),
+       imageCompressionMaxDim: (function () { if (localStorage.getItem('kv_img_compress_ver') !== '2') return 1600; return parseInt(localStorage.getItem('kv_img_compress_maxdim') || '1600', 10) || 1600; })(),
 
       /* Data dimuat dari: backend API -> data lokal admin -> data contoh */
        data: JSON.parse(localStorage.getItem('kv_local_data') || 'null') || { manga: [], chapters: [], comments: [] },
@@ -5142,8 +5142,8 @@
             '<p class="kv-admin-sub" style="margin-bottom:14px;">Atur kompresi sebelum upload ke Telegram (WebP/JPEG). Berlaku untuk upload chapter, scrape MangaDex, dan gambar komentar.</p>' +
             '<form id="kv-compress-settings-form" class="kv-form-grid" novalidate>' +
               '<label style="display:flex;align-items:center;gap:8px;grid-column:1/-1;"><input type="checkbox" name="enabled"' + (state.imageCompressionEnabled ? ' checked' : '') + '/> Aktifkan kompresi gambar</label>' +
-              '<label>Kualitas (0.1 - 1.0)<input class="kv-input" name="quality" type="number" min="0.1" max="1" step="0.05" value="' + (state.imageCompressionQuality || 0.85) + '"/></label>' +
-              '<label>Dimensi maks (px)<input class="kv-input" name="maxDim" type="number" min="500" max="4000" step="100" value="' + (state.imageCompressionMaxDim || 2000) + '"/></label>' +
+              '<label>Kualitas (0.1 - 1.0)<input class="kv-input" name="quality" type="number" min="0.1" max="1" step="0.05" value="' + (state.imageCompressionQuality || 0.8) + '"/></label>' +
+              '<label>Dimensi maks (px)<input class="kv-input" name="maxDim" type="number" min="500" max="4000" step="100" value="' + (state.imageCompressionMaxDim || 1600) + '"/></label>' +
               '<div style="grid-column:1/-1; display:flex; justify-content:flex-end;">' +
                 '<button type="submit" class="kv-btn kv-btn-primary">Simpan Pengaturan Kompresi</button>' +
               '</div>' +
