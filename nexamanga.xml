@@ -3301,7 +3301,7 @@
            return { m: m, last: last };
          })
          .filter(function (x) { return x.last; })
-         .sort(function (a, b) { return String(b.last).localeCompare(String(a.last)); })
+         .sort(function (a, b) { return String(b.last).localeCompare(String(a.last)) || String(a.m.title || '').localeCompare(String(b.m.title || '')); })
          .slice(0, 6)
          .map(function (x) { return homeCard(x.m); })
          .join('');
@@ -4018,7 +4018,8 @@
           '<div class="kv-reader-placeholder-inner"><strong>Halaman ' + pageIndex + ' belum tersedia</strong><small>Halaman ini belum memiliki URL media di database.</small></div>' +
         '</div>';
       }
-      return '<figure class="' + figureClass + '"><img src="' + escapeHtml(mediaUrl) + '" alt="' + escapeHtml(title) + ' Chapter ' + chNum + ' Halaman ' + escapeHtml(p.order || pageIndex) + '" loading="lazy" referrerpolicy="no-referrer"/></figure>';
+       return '<figure class="' + figureClass + '"><img data-src="' + escapeHtml(mediaUrl) + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="' + escapeHtml(title) + ' Chapter ' + chNum + ' Halaman ' + escapeHtml(p.order || pageIndex) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"/></figure>';
+
     }
 
     function saveHistory(mangaId, chapterId, chapterNumber) {
@@ -4540,10 +4541,30 @@
         });
         var imgJson = await imgRes.json();
         if (!imgRes.ok) throw new Error(imgJson.error || ('HTTP ' + imgRes.status));
+        var mime = imgJson.mimeType || 'image/jpeg';
+        var dataUrl = imgJson.dataBase64;
+        try {
+          var byteStr = atob(dataUrl.split(',')[1] || '');
+          var ab = new ArrayBuffer(byteStr.length);
+          var ia = new Uint8Array(ab);
+          for (var i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+          var blob = new Blob([ab], { type: mime });
+          var compressed = await compressImageBlob(blob, fileName);
+          if (compressed && compressed !== blob && compressed.size < blob.size) {
+            var reader = new FileReader();
+            dataUrl = await new Promise(function (resolve, reject) {
+              reader.onload = function () { resolve(reader.result); };
+              reader.onerror = function () { reject(new Error('compress read fail')); };
+              reader.readAsDataURL(compressed);
+            });
+            mime = compressed.type || mime;
+            fileName = fileName.replace(/\.[^.]+$/, '.webp');
+          }
+        } catch (e) { /* keep original */ }
         var upRes = await fetch(CONFIG.API_BASE_URL + '/api/admin/upload-dual', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
-          body: JSON.stringify({ fileName: fileName, mimeType: imgJson.mimeType || 'image/jpeg', dataBase64: imgJson.dataBase64 })
+          body: JSON.stringify({ fileName: fileName, mimeType: mime, dataBase64: dataUrl })
         });
         var json = await upRes.json();
         if (!upRes.ok) throw new Error(json.error || ('HTTP ' + upRes.status));
@@ -4636,20 +4657,16 @@
               var baseUrl = atHome.baseUrl;
               var hash = atHome.chapter.hash;
               var files = atHome.chapter.data || [];
-               var concurrency = 3;
-               for (var j = 0; j < files.length; j += concurrency) {
-                 var chunk = files.slice(j, j + concurrency);
-                 state.mdProgress.current = 'Chapter ' + num + ': gambar ' + (j + 1) + '-' + Math.min(j + concurrency, files.length) + '/' + files.length;
+               for (var j = 0; j < files.length; j++) {
+                 state.mdProgress.current = 'Chapter ' + num + ': gambar ' + (j + 1) + '/' + files.length;
                  render();
-                 var results = await Promise.all(chunk.map(function (fname, idx) {
-                   return mdUploadImage(baseUrl + '/data/' + hash + '/' + fname, fname).then(function (pg) {
-                     pg.order = j + idx + 1;
-                     return pg;
-                   }).catch(function () { return null; });
-                 }));
-                 results.forEach(function (pg) { if (pg) pages.push(pg); });
-                 pages.sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+                 try {
+                   var page = await mdUploadImage(baseUrl + '/data/' + hash + '/' + files[j], files[j]);
+                   page.order = pages.length + 1;
+                   pages.push(page);
+                 } catch (e) { /* skip failed image */ }
                }
+               pages.sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
 
             } catch (e) { /* skip chapter images */ }
             var obj = { id: uid('ch'), mangaId: manga.id, number: num, title: attrsCh.title || '', publishedAt: (attrsCh.publishAt || '').slice(0, 10) || today(), pages: pages };
@@ -4887,7 +4904,8 @@
           '<label>Manga *<select class="kv-select" name="mangaId" id="kv-ch-form-manga" style="width:100%;display:block;margin-top:4px;">' +
             state.data.manga.map(function (m) { return '<option value="' + escapeHtml(m.id) + '"' + (m.id === f.mangaId ? ' selected' : '') + '>' + escapeHtml(m.title) + '</option>'; }).join('') +
           '</select></label>' +
-          '<label>Nomor Chapter *<input class="kv-input kv-mono" name="number" type="number" min="1" step="1" value="' + escapeHtml(f.number) + '" required style="width:100%;display:block;margin-top:4px;"/></label>' +
+           '<label>Nomor Chapter *<input class="kv-input kv-mono" name="number" type="number" min="0.1" step="0.1" value="' + escapeHtml(f.number) + '" required style="width:100%;display:block;margin-top:4px;"/></label>' +
+
           '<label>Judul Chapter<input class="kv-input" name="title" value="' + escapeHtml(f.title || '') + '" style="width:100%;display:block;margin-top:4px;"/></label>' +
           '<label>Tanggal Publikasi<input class="kv-input kv-mono" name="publishedAt" type="date" value="' + escapeHtml(f.publishedAt || today()) + '" style="width:100%;display:block;margin-top:4px;"/></label>' +
         '</div>' +
@@ -5206,13 +5224,15 @@
       var err = document.getElementById('kv-chapter-form-err');
       var fd = new FormData(form);
       var mangaId = fd.get('mangaId');
-      var number = parseInt(fd.get('number'), 10);
+       var number = parseFloat(fd.get('number'));
+
       var title = String(fd.get('title') || '').trim();
       var publishedAt = fd.get('publishedAt') || today();
       var pages = state.adminChapterForm.pages || [];
       var problems = [];
       if (!mangaId) problems.push('Pilih manga terlebih dahulu.');
-      if (isNaN(number) || number < 1) problems.push('Nomor chapter harus angka >= 1.');
+       if (isNaN(number) || number <= 0) problems.push('Nomor chapter harus angka > 0.');
+
       if (state.data.chapters.filter(function (c) { return c.mangaId === mangaId && c.number === number && c.id !== (fd.get('id') || ''); }).length) problems.push('Nomor chapter tersebut sudah dipakai di manga ini.');
       if (problems.length) { if (err) err.textContent = problems.join(' '); return; }
 
@@ -5315,7 +5335,46 @@
 
     /* Unggah satu berkas per request; gambar disimpan di Telegram dan
        ditayangkan oleh URL proxy Vercel. */
-    function mimeFromName(name) {
+     function compressImageBlob(blob, fileName) {
+       return new Promise(function (resolve) {
+         if (!blob || !blob.type || blob.type.indexOf('image/') !== 0) { resolve(blob); return; }
+         var img = new Image();
+         var url = URL.createObjectURL(blob);
+         img.onload = function () {
+           URL.revokeObjectURL(url);
+           var maxDim = 2000;
+           var w = img.naturalWidth || img.width;
+           var h = img.naturalHeight || img.height;
+           if (w > maxDim || h > maxDim) {
+             var scale = Math.min(maxDim / w, maxDim / h);
+             w = Math.round(w * scale);
+             h = Math.round(h * scale);
+           }
+           var canvas = document.createElement('canvas');
+           canvas.width = w;
+           canvas.height = h;
+           var ctx = canvas.getContext('2d');
+           ctx.drawImage(img, 0, 0, w, h);
+           canvas.toBlob(function (out) {
+             if (!out || out.size >= blob.size) { resolve(blob); return; }
+             resolve(out);
+           }, 'image/webp', 0.9);
+         };
+         img.onerror = function () { URL.revokeObjectURL(url); resolve(blob); };
+         img.src = url;
+       });
+     }
+     function compressImageFile(file) {
+       if (!file || !file.type || file.type.indexOf('image/') !== 0) return Promise.resolve(file);
+       return compressImageBlob(file, file.name).then(function (blob) {
+         if (blob === file) return file;
+         var name = String(file.name || 'image').replace(/\.[^.]+$/, '.webp');
+         try { return new File([blob], name, { type: blob.type || 'image/webp', lastModified: Date.now() }); }
+         catch (e) { return file; }
+       });
+     }
+     function mimeFromName(name) {
+
       var ext = String(name || '').split('.').pop().toLowerCase();
       return ({ jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif' })[ext] || 'image/jpeg';
     }
@@ -5447,7 +5506,8 @@
             toast('Gagal mengekstrak ZIP ' + file.name + ': ' + err.message, 'err');
           }
         } else {
-          collected.push(file);
+          var compressed = await compressImageFile(file);
+          collected.push(compressed);
         }
       }
       if (!collected.length) {
@@ -5504,7 +5564,28 @@
     /* =========================================================================
        RENDER UTAMA & EVENT HANDLERS
        ========================================================================= */
-    function render() {
+     function batchLoadReaderImages() {
+       var imgs = document.querySelectorAll('figure.manga-page img[data-src]');
+       if (!imgs.length) return;
+       if ('IntersectionObserver' in window) {
+         var io = new IntersectionObserver(function (entries) {
+           entries.forEach(function (e) {
+             if (e.isIntersecting) {
+               var img = e.target;
+               io.unobserve(img);
+               var src = img.getAttribute('data-src');
+               if (src) { img.src = src; img.removeAttribute('data-src'); }
+             }
+           });
+         }, { rootMargin: '300px 0px' });
+         imgs.forEach(function (img) { io.observe(img); });
+       } else {
+         imgs.forEach(function (img) { var s = img.getAttribute('data-src'); if (s) { img.src = s; img.removeAttribute('data-src'); } });
+       }
+     }
+
+     function render() {
+
       var app = document.getElementById('kv-app');
       if (!app) return;
        if (document.body) {
@@ -5564,6 +5645,7 @@
       if (state.pendingDelete) bodyHtml += renderConfirmModal();
       app.innerHTML = renderHeader() + bodyHtml + renderFooter();
       bindEvents();
+      if (state.route === 'reader') batchLoadReaderImages();
     }
 
     function setBannerDotsActive(index) {
@@ -5807,9 +5889,10 @@
               if (preview) preview.innerHTML = '<img src="' + escapeHtml(url) + '" alt="Preview logo"/>';
               toast('Logo berhasil diunggah. Klik Simpan Pengaturan untuk menerapkan.', 'ok');
             }).catch(function (err) { toast('Gagal mengunggah logo: ' + err.message, 'error'); });
+            };
+            compressImageFile(file).then(function (cf) { uploadFile = cf; reader.readAsDataURL(cf); }).catch(function () { reader.readAsDataURL(file); });
           };
-          reader.readAsDataURL(file);
-        };
+
       }
 
 
@@ -5904,9 +5987,11 @@
            state.imageTargetForm = null;
             if (!file || !targetForm) return;
             if (!CONFIG.API_BASE_URL) { toast('Upload gambar butuh backend yang terhubung.', 'warn'); return; }
-            var btn = state.commentImageUploadingBtn;
-            if (btn) { btn.disabled = true; btn.innerHTML = '<span class="kv-spinner"></span>'; }
-            var reader = new FileReader();
+             var btn = state.commentImageUploadingBtn;
+             if (btn) { btn.disabled = true; btn.innerHTML = '<span class="kv-spinner"></span>'; }
+             var reader = new FileReader();
+             var uploadFile = file;
+
 
            reader.onload = function () {
              var headers = { 'Content-Type': 'application/json' };
@@ -5914,7 +5999,8 @@
              fetch(CONFIG.API_BASE_URL + '/api/comment/image', {
                method: 'POST',
                headers: headers,
-               body: JSON.stringify({ fileName: file.name, mimeType: file.type, dataBase64: reader.result })
+                body: JSON.stringify({ fileName: uploadFile.name, mimeType: uploadFile.type, dataBase64: reader.result })
+
              }).then(function (r) {
                return r.json().then(function (res) {
                  if (!r.ok) throw new Error(res.error || ('HTTP ' + r.status));

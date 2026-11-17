@@ -116,8 +116,8 @@ function saveChapter(catalog, input) {
   item.id = requireText(item.id, 'ID chapter', 100);
   item.mangaId = requireText(item.mangaId, 'ID manga', 100);
   item.number = Number(item.number);
-  if (!Number.isInteger(item.number) || item.number < 1) {
-    throw new ValidationError('Nomor chapter harus berupa bilangan bulat positif.');
+  if (!Number.isFinite(item.number) || item.number <= 0) {
+    throw new ValidationError('Nomor chapter harus berupa angka positif.');
   }
   if (!catalog.manga.some((manga) => manga.id === item.mangaId)) {
     throw new ValidationError('Manga untuk chapter ini tidak ditemukan.');
