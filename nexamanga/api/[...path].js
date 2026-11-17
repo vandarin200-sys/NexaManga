@@ -456,7 +456,12 @@ async function handler(req, res) {
       if (!imageUrl) throw new HttpError(400, 'URL gambar tidak valid.');
       let parsed;
       try { parsed = new URL(imageUrl); } catch { throw new HttpError(400, 'URL gambar tidak valid.'); }
-      if (!/^(uploads\.mangadex\.org|.*\.mangadex\.org)$/i.test(parsed.hostname) && !parsed.hostname.endsWith('mangadex.org')) {
+      const host = parsed.hostname.toLowerCase();
+      const allowed = host === 'uploads.mangadex.org' ||
+        host.endsWith('.mangadex.org') ||
+        host.endsWith('.mangadex.network') ||
+        host.endsWith('.mangadex.cc');
+      if (!allowed) {
         throw new HttpError(400, 'Host gambar tidak diizinkan.');
       }
       const r = await fetch(imageUrl, { headers: { 'User-Agent': 'NexaManga/1.0' } });
