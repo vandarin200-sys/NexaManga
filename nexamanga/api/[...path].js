@@ -428,7 +428,9 @@ async function handler(req, res) {
       const id = url.searchParams.get('id');
       if (!id) throw new HttpError(400, 'ID manga tidak valid.');
       const offset = url.searchParams.get('offset') || '0';
-      const r = await fetch('https://api.mangadex.org/manga/' + encodeURIComponent(id) + '/feed?translatedLanguage[]=en&limit=500&offset=' + encodeURIComponent(offset) + '&order[chapter]=asc', {
+      const lang = url.searchParams.get('lang');
+      const langParam = lang && lang !== 'all' ? '&translatedLanguage[]=' + encodeURIComponent(lang) : '';
+      const r = await fetch('https://api.mangadex.org/manga/' + encodeURIComponent(id) + '/feed?limit=500&offset=' + encodeURIComponent(offset) + '&order[chapter]=asc' + langParam, {
         headers: { 'Accept': 'application/json', 'User-Agent': 'NexaManga/1.0' }
       });
       const data = await r.json();
