@@ -135,6 +135,8 @@ function saveChapter(catalog, input) {
   const index = catalog.chapters.findIndex((chapter) => chapter.id === item.id);
   if (index === -1) catalog.chapters.push(item);
   else catalog.chapters[index] = item;
+  const manga = catalog.manga.find((entry) => entry.id === item.mangaId);
+  if (manga) manga.updatedAt = new Date().toISOString().slice(0, 10);
 }
 
 function pinComment(catalog, input) {

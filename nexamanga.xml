@@ -884,7 +884,8 @@
       background: color-mix(in srgb, var(--kv-accent) 15%, var(--kv-surface));
       border-color: color-mix(in srgb, var(--kv-accent) 48%, var(--kv-border));
     }
-    .kv-theme-toggle svg { width: 24px; height: 24px; }
+       .kv-theme-toggle svg { width: 28px; height: 28px; }
+
     .kv-nav-login {
       margin-left: 6px;
       padding: 8px 16px;
@@ -2356,11 +2357,17 @@
       .kv-brand-logo.kv-reader-brand-logo { min-width:0; height:30px; overflow:hidden; background:transparent; }
       .kv-admin-logo-icon img { height:100%; width:auto; max-width:180px; object-fit:contain; display:block; }
 
-      .kv-comment-rules { margin: 0 0 12px; padding: 12px 14px; border: 1px solid var(--kv-border); border-left: 4px solid var(--kv-accent); border-radius: 12px; background: var(--kv-surface-2); }
+       .kv-comment-rules { margin: 0 0 20px; padding: 12px 14px; border: 0; border-left: 4px solid var(--kv-accent); border-radius: 0; background: transparent; }
+       .kv-comment-reaction { margin: 16px 0 24px; padding: 14px 12px; border: 0; border-radius: 0; background: transparent; }
+       .kv-comment-form { margin-top: 8px; }
+       .kv-comment-sortbar { display: flex; align-items: center; gap: 8px; margin: 12px 0 8px; }
+       .kv-comment-sortlabel { font-size: .75rem; color: var(--kv-text-muted); font-weight: 700; }
+
     .kv-comment-rules-head { display:flex; align-items:center; gap:8px; font-size:.78rem; font-weight:800; color:var(--kv-text); letter-spacing:.04em; text-transform:uppercase; margin-bottom:8px; }
     .kv-comment-rules-head svg { width:16px; height:16px; display:block; color:var(--kv-accent); }
     .kv-comment-rules-list { margin:0; padding-left:18px; display:grid; gap:4px; font-size:.8rem; line-height:1.5; color:var(--kv-text-muted); }
-    .kv-comment-reaction { margin: 4px 0 12px; padding: 14px 12px; border: 1px solid var(--kv-border); border-radius: 12px; background: var(--kv-surface); }
+       .kv-comment-reaction { margin: 4px 0 12px; padding: 14px 12px; border: 0; border-radius: 0; background: transparent; }
+
     .kv-comment-reaction-label { font-size: .72rem; font-weight: 700; color: var(--kv-text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; text-align: center; }
     .kv-manga-reaction-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 480px; margin: 0 auto; }
     .kv-manga-reaction { flex: 0 0 calc(33.333% - 8px); max-width: 150px; min-width: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; border-radius: 14px; border: 1px solid var(--kv-border); background: var(--kv-surface-2); color: var(--kv-text-muted); cursor: pointer; transition: border-color .15s ease, transform .15s ease, color .15s ease, background-color .15s ease; }
@@ -2604,7 +2611,9 @@
        uploadProgress: null,
        analyticsData: undefined,
 
-      commentFilter: 'Semua',
+       commentFilter: 'Semua',
+       commentSort: 'newest',
+
       commentNotice: '',
        pendingDelete: null,        // { type, id, label, confirmLabel }
        toasts: [],
@@ -3245,9 +3254,19 @@
         '</a>';
       }
 
-      var latestCards = state.data.manga.slice()
-        .sort(function (a, b) { return String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')); })
-        .slice(0, 6).map(homeCard).join('');
+       var latestCards = state.data.manga.slice()
+         .map(function (m) {
+           var chs = state.data.chapters.filter(function (c) { return c.mangaId === m.id; });
+           var last = m.updatedAt || '';
+           chs.forEach(function (c) { if (String(c.publishedAt || '') > String(last)) last = c.publishedAt; });
+           return { m: m, last: last };
+         })
+         .filter(function (x) { return x.last; })
+         .sort(function (a, b) { return String(b.last).localeCompare(String(a.last)); })
+         .slice(0, 6)
+         .map(function (x) { return homeCard(x.m); })
+         .join('');
+
       var genres = ['Semua Koleksi'].concat(collectGenres().slice(0, 9));
       var popular = state.data.manga.slice().sort(function (a, b) { return (b.views || 0) - (a.views || 0); }).slice(0, 3);
       var recommended = state.data.manga.filter(function (m) { return m.recommended; });
@@ -3660,13 +3679,24 @@
                     childrenHtml +
                   '</div>';
                 }
-                var topLevel = (byParent[''] || []).slice().sort(function (a, b) {
-                  var ap = a.pinned ? 1 : 0;
-                  var bp = b.pinned ? 1 : 0;
-                  if (ap !== bp) return bp - ap;
-                  return String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || String(b.id || '').localeCompare(String(a.id || ''));
-                });
-                return topLevel.map(function (c) { return renderComment(c, 0); }).join('') || '<p class="kv-detail-empty">Belum ada komentar. Jadilah yang pertama.</p>';
+                 var sortMode = state.commentSort || 'newest';
+                 var topLevel = (byParent[''] || []).slice().sort(function (a, b) {
+                   var ap = a.pinned ? 1 : 0;
+                   var bp = b.pinned ? 1 : 0;
+                   if (ap !== bp) return bp - ap;
+                   if (sortMode === 'oldest') {
+                     return String(a.createdAt || '').localeCompare(String(b.createdAt || '')) || String(a.id || '').localeCompare(String(b.id || ''));
+                   }
+                   return String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || String(b.id || '').localeCompare(String(a.id || ''));
+                 });
+
+                 var sortBar = '<div class="kv-comment-sortbar">' +
+                   '<span class="kv-comment-sortlabel">Urutkan:</span>' +
+                   '<button type="button" class="kv-btn kv-btn-sm ' + (sortMode === 'newest' ? 'kv-btn-primary' : 'kv-btn-ghost') + '" data-action="set-comment-sort" data-sort="newest">Terbaru</button>' +
+                   '<button type="button" class="kv-btn kv-btn-sm ' + (sortMode === 'oldest' ? 'kv-btn-primary' : 'kv-btn-ghost') + '" data-action="set-comment-sort" data-sort="oldest">Terdahulu</button>' +
+                 '</div>';
+                 return sortBar + (topLevel.map(function (c) { return renderComment(c, 0); }).join('') || '<p class="kv-detail-empty">Belum ada komentar. Jadilah yang pertama.</p>');
+
               })() +
             '</section>' 
     }
@@ -4365,24 +4395,45 @@
               '<article class="kv-traffic-card"><div class="kv-traffic-label">TOTAL VISITS</div><div class="kv-traffic-value" id="kv-traffic-visits">' + (t.visits || 0).toLocaleString('id-ID') + '</div><div class="kv-traffic-note">Session-based estimate</div></article>' +
               '<article class="kv-traffic-card"><div class="kv-traffic-label">AVG. PAGES/VISIT</div><div class="kv-traffic-value" id="kv-traffic-average">' + (t.average || 0) + '</div><div class="kv-traffic-note">Engagement metric</div></article>' +
             '</div>' +
-            '<div class="kv-traffic-chart">' +
-              '<h3 class="kv-chart-title">&#9635; Traffic Overview</h3>' +
-              '<p class="kv-chart-sub">Pageviews, visitors, and visits over time</p>' +
-              '<div class="kv-traffic-legend"><span><i class="kv-traffic-dot" style="background:#62a5ff"></i>Pageviews</span><span><i class="kv-traffic-dot" style="background:#d77aa9"></i>Unique Visitors</span><span><i class="kv-traffic-dot" style="background:#e6d36f"></i>Visits</span></div>' +
-              '<svg viewBox="0 0 1100 355" role="img" aria-label="Grafik traffic"><title>Traffic Overview: Pageviews, Unique Visitors, Visits</title><g>' +
-                '<line class="kv-traffic-grid" x1="55" y1="35" x2="1080" y2="35"/><line class="kv-traffic-grid" x1="55" y1="95" x2="1080" y2="95"/><line class="kv-traffic-grid" x1="55" y1="155" x2="1080" y2="155"/><line class="kv-traffic-grid" x1="55" y1="215" x2="1080" y2="215"/><line class="kv-traffic-grid" x1="55" y1="275" x2="1080" y2="275"/>' +
-                '<text class="kv-traffic-axis" x="28" y="39">120</text><text class="kv-traffic-axis" x="28" y="99">90</text><text class="kv-traffic-axis" x="28" y="159">60</text><text class="kv-traffic-axis" x="28" y="219">30</text><text class="kv-traffic-axis" x="38" y="279">0</text>' +
-              '</g>' +
-              '<path d="M55 205 C95 195 130 177 170 180 S245 218 285 202 S365 126 410 132 S485 190 525 170 S600 52 650 48 S720 100 755 172 S815 258 855 274 S940 274 975 274 S1040 220 1080 205" class="kv-traffic-line" stroke="#62a5ff"><title>Pageviews</title></path>' +
-              '<path d="M55 270 C105 265 130 260 170 264 S250 270 285 268 S370 255 410 258 S485 264 525 260 S610 268 650 267 S730 273 755 275 S850 276 900 275 S1030 275 1080 274" class="kv-traffic-line" stroke="#d77aa9"><title>Unique Visitors</title></path>' +
-              '<path d="M55 264 C100 252 130 247 170 250 S245 259 285 255 S370 245 410 248 S485 252 525 249 S610 247 650 253 S730 269 755 273 S850 275 900 275 S1030 272 1080 270" class="kv-traffic-line" stroke="#e6d36f"><title>Visits</title></path>' +
-              '<g class="kv-traffic-axis" text-anchor="middle">' +
-                 '<text x="55" y="302">1 Jan</text><text x="170" y="302">2 Jan</text><text x="285" y="302">3 Jan</text><text x="400" y="302">4 Jan</text><text x="515" y="302">5 Jan</text><text x="630" y="302">6 Jan</text><text x="745" y="302">7 Jan</text><text x="860" y="302">8 Jan</text><text x="975" y="302">9 Jan</text><text x="1080" y="302">10 Jan</text>' +
+               '<div class="kv-traffic-chart">' +
+               '<h3 class="kv-chart-title">&#9635; Traffic Overview</h3>' +
+               '<p class="kv-chart-sub">Pageviews, visitors, and visits over time</p>' +
+               '<div class="kv-traffic-legend"><span><i class="kv-traffic-dot" style="background:#62a5ff"></i>Pageviews</span><span><i class="kv-traffic-dot" style="background:#d77aa9"></i>Unique Visitors</span><span><i class="kv-traffic-dot" style="background:#e6d36f"></i>Visits</span></div>' +
+               (function () {
+                 var daily = (d.daily && d.daily.length) ? d.daily : [];
+                 if (!daily.length) return '<p style="color:var(--kv-text-muted);text-align:center;padding:24px 0;">Belum ada data traffic pada rentang ini.</p>';
+                 var maxV = 1;
+                 daily.forEach(function (r) { maxV = Math.max(maxV, r.pageviews || 0, r.visitors || 0, r.visits || 0); });
+                 var left = 55, right = 1080, top = 35, bottom = 275;
+                 var span = right - left;
+                 var range = bottom - top;
+                 function x(i) { return daily.length === 1 ? (left + right) / 2 : left + (i * span) / (daily.length - 1); }
+                 function y(v) { return bottom - ((v || 0) / maxV) * range; }
+                 function path(key, color) {
+                   var pts = daily.map(function (r, i) { return x(i) + ',' + y(r[key]); }).join(' ');
+                   return '<polyline points="' + pts + '" class="kv-traffic-line" stroke="' + color + '" fill="none"><title>' + key + '</title></polyline>';
+                 }
+                 var labels = daily.map(function (r, i) {
+                   var dt = String(r.date || '');
+                   var short = dt.length >= 10 ? dt.slice(8, 10) + ' ' + ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][parseInt(dt.slice(5, 7), 10) - 1] : dt;
+                   return '<text class="kv-traffic-axis" x="' + x(i) + '" y="302" text-anchor="middle">' + short + '</text>';
+                 }).join('');
+                 var yLabels = [0, 0.25, 0.5, 0.75, 1].map(function (f) {
+                   var v = Math.round(maxV * f);
+                   return '<text class="kv-traffic-axis" x="38" y="' + (bottom - f * range + 4) + '">' + v + '</text>' +
+                     '<line class="kv-traffic-grid" x1="55" y1="' + (bottom - f * range) + '" x2="1080" y2="' + (bottom - f * range) + '"/>';
+                 }).join('');
+                 return '<svg viewBox="0 0 1100 355" role="img" aria-label="Grafik traffic"><title>Traffic Overview</title>' +
+                   yLabels +
+                   path('pageviews', '#62a5ff') +
+                   path('visitors', '#d77aa9') +
+                   path('visits', '#e6d36f') +
+                   '<g text-anchor="middle">' + labels + '</g>' +
+                   '</svg>';
+               })() +
+             '</div>' +
+           '</section>';
 
-              '</g>' +
-            '</svg>' +
-            '</div>' +
-          '</section>';
       }
 
       function renderAdminMangaList() {
@@ -5187,11 +5238,12 @@
     function render() {
       var app = document.getElementById('kv-app');
       if (!app) return;
-      if (document.body) {
-        document.body.classList.toggle('kv-home-route', state.route === 'home' || state.route === 'catalog' || state.route === 'account');
-        document.body.classList.toggle('kv-detail-route', state.route === 'detail');
-        document.body.classList.toggle('kv-reader-route', state.route === 'reader');
-      }
+       if (document.body) {
+         document.body.classList.toggle('kv-home-route', state.route === 'home' || state.route === 'catalog' || state.route === 'account' || state.route === 'info');
+         document.body.classList.toggle('kv-detail-route', state.route === 'detail');
+         document.body.classList.toggle('kv-reader-route', state.route === 'reader');
+       }
+
       var bodyHtml = '';
       if (state.loading) {
         bodyHtml = '<div class="kv-container" style="margin-top:40px;"><div class="kv-stat-box">Memuat...</div></div>';
@@ -5759,6 +5811,7 @@
         render();
       }
       else if (act === 'retry-api') { state.error = null; syncFromApi(); }
+       else if (act === 'set-comment-sort') { state.commentSort = el.getAttribute('data-sort'); render(); }
        else if (act === 'comment-image') {
          if (!state.user) { toast('Masuk terlebih dahulu untuk mengunggah gambar.', 'warn'); return; }
          state.imageTargetForm = el.closest('form');
