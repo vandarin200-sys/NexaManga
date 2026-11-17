@@ -49,6 +49,7 @@ Perintah ini membaca pesan snapshot yang dipin di chat Telegram lalu menyalinnya
 
 ## Persiapan Telegram (hanya untuk gambar)
 
+
 1. Buat bot melalui [@BotFather](https://t.me/BotFather), lalu simpan token bot.
 2. Buat satu channel privat atau grup privat untuk penyimpanan gambar. Tambahkan bot sebagai admin dengan izin mengirim pesan. Pin pesan tidak lagi diperlukan.
 3. Catat ID chat. Untuk channel/grup privat, ID biasanya diawali `-100`. Jangan membagikan URL API Telegram yang berisi token.
