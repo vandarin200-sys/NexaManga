@@ -2404,6 +2404,15 @@
       .kv-spoiler.open .kv-spoiler-state-close { display: inline; }
       .kv-spoiler.open .kv-spoiler-state-open { display: none; }
        .kv-reply-to { display: inline-flex; align-items: center; background: rgba(101,88,217,.18); color: var(--kv-accent); padding: 2px 7px; border-radius: 999px; font-size: .68rem; font-weight: 600; margin-right: 6px; }
+       .kv-md-results { display: flex; flex-direction: column; gap: 12px; }
+       .kv-md-result { display: flex; gap: 12px; background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 10px; padding: 12px; }
+       .kv-md-cover { width: 80px; height: 112px; border-radius: 8px; overflow: hidden; background: var(--kv-surface-2); flex: 0 0 80px; }
+       .kv-md-cover img { width: 100%; height: 100%; object-fit: cover; }
+       .kv-md-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+       .kv-md-title { font-weight: 700; color: var(--kv-text); font-size: .95rem; }
+       .kv-md-meta { color: var(--kv-text-muted); font-size: .75rem; }
+       .kv-md-desc { color: var(--kv-text-muted); font-size: .8rem; overflow-wrap: anywhere; }
+       .kv-md-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
        .kv-traffic { margin-top: 20px; }
        .kv-traffic-toolbar { display: flex; align-items: end; gap: 14px; flex-wrap: wrap; background: var(--kv-surface); padding: 14px 16px; border-radius: 13px; margin-bottom: 20px; border: 1px solid var(--kv-border); }
        .kv-traffic-field { display: flex; flex-direction: column; gap: 7px; min-width: 150px; flex: 1; }
@@ -2610,6 +2619,18 @@
        adminExpandedManga: null,
        uploadProgress: null,
        analyticsData: undefined,
+       mdUrl: '',
+       mdQuery: '',
+       mdResults: [],
+       mdLoading: false,
+       mdError: '',
+       mdImporting: false,
+       mdProgress: null,
+       analyticsFrom: '',
+       analyticsTo: '',
+       analyticsDefaultMonth: '',
+       analyticsUserChanged: false,
+       analyticsError: '',
 
        commentFilter: 'Semua',
        commentSort: 'newest',
@@ -4174,6 +4195,7 @@
        }
         else if (tab === 'komentar') body = renderAdminComments();
         else if (tab === 'analytics') body = renderAdminAnalytics();
+        else if (tab === 'mangadex') body = renderAdminMangaDex();
         else if (tab === 'leaderboard') body = renderAdminLeaderboard();
         else if (tab === 'pengguna') body = renderAdminUsers();
         else if (tab === 'pengaturan') body = renderAdminSettings();
@@ -4185,6 +4207,7 @@
          manga: ['Manajemen Manga & Chapter', 'Tambah, ubah, hapus manga dan kelola chapter per judul.'],
           komentar: ['Moderasi Komentar', 'Setujui, tolak, atau hapus komentar pembaca.'],
           analytics: ['Analitik Traffic', 'Rincian traffic situs dari awal bulan ini sampai hari ini.'],
+          mangadex: ['Import MangaDex', 'Cari dan impor manga beserta daftar chapter dari MangaDex.'],
           leaderboard: ['Leaderboard Judul', 'Semua judul diurutkan berdasarkan jumlah pembaca.'],
          pengguna: ['Manajemen Pengguna', 'Daftar akun, ubah role, dan hapus pengguna.'],
          pengaturan: ['Pengaturan', 'Konfigurasi tema, integrasi backend, dan zona bahaya.']
@@ -4209,6 +4232,7 @@
        var navMain = [
           { key: 'dashboard', label: 'Dashboard', icon: 'grid' },
           { key: 'analytics', label: 'Analitik', icon: 'trend' },
+          { key: 'mangadex', label: 'MangaDex', icon: 'globe' },
           { key: 'manga', label: 'Manga', icon: 'book' },
 
           { key: 'komentar', label: 'Komentar', icon: 'chat', badge: pending },
@@ -4366,12 +4390,24 @@
 
       function renderAdminAnalytics() {
         var now = new Date();
-        var toStr = now.toISOString().slice(0, 10);
-        var fromStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01';
-        if (!state.analyticsFrom) state.analyticsFrom = fromStr;
-        if (!state.analyticsTo) state.analyticsTo = toStr;
-        fromStr = state.analyticsFrom;
-        toStr = state.analyticsTo;
+        var curMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        var defaultFrom = curMonth + '-01';
+        var defaultTo = now.toISOString().slice(0, 10);
+        if (state.analyticsDefaultMonth !== curMonth) {
+          state.analyticsDefaultMonth = curMonth;
+          state.analyticsUserChanged = false;
+          state.analyticsFrom = defaultFrom;
+          state.analyticsTo = defaultTo;
+          state.analyticsData = undefined;
+        }
+        if (!state.analyticsUserChanged) {
+          if (!state.analyticsFrom) state.analyticsFrom = defaultFrom;
+          if (!state.analyticsTo) state.analyticsTo = defaultTo;
+        }
+        var fromStr = state.analyticsFrom || defaultFrom;
+        var toStr = state.analyticsTo || defaultTo;
+        state.analyticsFrom = fromStr;
+        state.analyticsTo = toStr;
         if (state.analyticsData === undefined) {
           state.analyticsData = null;
           loadAdminAnalytics(fromStr, toStr);
@@ -4379,9 +4415,17 @@
         }
         var d = state.analyticsData || {};
         var t = (d.totals) || { pageviews: 0, visitors: 0, visits: 0, average: 0 };
+        var trackedDays = (d.daily && d.daily.length) ? d.daily.length : 0;
+        var hasData = trackedDays > 0 && (t.pageviews || 0) > 0;
+        if (state.analyticsData === null && state.analyticsError) {
+          return '<div class="kv-card" style="margin-top:16px;"><p style="color:var(--kv-danger);">' + escapeHtml(state.analyticsError) + '</p><p style="color:var(--kv-text-muted);font-size:0.85rem;">Pastikan backend Vercel terhubung dan token admin valid.</p></div>';
+        }
         return '<div class="kv-card" style="margin-bottom:16px;">' +
           '<h3 class="kv-section-title" style="margin:0 0 8px;">Analitik Traffic</h3>' +
           '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Halaman ini menampilkan rincian traffic situs. Tanggal otomatis dari awal bulan ini sampai hari ini. Ubah rentang tanggal lalu tekan Refresh.</p>' +
+          (CONFIG.API_BASE_URL ? '' : '<p style="color:var(--kv-warning);font-size:0.85rem;">Backend tidak terhubung (mode lokal): data traffic tidak dapat dicatat.</p>') +
+          '<p style="color:var(--kv-text-muted);font-size:0.8rem;margin:0 0 12px;">Hari tercatat: ' + trackedDays + ' · Total pageviews: ' + (t.pageviews || 0) + '</p>' +
+          '<button type="button" class="kv-btn kv-btn-ghost kv-btn-sm" data-action="kv-traffic-test" style="margin-bottom:12px;">Catat kunjungan uji</button>' +
           '</div>' +
           '<section class="kv-traffic">' +
             '<div class="kv-traffic-toolbar">' +
@@ -4400,7 +4444,20 @@
                '<p class="kv-chart-sub">Pageviews, visitors, and visits over time</p>' +
                '<div class="kv-traffic-legend"><span><i class="kv-traffic-dot" style="background:#62a5ff"></i>Pageviews</span><span><i class="kv-traffic-dot" style="background:#d77aa9"></i>Unique Visitors</span><span><i class="kv-traffic-dot" style="background:#e6d36f"></i>Visits</span></div>' +
                (function () {
-                 var daily = (d.daily && d.daily.length) ? d.daily : [];
+                 var tracked = (d.daily && d.daily.length) ? d.daily : [];
+                 if (!tracked.length) return '<p style="color:var(--kv-text-muted);text-align:center;padding:24px 0;">Belum ada data traffic pada rentang ini. Kunjungi halaman situs (frontend) agar pageview tercatat.</p>';
+                 var byDate = {};
+                 tracked.forEach(function (r) { byDate[String(r.date)] = r; });
+                 var daily = [];
+                 var cur = new Date(fromStr + 'T00:00:00');
+                 var end = new Date(toStr + 'T00:00:00');
+                 while (cur <= end) {
+                   var key = cur.toISOString().slice(0, 10);
+                   var r = byDate[key] || { date: key, pageviews: 0, visitors: 0, visits: 0 };
+                   r.date = key;
+                   daily.push(r);
+                   cur.setDate(cur.getDate() + 1);
+                 }
                  if (!daily.length) return '<p style="color:var(--kv-text-muted);text-align:center;padding:24px 0;">Belum ada data traffic pada rentang ini.</p>';
                  var maxV = 1;
                  daily.forEach(function (r) { maxV = Math.max(maxV, r.pageviews || 0, r.visitors || 0, r.visits || 0); });
@@ -4434,6 +4491,153 @@
              '</div>' +
            '</section>';
 
+      }
+
+      function mdCoverUrl(manga) {
+        var rel = (manga.relationships || []).filter(function (r) { return r.type === 'cover_art'; })[0];
+        var file = rel && rel.attributes && rel.attributes.fileName;
+        if (!file) return '';
+        return 'https://uploads.mangadex.org/covers/' + manga.id + '/' + file + '.512.jpg';
+      }
+      function mdStatus(s) {
+        if (s === 'completed') return 'Tamat';
+        if (s === 'hiatus') return 'Hiatus';
+        return 'Ongoing';
+      }
+      function mdType(lang) {
+        if (lang === 'ko') return 'Manhwa';
+        if (lang === 'zh' || lang === 'zh-hk') return 'Manhua';
+        return 'Manga';
+      }
+      function mdParseId(input) {
+        var s = String(input || '').trim();
+        var m = s.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+        if (m) return m[0];
+        return s;
+      }
+      async function mdUploadImage(url, fileName) {
+        if (!CONFIG.API_BASE_URL) throw new Error('Backend tidak terhubung.');
+        var imgRes = await fetch(CONFIG.API_BASE_URL + '/api/mangadex/image?url=' + encodeURIComponent(url), {
+          headers: { 'Authorization': 'Bearer ' + state.adminToken }
+        });
+        var imgJson = await imgRes.json();
+        if (!imgRes.ok) throw new Error(imgJson.error || ('HTTP ' + imgRes.status));
+        var upRes = await fetch(CONFIG.API_BASE_URL + '/api/admin/upload-dual', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+          body: JSON.stringify({ fileName: fileName, mimeType: imgJson.mimeType || 'image/jpeg', dataBase64: imgJson.dataBase64 })
+        });
+        var json = await upRes.json();
+        if (!upRes.ok) throw new Error(json.error || ('HTTP ' + upRes.status));
+        return { fileName: fileName, bloggerUrl: json.bloggerUrl || '', telegramFileId: json.telegramFileId || '', status: 'Telegram: ' + (json.telegramStatus || 'gagal') + ' | Proxy: ' + (json.bloggerStatus || 'gagal') };
+      }
+      async function mdScrape(input) {
+        var id = mdParseId(input);
+        if (!id) { toast('URL/ID MangaDex tidak valid.', 'err'); return; }
+        if (!CONFIG.API_BASE_URL) { toast('Backend harus terhubung untuk mengunggah gambar.', 'err'); return; }
+        state.mdImporting = true;
+        state.mdProgress = { active: true, total: 0, done: 0, current: 'Mengambil metadata manga...' };
+        render();
+        try {
+          var mRes = await fetch(CONFIG.API_BASE_URL + '/api/mangadex/manga?id=' + encodeURIComponent(id), {
+            headers: { 'Authorization': 'Bearer ' + state.adminToken }
+          });
+          if (!mRes.ok) throw new Error('HTTP ' + mRes.status);
+          var mData = await mRes.json();
+          var m = mData.data;
+          if (!m) throw new Error('Manga tidak ditemukan.');
+          var attrs = m.attributes || {};
+          var title = (attrs.title && (attrs.title.en || Object.values(attrs.title)[0])) || 'Untitled';
+          var desc = (attrs.description && (attrs.description.en || Object.values(attrs.description)[0])) || '';
+          var authorRel = (m.relationships || []).filter(function (r) { return r.type === 'author' || r.type === 'artist'; })[0];
+          var author = authorRel && authorRel.attributes ? authorRel.attributes.name : '';
+          var cover = mdCoverUrl(m);
+          var tags = (attrs.tags || []).map(function (t) { return (t.attributes && t.attributes.name && (t.attributes.name.en || Object.values(t.attributes.name)[0])) || ''; }).filter(Boolean);
+          var manga = state.data.manga.filter(function (x) { return x.title === title; })[0];
+          if (!manga) {
+            manga = { id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author, synopsis: desc, coverBloggerUrl: cover, genres: tags, type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: '', featured: false, recommended: false, views: 0, updatedAt: today() };
+            state.data.manga.push(manga);
+          } else {
+            manga.coverBloggerUrl = manga.coverBloggerUrl || cover;
+            manga.updatedAt = today();
+          }
+          persistData();
+          apiSync('/api/admin/save-manga', manga);
+
+          state.mdProgress.current = 'Mengambil daftar chapter...';
+          render();
+          var chapters = [];
+          var offset = 0;
+          while (true) {
+            var cRes = await fetch(CONFIG.API_BASE_URL + '/api/mangadex/chapters?id=' + encodeURIComponent(id) + '&offset=' + offset, {
+              headers: { 'Authorization': 'Bearer ' + state.adminToken }
+            });
+            if (!cRes.ok) throw new Error('HTTP ' + cRes.status);
+            var cData = await cRes.json();
+            chapters = chapters.concat(cData.data || []);
+            if (!cData.total || chapters.length >= cData.total) break;
+            offset += 500;
+            if (offset > 10000) break;
+          }
+          state.mdProgress.total = chapters.length;
+          render();
+          for (var i = 0; i < chapters.length; i++) {
+            var ch = chapters[i];
+            var attrsCh = ch.attributes || {};
+            var num = parseFloat(attrsCh.chapter);
+            if (isNaN(num)) { state.mdProgress.done = i + 1; render(); continue; }
+            if (state.data.chapters.some(function (c) { return c.mangaId === manga.id && c.number === num; })) { state.mdProgress.done = i + 1; render(); continue; }
+            state.mdProgress.current = 'Chapter ' + num + ': mengunduh gambar...';
+            state.mdProgress.done = i;
+            render();
+            var pages = [];
+            try {
+              var atHome = await fetch(CONFIG.API_BASE_URL + '/api/mangadex/athome?chapterId=' + encodeURIComponent(ch.id), {
+                headers: { 'Authorization': 'Bearer ' + state.adminToken }
+              }).then(function (r) { return r.json(); });
+              var baseUrl = atHome.baseUrl;
+              var hash = atHome.chapter.hash;
+              var files = atHome.chapter.data || [];
+              for (var j = 0; j < files.length; j++) {
+                state.mdProgress.current = 'Chapter ' + num + ': gambar ' + (j + 1) + '/' + files.length;
+                render();
+                try {
+                  var page = await mdUploadImage(baseUrl + '/data/' + hash + '/' + files[j], files[j]);
+                  page.order = pages.length + 1;
+                  pages.push(page);
+                } catch (e) { /* skip failed image */ }
+              }
+            } catch (e) { /* skip chapter images */ }
+            var obj = { id: uid('ch'), mangaId: manga.id, number: num, title: attrsCh.title || '', publishedAt: (attrsCh.publishAt || '').slice(0, 10) || today(), pages: pages };
+            state.data.chapters.push(obj);
+            persistData();
+            apiSync('/api/admin/save-chapter', obj);
+            state.mdProgress.done = i + 1;
+            render();
+          }
+          manga.updatedAt = today();
+          persistData();
+          apiSync('/api/admin/save-manga', manga);
+          state.mdImporting = false;
+          state.mdProgress.active = false;
+          toast('Scrape selesai: ' + manga.title, 'ok');
+          render();
+        } catch (e) {
+          state.mdImporting = false;
+          state.mdProgress.active = false;
+          toast('Gagal scrape: ' + (e && e.message ? e.message : e), 'err');
+          render();
+        }
+      }
+      function renderAdminMangaDex() {
+        return '<div class="kv-card">' +
+          '<div class="kv-toolbar">' +
+            '<input id="kv-md-url" class="kv-input" type="text" placeholder="URL atau ID manga MangaDex (https://mangadex.org/title/...)" value="' + escapeHtml(state.mdUrl || '') + '" aria-label="URL manga MangaDex" style="flex:1;"/>' +
+            '<button type="button" class="kv-btn kv-btn-primary" data-action="md-scrape" ' + (state.mdImporting ? 'disabled' : '') + '>Scrape &amp; Impor</button>' +
+          '</div>' +
+          '<p style="color:var(--kv-text-muted);font-size:0.8rem;margin:10px 0 0;">Tempel URL detail manga dari MangaDex. Sistem akan mengambil metadata, daftar chapter, dan mengunduh + mengunggah semua gambar ke Telegram secara bertahap.</p>' +
+          (state.mdImporting && state.mdProgress ? '<p style="color:var(--kv-accent);margin-top:10px;">' + escapeHtml(state.mdProgress.current || '') + ' (' + state.mdProgress.done + '/' + state.mdProgress.total + ')</p>' : '') +
+        '</div>';
       }
 
       function renderAdminMangaList() {
@@ -4689,9 +4893,9 @@
        var t = to || (state.analyticsTo || '');
        if (!f || !t) return;
        fetch(CONFIG.API_BASE_URL + '/api/analytics?from=' + encodeURIComponent(f) + '&to=' + encodeURIComponent(t), { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
-         .then(function (r) { if (!r.ok) throw new Error('Gagal memuat analitik.'); return r.json(); })
-         .then(function (res) { state.analyticsData = res; render(); })
-         .catch(function () { state.analyticsData = null; });
+         .then(function (r) { if (!r.ok) throw new Error('Gagal memuat analitik (HTTP ' + r.status + ').'); return r.json(); })
+         .then(function (res) { state.analyticsData = res; state.analyticsError = ''; render(); })
+         .catch(function (e) { state.analyticsData = null; state.analyticsError = (e && e.message) ? e.message : 'Gagal memuat analitik.'; render(); });
      }
 
      function loadAdminUsers() {
@@ -5259,6 +5463,18 @@
         else if (state.route === 'info') bodyHtml = renderInfo();
         else bodyHtml = render404();
       }
+      if (state.mdProgress && state.mdProgress.active) {
+        var mp = state.mdProgress;
+        var mppct = mp.total ? Math.round((mp.done / mp.total) * 100) : 0;
+        bodyHtml += '<div class="kv-upload-overlay" role="dialog" aria-modal="true" aria-label="Scrape MangaDex">' +
+          '<div class="kv-upload-box">' +
+            '<div class="kv-upload-title">Scraping MangaDex</div>' +
+            '<div class="kv-upload-sub">' + escapeHtml(mp.current || '') + '</div>' +
+            '<div class="kv-upload-bar"><div class="kv-upload-bar-fill" style="width:' + mppct + '%;"></div></div>' +
+            '<div class="kv-upload-count">' + mp.done + ' / ' + mp.total + ' chapter (' + mppct + '%)</div>' +
+          '</div>' +
+        '</div>';
+      }
       if (state.uploadProgress && state.uploadProgress.active) {
         var up = state.uploadProgress;
         var pct = up.total ? Math.round((up.done / up.total) * 100) : 0;
@@ -5660,8 +5876,11 @@
        }
 
        /* --- Binding panel admin --- */
-      var aSearch = document.getElementById('kv-admin-manga-search');
-      if (aSearch) aSearch.oninput = function (e) { state.adminSearch = e.target.value; state.adminRefocusSearch = true; render(); };
+       var aSearch = document.getElementById('kv-admin-manga-search');
+       if (aSearch) aSearch.oninput = function (e) { state.adminSearch = e.target.value; state.adminRefocusSearch = true; render(); };
+       var mdUrl = document.getElementById('kv-md-url');
+       if (mdUrl) mdUrl.oninput = function (e) { state.mdUrl = e.target.value; };
+
       if (aSearch && state.adminRefocusSearch) {
         state.adminRefocusSearch = false;
         aSearch.focus();
@@ -5847,15 +6066,99 @@
        else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; state.adminChapterFullId = null; state.adminDrawerOpen = false; if (state.adminTab === 'pengguna') state.usersCache = undefined; render(); }
        else if (act === 'admin-comment-filter') { state.commentFilter = el.getAttribute('data-filter'); render(); }
        else if (act === 'admin-open-leaderboard') { state.adminTab = 'leaderboard'; state.adminDrawerOpen = false; render(); }
+       else if (act === 'md-scrape') {
+         var urlInput = document.getElementById('kv-md-url');
+         var urlVal = urlInput ? urlInput.value : state.mdUrl;
+         state.mdUrl = urlVal;
+         mdScrape(urlVal);
+       }
+       else if (act === 'md-search') {
+         var q = (document.getElementById('kv-md-search') || {}).value || state.mdQuery || '';
+         state.mdQuery = q.trim();
+         if (!state.mdQuery) { state.mdError = 'Masukkan kata kunci.'; render(); return; }
+         state.mdLoading = true; state.mdError = ''; state.mdResults = []; render();
+         fetch('https://api.mangadex.org/manga?title=' + encodeURIComponent(state.mdQuery) + '&limit=12&includes[]=cover_art&includes[]=author&includes[]=artist&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic')
+           .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+           .then(function (res) { state.mdResults = res.data || []; state.mdLoading = false; render(); })
+           .catch(function (e) { state.mdLoading = false; state.mdError = 'Gagal mencari: ' + (e && e.message ? e.message : e); render(); });
+       }
+       else if (act === 'md-import-manga') {
+         var mid = el.getAttribute('data-id');
+         state.mdImporting = true; render();
+         fetch('https://api.mangadex.org/manga/' + encodeURIComponent(mid) + '?includes[]=cover_art&includes[]=author&includes[]=artist')
+           .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+           .then(function (res) {
+             var m = res.data;
+             if (!m) throw new Error('Data manga tidak ditemukan.');
+             var attrs = m.attributes || {};
+             var title = (attrs.title && (attrs.title.en || Object.values(attrs.title)[0])) || 'Untitled';
+             var desc = (attrs.description && (attrs.description.en || Object.values(attrs.description)[0])) || '';
+             var authorRel = (m.relationships || []).filter(function (r) { return r.type === 'author' || r.type === 'artist'; })[0];
+             var author = authorRel && authorRel.attributes ? authorRel.attributes.name : '';
+             var cover = mdCoverUrl(m);
+             var tags = (attrs.tags || []).map(function (t) { return (t.attributes && t.attributes.name && (t.attributes.name.en || Object.values(t.attributes.name)[0])) || ''; }).filter(Boolean);
+             var obj = {
+               id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author,
+               synopsis: desc, coverBloggerUrl: cover, genres: tags,
+               type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: '',
+               featured: false, recommended: false, views: 0, updatedAt: today()
+             };
+             state.data.manga.push(obj);
+             persistData();
+             apiSync('/api/admin/save-manga', obj);
+             state.mdImporting = false;
+             toast('Manga "' + title + '" diimpor.', 'ok');
+             render();
+           })
+           .catch(function (e) { state.mdImporting = false; toast('Gagal impor: ' + (e && e.message ? e.message : e), 'err'); render(); });
+       }
+       else if (act === 'md-import-chapters') {
+         var mid = el.getAttribute('data-id');
+         var mtitle = el.getAttribute('data-title') || '';
+         var existingManga = state.data.manga.filter(function (m) { return m.title === mtitle; })[0];
+         if (!existingManga) { toast('Impor manga terlebih dahulu.', 'warn'); return; }
+         state.mdImporting = true; render();
+         fetch('https://api.mangadex.org/manga/' + encodeURIComponent(mid) + '/feed?translatedLanguage[]=en&limit=500&order[chapter]=asc')
+           .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+           .then(function (res) {
+             var list = res.data || [];
+             var count = 0;
+             list.forEach(function (ch) {
+               var attrs = ch.attributes || {};
+               var num = parseFloat(attrs.chapter);
+               if (isNaN(num)) return;
+               if (state.data.chapters.some(function (c) { return c.mangaId === existingManga.id && c.number === num; })) return;
+               var obj = { id: uid('ch'), mangaId: existingManga.id, number: num, title: attrs.title || '', publishedAt: (attrs.publishAt || '').slice(0, 10) || today(), pages: [] };
+               state.data.chapters.push(obj);
+               count++;
+               apiSync('/api/admin/save-chapter', obj);
+             });
+             existingManga.updatedAt = today();
+             persistData();
+             state.mdImporting = false;
+             toast(count + ' chapter diimpor untuk ' + existingManga.title + '.', 'ok');
+             render();
+           })
+           .catch(function (e) { state.mdImporting = false; toast('Gagal impor chapter: ' + (e && e.message ? e.message : e), 'err'); render(); });
+       }
        else if (act === 'kv-traffic-refresh') {
          var from = document.getElementById('kv-traffic-from');
          var to = document.getElementById('kv-traffic-to');
          if (from && to && from.value && to.value && from.value > to.value) { alert('Tanggal awal tidak boleh melewati tanggal akhir.'); return; }
          state.analyticsFrom = from && from.value ? from.value : state.analyticsFrom;
          state.analyticsTo = to && to.value ? to.value : state.analyticsTo;
-         state.analyticsData = undefined;
-         loadAdminAnalytics(state.analyticsFrom, state.analyticsTo);
-       }
+         state.analyticsUserChanged = true;
+          state.analyticsData = undefined;
+          loadAdminAnalytics(state.analyticsFrom, state.analyticsTo);
+        }
+        else if (act === 'kv-traffic-test') {
+          trackPageview();
+          setTimeout(function () {
+            state.analyticsData = undefined;
+            loadAdminAnalytics(state.analyticsFrom, state.analyticsTo);
+          }, 800);
+        }
+
       else if (act === 'admin-delete-user') { deleteUserAdmin(el.getAttribute('data-id')); }
       else if (act === 'admin-new-manga') { state.adminForm = blankManga(); state.adminTab = 'manga'; state.adminDrawerOpen = false; render(); }
       else if (act === 'admin-edit-manga') {

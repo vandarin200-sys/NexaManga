@@ -409,6 +409,63 @@ async function handler(req, res) {
       return sendJson(res, 200, { ok: true, views: updated.views });
     }
 
+    if (route === 'mangadex/manga' && req.method === 'GET') {
+      await requireAdmin(req);
+      const url = new URL(req.url, 'http://localhost');
+      const id = url.searchParams.get('id');
+      if (!id) throw new HttpError(400, 'ID manga tidak valid.');
+      const r = await fetch('https://api.mangadex.org/manga/' + encodeURIComponent(id) + '?includes[]=cover_art&includes[]=author&includes[]=artist', {
+        headers: { 'Accept': 'application/json', 'User-Agent': 'NexaManga/1.0' }
+      });
+      const data = await r.json();
+      if (!r.ok) throw new HttpError(r.status, (data && data.errors && data.errors[0] && data.errors[0].detail) || 'Gagal mengambil manga.');
+      return sendJson(res, 200, data);
+    }
+
+    if (route === 'mangadex/chapters' && req.method === 'GET') {
+      await requireAdmin(req);
+      const url = new URL(req.url, 'http://localhost');
+      const id = url.searchParams.get('id');
+      if (!id) throw new HttpError(400, 'ID manga tidak valid.');
+      const offset = url.searchParams.get('offset') || '0';
+      const r = await fetch('https://api.mangadex.org/manga/' + encodeURIComponent(id) + '/feed?translatedLanguage[]=en&limit=500&offset=' + encodeURIComponent(offset) + '&order[chapter]=asc', {
+        headers: { 'Accept': 'application/json', 'User-Agent': 'NexaManga/1.0' }
+      });
+      const data = await r.json();
+      if (!r.ok) throw new HttpError(r.status, (data && data.errors && data.errors[0] && data.errors[0].detail) || 'Gagal mengambil chapter.');
+      return sendJson(res, 200, data);
+    }
+
+    if (route === 'mangadex/athome' && req.method === 'GET') {
+      await requireAdmin(req);
+      const url = new URL(req.url, 'http://localhost');
+      const chapterId = url.searchParams.get('chapterId');
+      if (!chapterId) throw new HttpError(400, 'ID chapter tidak valid.');
+      const r = await fetch('https://api.mangadex.org/at-home/server/' + encodeURIComponent(chapterId), {
+        headers: { 'Accept': 'application/json', 'User-Agent': 'NexaManga/1.0' }
+      });
+      const data = await r.json();
+      if (!r.ok) throw new HttpError(r.status, (data && data.errors && data.errors[0] && data.errors[0].detail) || 'Gagal mengambil server gambar.');
+      return sendJson(res, 200, data);
+    }
+
+    if (route === 'mangadex/image' && req.method === 'GET') {
+      await requireAdmin(req);
+      const url = new URL(req.url, 'http://localhost');
+      const imageUrl = url.searchParams.get('url');
+      if (!imageUrl) throw new HttpError(400, 'URL gambar tidak valid.');
+      let parsed;
+      try { parsed = new URL(imageUrl); } catch { throw new HttpError(400, 'URL gambar tidak valid.'); }
+      if (!/^(uploads\.mangadex\.org|.*\.mangadex\.org)$/i.test(parsed.hostname) && !parsed.hostname.endsWith('mangadex.org')) {
+        throw new HttpError(400, 'Host gambar tidak diizinkan.');
+      }
+      const r = await fetch(imageUrl, { headers: { 'User-Agent': 'NexaManga/1.0' } });
+      if (!r.ok) throw new HttpError(r.status, 'Gagal mengunduh gambar.');
+      const buf = Buffer.from(await r.arrayBuffer());
+      const mime = r.headers.get('content-type') || 'image/jpeg';
+      return sendJson(res, 200, { dataBase64: 'data:' + mime + ';base64,' + buf.toString('base64'), mimeType: mime });
+    }
+
     if (route === 'track' && req.method === 'POST') {
       const body = await readBody(req);
       const visitorId = typeof body.visitorId === 'string' ? body.visitorId.slice(0, 100) : '';
