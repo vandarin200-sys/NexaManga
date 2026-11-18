@@ -275,6 +275,7 @@ function saveSettings(catalog, input) {
     if (field === 'siteName' && trimmed.length > 100) throw new ValidationError('Nama situs maksimal 100 karakter.');
     if (field === 'siteTagline' && trimmed.length > 250) throw new ValidationError('Tagline maksimal 250 karakter.');
     if (field === 'logoUrl' && trimmed.length > 2048) throw new ValidationError('URL logo terlalu panjang.');
+    if (field === 'logoUrl' && trimmed && !/^https?:\/\//i.test(trimmed)) throw new ValidationError('URL logo harus menggunakan HTTP atau HTTPS.');
     if (field === 'contactEmail' && trimmed.length > 254) throw new ValidationError('Email kontak terlalu panjang.');
     if (['aboutContent', 'contactContent', 'privacyContent', 'termsContent'].includes(field) && trimmed.length > 20000) {
       throw new ValidationError('Konten halaman terlalu panjang (maks 20.000 karakter).');
@@ -321,6 +322,9 @@ function addComment(catalog, input) {
   }
   const parentId = parentIdInput;
   const imageUrl = typeof input.imageUrl === 'string' && input.imageUrl.trim() ? input.imageUrl.trim().slice(0, 2048) : null;
+  if (imageUrl && !/^https?:\/\//i.test(imageUrl)) {
+    throw new ValidationError('URL gambar komentar harus menggunakan HTTP atau HTTPS.');
+  }
   const replyTo = typeof input.replyTo === 'string' && input.replyTo.trim() ? input.replyTo.trim().slice(0, 100) : null;
   const comment = {
     id: `c-${crypto.randomUUID()}`,

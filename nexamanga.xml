@@ -1870,7 +1870,21 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-home-route .kv-catalog-toolbar .kv-search-input { padding-left: 38px; width: 100%; }
       body.kv-home-route .kv-catalog-toolbar .kv-input { min-width: 0; flex: 1; }
       body.kv-home-route .kv-catalog-toolbar .kv-search-wrap .kv-input { display: block; width: 100%; padding: 11px 12px 11px 38px; border-radius: 10px; border: 1px solid var(--kv-border); background: var(--kv-surface); color: var(--kv-text); font-size: .875rem; font-family: inherit; transition: border-color .15s ease, box-shadow .15s ease; outline: none; min-width: 0; flex: 1 1 auto; }
-      body.kv-home-route .kv-catalog-toolbar .kv-search-wrap .kv-input:focus { border-color: var(--kv-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kv-accent) 20%, transparent); }
+       body.kv-home-route .kv-catalog-toolbar .kv-search-wrap .kv-input:focus { border-color: var(--kv-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kv-accent) 20%, transparent); }
+
+       body.kv-home-route .kv-filter-drawer-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 80; animation: kvFadeIn .18s ease; }
+       body.kv-home-route .kv-filter-drawer { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); max-height: calc(-40px + 85vh); background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 18px 18px 0 0; box-shadow: 0 -20px 60px rgba(0,0,0,.4); z-index: 90; display: flex; flex-direction: column; animation: kvSlideUp .22s ease; }
+       body.kv-home-route .kv-filter-drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 12px; flex-shrink: 0; }
+       body.kv-home-route .kv-filter-drawer-title { font-size: 16px; font-weight: 600; color: var(--kv-text); }
+       body.kv-home-route .kv-filter-drawer-body { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; padding: 0 16px 16px; display: flex; flex-direction: column; gap: 20px; min-height: 0; }
+       body.kv-home-route .kv-filter-drawer-section { display: flex; flex-direction: column; gap: 8px; }
+       body.kv-home-route .kv-filter-drawer-label { font-size: 13px; color: var(--kv-text-muted); }
+       body.kv-home-route .kv-filter-drawer-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+       body.kv-home-route .kv-filter-drawer-chip { height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--kv-border); background: var(--kv-surface-2, var(--kv-surface)); color: var(--kv-text); font-size: 13px; font-weight: 400; cursor: pointer; white-space: nowrap; transition: all .15s ease; }
+       body.kv-home-route .kv-filter-drawer-chip.is-active { background: var(--kv-accent); color: var(--kv-accent-fg, #fff); border-color: var(--kv-accent); font-weight: 500; }
+       body.kv-home-route .kv-filter-drawer-foot { flex-shrink: 0; padding: 12px 16px 16px; border-top: 1px solid var(--kv-border); }
+       @keyframes kvFadeIn { from { opacity: 0; } to { opacity: 1; } }
+       @keyframes kvSlideUp { from { transform: translate(-50%, 100%); opacity: .8; } to { transform: translate(-50%, 0); opacity: 1; } }
 
 
       body.kv-home-route .kv-dropdown { position: relative; }
@@ -2606,8 +2620,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       filterGenres: [],
       filterStatus: 'Semua',
       filterType: 'Semua',
+      filterMinChapters: 0,
       sortBy: 'terbaru',
       openCatalogDropdown: null,
+      filterDrawerOpen: false,
       page: 1,
        chapterSortAsc: false,
        chapterSearch: '',
@@ -3142,8 +3158,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        if (window.location.hash !== routeHash) {
          window.history.pushState(null, '', routeHash);
        }
-       state.mobileMenuOpen = false;
-       state.commentNotice = null;
+        state.mobileMenuOpen = false;
+        state.filterDrawerOpen = false;
+        state.commentNotice = null;
        parseRoute();
        render();
        window.scrollTo(0, 0);
@@ -3460,14 +3477,77 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     /* =========================================================================
        HALAMAN ARCHIVE
        ========================================================================= */
-    function sortLabel(sortBy) {
-      if (sortBy === 'populer') return 'Terpopuler';
-      if (sortBy === 'rating') return 'Rating Tertinggi';
-      if (sortBy === 'abjad') return 'A - Z';
-      return 'Terbaru';
-    }
+     function sortLabel(sortBy) {
+       if (sortBy === 'populer') return 'Terpopuler';
+       if (sortBy === 'rating') return 'Rating Tertinggi';
+       if (sortBy === 'abjad') return 'A - Z';
+       return 'Terbaru';
+     }
 
-    function renderCatalog() {
+     function renderFilterDrawer(allGenres, typeOptions, statusOptions) {
+       var minOpts = [0, 10, 50, 100, 200];
+       return '<div class="kv-filter-drawer-backdrop" data-action="close-filter-drawer"></div>' +
+         '<div class="kv-filter-drawer kv-filter-drawer-open" role="dialog" aria-label="Filter koleksi">' +
+           '<div class="kv-filter-drawer-head">' +
+             '<span class="kv-filter-drawer-title">Filter</span>' +
+             '<button type="button" class="kv-btn kv-btn-ghost" data-action="clear-filters" style="text-decoration:underline;">Hapus semua</button>' +
+           '</div>' +
+           '<div class="kv-filter-drawer-body">' +
+             '<div class="kv-filter-drawer-section">' +
+               '<span class="kv-filter-drawer-label">Tipe</span>' +
+               '<div class="kv-filter-drawer-chips">' +
+                 typeOptions.map(function (t) {
+                   var value = t === 'Semua Tipe' ? 'Semua' : t;
+                   var active = (t === 'Semua Tipe' && state.filterType === 'Semua Tipe') || state.filterType === t;
+                   return '<button type="button" class="kv-filter-drawer-chip' + (active ? ' is-active' : '') + '" data-action="set-filter-type" data-value="' + escapeHtml(t) + '">' + escapeHtml(value) + '</button>';
+                 }).join('') +
+               '</div>' +
+             '</div>' +
+             '<div class="kv-filter-drawer-section">' +
+               '<span class="kv-filter-drawer-label">Status</span>' +
+               '<div class="kv-filter-drawer-chips">' +
+                 statusOptions.map(function (st) {
+                   var value = st === 'Semua Status' ? 'Semua' : st;
+                   var active = (st === 'Semua Status' && state.filterStatus === 'Semua Status') || state.filterStatus === st;
+                   return '<button type="button" class="kv-filter-drawer-chip' + (active ? ' is-active' : '') + '" data-action="set-filter-status" data-value="' + escapeHtml(st) + '">' + escapeHtml(value) + '</button>';
+                 }).join('') +
+               '</div>' +
+             '</div>' +
+             '<div class="kv-filter-drawer-section">' +
+               '<span class="kv-filter-drawer-label">Minimal chapter</span>' +
+               '<div class="kv-filter-drawer-chips">' +
+                 minOpts.map(function (n) {
+                   var active = (state.filterMinChapters || 0) === n;
+                   return '<button type="button" class="kv-filter-drawer-chip' + (active ? ' is-active' : '') + '" data-action="set-filter-min" data-value="' + n + '">' + (n === 0 ? 'Semua' : n) + '</button>';
+                 }).join('') +
+               '</div>' +
+             '</div>' +
+             '<div class="kv-filter-drawer-section">' +
+               '<span class="kv-filter-drawer-label">Genre</span>' +
+               '<div class="kv-filter-drawer-chips">' +
+                 allGenres.map(function (g) {
+                   var active = state.filterGenres.indexOf(g) !== -1;
+                   return '<button type="button" class="kv-filter-drawer-chip' + (active ? ' is-active' : '') + '" data-action="toggle-filter-genre" data-genre="' + escapeHtml(g) + '">' + escapeHtml(g) + '</button>';
+                 }).join('') +
+               '</div>' +
+             '</div>' +
+             '<div class="kv-filter-drawer-section">' +
+               '<span class="kv-filter-drawer-label">Urutan</span>' +
+               '<div class="kv-filter-drawer-chips">' +
+                 [['terbaru', 'Terbaru'], ['populer', 'Terpopuler'], ['rating', 'Rating Tertinggi'], ['abjad', 'A - Z']].map(function (item) {
+                   var active = state.sortBy === item[0];
+                   return '<button type="button" class="kv-filter-drawer-chip' + (active ? ' is-active' : '') + '" data-action="set-sort" data-value="' + item[0] + '">' + item[1] + '</button>';
+                 }).join('') +
+               '</div>' +
+             '</div>' +
+           '</div>' +
+           '<div class="kv-filter-drawer-foot">' +
+             '<button type="button" class="kv-btn kv-btn-primary" data-action="close-filter-drawer" style="width:100%;height:44px;">Tampilkan hasil</button>' +
+            '</div>' +
+          '</div>';
+     }
+
+     function renderCatalog() {
        var allGenres = collectGenres();
        var typeOptions = ['Semua Tipe'].concat(collectTypes());
        var statusOptions = ['Semua Status', 'Ongoing', 'Tamat', 'Hiatus'];
@@ -3483,7 +3563,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
          var matchG = state.filterGenres.length === 0 || (m.genres || []).some(function (genre) { return state.filterGenres.indexOf(genre) !== -1; });
          var matchS = state.filterStatus === 'Semua Status' || m.status === state.filterStatus;
          var matchT = state.filterType === 'Semua Tipe' || m.type === state.filterType;
-        return matchQ && matchG && matchS && matchT;
+         var chapterCount = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
+         var matchMin = !(state.filterMinChapters) || chapterCount >= (state.filterMinChapters || 0);
+         return matchQ && matchG && matchS && matchT && matchMin;
       });
 
       list.sort(function (a, b) {
@@ -3515,90 +3597,18 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           '</div>' +
           '<span class="kv-catalog-count">' + list.length + ' judul</span>' +
         '</section>' +
-        '<div class="kv-catalog-toolbar" data-catalog-toolbar="1" aria-label="Filter koleksi manga">' +
-          '<label class="kv-search-wrap">' +
-            '<svg class="kv-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>' +
-            '<input id="kv-search-input" class="kv-input kv-search-input" type="search" placeholder="Cari judul manga..." value="' + escapeHtml(state.search) + '" aria-label="Cari judul manga"/>' +
-          '</label>' +
-          '<div class="kv-dropdown" data-dropdown="genre">' +
-            '<button type="button" class="kv-dropdown-btn" id="kv-filter-genre-btn" aria-haspopup="dialog" aria-expanded="' + (state.openCatalogDropdown === 'genre' ? 'true' : 'false') + '" aria-controls="kv-filter-genre-panel">' +
-              '<span class="kv-dropdown-label">Genre</span>' +
-              '<span class="kv-dropdown-value">' + (state.filterGenres.length ? state.filterGenres.length + ' dipilih' : 'Semua Genre') + '</span>' +
-              '<svg class="kv-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
-            '</button>' +
-            '<div class="kv-dropdown-panel kv-filter-panel' + (state.openCatalogDropdown === 'genre' ? ' is-open' : '') + '" id="kv-filter-genre-panel" role="dialog" aria-label="Pilih genre">' +
-              '<div class="kv-filter-panel-head"><span>Pilih Genre</span><span class="kv-filter-panel-hint">' + state.filterGenres.length + ' dipilih</span></div>' +
-              '<div class="kv-filter-panel-grid">' +
-                allGenres.map(function (g) {
-                  var active = state.filterGenres.indexOf(g) !== -1;
-                  return '<label class="kv-check-chip' + (active ? ' is-checked' : '') + '"><input type="checkbox" class="kv-filter-check" data-genre="' + escapeHtml(g) + '"' + (active ? ' checked' : '') + '/><span>' + escapeHtml(g) + '</span></label>';
-                }).join('') +
-              '</div>' +
-              '<div class="kv-filter-panel-foot">' +
-                '<button type="button" class="kv-btn kv-btn-ghost" data-action="clear-genres">Hapus</button>' +
-                '<button type="button" class="kv-btn kv-btn-primary" data-action="close-catalog-dropdowns">Selesai</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="kv-dropdown" data-dropdown="type">' +
-            '<button type="button" class="kv-dropdown-btn" id="kv-filter-type-btn" aria-haspopup="dialog" aria-expanded="' + (state.openCatalogDropdown === 'type' ? 'true' : 'false') + '" aria-controls="kv-filter-type-panel">' +
-              '<span class="kv-dropdown-label">Tipe</span>' +
-              '<span class="kv-dropdown-value">' + escapeHtml(state.filterType) + '</span>' +
-              '<svg class="kv-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
-            '</button>' +
-            '<div class="kv-dropdown-panel' + (state.openCatalogDropdown === 'type' ? ' is-open' : '') + '" id="kv-filter-type-panel" role="dialog" aria-label="Pilih tipe manga">' +
-              '<div class="kv-filter-panel-head"><span>Tipe</span></div>' +
-              '<div class="kv-filter-options">' +
-                typeOptions.map(function (t) {
-                  var active = state.filterType === t;
-                  return '<button type="button" class="kv-filter-option' + (active ? ' is-selected' : '') + '" data-action="set-filter-type" data-value="' + escapeHtml(t) + '"><span class="kv-check-dot"></span>' + escapeHtml(t) + '</button>';
-                }).join('') +
-              '</div>' +
-              '<div class="kv-filter-panel-foot">' +
-                '<button type="button" class="kv-btn kv-btn-primary" data-action="close-catalog-dropdowns">Selesai</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="kv-dropdown" data-dropdown="status">' +
-            '<button type="button" class="kv-dropdown-btn" id="kv-filter-status-btn" aria-haspopup="dialog" aria-expanded="' + (state.openCatalogDropdown === 'status' ? 'true' : 'false') + '" aria-controls="kv-filter-status-panel">' +
-              '<span class="kv-dropdown-label">Status</span>' +
-              '<span class="kv-dropdown-value">' + escapeHtml(state.filterStatus) + '</span>' +
-              '<svg class="kv-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
-            '</button>' +
-            '<div class="kv-dropdown-panel' + (state.openCatalogDropdown === 'status' ? ' is-open' : '') + '" id="kv-filter-status-panel" role="dialog" aria-label="Pilih status manga">' +
-              '<div class="kv-filter-panel-head"><span>Status</span></div>' +
-              '<div class="kv-filter-options">' +
-                statusOptions.map(function (st) {
-                  var active = state.filterStatus === st;
-                  return '<button type="button" class="kv-filter-option' + (active ? ' is-selected' : '') + '" data-action="set-filter-status" data-value="' + escapeHtml(st) + '"><span class="kv-check-dot"></span>' + escapeHtml(st) + '</button>';
-                }).join('') +
-              '</div>' +
-              '<div class="kv-filter-panel-foot">' +
-                '<button type="button" class="kv-btn kv-btn-primary" data-action="close-catalog-dropdowns">Selesai</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="kv-dropdown kv-dropdown-right" data-dropdown="sort">' +
-            '<button type="button" class="kv-dropdown-btn" id="kv-sort-by-btn" aria-haspopup="dialog" aria-expanded="' + (state.openCatalogDropdown === 'sort' ? 'true' : 'false') + '" aria-controls="kv-sort-by-panel">' +
-              '<svg class="kv-sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16"/><path d="M4 17l3 3 3-3"/><path d="M17 20V4"/><path d="M20 7l-3-3-3 3"/></svg>' +
-              '<span class="kv-dropdown-value">' + escapeHtml(sortLabel(state.sortBy)) + '</span>' +
-              '<svg class="kv-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
-            '</button>' +
-            '<div class="kv-dropdown-panel' + (state.openCatalogDropdown === 'sort' ? ' is-open' : '') + '" id="kv-sort-by-panel" role="dialog" aria-label="Urutkan koleksi">' +
-              '<div class="kv-filter-panel-head"><span>Urutkan</span></div>' +
-              '<div class="kv-filter-options">' +
-                [['terbaru', 'Terbaru'], ['populer', 'Terpopuler'], ['rating', 'Rating Tertinggi'], ['abjad', 'A - Z']].map(function (item) {
-                  var active = state.sortBy === item[0];
-                  return '<button type="button" class="kv-filter-option' + (active ? ' is-selected' : '') + '" data-action="set-sort" data-value="' + item[0] + '"><span class="kv-check-dot"></span>' + item[1] + '</button>';
-                }).join('') +
-              '</div>' +
-              '<div class="kv-filter-panel-foot">' +
-                '<button type="button" class="kv-btn kv-btn-primary" data-action="close-catalog-dropdowns">Selesai</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        (paged.length === 0
+         '<div class="kv-catalog-toolbar" data-catalog-toolbar="1" aria-label="Filter koleksi manga">' +
+           '<label class="kv-search-wrap">' +
+             '<svg class="kv-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>' +
+             '<input id="kv-search-input" class="kv-input kv-search-input" type="search" placeholder="Cari judul manga..." value="' + escapeHtml(state.search) + '" aria-label="Cari judul manga"/>' +
+           '</label>' +
+           '<button type="button" class="kv-btn kv-btn-primary" data-action="toggle-filter-drawer" aria-expanded="' + (state.filterDrawerOpen ? 'true' : 'false') + '" style="display:inline-flex;align-items:center;gap:8px;">' +
+             '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg>' +
+             'Filter' +
+           '</button>' +
+         '</div>' +
+         (state.filterDrawerOpen ? renderFilterDrawer(allGenres, typeOptions, statusOptions) : '') +
+         (paged.length === 0
           ? '<div class="kv-catalog-empty">Tidak ada manga yang cocok dengan filter Anda.</div>'
           : '<div class="kv-home-grid kv-catalog-grid">' + paged.map(renderLightCard).join('') + '</div>') +
          paginationHtml +
@@ -6256,7 +6266,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       else if (act === 'quick-genre') { var genre = el.getAttribute('data-genre'); state.filterGenres = genre && genre !== 'Semua' ? [genre] : []; state.openCatalogDropdown = 'genre'; state.page = 1; navigate('#/archive'); }
       else if (act === 'toggle-ch-sort') { state.chapterSortAsc = !state.chapterSortAsc; render(); }
       else if (act === 'clear-genres') { state.filterGenres = []; state.page = 1; state.openCatalogDropdown = 'genre'; render(); }
-      else if (act === 'close-catalog-dropdowns') { state.openCatalogDropdown = null; render(); }
+       else if (act === 'close-catalog-dropdowns') { state.openCatalogDropdown = null; render(); }
+       else if (act === 'toggle-filter-drawer') { state.filterDrawerOpen = !state.filterDrawerOpen; render(); }
+       else if (act === 'close-filter-drawer') { state.filterDrawerOpen = false; render(); }
+       else if (act === 'clear-filters') { state.filterGenres = []; state.filterType = 'Semua Tipe'; state.filterStatus = 'Semua Status'; state.filterMinChapters = 0; state.sortBy = 'terbaru'; state.page = 1; render(); }
+       else if (act === 'toggle-filter-genre') { var g = el.getAttribute('data-genre'); if (!Array.isArray(state.filterGenres)) state.filterGenres = []; if (state.filterGenres.indexOf(g) === -1) state.filterGenres.push(g); else state.filterGenres = state.filterGenres.filter(function (x) { return x !== g; }); state.page = 1; render(); }
+       else if (act === 'set-filter-min') { state.filterMinChapters = Number(el.getAttribute('data-value')) || 0; state.page = 1; render(); }
       else if (act === 'set-filter-type') { state.filterType = el.getAttribute('data-value') || 'Semua Tipe'; state.page = 1; state.openCatalogDropdown = null; render(); }
       else if (act === 'set-filter-status') { state.filterStatus = el.getAttribute('data-value') || 'Semua Status'; state.page = 1; state.openCatalogDropdown = null; render(); }
       else if (act === 'set-sort') { state.sortBy = el.getAttribute('data-value') || 'terbaru'; state.openCatalogDropdown = null; render(); }

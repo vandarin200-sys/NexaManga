@@ -59,6 +59,9 @@ async function telegramFileInfo(fileId) {
 }
 
 async function downloadTelegramFile(filePath, maxBytes) {
+  if (typeof filePath !== 'string' || !filePath || /[\\\\]/.test(filePath) || filePath.includes('..')) {
+    throw new TelegramError('Lokasi file Telegram tidak valid.');
+  }
   const response = await fetch(`https://api.telegram.org/file/bot${botToken()}/${filePath}`);
   if (!response.ok) throw new TelegramError(`Telegram file download failed: ${response.status}`);
   const length = Number(response.headers.get('content-length') || 0);

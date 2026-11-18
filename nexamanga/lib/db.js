@@ -167,7 +167,9 @@ async function recordTrack(visitorId) {
     pageviews = Number(rows[0].pageviews) + 1;
     visitors = Array.isArray(rows[0].visitors) ? rows[0].visitors.slice() : [];
   }
-  if (visitorId && !visitors.includes(visitorId)) visitors.push(visitorId);
+    const safeVisitorId = typeof visitorId === 'string' && /^[A-Za-z0-9._:-]{1,100}$/.test(visitorId) ? visitorId : '';
+    if (safeVisitorId && !visitors.includes(safeVisitorId)) visitors.push(safeVisitorId);
+    if (visitors.length > 10000) visitors = visitors.slice(visitors.length - 10000);
   const visits = visitors.length;
   await sql()`INSERT INTO nexamanga_analytics (day, pageviews, visits, visitors)
     VALUES (${day}, ${pageviews}, ${visits}, ${JSON.stringify(visitors)}::jsonb)

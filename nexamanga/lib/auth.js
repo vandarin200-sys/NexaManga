@@ -32,7 +32,7 @@ function createSignedToken(claims) {
 }
 
 function verifySignedToken(token, now = Math.floor(Date.now() / 1000)) {
-  if (typeof token !== 'string') return null;
+  if (typeof token !== 'string' || token.length === 0 || token.length > 8192) return null;
   const parts = token.split('.');
   if (parts.length !== 2) return null;
 

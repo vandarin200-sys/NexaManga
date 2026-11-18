@@ -64,10 +64,20 @@ function parseAllowedOrigins() {
     .filter(Boolean);
 }
 
+function setSecurityHeaders(res) {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-XSS-Protection', '0');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'");
+}
+
 function setCors(req, res) {
   const origin = req.headers.origin;
   const allowed = parseAllowedOrigins();
-  const wildcard = (process.env.ALLOWED_ORIGINS || '*').includes('*');
+  const wildcard = allowed.includes('*');
 
   if (wildcard) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -288,6 +298,7 @@ function decodeUpload(dataUrl) {
   if (typeof dataUrl !== 'string') throw new HttpError(400, 'Data gambar tidak valid.');
   const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/);
   if (!match) throw new HttpError(400, 'Data gambar harus berupa JPEG, PNG, atau WebP base64.');
+  if (match[2].length > 4.5 * 1024 * 1024) throw new HttpError(413, 'Ukuran request terlalu besar.');
   const bytes = Buffer.from(match[2], 'base64');
   if (bytes.length === 0 || bytes.length > MAX_MEDIA_BYTES) {
     throw new HttpError(413, 'Ukuran gambar harus maksimal 3 MiB.');
@@ -304,6 +315,7 @@ function validatePathId(value) {
 const LANDING_HTML = '<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>NexaManga Vercel Backend</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:40px 20px;background:#0f172a;color:#e2e8f0}.card{max-width:640px;margin:0 auto;background:#1e293b;border-radius:12px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,.3)}h1{margin:0 0 8px;font-size:1.6rem}p{line-height:1.6;color:#cbd5e1}a{color:#38bdf8}code{background:#0f172a;padding:2px 6px;border-radius:4px}.status{display:inline-block;margin-top:16px;padding:8px 12px;background:#16a34a;color:#fff;border-radius:6px;text-decoration:none}</style></head><body><div class="card"><h1>NexaManga Vercel Backend</h1><p>Backend serverless untuk tema Blogger NexaManga. API tersedia di <code>/api/*</code>.</p><p>Periksa status layanan:</p><a class="status" href="/api/health">Cek Health</a></div></body></html>';
 
 async function handler(req, res) {
+  setSecurityHeaders(res);
   setCors(req, res);
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
@@ -467,6 +479,7 @@ async function handler(req, res) {
       if (!imageUrl) throw new HttpError(400, 'URL gambar tidak valid.');
       let parsed;
       try { parsed = new URL(imageUrl); } catch { throw new HttpError(400, 'URL gambar tidak valid.'); }
+      if (parsed.protocol !== 'https:') throw new HttpError(400, 'URL gambar harus menggunakan HTTPS.');
       const host = parsed.hostname.toLowerCase();
       const allowed = host === 'uploads.mangadex.org' ||
         host.endsWith('.mangadex.org') ||
@@ -567,6 +580,9 @@ async function handler(req, res) {
         body.userId = claims.sub;
         body.authorName = claims.user && claims.user.name ? claims.user.name : 'Pengguna';
         body.authorAvatar = claims.user && claims.user.avatar ? claims.user.avatar : null;
+      } else {
+        body.userId = null;
+        body.authorAvatar = null;
       }
       let created;
       await updateCatalog((catalog) => { created = addComment(catalog, body); });
@@ -732,7 +748,7 @@ async function handler(req, res) {
     }
     if (/Environment variable|TOKEN_SECRET|DATABASE_URL|PUBLIC_API_URL|GOOGLE_CLIENT|DISCORD_CLIENT/.test(error.message)) {
       console.error(error.message);
-      return sendJson(res, 500, { error: error.message });
+      return sendJson(res, 500, { error: 'Konfigurasi backend tidak lengkap.' });
     }
     if (error instanceof SyntaxError) {
       return sendJson(res, 400, { error: 'Body harus berupa JSON yang valid.' });
