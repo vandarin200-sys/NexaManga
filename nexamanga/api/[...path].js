@@ -703,6 +703,22 @@ async function handler(req, res) {
       return sendJson(res, 200, { ok: true, pinned: !!updated.pinned });
     }
 
+    if (route === 'profile/upload-background' && req.method === 'POST') {
+      const claims = await freshSessionClaims(req);
+      if (!claims) throw new HttpError(401, 'Sesi akun tidak valid atau sudah berakhir. Silakan masuk kembali.');
+      const body = await readBody(req);
+      const { mimeType, bytes } = decodeUpload(body.dataBase64);
+      const baseUrl = apiBaseUrl();
+      const fileId = await saveMedia(body.fileName, mimeType, bytes);
+      const mediaUrl = `${baseUrl}/api/media/${encodeURIComponent(fileId)}`;
+      return sendJson(res, 201, {
+        telegramFileId: fileId,
+        url: mediaUrl,
+        telegramStatus: 'tersimpan',
+        bloggerStatus: 'proxy aktif'
+      });
+    }
+
     if (route === 'admin/upload-dual' && req.method === 'POST') {
       await requireAdmin(req);
       const body = await readBody(req);

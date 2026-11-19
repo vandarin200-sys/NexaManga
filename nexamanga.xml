@@ -23,6 +23,11 @@
   <link crossorigin='' href='https://fonts.gstatic.com' rel='preconnect'/>
   <link href='https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
   <link href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap' rel='stylesheet'/>
+  <link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&amp;display=swap' rel='stylesheet'/>
+  <script src='https://cdn.tailwindcss.com'></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"','sans-serif'], brand: ['Cinzel','serif'] }, colors: { brand: { red:'#DC2626', amber:'#D97706', dark:'#121215', surface:'#1A1A1E', warmBg:'#FAF7F2', warmSurface:'#F3EDE2', warmBorder:'#E6DCCF' } } } } };
+  </script>
 
   <b:skin><![CDATA[
     /* =========================================================================
@@ -64,6 +69,7 @@
     *, *::before, *::after { box-sizing: border-box; }
     html, body {
       margin: 0; padding: 0;
+      overflow-x: hidden;
       background: var(--kv-bg);
       color: var(--kv-text);
       font-family: var(--kv-font-sans);
@@ -1638,8 +1644,8 @@
       html:not(.dark) body.kv-detail-route .kv-detail-breadcrumb [aria-current] { color: #3b2f1e; font-weight: 600; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       html:not(.dark) body.kv-detail-route .kv-detail-hero { position: relative; overflow: hidden; border-radius: 20px; padding: 24px; background: linear-gradient(135deg,#faf3e0 0%,#f0e6cc 55%,#efe4c8 100%); border: 1px solid #d8c8a0; box-shadow: 0 24px 48px -30px rgba(139, 90, 43,.12); color:#3b2f1e; }
       html:not(.dark) body.kv-detail-route .kv-detail-hero::before { content:""; position: absolute; right:-80px; top:-80px; width:320px; height:320px; border-radius:999px; background: rgba(139, 90, 43,.18); filter: blur(70px); pointer-events:none; }
-      html:not(.dark) body.kv-detail-route .kv-detail-hero-cover { position: relative; width: 100%; max-width: 260px; margin: 0 auto 20px; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden; background: #faf3e0; box-shadow: 0 18px 38px -22px rgba(59, 47, 30,.18); }
-      html:not(.dark) body.kv-detail-route .kv-detail-hero-cover img { width:100%; height:100%; object-fit: cover; }
+      html:not(.dark) body.kv-detail-route .kv-detail-hero-cover { position: relative; width: 100%; max-width: 260px; margin: 0 auto 20px; aspect-ratio: auto; min-height: 200px; border-radius: 14px; overflow: hidden; background: #faf3e0; box-shadow: 0 18px 38px -22px rgba(59, 47, 30,.18); }
+      html:not(.dark) body.kv-detail-route .kv-detail-hero-cover img { width:100%; height:auto; object-fit: contain; display:block; }
       html:not(.dark) body.kv-detail-route .kv-detail-hero-cover > div { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#6b5b3e; padding: 20px; text-align:center; font-size:.9rem; }
       html:not(.dark) body.kv-detail-route .kv-detail-hero-body { position: relative; }
       html:not(.dark) body.kv-detail-route .kv-detail-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 12px; }
@@ -1779,14 +1785,14 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-reader-placeholder-inner { text-align:center; }
       body.kv-reader-route .kv-reader-placeholder-inner strong { display:block; color:var(--kv-text); margin-bottom:8px; }
       body.kv-reader-route .kv-reader-placeholder-inner small { line-height:1.6; }
-       body.kv-reader-route .kv-reader-overlay { position:sticky; bottom:12px; z-index:60; height:0; pointer-events:none; }
+       body.kv-reader-route .kv-reader-overlay { position:fixed; bottom:12px; left:0; right:0; z-index:60; height:0; pointer-events:none; }
        body.kv-reader-route .kv-reader-side { position:fixed; right:18px; top:34%; display:flex; flex-direction:column; gap:14px; pointer-events:auto; z-index:60; transition:transform .3s ease, opacity .3s ease; }
        body.kv-reader-route .kv-reader-bottom-controls { position:absolute; left:50%; bottom:0; transform:translateX(-50%); display:flex; align-items:center; gap:clamp(10px,2.2vw,24px); pointer-events:auto; transition:transform .3s ease, opacity .3s ease; }
 
       body.kv-reader-route .kv-reader-overlay-hidden .kv-reader-side { transform:translateX(130%); opacity:0; pointer-events:none; }
       body.kv-reader-route .kv-reader-overlay-hidden .kv-reader-bottom-controls { transform:translate(-50%, 130%); opacity:0; pointer-events:none; }
       body.kv-reader-route .kv-reader-overlay-settled { height:76px; overflow:visible; }
-      body.kv-reader-route .kv-reader-overlay-settled .kv-reader-bottom-controls { bottom:auto; top:6px; }
+      body.kv-reader-route .kv-reader-overlay-settled .kv-reader-bottom-controls { bottom:0; }
         body.kv-reader-route .kv-round-btn { width:clamp(48px,6vw,56px); height:clamp(48px,6vw,56px); border:1px solid var(--kv-border); border-radius:14px; background:color-mix(in srgb, var(--kv-surface) 92%, transparent); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:var(--kv-text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; box-shadow:0 8px 22px -12px rgba(0,0,0,.4); transition:transform .15s ease, border-color .15s ease, color .15s ease, background .15s ease; -webkit-tap-highlight-color:transparent; }
         body.kv-reader-route .kv-round-btn-next { background:var(--kv-accent); color:#faf3e0; border-color:var(--kv-accent); }
         body.kv-reader-route .kv-round-btn-next:hover { background:var(--kv-accent-hover); border-color:var(--kv-accent-hover); transform:translateY(-2px) scale(1.04); }
@@ -1928,6 +1934,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         body.kv-home-route .kv-filter-panel-grid { grid-template-columns: repeat(3, 1fr); }
         body.kv-home-route .kv-dropdown-btn .kv-dropdown-value { max-width: 84px; }
         body.kv-home-route .kv-catalog-toolbar { flex-direction: column; align-items: stretch; }
+        body.kv-home-route .kv-catalog-toolbar .kv-search-wrap { flex: 0 0 auto; min-height: 0; height: auto; }
         body.kv-home-route .kv-catalog-toolbar .kv-dropdown { width: 100%; }
         body.kv-home-route .kv-catalog-toolbar .kv-dropdown-btn { width: 100%; justify-content: space-between; }
         body.kv-home-route .kv-catalog-toolbar .kv-dropdown-panel { left: 50%; right: auto; margin-left: calc(-0.5 * min(92vw, 360px)); width: min(92vw, 360px); min-width: 0; }
@@ -2160,8 +2167,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       html.dark body.kv-detail-route .kv-detail-breadcrumb [aria-current] { color: #dee1fe; font-weight: 600; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       html.dark body.kv-detail-route .kv-detail-hero { position: relative; overflow: hidden; border-radius: 20px; padding: 24px; background: linear-gradient(135deg,#171a27 0%,#20243a 55%,#20243a 100%); border: 1px solid #2b304c; box-shadow: 0 24px 48px -30px rgba(101,88,217,.25); color:#dee1fe; }
       html.dark body.kv-detail-route .kv-detail-hero::before { content:""; position: absolute; right:-80px; top:-80px; width:320px; height:320px; border-radius:999px; background: rgba(101,88,217,.18); filter: blur(70px); pointer-events:none; }
-      html.dark body.kv-detail-route .kv-detail-hero-cover { position: relative; width: 100%; max-width: 260px; margin: 0 auto 20px; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden; background: #171a27; box-shadow: 0 18px 38px -22px rgba(0,0,0,.5); }
-      html.dark body.kv-detail-route .kv-detail-hero-cover img { width:100%; height:100%; object-fit: cover; }
+      html.dark body.kv-detail-route .kv-detail-hero-cover { position: relative; width: 100%; max-width: 260px; margin: 0 auto 20px; aspect-ratio: auto; min-height: 200px; border-radius: 14px; overflow: hidden; background: #171a27; box-shadow: 0 18px 38px -22px rgba(0,0,0,.5); }
+      html.dark body.kv-detail-route .kv-detail-hero-cover img { width:100%; height:auto; object-fit: contain; display:block; }
       html.dark body.kv-detail-route .kv-detail-hero-cover > div { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#a0a7b8; padding: 20px; text-align:center; font-size:.9rem; }
       html.dark body.kv-detail-route .kv-detail-hero-body { position: relative; }
       html.dark body.kv-detail-route .kv-detail-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 12px; }
@@ -2562,7 +2569,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           - POST /api/admin/delete-chapter  -> { id }
           - POST /api/admin/delete-comment  -> { id }
           - POST /api/admin/comment-status  -> { id, status }
-          - POST /api/admin/pin-comment     -> { id } — sematkan komentar (admin)
+          - POST /api/admin/pin-comment     -> { id } � sematkan komentar (admin)
           Semua endpoint admin memverifikasi header: Authorization: Bearer <token>.
        3. NEON POSTGRES menjadi database katalog/akun/komentar: archive
           disimpan sebagai dokumen JSONB pada tabel nexamanga_snapshot di
@@ -2624,6 +2631,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       sortBy: 'terbaru',
       openCatalogDropdown: null,
       filterDrawerOpen: false,
+      filterDrawerSkipAnim: false,
       page: 1,
        chapterSortAsc: false,
        chapterSearch: '',
@@ -2782,6 +2790,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         var o = profileOverride();
         if (o.avatar) return o.avatar;
         if (state.user && state.user.avatar) return state.user.avatar;
+        return fallback || null;
+      }
+
+      function currentDisplayBackground(fallback) {
+        var o = profileOverride();
+        if (o.background) return o.background;
         return fallback || null;
       }
 
@@ -3276,38 +3290,88 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     /* =========================================================================
        RENDER HEADER & FOOTER
        ========================================================================= */
-    function renderHeader() {
-      if (state.route === 'admin' || state.route === 'reader') return '';
+     function renderHeader() {
+       if (state.route === 'admin' || state.route === 'reader') return '';
        var navItems = [
          { path: '/', label: 'Beranda', key: 'home' },
-         { path: '/archive', label: 'Archive', key: 'catalog' },
+         { path: '/archive', label: 'Archive / Daftar', key: 'catalog' },
          { path: '/akun', label: state.user ? 'Akun Saya' : 'Masuk', key: 'account' },
          { path: '/tentang', label: 'Tentang', key: 'info' }
        ];
        if (state.user && state.user.role === 'admin') navItems.splice(3, 0, { path: '/admin', label: 'Admin', key: 'admin' });
-      var linksHtml = navItems.map(function (item) {
-        var cls = 'kv-nav-link' + (item.key === 'account' ? ' kv-nav-login' : '') + (state.route === item.key ? ' active' : '');
-        return '<a class="' + cls + '" href="' + item.path + '"' + (state.route === item.key ? ' aria-current="page"' : '') + '>' + item.label + '</a>';
-      }).join('');
-      var themeLabel = state.theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap';
-      var themeIcon = state.theme === 'dark'
-        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>'
-        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>';
+       var themeLabel = state.theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap';
+       var themeIcon = state.theme === 'dark'
+         ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>'
+         : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+       var genreChips = ['Semua Koleksi'].concat(collectGenres().slice(0, 9));
+       var genreHtml = genreChips.map(function (g, i) {
+         var active = i === 0 && state.filterGenres.length === 0;
+         var cls = active
+           ? 'px-3.5 py-1.5 rounded-full font-bold bg-[#574431] text-white whitespace-nowrap shadow-xs'
+           : 'px-3 py-1.5 rounded-full font-medium bg-[#EFE8DC] text-[#483B2E] hover:bg-[#E5DDCF] whitespace-nowrap transition-colors dark:bg-[#20243A] dark:text-neutral-300';
+         return '<button type="button" class="' + cls + '" data-action="quick-genre" data-genre="' + escapeHtml(g) + '">' + escapeHtml(g) + '</button>';
+       }).join('');
+       var navHtml = navItems.map(function (item) {
+         var active = state.route === item.key;
+         var cls = active
+           ? 'px-4 py-2 rounded-full font-bold text-sm bg-[#574431] text-white shadow-sm transition-all'
+           : 'px-4 py-2 rounded-full font-semibold text-sm text-[#574431] hover:bg-[#EFE8DC] transition-colors dark:text-neutral-300 dark:hover:bg-[#20243A]';
+         return '<a href="' + item.path + '" class="' + cls + '">' + escapeHtml(item.label) + '</a>';
+       }).join('');
+       var userHtml = state.user
+         ? '<a href="#/akun" class="inline-flex items-center gap-2 px-2 py-1.5 rounded-full bg-[#EFE8DC] hover:bg-[#E5DDCF] transition-colors dark:bg-[#20243A]" title="' + escapeHtml(currentDisplayName(state.user.name)) + '">' +
+             (currentDisplayAvatar(state.user.avatar) ? '<img src="' + escapeHtml(currentDisplayAvatar(state.user.avatar)) + '" alt="" class="w-8 h-8 rounded-full object-cover border border-[#E6DCCF] dark:border-[#2B304C]"/>' : '<div class="w-8 h-8 rounded-full bg-[#574431] text-white flex items-center justify-center font-bold text-sm">' + escapeHtml(String(currentDisplayName(state.user.name)).charAt(0).toUpperCase()) + '</div>') +
+           '</a>'
+         : '<a href="#/akun" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm bg-gradient-to-r from-[#694F36] to-[#513B26] hover:from-[#513B26] hover:to-[#3F2D1C] text-white shadow-sm hover:shadow transition-all duration-200"><svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span>Masuk</span></a>';
+       var mobileMenu = state.mobileMenuOpen
+         ? '<div class="md:hidden mx-4 mb-3 mt-1 flex flex-col gap-1 p-2 rounded-2xl bg-white border border-[#E6DCCF] shadow-lg dark:bg-[#1A1A1E] dark:border-[#2B304C]">' + navItems.map(function(item){ var active=state.route===item.key; return '<a href="'+item.path+'" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors '+(active?'bg-[#574431] text-white':'text-[#574431] hover:bg-[#EFE8DC] dark:text-neutral-300 dark:hover:bg-[#20243A]')+'">'+escapeHtml(item.label)+'</a>'; }).join('') + '</div>'
+         : '';
+       var brandModeVal = brandMode();
+       var showLogo = brandModeVal !== 'name-only';
+       var showName = brandModeVal !== 'logo-only';
+       var logoHtml = '';
+       if (showLogo) {
+         if (siteLogo()) {
+           logoHtml = '<img src="' + escapeHtml(siteLogo()) + '" alt="Logo" class="max-h-10 w-auto max-w-[160px] rounded-xl object-contain"/>';
+         } else {
+           logoHtml = '<div class="relative w-11 h-11 rounded-xl bg-gradient-to-tr from-[#991B1B] via-[#DC2626] to-[#F59E0B] p-0.5 shadow-md group-hover:scale-105 transition-transform duration-300"><div class="w-full h-full bg-[#1C1917] rounded-[10px] flex items-center justify-center"><span class="font-extrabold text-xl text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-rose-400">?</span></div></div>';
+         }
+       }
+       var nameHtml = showName
+         ? '<div class="flex flex-col">' +
+             '<div class="flex items-center gap-1.5 leading-none">' +
+               '<span class="font-black text-2xl tracking-tighter text-[#1C1917] dark:text-white">' + escapeHtml(siteName()).toUpperCase() + '</span>' +
+             '</div>' +
+             '<span class="text-[11px] font-medium text-[#78716C] tracking-wide mt-1 dark:text-neutral-400">' + escapeHtml(siteTagline()) + '</span>' +
+           '</div>'
+         : '';
+       return        '<header class="relative bg-[#FAF7F2] border-b border-[#E6DCCF] shadow-sm dark:bg-[#121215] dark:border-[#2B304C]">' +
+         '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">' +
+           '<div class="flex items-center justify-between h-20 gap-4 lg:gap-8 min-w-0 overflow-hidden">' +
+             '<a href="#/" class="flex items-center gap-3 group focus:outline-none flex-shrink-0">' +
+               logoHtml +
+               nameHtml +
+             '</a>' +
+             '<nav class="hidden md:flex items-center gap-1">' + navHtml +
+             '</nav>' +
+             '<div class="flex items-center gap-3 flex-shrink-0">' +
 
-      return '<header class="kv-header">' +
-        '<div class="kv-container kv-header-inner">' +
-          '<a class="kv-brand" href="#/" aria-label="' + escapeHtml(siteName()) + ' - beranda">' +
-            renderBrandInner() +
-          '</a>' +
-          '<nav class="kv-nav" aria-label="Navigasi Utama">' + linksHtml + '</nav>' +
-          '<div class="kv-header-actions">' +
-            '<button type="button" class="kv-btn kv-btn-ghost kv-theme-toggle" data-action="toggle-theme" aria-label="' + themeLabel + '" title="' + themeLabel + '">' + themeIcon + '</button>' +
-            '<button type="button" class="kv-btn kv-btn-ghost kv-mobile-btn" data-action="toggle-mobile-menu" aria-label="' + (state.mobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi') + '" aria-expanded="' + (state.mobileMenuOpen ? 'true' : 'false') + '" aria-controls="kv-mobile-menu">' + (state.mobileMenuOpen ? '&times;' : '<span aria-hidden="true">&#9776;</span>') + '</button>' +
-          '</div>' +
-        '</div>' +
-        (state.mobileMenuOpen ? '<nav id="kv-mobile-menu" class="kv-container kv-mobile-menu" aria-label="Navigasi mobile">' + linksHtml + '</nav>' : '') +
-      '</header>';
-    }
+               '<button type="button" class="w-9 h-9 rounded-full bg-[#EFE8DC] hover:bg-[#E5DDCF] flex items-center justify-center text-[#574431] transition-colors border border-[#E6DCCF] dark:bg-[#20243A] dark:text-neutral-300 dark:border-[#2B304C]" data-action="toggle-theme" title="' + themeLabel + '">' + themeIcon + '</button>' +
+               userHtml +
+               '<button class="md:hidden p-2 text-[#574431] rounded-lg hover:bg-[#EFE8DC] dark:text-neutral-300" data-action="toggle-mobile-menu"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>' +
+             '</div>' +
+           '</div>' +
+         '<div class="px-4 sm:px-6 lg:px-8 pb-3 pt-2 bg-[#FAF7F2] dark:bg-[#121215] border-b border-[#E6DCCF] dark:border-[#2B304C]">' +
+           '<div class="max-w-7xl mx-auto">' +
+             '<div class="relative max-w-2xl">' +
+               '<input type="text" id="kv-search-input" placeholder="Cari judul manga, manhwa, author..." value="' + escapeHtml(state.search) + '" class="w-full bg-[#EFE8DC] text-[#2D2A26] placeholder-[#8A8175] text-sm pl-11 pr-4 py-2.5 rounded-full border border-transparent focus:border-[#C4B5A5] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#8C6D4F]/20 transition-all dark:bg-[#20243A] dark:text-white dark:placeholder-neutral-400"/>' +
+               '<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8A8175]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>' +
+             '</div>' +
+           '</div>' +
+         '</div>' +
+mobileMenu +
+       '</header>';
+     }
 
     function renderFooter() {
       if (state.route === 'reader' || state.route === 'admin') return '';
@@ -3486,8 +3550,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 
      function renderFilterDrawer(allGenres, typeOptions, statusOptions) {
        var minOpts = [0, 10, 50, 100, 200];
-       return '<div class="kv-filter-drawer-backdrop" data-action="close-filter-drawer"></div>' +
-         '<div class="kv-filter-drawer kv-filter-drawer-open" role="dialog" aria-label="Filter koleksi">' +
+       var skipAnim = !!state.filterDrawerSkipAnim;
+       var backdropStyle = skipAnim ? ' style="animation:none;"' : '';
+       var drawerStyle = skipAnim ? ' style="animation:none;"' : '';
+       return '<div class="kv-filter-drawer-backdrop" data-action="close-filter-drawer"' + backdropStyle + '></div>' +
+         '<div class="kv-filter-drawer kv-filter-drawer-open" role="dialog" aria-label="Filter koleksi"' + drawerStyle + '>' +
            '<div class="kv-filter-drawer-head">' +
              '<span class="kv-filter-drawer-title">Filter</span>' +
              '<button type="button" class="kv-btn kv-btn-ghost" data-action="clear-filters" style="text-decoration:underline;">Hapus semua</button>' +
@@ -3838,7 +3905,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           '<ol><li><a href="#/">Beranda</a></li><li>/</li><li><a href="#/archive">Archive</a></li><li>/</li><li aria-current="page">' + escapeHtml(manga.title) + '</li></ol>' +
         '</nav>' +
         '<section class="kv-detail-hero">' +
-          '<div class="kv-detail-hero-cover">' + renderCover(manga.coverBloggerUrl, manga.title) + '</div>' +
+                    '<div class="kv-detail-hero-cover">' + (manga.coverBloggerUrl ? '<img src="' + escapeHtml(manga.coverBloggerUrl) + '" alt="Sampul ' + escapeHtml(manga.title) + '" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:auto;object-fit:contain;display:block;"/>' : svgFallbackCover(manga.title)) + '</div>' +
           '<div class="kv-detail-hero-body">' +
             '<div class="kv-detail-chip-row">' +
               '<span class="kv-detail-badge kv-detail-badge-primary">' + escapeHtml(manga.type || 'Manga') + '</span>' +
@@ -4128,7 +4195,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
               brandMedia +
               '<span class="kv-login-kicker">' + escapeHtml(siteName()) + '</span>' +
               '<h1 class="kv-login-title">Selamat datang di ' + escapeHtml(siteName()) + '</h1>' +
-              '<p class="kv-login-sub">Masuk untuk membuka semua fitur pembaca — dari favorit hingga komentar. Satu akun untuk semua, tanpa password tambahan.</p>' +
+              '<p class="kv-login-sub">Masuk untuk membuka semua fitur pembaca � dari favorit hingga komentar. Satu akun untuk semua, tanpa password tambahan.</p>' +
               '<ul class="kv-login-features">' + guestFeatures + '</ul>' +
             '</div>' +
             '<div class="kv-login-card">' +
@@ -4146,107 +4213,132 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       var displayAvatar = override.avatar || state.user.avatar || '';
       var initial = escapeHtml(displayName.charAt(0).toUpperCase());
       var avatar = displayAvatar
-        ? '<img src="' + escapeHtml(displayAvatar) + '" alt="Avatar ' + escapeHtml(displayName) + '" class="kv-account-avatar-img" referrerpolicy="no-referrer"/>'
-        : '<div class="kv-account-avatar-fallback">' + initial + '</div>';
+        ? '<img src="' + escapeHtml(displayAvatar) + '" alt="Avatar ' + escapeHtml(displayName) + '" class="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-4 border-[#FAF7F2] dark:border-[#121215] shadow-lg" referrerpolicy="no-referrer"/>'
+        : '<div class="w-28 h-28 md:w-32 md:h-32 rounded-full bg-[#EFE8DC] dark:bg-[#20243A] text-[#574431] dark:text-[#A69AF4] flex items-center justify-center text-4xl font-black border-4 border-[#FAF7F2] dark:border-[#121215] shadow-lg">' + initial + '</div>';
       var roleLabel = state.user.role === 'admin' ? 'Administrator' : 'Pembaca';
 
-      return '<main class="kv-container kv-home-light kv-account-page">' +
-        '<section class="kv-account-hero">' +
-          '<div class="kv-account-banner">' +
-            '<div class="kv-account-banner-badge"><span class="kv-account-pulse"></span>Aktif</div>' +
-          '</div>' +
-          '<div class="kv-account-identity">' +
-            '<div class="kv-account-avatar-wrap">' + avatar + '</div>' +
-            '<div class="kv-account-bio">' +
-              '<div class="kv-account-name-row">' +
-                '<h1>' + escapeHtml(displayName) + '</h1>' +
-                '<span class="kv-account-role">' + escapeHtml(roleLabel) + '</span>' +
+      var metrics = [
+        { label: 'Komik Dibaca', value: komikDibaca },
+        { label: 'Chapter Selesai', value: chapterSelesai },
+        { label: 'Bookmark Aktif', value: favManga.length },
+        { label: 'Komentar Saya', value: myComments }
+      ].map(function (m) {
+        return '<div class="rounded-2xl bg-[#F3EDE2] dark:bg-[#20243A] border border-[#E6DCCF] dark:border-[#2B304C] p-4">' +
+          '<div class="text-[10px] font-mono uppercase tracking-wider text-[#78716C] dark:text-neutral-400">' + escapeHtml(m.label) + '</div>' +
+          '<div class="text-2xl font-black text-[#1C1917] dark:text-white mt-1">' + m.value + '</div>' +
+        '</div>';
+      }).join('');
+
+      var historyHtml = historyItems.length
+        ? historyItems.slice(0, 4).map(function (item) {
+            var m = item.manga; var h = item.history;
+            return '<article class="flex gap-4 p-3 rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] hover:shadow-md transition-shadow">' +
+              '<div class="w-20 shrink-0 aspect-[3/4] rounded-xl overflow-hidden bg-[#F3EDE2] dark:bg-[#20243A]">' +
+                '<img src="' + escapeHtml(m.coverBloggerUrl || '') + '" alt="' + escapeHtml(m.title) + '" class="w-full h-full object-cover" loading="lazy" referrerpolicy="no-referrer"/>' +
               '</div>' +
-              '<p class="kv-account-handle">' + escapeHtml(state.user.email || state.user.provider || 'member') + '</p>' +
-              '<p class="kv-account-meta">Melalui ' + escapeHtml(state.user.provider) + ' &middot; Role: ' + escapeHtml(state.user.role) + '</p>' +
+              '<div class="flex-1 min-w-0 flex flex-col gap-1">' +
+                '<span class="text-[10px] font-bold uppercase tracking-wider text-[#8C6D4F] dark:text-[#A69AF4]">' + escapeHtml(m.type || 'Manga') + '</span>' +
+                '<h3 class="text-sm font-bold text-[#1C1917] dark:text-white line-clamp-1">' + escapeHtml(m.title) + '</h3>' +
+                '<div class="text-xs text-[#78716C] dark:text-neutral-400">Terakhir dibaca: Chapter ' + escapeHtml(h.chapterNumber) + ' &middot; ' + escapeHtml(h.lastReadAt || '') + '</div>' +
+                '<a class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-white bg-[#574431] hover:bg-[#3F2D1C] px-3 py-1.5 rounded-lg w-fit transition-colors" href="#/baca/' + escapeHtml(m.slug) + '/' + escapeHtml(h.chapterId) + '">Lanjut Baca Ch. ' + escapeHtml(h.chapterNumber) + ' &rarr;</a>' +
+              '</div>' +
+            '</article>';
+          }).join('')
+        : '<p class="text-sm text-[#78716C] dark:text-neutral-400">Belum ada riwayat baca. Mulai membaca manga untuk melihatnya di sini.</p>';
+
+      var bookmarkHtml = favManga.length
+        ? '<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">' + favManga.slice(0, 8).map(renderLightCard).join('') + '</div>'
+        : '<p class="text-sm text-[#78716C] dark:text-neutral-400">Belum ada manga yang disimpan. Tandai favorit dari halaman detail manga.</p>';
+
+      var editForm = state.editingProfile
+        ? '<form id="kv-profile-form" class="mt-6 rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
+            '<div class="flex items-center justify-between mb-4">' +
+              '<div class="text-base font-bold text-[#1C1917] dark:text-white">Edit Profil</div>' +
+              '<button type="button" class="text-xs font-semibold text-[#78716C] hover:text-[#574431] dark:text-neutral-400" data-action="toggle-edit-profile">Batal</button>' +
             '</div>' +
-            '<div class="kv-account-actions">' +
-              '<button type="button" class="kv-account-secondary" data-action="toggle-edit-profile">Edit Profil</button>' +
-              '<button type="button" class="kv-account-primary" data-action="logout-user">Keluar</button>' +
+            '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">' +
+              '<label class="flex flex-col gap-1.5 text-xs font-mono uppercase tracking-wider text-[#78716C] dark:text-neutral-400">Nama Tampilan<input class="mt-1 w-full rounded-xl border border-[#E6DCCF] dark:border-[#2B304C] bg-[#FAF7F2] dark:bg-[#121215] text-[#1C1917] dark:text-white px-3 py-2 text-sm font-sans normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-[#8C6D4F]/30" name="name" type="text" value="' + escapeHtml(displayName) + '" required/></label>' +
+              '<label class="flex flex-col gap-1.5 text-xs font-mono uppercase tracking-wider text-[#78716C] dark:text-neutral-400">URL Avatar<input class="mt-1 w-full rounded-xl border border-[#E6DCCF] dark:border-[#2B304C] bg-[#FAF7F2] dark:bg-[#121215] text-[#1C1917] dark:text-white px-3 py-2 text-sm font-sans normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-[#8C6D4F]/30" name="avatar" type="url" value="' + escapeHtml(displayAvatar) + '" placeholder="https://..."/></label>' +
+              '<label class="flex flex-col gap-1.5 text-xs font-mono uppercase tracking-wider text-[#78716C] dark:text-neutral-400 sm:col-span-2">URL Background<input class="mt-1 w-full rounded-xl border border-[#E6DCCF] dark:border-[#2B304C] bg-[#FAF7F2] dark:bg-[#121215] text-[#1C1917] dark:text-white px-3 py-2 text-sm font-sans normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-[#8C6D4F]/30" name="background" type="url" value="' + escapeHtml(currentDisplayBackground('') || '') + '" placeholder="https://... (kosongkan untuk gradient)"/></label>' +
+              '<label class="flex flex-col gap-1.5 text-xs font-mono uppercase tracking-wider text-[#78716C] dark:text-neutral-400 sm:col-span-2">Upload Background<input class="mt-1 w-full text-sm text-[#1C1917] dark:text-white file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-[#574431] file:text-white" name="backgroundFile" type="file" accept="image/*"/></label>' +
+            '</div>' +
+            '<p class="mt-3 text-xs text-[#78716C] dark:text-neutral-400">Disimpan di browser ini. Tidak mengubah data akun di server OAuth.</p>' +
+            '<div class="mt-4 flex justify-end">' +
+              '<button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#694F36] to-[#513B26] hover:from-[#513B26] hover:to-[#3F2D1C] text-white shadow-sm transition-all">Simpan Profil</button>' +
+            '</div>' +
+          '</form>'
+        : '';
+
+      var readerModeLabel = state.readerMode === 'vertical' ? 'Webtoon scroll' : 'Halaman tunggal';
+
+      var displayBackground = currentDisplayBackground('');
+
+      return '<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">' +
+        '<section class="relative overflow-hidden rounded-3xl border border-[#E6DCCF] dark:border-[#2B304C] shadow-sm">' +
+          '<div class="absolute inset-0">' +
+            (displayBackground
+              ? '<img src="' + escapeHtml(displayBackground) + '" alt="" class="w-full h-full object-cover" referrerpolicy="no-referrer"/><div class="absolute inset-0 bg-black/45"></div>'
+              : '<div class="w-full h-full bg-gradient-to-r from-[#694F36] via-[#8C6D4F] to-[#D97706]"></div><div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, rgba(255,255,255,.8) 1.5px, transparent 1.5px); background-size: 22px 22px;"></div>') +
+          '</div>' +
+          '<div class="relative z-10 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-6">' +
+            '<div class="shrink-0">' + avatar + '</div>' +
+            '<div class="flex-1 min-w-0">' +
+              '<div class="flex flex-wrap items-center gap-2">' +
+                '<h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow">' + escapeHtml(displayName) + '</h1>' +
+                '<span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/90 text-[#3323CC]">' + escapeHtml(roleLabel) + '</span>' +
+              '</div>' +
+              '<p class="mt-1 text-sm font-semibold text-white/90 drop-shadow">' + escapeHtml(state.user.email || state.user.provider || 'member') + '</p>' +
+              '<p class="mt-0.5 text-xs text-white/80">Melalui ' + escapeHtml(state.user.provider) + ' &middot; Role: ' + escapeHtml(state.user.role) + '</p>' +
+            '</div>' +
+            '<div class="flex items-center gap-2">' +
+              '<button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-white/90 text-[#574431] hover:bg-white transition-colors" data-action="toggle-edit-profile">Edit Profil</button>' +
+              '<button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-black/30 text-white border border-white/30 hover:bg-black/40 transition-colors" data-action="logout-user">Keluar</button>' +
             '</div>' +
           '</div>' +
-          '<div class="kv-account-metrics">' +
-            '<div class="kv-account-metric"><span class="kv-account-metric-label">Komik Dibaca</span><span class="kv-account-metric-value">' + komikDibaca + '</span></div>' +
-            '<div class="kv-account-metric"><span class="kv-account-metric-label">Chapter Selesai</span><span class="kv-account-metric-value">' + chapterSelesai + '</span></div>' +
-            '<div class="kv-account-metric"><span class="kv-account-metric-label">Bookmark Aktif</span><span class="kv-account-metric-value">' + favManga.length + '</span></div>' +
-            '<div class="kv-account-metric"><span class="kv-account-metric-label">Komentar Saya</span><span class="kv-account-metric-value">' + myComments + '</span></div>' +
-          '</div>' +
+          '<div class="relative z-10 px-6 sm:px-8 pb-6 grid grid-cols-2 sm:grid-cols-4 gap-3">' + metrics + '</div>' +
+          (displayBackground ? '' : '') +
         '</section>' +
-        (state.editingProfile
-          ? '<form id="kv-profile-form" class="kv-account-edit">' +
-              '<div class="kv-account-edit-head">' +
-                '<div class="kv-account-block-title">Edit Profil</div>' +
-                '<button type="button" class="kv-account-pref-btn" data-action="toggle-edit-profile">Batal</button>' +
+        editForm +
+        '<div class="mt-6 grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-6">' +
+          '<div class="flex flex-col gap-6">' +
+            '<section class="rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
+              '<div class="flex items-center justify-between mb-4">' +
+                '<div class="flex items-center gap-2 text-base font-bold text-[#1C1917] dark:text-white"><span class="w-2.5 h-2.5 rounded-full bg-[#694F36]"></span>Lanjutkan Membaca</div>' +
+                '<span class="text-xs font-mono text-[#78716C] dark:text-neutral-400">' + historyItems.length + ' judul</span>' +
               '</div>' +
-              '<div class="kv-account-edit-grid">' +
-                '<label class="kv-account-edit-label">Nama Tampilan<input class="kv-input" name="name" type="text" value="' + escapeHtml(displayName) + '" required/></label>' +
-                '<label class="kv-account-edit-label">URL Avatar<input class="kv-input" name="avatar" type="url" value="' + escapeHtml(displayAvatar) + '" placeholder="https://..."/></label>' +
-              '</div>' +
-              '<p class="kv-account-edit-hint">Disimpan di browser ini. Tidak mengubah data akun di server OAuth.</p>' +
-              '<div class="kv-account-edit-actions">' +
-                '<button type="submit" class="kv-account-primary">Simpan Profil</button>' +
-              '</div>' +
-            '</form>'
-          : '') +
-        '<div class="kv-account-layout">' +
-          '<div class="kv-account-main">' +
-            '<section class="kv-account-block">' +
-              '<div class="kv-account-block-head">' +
-                '<div class="kv-account-block-title"><span class="kv-account-dot kv-account-dot-primary"></span>Lanjutkan Membaca</div>' +
-                '<span class="kv-account-block-note">' + historyItems.length + ' judul</span>' +
-              '</div>' +
-              (historyItems.length
-                ? historyItems.slice(0, 4).map(function (item) {
-                    var m = item.manga; var h = item.history;
-                    return '<article class="kv-account-history-card">' +
-                      '<div class="kv-account-history-cover"><img src="' + escapeHtml(m.coverBloggerUrl || '') + '" alt="' + escapeHtml(m.title) + '" loading="lazy" referrerpolicy="no-referrer"/></div>' +
-                      '<div class="kv-account-history-body">' +
-                        '<span class="kv-account-history-type">' + escapeHtml(m.type || 'Manga') + '</span>' +
-                        '<h3>' + escapeHtml(m.title) + '</h3>' +
-                        '<div class="kv-account-history-meta"><span>Terakhir dibaca: Chapter ' + escapeHtml(h.chapterNumber) + '</span><span>&middot;</span><span>' + escapeHtml(h.lastReadAt || '') + '</span></div>' +
-                        '<a class="kv-account-history-btn" href="#/baca/' + escapeHtml(m.slug) + '/' + escapeHtml(h.chapterId) + '">Lanjut Baca Ch. ' + escapeHtml(h.chapterNumber) + ' &rarr;</a>' +
-                      '</div>' +
-                    '</article>';
-                  }).join('')
-                : '<p class="kv-account-empty">Belum ada riwayat baca. Mulai membaca manga untuk melihatnya di sini.</p>') +
+              '<div class="flex flex-col gap-3">' + historyHtml + '</div>' +
             '</section>' +
-            '<section class="kv-account-block">' +
-              '<div class="kv-account-block-head">' +
-                '<div class="kv-account-block-title"><span class="kv-account-dot kv-account-dot-secondary"></span>Koleksi Bookmark</div>' +
-                '<a class="kv-account-block-note kv-account-link" href="#/archive">Archive &rarr;</a>' +
+            '<section class="rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
+              '<div class="flex items-center justify-between mb-4">' +
+                '<div class="flex items-center gap-2 text-base font-bold text-[#1C1917] dark:text-white"><span class="w-2.5 h-2.5 rounded-full bg-[#8C6D4F]"></span>Koleksi Bookmark</div>' +
+                '<a class="text-xs font-semibold text-[#694F36] hover:underline dark:text-[#A69AF4]" href="#/archive">Archive &rarr;</a>' +
               '</div>' +
-              (favManga.length
-                ? '<div class="kv-home-grid kv-account-fav-grid">' + favManga.slice(0, 8).map(renderLightCard).join('') + '</div>'
-                : '<p class="kv-account-empty">Belum ada manga yang disimpan. Tandai favorit dari halaman detail manga.</p>') +
+              bookmarkHtml +
             '</section>' +
           '</div>' +
-          '<aside class="kv-account-sidebar">' +
-            '<section class="kv-account-side-card">' +
-              '<div class="kv-account-block-title">Preferensi Membaca</div>' +
-              '<div class="kv-account-pref-row">' +
-                '<span class="kv-account-pref-icon">☰</span>' +
-                '<div><strong>Gaya Pembaca</strong><p>' + (state.readerMode === 'vertical' ? 'Webtoon scroll' : 'Halaman tunggal') + '</p></div>' +
-                '<button type="button" class="kv-account-pref-btn" data-action="toggle-reader-mode">Ubah</button>' +
+          '<aside class="flex flex-col gap-4">' +
+            '<section class="rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
+              '<div class="text-base font-bold text-[#1C1917] dark:text-white mb-3">Preferensi Membaca</div>' +
+              '<div class="flex items-center gap-3 p-3 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A]">' +
+                '<div class="w-9 h-9 rounded-xl bg-[#E2DFFF] dark:bg-[#2A2F4C] text-[#694F36] dark:text-[#A69AF4] flex items-center justify-center text-lg">☰</div>' +
+                '<div class="flex-1 min-w-0"><div class="text-sm font-bold text-[#1C1917] dark:text-white">Gaya Pembaca</div><div class="text-xs text-[#78716C] dark:text-neutral-400">' + readerModeLabel + '</div></div>' +
+                '<button type="button" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-white dark:bg-[#1A1A1E] border border-[#E6DCCF] dark:border-[#2B304C] text-[#574431] dark:text-neutral-200" data-action="toggle-reader-mode">Ubah</button>' +
               '</div>' +
             '</section>' +
-            '<section class="kv-account-side-card">' +
-              '<div class="kv-account-block-title">Pintasan</div>' +
-              '<div class="kv-account-links">' +
-                '<a href="#/archive">Archive &rarr;</a>' +
-                '<a href="#/tentang">Tentang NexaManga &rarr;</a>' +
-                '<a href="#/ketentuan">Ketentuan Layanan &rarr;</a>' +
+            '<section class="rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
+              '<div class="text-base font-bold text-[#1C1917] dark:text-white mb-3">Pintasan</div>' +
+              '<div class="flex flex-col gap-2">' +
+                '<a href="#/archive" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Archive <span>→</span></a>' +
+                '<a href="#/tentang" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Tentang NexaManga <span>→</span></a>' +
+                '<a href="#/ketentuan" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Ketentuan Layanan <span>→</span></a>' +
               '</div>' +
             '</section>' +
-            '<button type="button" class="kv-account-logout" data-action="logout-user">Keluar dari Akun</button>' +
+            '<button type="button" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#464555] dark:text-neutral-300 border border-[#E6DCCF] dark:border-[#2B304C] text-sm font-bold hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors" data-action="logout-user">Keluar dari Akun</button>' +
           '</aside>' +
         '</div>' +
       '</main>';
     }
+
 
     function renderOAuthButtons() {
       if (!CONFIG.API_BASE_URL) {
@@ -4454,7 +4546,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
             '<div class="kv-admin-leader-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</div>' +
             '<div class="kv-admin-leader-body">' +
               '<div class="kv-admin-leader-title">' + escapeHtml(m.title) + '</div>' +
-              '<div class="kv-admin-leader-meta">' + escapeHtml(m.type || 'Manga') + ' · ' + escapeHtml(m.status || 'Ongoing') + ' · ' + chs + ' chapter' + (m.rating ? ' · ★ ' + escapeHtml(m.rating) : '') + '</div>' +
+              '<div class="kv-admin-leader-meta">' + escapeHtml(m.type || 'Manga') + ' � ' + escapeHtml(m.status || 'Ongoing') + ' � ' + chs + ' chapter' + (m.rating ? ' � ? ' + escapeHtml(m.rating) : '') + '</div>' +
               '<div class="kv-admin-leader-barwrap"><div class="kv-admin-leader-bar" style="width:' + w + '%;"></div></div>' +
             '</div>' +
             '<div class="kv-admin-leader-views">' + v.toLocaleString('id-ID') + ' <span>views</span></div>' +
@@ -4510,7 +4602,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           '<h3 class="kv-section-title" style="margin:0 0 8px;">Analitik Traffic</h3>' +
           '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Halaman ini menampilkan rincian traffic situs. Tanggal otomatis dari awal bulan ini sampai hari ini. Ubah rentang tanggal lalu tekan Refresh.</p>' +
           (CONFIG.API_BASE_URL ? '' : '<p style="color:var(--kv-warning);font-size:0.85rem;">Backend tidak terhubung (mode lokal): data traffic tidak dapat dicatat.</p>') +
-          '<p style="color:var(--kv-text-muted);font-size:0.8rem;margin:0 0 12px;">Hari tercatat: ' + trackedDays + ' · Total pageviews: ' + (t.pageviews || 0) + '</p>' +
+          '<p style="color:var(--kv-text-muted);font-size:0.8rem;margin:0 0 12px;">Hari tercatat: ' + trackedDays + ' � Total pageviews: ' + (t.pageviews || 0) + '</p>' +
           '<button type="button" class="kv-btn kv-btn-ghost kv-btn-sm" data-action="kv-traffic-test" style="margin-bottom:12px;">Catat kunjungan uji</button>' +
           '</div>' +
           '<section class="kv-traffic">' +
@@ -4807,10 +4899,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
                '<div class="kv-manga-card-badges">' + (m.featured ? '<span class="kv-badge kv-badge-ok">Unggulan</span> ' : '') + (m.recommended ? '<span class="kv-badge">Rekomendasi</span>' : '') + '</div>' +
              '</div>' +
              '<div class="kv-manga-card-meta">' +
-               '<span>' + escapeHtml(m.type) + '</span><span class="dot">·</span>' +
-               '<span>' + escapeHtml(m.status) + '</span><span class="dot">·</span>' +
+               '<span>' + escapeHtml(m.type) + '</span><span class="dot">�</span>' +
+               '<span>' + escapeHtml(m.status) + '</span><span class="dot">�</span>' +
                '<span>' + chs.length + ' chapter</span>' +
-               (m.rating ? '<span class="dot">·</span><span>★ ' + escapeHtml(m.rating) + '</span>' : '') +
+               (m.rating ? '<span class="dot">�</span><span>? ' + escapeHtml(m.rating) + '</span>' : '') +
              '</div>' +
              '<div class="kv-manga-card-actions">' +
                '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-toggle-expand" data-id="' + escapeHtml(m.id) + '">' + kvIcon('chev') + ' ' + (expanded ? 'Tutup' : 'Chapter') + '</button>' +
@@ -4831,7 +4923,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        '</div>';
      }
 
-    /* Panel chapter terintegrasi di baris manga — selalu diurut otomatis by nomor */
+    /* Panel chapter terintegrasi di baris manga � selalu diurut otomatis by nomor */
     function renderAdminChapterPanel(m, chs) {
       var sorted = chs.slice().sort(function (a, b) { return a.number - b.number; });
       var rows = sorted.map(function (c) {
@@ -4980,7 +5072,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         '<div style="margin:16px 0 8px;">' +
           '<h3 style="margin:0 0 8px;font-size:0.9375rem;">Halaman Gambar (Penyimpanan Telegram)</h3>' +
           '<div id="kv-dropzone" class="kv-dropzone" tabindex="0" role="button" aria-label="Seret gambar ke sini atau klik untuk memilih">' +
-            '<div class="ico">📁</div>' +
+            '<div class="ico">??</div>' +
             '<div><strong>Seret gambar ke sini</strong> atau klik untuk memilih</div>' +
             '<div style="font-size:.75rem;margin-top:4px;">JPEG/PNG/WebP, maks 3 MiB per berkas</div>' +
           '</div>' +
@@ -5019,7 +5111,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
             avatar +
             '<div class="kv-admin-comment-meta">' +
               '<div class="kv-admin-comment-author">' + escapeHtml(authorName) + (c.pinned ? ' <span class="kv-comment-pinned">Disematkan</span>' : '') + '</div>' +
-              '<div class="kv-admin-comment-sub">' + escapeHtml(m ? m.title : '(manga dihapus)') + (ch ? ' · Ch. ' + escapeHtml(ch.number) : '') + ' · ' + escapeHtml(c.createdAt || '') + '</div>' +
+              '<div class="kv-admin-comment-sub">' + escapeHtml(m ? m.title : '(manga dihapus)') + (ch ? ' � Ch. ' + escapeHtml(ch.number) : '') + ' � ' + escapeHtml(c.createdAt || '') + '</div>' +
             '</div>' +
             badge +
           '</div>' +
@@ -5714,7 +5806,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           bodyHtml += '<div class="kv-scrape-indicator" role="status" aria-live="polite">' +
             '<div class="kv-scrape-indicator-bar"><div class="kv-scrape-indicator-fill" style="width:' + mppct + '%;"></div></div>' +
             '<span class="kv-scrape-indicator-text">Scrape ' + mp.done + '/' + mp.total + '</span>' +
-            '<button type="button" class="kv-scrape-indicator-btn" data-action="md-progress-open" aria-label="Buka progres">‹</button>' +
+            '<button type="button" class="kv-scrape-indicator-btn" data-action="md-progress-open" aria-label="Buka progres">�</button>' +
           '</div>';
         }
       }
@@ -5817,10 +5909,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         window.addEventListener('scroll', updateOverlayDockState, { passive: true });
         window.addEventListener('resize', updateOverlayDockState);
       }
-      if (state.readerDockTimer) clearInterval(state.readerDockTimer);
-      state.readerDockTimer = setInterval(updateOverlayDockState, 400);
-      updateOverlayDockState();
-      document.body.style.overflow = (state.readerMenuOpen || state.readerSettingsOpen) ? 'hidden' : '';
       var readerFrame = document.querySelector('.kv-reader-frame');
       if (readerFrame) {
         readerFrame.addEventListener('click', function (event) {
@@ -5829,8 +5917,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           toggleOverlayVisibility();
         });
       }
+      if (state.readerDockTimer) clearInterval(state.readerDockTimer);
+      state.readerDockTimer = setInterval(updateOverlayDockState, 400);
+      updateOverlayDockState();
+      document.body.style.overflow = (state.readerMenuOpen || state.readerSettingsOpen) ? 'hidden' : '';
       var sInput = document.getElementById('kv-search-input');
-      if (sInput) sInput.oninput = function (e) { state.search = e.target.value; state.page = 1; state.refocusSearch = true; render(); };
+      if (sInput) sInput.oninput = function (e) { state.search = e.target.value; state.page = 1; state.refocusSearch = true; if (state.route !== 'catalog') { state.route = 'catalog'; state.params = {}; try { window.history.replaceState(null, '', '#/archive'); } catch (err) {} parseRoute(); render(); } else { render(); } };
       // Pertahankan fokus kursor di kolom pencarian setelah render ulang
       if (sInput && state.refocusSearch) {
         state.refocusSearch = false;
@@ -5907,13 +5999,47 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           var fd = new FormData(pForm);
           var name = String(fd.get('name') || '').trim();
           var avatar = String(fd.get('avatar') || '').trim();
+          var background = String(fd.get('background') || '').trim();
+          var bgFile = fd.get('backgroundFile');
           if (name.length < 2) { toast('Nama minimal 2 karakter.', 'warn'); return; }
           var overrideId = state.user && state.user.id;
           if (!overrideId) { toast('Masuk terlebih dahulu untuk menyimpan profil.', 'warn'); return; }
-          try { localStorage.setItem('kv_profile_override_v2_' + overrideId, JSON.stringify({ name: name, avatar: avatar })); } catch (err) { toast('Gagal menyimpan profil di browser.', 'warn'); }
-          state.editingProfile = false;
-          toast('Profil berhasil disimpan.', 'ok');
-          render();
+          var save = function (bgValue) {
+            try { localStorage.setItem('kv_profile_override_v2_' + overrideId, JSON.stringify({ name: name, avatar: avatar, background: bgValue || background || '' })); } catch (err) { toast('Gagal menyimpan profil di browser.', 'warn'); }
+            state.editingProfile = false;
+            toast('Profil berhasil disimpan.', 'ok');
+            render();
+          };
+          if (bgFile && bgFile.size) {
+            if (CONFIG.API_BASE_URL && state.adminToken) {
+              var reader = new FileReader();
+              reader.onload = function (ev) {
+                var dataUrl = String(ev.target.result || '');
+                fetch(CONFIG.API_BASE_URL + '/api/profile/upload-background', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+                  body: JSON.stringify({ fileName: bgFile.name || 'background.jpg', dataBase64: dataUrl })
+                }).then(function (res) { return res.json().then(function (json) { return { ok: res.ok, json: json }; }); })
+                  .then(function (result) {
+                    if (!result.ok) throw new Error((result.json && result.json.error) || 'Unggah gagal.');
+                    save((result.json && (result.json.url || result.json.bloggerUrl)) || dataUrl);
+                  })
+                  .catch(function () {
+                    save(dataUrl);
+                    toast('Gagal unggah ke Telegram, disimpan lokal.', 'warn');
+                  });
+              };
+              reader.onerror = function () { save(background); };
+              reader.readAsDataURL(bgFile);
+            } else {
+              var reader2 = new FileReader();
+              reader2.onload = function (ev) { save(String(ev.target.result || '')); };
+              reader2.onerror = function () { save(background); };
+              reader2.readAsDataURL(bgFile);
+            }
+          } else {
+            save(background);
+          }
         };
       }
 
@@ -6267,14 +6393,14 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       else if (act === 'toggle-ch-sort') { state.chapterSortAsc = !state.chapterSortAsc; render(); }
       else if (act === 'clear-genres') { state.filterGenres = []; state.page = 1; state.openCatalogDropdown = 'genre'; render(); }
        else if (act === 'close-catalog-dropdowns') { state.openCatalogDropdown = null; render(); }
-       else if (act === 'toggle-filter-drawer') { state.filterDrawerOpen = !state.filterDrawerOpen; render(); }
+       else if (act === 'toggle-filter-drawer') { state.filterDrawerOpen = !state.filterDrawerOpen; state.filterDrawerSkipAnim = false; render(); }
        else if (act === 'close-filter-drawer') { state.filterDrawerOpen = false; render(); }
-       else if (act === 'clear-filters') { state.filterGenres = []; state.filterType = 'Semua Tipe'; state.filterStatus = 'Semua Status'; state.filterMinChapters = 0; state.sortBy = 'terbaru'; state.page = 1; render(); }
-       else if (act === 'toggle-filter-genre') { var g = el.getAttribute('data-genre'); if (!Array.isArray(state.filterGenres)) state.filterGenres = []; if (state.filterGenres.indexOf(g) === -1) state.filterGenres.push(g); else state.filterGenres = state.filterGenres.filter(function (x) { return x !== g; }); state.page = 1; render(); }
-       else if (act === 'set-filter-min') { state.filterMinChapters = Number(el.getAttribute('data-value')) || 0; state.page = 1; render(); }
-      else if (act === 'set-filter-type') { state.filterType = el.getAttribute('data-value') || 'Semua Tipe'; state.page = 1; state.openCatalogDropdown = null; render(); }
-      else if (act === 'set-filter-status') { state.filterStatus = el.getAttribute('data-value') || 'Semua Status'; state.page = 1; state.openCatalogDropdown = null; render(); }
-      else if (act === 'set-sort') { state.sortBy = el.getAttribute('data-value') || 'terbaru'; state.openCatalogDropdown = null; render(); }
+       else if (act === 'clear-filters') { state.filterGenres = []; state.filterType = 'Semua Tipe'; state.filterStatus = 'Semua Status'; state.filterMinChapters = 0; state.sortBy = 'terbaru'; state.page = 1; state.filterDrawerSkipAnim = true; render(); }
+       else if (act === 'toggle-filter-genre') { var g = el.getAttribute('data-genre'); if (!Array.isArray(state.filterGenres)) state.filterGenres = []; if (state.filterGenres.indexOf(g) === -1) state.filterGenres.push(g); else state.filterGenres = state.filterGenres.filter(function (x) { return x !== g; }); state.page = 1; state.filterDrawerSkipAnim = true; render(); }
+       else if (act === 'set-filter-min') { state.filterMinChapters = Number(el.getAttribute('data-value')) || 0; state.page = 1; state.filterDrawerSkipAnim = true; render(); }
+      else if (act === 'set-filter-type') { state.filterType = el.getAttribute('data-value') || 'Semua Tipe'; state.page = 1; state.openCatalogDropdown = null; state.filterDrawerSkipAnim = true; render(); }
+      else if (act === 'set-filter-status') { state.filterStatus = el.getAttribute('data-value') || 'Semua Status'; state.page = 1; state.openCatalogDropdown = null; state.filterDrawerSkipAnim = true; render(); }
+      else if (act === 'set-sort') { state.sortBy = el.getAttribute('data-value') || 'terbaru'; state.openCatalogDropdown = null; state.filterDrawerSkipAnim = true; render(); }
       else if (act === 'toggle-reader-mode') { var mode = el.getAttribute('data-mode'); state.readerMode = (mode === 'vertical' || mode === 'paged') ? mode : (state.readerMode === 'vertical' ? 'paged' : 'vertical'); state.currentPageIdx = 0; render(); }
       else if (act === 'scroll-reader-up') { window.scrollBy({ top: -Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
       else if (act === 'scroll-reader-down') { window.scrollBy({ top: Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
