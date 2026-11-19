@@ -29,16 +29,85 @@ class CatalogNotInitializedError extends Error {
 }
 
 function databaseUrl() {
+  if (process.env.DATABASE_URL) {
+    const value = config('DATABASE_URL');
+    if (!/^(postgres(ql)?|mysql2?):\/\//i.test(value)) {
+      throw new Error('DATABASE_URL harus berupa connection string PostgreSQL atau MySQL.');
+    }
+    return value;
+  }
+  const host = process.env.DB_HOST;
+  const port = process.env.DB_PORT;
+  const name = process.env.DB_NAME || process.env.DB_DATABASE;
+  const user = process.env.DB_USER || process.env.DB_USERNAME;
+  const password = process.env.DB_PASSWORD;
+  const driver = dbDriver();
+  if (host && name && user) {
+    const scheme = driver === 'mysql' ? 'mysql' : 'postgresql';
+    const defaultPort = driver === 'mysql' ? '3306' : '5432';
+    const portPart = `:${port || defaultPort}`;
+    const auth = password ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}` : encodeURIComponent(user);
+    return `${scheme}://${auth}@${host}${portPart}/${name}`;
+  }
   const value = config('DATABASE_URL');
-  if (!/^postgres(ql)?:\/\//i.test(value)) {
-    throw new Error('DATABASE_URL harus berupa connection string PostgreSQL, misalnya postgresql://user:password@host/dbname?sslmode=require.');
+  if (!/^(postgres(ql)?|mysql2?):\/\//i.test(value)) {
+    throw new Error('DATABASE_URL harus berupa connection string PostgreSQL atau MySQL.');
   }
   return value;
 }
 
+function dbDriver() {
+  const explicit = String(process.env.DB_DRIVER || '').toLowerCase();
+  if (explicit === 'mysql' || explicit === 'mysql2') return 'mysql';
+  if (explicit === 'pg' || explicit === 'postgres' || explicit === 'postgresql') return 'pg';
+  if (explicit === 'neon') return 'neon';
+  const url = process.env.DATABASE_URL;
+  if (url) {
+    if (/^mysql2?:\/\//i.test(url)) return 'mysql';
+    if (/^postgres(ql)?:\/\//i.test(url)) return 'neon';
+  }
+  if (process.env.DB_HOST) {
+    if (String(process.env.DB_PORT || '') === '3306') return 'mysql';
+    return 'pg';
+  }
+  return 'neon';
+}
+
 let client = null;
+let pool = null;
+let mysqlPool = null;
 
 function sql() {
+  const driver = dbDriver();
+  if (driver === 'mysql') {
+    if (!mysqlPool) {
+      const mysql = require('mysql2/promise');
+      mysqlPool = mysql.createPool(databaseUrl());
+    }
+    return function (strings, ...values) {
+      let text = '';
+      strings.forEach((str, i) => {
+        text += str;
+        if (i < values.length) text += '?';
+      });
+      text = text.replace(/::jsonb/g, '');
+      return mysqlPool.query(text, values).then((result) => result[0]);
+    };
+  }
+  if (driver === 'pg') {
+    if (!pool) {
+      const { Pool } = require('pg');
+      pool = new Pool({ connectionString: databaseUrl(), ssl: /sslmode=require/i.test(databaseUrl()) ? { rejectUnauthorized: false } : undefined });
+    }
+    return function (strings, ...values) {
+      let text = '';
+      strings.forEach((str, i) => {
+        text += str;
+        if (i < values.length) text += `$${i + 1}`;
+      });
+      return pool.query(text, values).then((result) => result.rows);
+    };
+  }
   if (!client) client = neon(databaseUrl());
   return client;
 }
@@ -48,6 +117,28 @@ let schemaPromise = null;
 function ensureSchema() {
   if (!schemaPromise) {
     schemaPromise = (async () => {
+      const driver = dbDriver();
+      if (driver === 'mysql') {
+        await sql()`CREATE TABLE IF NOT EXISTS nexamanga_snapshot (
+          id SMALLINT PRIMARY KEY,
+          data JSON NOT NULL,
+          version BIGINT NOT NULL DEFAULT 1,
+          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )`;
+        await sql()`CREATE TABLE IF NOT EXISTS nexamanga_analytics (
+          day DATE PRIMARY KEY,
+          pageviews BIGINT NOT NULL DEFAULT 0,
+          visits BIGINT NOT NULL DEFAULT 0,
+          visitors JSON NOT NULL
+        )`;
+        try {
+          await sql()`INSERT IGNORE INTO nexamanga_snapshot (id, data) VALUES (1, ${JSON.stringify(EMPTY_CATALOG)})`;
+        } catch (error) {
+          // Abaikan; inisialisasi dilakukan lewat endpoint admin jika diperlukan.
+        }
+        return;
+      }
+
        await sql()`CREATE TABLE IF NOT EXISTS nexamanga_snapshot (
          id smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1),
          data jsonb NOT NULL,
@@ -122,9 +213,13 @@ async function initializeCatalog(catalog) {
   const payload = snapshotPayload(catalog);
   const existing = await sql()`SELECT id FROM nexamanga_snapshot WHERE id = 1`;
   if (existing.length > 0) throw new StorageAlreadyInitializedError();
-  await sql()`INSERT INTO nexamanga_snapshot (id, data)
-    VALUES (1, ${payload}::jsonb)
-    ON CONFLICT (id) DO NOTHING`;
+  if (dbDriver() === 'mysql') {
+    await sql()`INSERT IGNORE INTO nexamanga_snapshot (id, data) VALUES (1, ${payload})`;
+  } else {
+    await sql()`INSERT INTO nexamanga_snapshot (id, data)
+      VALUES (1, ${payload}::jsonb)
+      ON CONFLICT (id) DO NOTHING`;
+  }
   return 1;
 }
 
@@ -148,11 +243,19 @@ async function modifyCatalog(change) {
     const draft = structuredClone(row.data);
     change(draft);
     const payload = snapshotPayload(draft);
-    const rows = await sql()`UPDATE nexamanga_snapshot
-      SET data = ${payload}::jsonb, version = version + 1, updated_at = now()
-      WHERE id = 1 AND version = ${row.version}
-      RETURNING version`;
-    if (rows.length === 1) return draft;
+    let updated;
+    if (dbDriver() === 'mysql') {
+      updated = await sql()`UPDATE nexamanga_snapshot
+        SET data = ${payload}, version = version + 1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = 1 AND version = ${row.version}`;
+      if (updated && updated.affectedRows === 1) return draft;
+    } else {
+      const rows = await sql()`UPDATE nexamanga_snapshot
+        SET data = ${payload}::jsonb, version = version + 1, updated_at = now()
+        WHERE id = 1 AND version = ${row.version}
+        RETURNING version`;
+      if (rows.length === 1) return draft;
+    }
     if (attempt >= CAS_MAX_ATTEMPTS) throw new ConcurrentUpdateError();
   }
 }
@@ -171,9 +274,16 @@ async function recordTrack(visitorId) {
     if (safeVisitorId && !visitors.includes(safeVisitorId)) visitors.push(safeVisitorId);
     if (visitors.length > 10000) visitors = visitors.slice(visitors.length - 10000);
   const visits = visitors.length;
-  await sql()`INSERT INTO nexamanga_analytics (day, pageviews, visits, visitors)
-    VALUES (${day}, ${pageviews}, ${visits}, ${JSON.stringify(visitors)}::jsonb)
-    ON CONFLICT (day) DO UPDATE SET pageviews = ${pageviews}, visits = ${visits}, visitors = ${JSON.stringify(visitors)}::jsonb`;
+  const visitorsJson = JSON.stringify(visitors);
+  if (dbDriver() === 'mysql') {
+    await sql()`INSERT INTO nexamanga_analytics (day, pageviews, visits, visitors)
+      VALUES (${day}, ${pageviews}, ${visits}, ${visitorsJson})
+      ON DUPLICATE KEY UPDATE pageviews = ${pageviews}, visits = ${visits}, visitors = ${visitorsJson}`;
+  } else {
+    await sql()`INSERT INTO nexamanga_analytics (day, pageviews, visits, visitors)
+      VALUES (${day}, ${pageviews}, ${visits}, ${visitorsJson}::jsonb)
+      ON CONFLICT (day) DO UPDATE SET pageviews = ${pageviews}, visits = ${visits}, visitors = ${visitorsJson}::jsonb`;
+  }
 }
 
 async function readAnalytics(from, to) {

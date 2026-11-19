@@ -31,6 +31,7 @@ const {
   getMedia,
   saveMedia
 } = require('../lib/telegram');
+const { uploadImage } = require('../lib/storage');
 const {
   CatalogNotInitializedError,
   ConcurrentUpdateError,
@@ -709,12 +710,11 @@ async function handler(req, res) {
       const body = await readBody(req);
       const { mimeType, bytes } = decodeUpload(body.dataBase64);
       const baseUrl = apiBaseUrl();
-      const fileId = await saveMedia(body.fileName, mimeType, bytes);
-      const mediaUrl = `${baseUrl}/api/media/${encodeURIComponent(fileId)}`;
+      const result = await uploadImage(body.fileName, mimeType, bytes, null, baseUrl);
       return sendJson(res, 201, {
-        telegramFileId: fileId,
-        url: mediaUrl,
-        telegramStatus: 'tersimpan',
+        telegramFileId: result.fileId,
+        url: result.url,
+        telegramStatus: result.status,
         bloggerStatus: 'proxy aktif'
       });
     }
@@ -724,12 +724,11 @@ async function handler(req, res) {
       const body = await readBody(req);
       const { mimeType, bytes } = decodeUpload(body.dataBase64);
       const baseUrl = apiBaseUrl();
-      const fileId = await saveMedia(body.fileName, mimeType, bytes);
-      const mediaUrl = `${baseUrl}/api/media/${encodeURIComponent(fileId)}`;
+      const result = await uploadImage(body.fileName, mimeType, bytes, null, baseUrl);
       return sendJson(res, 201, {
-        telegramFileId: fileId,
-        bloggerUrl: mediaUrl,
-        telegramStatus: 'tersimpan',
+        telegramFileId: result.fileId,
+        bloggerUrl: result.url,
+        telegramStatus: result.status,
         bloggerStatus: 'proxy aktif'
       });
     }

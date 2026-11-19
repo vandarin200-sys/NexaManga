@@ -267,7 +267,7 @@ function saveSettings(catalog, input) {
     throw new ValidationError('Data pengaturan tidak valid.');
   }
   const settings = Object.assign({}, catalog.settings || {});
-  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'contactEmail', 'brandMode', 'siteNameColor', 'aboutContent', 'contactContent', 'privacyContent', 'termsContent'];
+  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'contactEmail', 'brandMode', 'siteNameColor', 'aboutContent', 'contactContent', 'privacyContent', 'termsContent', 'storageProvider'];
   for (const field of stringFields) {
     const value = input[field];
     if (typeof value !== 'string') continue;
@@ -285,6 +285,9 @@ function saveSettings(catalog, input) {
     }
     if (field === 'brandMode' && trimmed && !['logo-name', 'logo-only', 'name-only'].includes(trimmed)) {
       throw new ValidationError('Mode tampilan brand tidak valid.');
+    }
+    if (field === 'storageProvider' && trimmed && !['telegram', 'r2'].includes(trimmed)) {
+      throw new ValidationError('Penyimpanan gambar tidak valid.');
     }
     if (field === 'siteNameColor' && trimmed && !/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(trimmed)) {
       throw new ValidationError('Warna nama situs harus format hex, misalnya #6366f1.');

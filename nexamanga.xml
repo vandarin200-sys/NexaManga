@@ -2633,6 +2633,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       filterDrawerOpen: false,
       filterDrawerSkipAnim: false,
       page: 1,
+      homePage: 1,
        chapterSortAsc: false,
        chapterSearch: '',
       readerMode: 'vertical', // 'vertical' | 'paged'
@@ -3430,7 +3431,7 @@ mobileMenu +
         '</a>';
       }
 
-       var latestCards = state.data.manga.slice()
+       var latestSorted = state.data.manga.slice()
          .map(function (m) {
            var chs = state.data.chapters.filter(function (c) { return c.mangaId === m.id; });
            var last = m.updatedAt || '';
@@ -3438,10 +3439,23 @@ mobileMenu +
            return { m: m, last: last };
          })
          .filter(function (x) { return x.last; })
-         .sort(function (a, b) { return String(b.last).localeCompare(String(a.last)) || String(a.m.title || '').localeCompare(String(b.m.title || '')); })
-         .slice(0, 6)
-         .map(function (x) { return homeCard(x.m); })
-         .join('');
+         .sort(function (a, b) { return String(b.last).localeCompare(String(a.last)) || String(a.m.title || '').localeCompare(String(b.m.title || '')); });
+
+       var homePageSize = 12;
+       var homeTotalPages = Math.max(1, Math.ceil(latestSorted.length / homePageSize));
+       if (!state.homePage || state.homePage < 1) state.homePage = 1;
+       if (state.homePage > homeTotalPages) state.homePage = homeTotalPages;
+       var homePageItems = latestSorted.slice((state.homePage - 1) * homePageSize, state.homePage * homePageSize);
+       var latestCards = homePageItems.map(function (x) { return homeCard(x.m); }).join('');
+
+       var homePagination = '';
+       if (homeTotalPages > 1) {
+         var pageButtons = [];
+         for (var hp = 1; hp <= homeTotalPages; hp++) {
+           pageButtons.push('<button type="button" class="kv-home-genre' + (hp === state.homePage ? ' active' : '') + '" data-action="home-page" data-page="' + hp + '">' + hp + '</button>');
+         }
+         homePagination = '<div class="kv-home-genres" style="justify-content:center;margin-top:14px;">' + pageButtons.join('') + '</div>';
+       }
 
       var genres = ['Semua Koleksi'].concat(collectGenres().slice(0, 9));
       var popular = state.data.manga.slice().sort(function (a, b) { return (b.views || 0) - (a.views || 0); }).slice(0, 3);
@@ -3510,7 +3524,7 @@ mobileMenu +
             '<a class="kv-home-link" href="#/archive">Lihat Semua &rarr;</a>' +
           '</div>' +
           '<div class="kv-home-grid">' + latestCards + '</div>' +
-        '</section>' +
+          homePagination +
         '<section class="kv-home-section" aria-labelledby="heading-popular">' +
           '<div class="kv-home-section-head">' +
             '<div><h2 class="kv-home-section-title" id="heading-popular">Komik Populer &amp; Trending</h2></div>' +
@@ -6011,31 +6025,31 @@ mobileMenu +
             render();
           };
           if (bgFile && bgFile.size) {
-            if (CONFIG.API_BASE_URL && state.adminToken) {
+            var token = state.adminToken || localStorage.getItem('kv_session_token') || '';
+            if (CONFIG.API_BASE_URL && token) {
+              state.adminToken = token;
               var reader = new FileReader();
               reader.onload = function (ev) {
                 var dataUrl = String(ev.target.result || '');
+                toast('Mengunggah background ke Telegram...', 'info');
                 fetch(CONFIG.API_BASE_URL + '/api/profile/upload-background', {
                   method: 'POST',
-                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                   body: JSON.stringify({ fileName: bgFile.name || 'background.jpg', dataBase64: dataUrl })
-                }).then(function (res) { return res.json().then(function (json) { return { ok: res.ok, json: json }; }); })
+                }).then(function (res) { return res.json().then(function (json) { return { ok: res.ok, status: res.status, json: json }; }); })
                   .then(function (result) {
-                    if (!result.ok) throw new Error((result.json && result.json.error) || 'Unggah gagal.');
+                    if (!result.ok) throw new Error((result.json && result.json.error) || ('HTTP ' + result.status));
                     save((result.json && (result.json.url || result.json.bloggerUrl)) || dataUrl);
+                    toast('Background tersimpan di Telegram.', 'ok');
                   })
-                  .catch(function () {
-                    save(dataUrl);
-                    toast('Gagal unggah ke Telegram, disimpan lokal.', 'warn');
+                  .catch(function (err) {
+                    toast('Gagal unggah ke Telegram: ' + (err && err.message ? err.message : 'unknown'), 'err');
                   });
               };
-              reader.onerror = function () { save(background); };
+              reader.onerror = function () { toast('Gagal membaca file.', 'err'); };
               reader.readAsDataURL(bgFile);
             } else {
-              var reader2 = new FileReader();
-              reader2.onload = function (ev) { save(String(ev.target.result || '')); };
-              reader2.onerror = function () { save(background); };
-              reader2.readAsDataURL(bgFile);
+              toast('Backend/token tidak tersedia. Upload background ke Telegram tidak bisa dilakukan.', 'err');
             }
           } else {
             save(background);
@@ -6390,6 +6404,7 @@ mobileMenu +
       else if (act === 'manga-reaction') { mangaReactionLocal(el.getAttribute('data-id'), el.getAttribute('data-reaction')); }
       else if (act === 'open-reader') { navigate('#/baca/' + el.getAttribute('data-slug') + '/' + el.getAttribute('data-cid')); }
       else if (act === 'quick-genre') { var genre = el.getAttribute('data-genre'); state.filterGenres = genre && genre !== 'Semua' ? [genre] : []; state.openCatalogDropdown = 'genre'; state.page = 1; navigate('#/archive'); }
+      else if (act === 'home-page') { state.homePage = Number(el.getAttribute('data-page')) || 1; render(); }
       else if (act === 'toggle-ch-sort') { state.chapterSortAsc = !state.chapterSortAsc; render(); }
       else if (act === 'clear-genres') { state.filterGenres = []; state.page = 1; state.openCatalogDropdown = 'genre'; render(); }
        else if (act === 'close-catalog-dropdowns') { state.openCatalogDropdown = null; render(); }
