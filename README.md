@@ -37,16 +37,6 @@ SELECT * FROM nexamanga_users ORDER BY created_at;
 
 View ini hanya membaca dokumen JSONB — tidak ada tabel akun terpisah; data tetap satu sumber di `nexamanga_snapshot`.
 
-### Migrasi dari Telegram (opsional, untuk instalasi lama)
-
-Jika sebelumnya katalog disimpan sebagai snapshot di chat Telegram, salin sekali ke Neon:
-
-```powershell
-npm run db:migrate
-```
-
-Perintah ini membaca pesan snapshot yang dipin di chat Telegram lalu menyalinnya ke tabel `nexamanga_snapshot`. Perintah gagal dengan aman jika tabel Neon sudah berisi data. Pesan Telegram tidak dihapus oleh skrip; hapus manual setelah Neon terverifikasi. Jika tidak ada migrasi yang perlu dilakukan, abaikan langkah ini.
-
 ## Persiapan Telegram (hanya untuk gambar)
 
 

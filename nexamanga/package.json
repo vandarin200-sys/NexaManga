@@ -4,8 +4,7 @@
   "private": true,
   "description": "Vercel API backend for the NexaManga Blogger theme with Neon Postgres storage and Telegram image hosting",
   "scripts": {
-    "test": "node --test",
-    "db:migrate": "node scripts/migrate-from-telegram.js"
+    "test": "node --test"
   },
   "engines": {
     "node": ">=20"

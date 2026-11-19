@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
-<html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' class='dark' lang='id' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' class='sepia' lang='id' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
 <head>
   <meta charset='UTF-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
   <title><data:blog.pageTitle/></title>
   <meta expr:content='data:blog.metaDescription' name='description'/>
   <b:include data='blog' name='all-head-content'/>
-  <meta content='#0B0E17' name='theme-color'/>
+  <meta content='#FAF7F2' name='theme-color'/>
+  <script>(function(){try{var t=localStorage.getItem('kv_theme')||'sepia';if(t==='light')t='sepia';document.documentElement.className=(t==='dark')?'dark':'sepia';var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#0B0E17':'#FAF7F2');}catch(e){}})();</script>
 
   <!-- =========================================================================
-       NexaManga Blogger XML Theme (Futuristic SaaS Manga Platform)
+       NexaManga Blogger XML Theme
        CARA PASANG:
        1. Buka Dashboard Blogger -> Tema -> klik panah bawah -> Edit HTML.
        2. Hapus semua kode lama, tempel seluruh isi file .xml ini, lalu Simpan.
@@ -63,10 +64,22 @@
       --kv-neon: #70CFC0;
       --kv-success: #22C55E;
       --kv-warning: #F59E0B;
-      --kv-danger: #EF4444;
     }
 
-    *, *::before, *::after { box-sizing: border-box; }
+    html.sepia {
+      --kv-bg: #FAF7F2;
+      --kv-surface: #FFFFFF;
+      --kv-surface-2: #F3EDE2;
+      --kv-border: #E6DCCF;
+      --kv-text: #1C1917;
+      --kv-text-muted: #78716C;
+      --kv-accent: #694F36;
+      --kv-accent-hover: #513B26;
+      --kv-neon: #D97706;
+      --kv-success: #16A34A;
+      --kv-warning: #D97706;
+      --kv-danger: #DC2626;
+    }
     html, body {
       margin: 0; padding: 0;
       overflow-x: hidden;
@@ -1254,6 +1267,31 @@
       @media (max-width: 600px) { .kv-manga-grid { grid-template-columns: 1fr; } }
       /* ===== Admin NexaOps theme ===== */
       .kv-admin-shell.kv-admin-top {
+        --kv-radius: 8px;
+        --kva-bg: var(--kv-bg);
+        --kva-surface: var(--kv-surface);
+        --kva-surface-2: var(--kv-surface-2);
+        --kva-surface-3: var(--kv-surface-2);
+        --kva-border: var(--kv-border);
+        --kva-text: var(--kv-text);
+        --kva-text-2: var(--kv-text-muted);
+        --kva-text-3: var(--kv-text-muted);
+        --kva-accent: var(--kv-accent);
+        --kva-accent-hover: var(--kv-accent-hover);
+        --kva-accent-soft: var(--kv-accent);
+        --kva-on-accent: #FFFFFF;
+        --kva-success: var(--kv-success);
+        --kva-danger: var(--kv-danger);
+        --kva-glow: color-mix(in srgb, var(--kv-accent) 22%, transparent);
+        --kva-glow-soft: color-mix(in srgb, var(--kv-accent) 12%, transparent);
+        --kva-overlay: rgba(0, 0, 0, .55);
+        --kva-shadow: 0 10px 28px -24px rgba(0, 0, 0, .6);
+        background: radial-gradient(1100px 520px at 85% -10%, var(--kva-glow), transparent 62%), var(--kva-bg);
+        color: var(--kva-text);
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+      }
+      html.dark .kv-admin-shell.kv-admin-top {
         --kv-bg: #0F111A;
         --kv-surface: #171A27;
         --kv-surface-2: #161A30;
@@ -1264,64 +1302,109 @@
         --kv-accent-hover: #7A6FE0;
         --kv-success: #34D399;
         --kv-danger: #FB7185;
-        --kv-radius: 8px;
-        background: radial-gradient(1100px 520px at 85% -10%, rgba(101, 88, 217, .22), transparent 62%), #0F111A;
-        color: #DEE1FE;
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        min-height: 100vh;
+        --kva-bg: #0F111A;
+        --kva-surface: #171A27;
+        --kva-surface-2: #161A30;
+        --kva-surface-3: #20243A;
+        --kva-border: #2B304C;
+        --kva-text: #DEE1FE;
+        --kva-text-2: #C8C4D6;
+        --kva-text-3: #737B91;
+        --kva-accent: #6558D9;
+        --kva-accent-hover: #7A6FE0;
+        --kva-accent-soft: #C6C0FF;
+        --kva-on-accent: #EFEBFF;
+        --kva-success: #34D399;
+        --kva-success-2: #4EDEA3;
+        --kva-danger: #FB7185;
+        --kva-glow: rgba(101, 88, 217, .22);
+        --kva-glow-soft: rgba(101, 88, 217, .08);
+        --kva-overlay: rgba(0, 0, 0, .55);
+        --kva-shadow: 0 10px 28px -24px rgba(0, 0, 0, .75);
+      }
+      html.sepia .kv-admin-shell.kv-admin-top {
+        --kv-bg: #FAF7F2;
+        --kv-surface: #FFFFFF;
+        --kv-surface-2: #F3EDE2;
+        --kv-border: #E6DCCF;
+        --kv-text: #1C1917;
+        --kv-text-muted: #78716C;
+        --kv-accent: #694F36;
+        --kv-accent-hover: #513B26;
+        --kv-success: #16A34A;
+        --kv-danger: #DC2626;
+        --kva-bg: #FAF7F2;
+        --kva-surface: #FFFFFF;
+        --kva-surface-2: #F3EDE2;
+        --kva-surface-3: #EFE8DC;
+        --kva-border: #E6DCCF;
+        --kva-text: #1C1917;
+        --kva-text-2: #483B2E;
+        --kva-text-3: #78716C;
+        --kva-accent: #694F36;
+        --kva-accent-hover: #513B26;
+        --kva-accent-soft: #8C6D4F;
+        --kva-on-accent: #FFFFFF;
+        --kva-success: #16A34A;
+        --kva-success-2: #15803D;
+        --kva-danger: #DC2626;
+        --kva-glow: rgba(105, 79, 54, .14);
+        --kva-glow-soft: rgba(105, 79, 54, .08);
+        --kva-overlay: rgba(28, 25, 23, .35);
+        --kva-shadow: 0 10px 28px -24px rgba(28, 25, 23, .18);
       }
       .kv-admin-topbar-new {
         position: sticky; top: 0; z-index: 20;
         display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
         padding: 14px 26px;
-        background: rgba(23, 26, 39, .88);
-        border-bottom: 1px solid #2B304C;
+        background: color-mix(in srgb, var(--kva-surface) 88%, transparent);
+        border-bottom: 1px solid var(--kva-border);
         backdrop-filter: blur(16px);
       }
-      .kv-admin-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; color: #DEE1FE; text-decoration: none; }
-      .kv-admin-logo span { color: #C6C0FF; }
+      .kv-admin-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; color: var(--kva-text); text-decoration: none; }
+      .kv-admin-logo span { color: var(--kva-accent-soft); }
       .kv-admin-nav-h { display: flex; gap: 4px; flex: 1; justify-content: center; flex-wrap: wrap; }
       .kv-admin-nav-h .kv-admin-nav-item {
         display: inline-flex; align-items: center; gap: 8px;
         padding: 8px 13px; border-radius: 6px; border: none; cursor: pointer;
-        background: transparent; color: #737B91; font-family: 'JetBrains Mono', monospace;
+        background: transparent; color: var(--kva-text-3); font-family: 'JetBrains Mono', monospace;
         font-size: .72rem; font-weight: 500; letter-spacing: .02em; transition: background .12s, color .12s;
       }
-      .kv-admin-nav-h .kv-admin-nav-item:hover { background: #20243A; color: #DEE1FE; }
-      .kv-admin-nav-h .kv-admin-nav-item.active { background: #6558D9; color: #EFEBFF; font-weight: 600; }
-      .kv-admin-nav-badge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; display: inline-grid; place-items: center; background: #FB7185; color: #0F111A; font-size: .65rem; font-weight: 700; }
+      .kv-admin-nav-h .kv-admin-nav-item:hover { background: var(--kva-surface-3); color: var(--kva-text); }
+      .kv-admin-nav-h .kv-admin-nav-item.active { background: var(--kva-accent); color: var(--kva-on-accent); font-weight: 600; }
+      .kv-admin-nav-badge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; display: inline-grid; place-items: center; background: var(--kva-danger); color: #fff; font-size: .65rem; font-weight: 700; }
       .kv-admin-top-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
       .kv-admin-chip {
         display: inline-flex; align-items: center; gap: 7px;
-        background: #20243A; border: 1px solid #2B304C; border-radius: 999px;
-        padding: 6px 12px; font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: #C8C4D6;
+        background: var(--kva-surface-3); border: 1px solid var(--kva-border); border-radius: 999px;
+        padding: 6px 12px; font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--kva-text-2);
       }
-      .kv-admin-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: #34D399; display: inline-block; }
-      .kv-admin-chip.off .dot { background: #FB7185; }
-      .kv-admin-quickbar { padding: 10px 26px; border-bottom: 1px solid #2B304C; background: #171A27; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+      .kv-admin-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--kva-success); display: inline-block; }
+      .kv-admin-chip.off .dot { background: var(--kva-danger); }
+      .kv-admin-quickbar { padding: 10px 26px; border-bottom: 1px solid var(--kva-border); background: var(--kva-surface); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
       .kv-admin-quicklink {
         display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px;
-        font-size: .76rem; color: #C8C4D6; text-decoration: none; border: 1px solid #2B304C; background: #161A30;
+        font-size: .76rem; color: var(--kva-text-2); text-decoration: none; border: 1px solid var(--kva-border); background: var(--kva-surface-2);
         transition: border-color .12s, color .12s, background .12s;
       }
-      .kv-admin-quicklink:hover { border-color: #6558D9; color: #C6C0FF; background: #20243A; }
+      .kv-admin-quicklink:hover { border-color: var(--kva-accent); color: var(--kva-accent-soft); background: var(--kva-surface-3); }
       .kv-admin-top { display: flex; align-items: stretch; }
       .kv-admin-sidebar {
         width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px;
-        padding: 18px 14px; background: #161A30; border-right: 1px solid #2B304C;
+        padding: 18px 14px; background: var(--kva-surface-2); border-right: 1px solid var(--kva-border);
         position: sticky; top: 0; height: 100vh; overflow-y: auto;
       }
       .kv-admin-brand { display: flex; flex-direction: column; gap: 10px; padding: 0 6px; }
       .kv-admin-brand-row { display: flex; align-items: center; gap: 10px; }
-      .kv-admin-logo-icon { width: auto; min-width: 34px; height: 34px; padding: 0 10px; flex-shrink: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #6558D9; color: #EFEBFF; overflow: hidden; }
+      .kv-admin-logo-icon { width: auto; min-width: 34px; height: 34px; padding: 0 10px; flex-shrink: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--kva-accent); color: var(--kva-on-accent); overflow: hidden; }
       .kv-admin-logo-icon svg { width: 20px; height: 20px; }
       .kv-admin-side-group { display: flex; flex-direction: column; gap: 6px; }
-      .kv-admin-side-label { font-family: 'JetBrains Mono', monospace; font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; color: #737B91; padding: 0 8px 4px; }
+      .kv-admin-side-label { font-family: 'JetBrains Mono', monospace; font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; color: var(--kva-text-3); padding: 0 8px 4px; }
       .kv-admin-nav { display: flex; flex-direction: column; gap: 2px; }
       .kv-admin-nav .kv-admin-nav-item { width: 100%; justify-content: flex-start; }
       .kv-admin-side-quick { display: flex; flex-direction: column; gap: 2px; }
       .kv-admin-side-quick .kv-admin-nav-item { width: 100%; justify-content: flex-start; }
-      .kv-admin-side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid #2B304C; }
+      .kv-admin-side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid var(--kva-border); }
       .kv-admin-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
       .kv-admin-main, .kv-admin-main-full, .kv-admin-content { min-width: 0; }
       .kv-admin-shell .kv-two-col > * { min-width: 0; }
@@ -1333,66 +1416,65 @@
       .kv-admin-shell .kv-form-grid > label { min-width: 0; }
       .kv-admin-search { flex: 1; max-width: 520px; min-width: 160px; position: relative; }
       .kv-admin-shell .kv-table td { overflow-wrap: anywhere; }
-      .kv-admin-content { min-width: 0; }
-      .kv-admin-search .material-symbols-outlined { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #737B91; }
-      .kv-admin-search input { width: 100%; background: #0F111A; border: 1px solid #2B304C; border-radius: 6px; color: #DEE1FE; padding: 9px 12px 9px 36px; font-family: 'JetBrains Mono', monospace; font-size: .72rem; }
-      .kv-admin-search input:focus { outline: none; border-color: #6558D9; box-shadow: 0 0 0 3px rgba(101, 88, 217, .22); }
-      .kv-admin-avatar { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #6558D9; color: #EFEBFF; font-size: .72rem; font-weight: 700; text-decoration: none; border: 1px solid #2B304C; }
+      .kv-admin-search .material-symbols-outlined { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--kva-text-3); }
+      .kv-admin-search input { width: 100%; background: var(--kva-bg); border: 1px solid var(--kva-border); border-radius: 6px; color: var(--kva-text); padding: 9px 12px 9px 36px; font-family: 'JetBrains Mono', monospace; font-size: .72rem; }
+      .kv-admin-search input:focus { outline: none; border-color: var(--kva-accent); box-shadow: 0 0 0 3px var(--kva-glow-soft); }
+      .kv-admin-avatar { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--kva-accent); color: var(--kva-on-accent); font-size: .72rem; font-weight: 700; text-decoration: none; border: 1px solid var(--kva-border); }
       .kv-admin-avatar img { width: 100%; height: 100%; object-fit: cover; }
       .kv-admin-main-full { max-width: 1500px; margin: 0 auto; padding: 26px 30px 60px; }
-      .kv-admin-pagehead { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid #2B304C; }
-      .kv-admin-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.55rem; font-weight: 600; letter-spacing: -0.01em; color: #DEE1FE; }
-      .kv-admin-sub { color: #737B91; font-size: .8rem; margin-top: 4px; }
+      .kv-admin-pagehead { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--kva-border); }
+      .kv-admin-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.55rem; font-weight: 600; letter-spacing: -0.01em; color: var(--kva-text); }
+      .kv-admin-sub { color: var(--kva-text-3); font-size: .8rem; margin-top: 4px; }
       .kv-admin-shell .kv-stat-box {
-        background: #171A27; border: 1px solid #2B304C; border-radius: 8px;
-        padding: 22px; box-shadow: 0 10px 28px -24px rgba(0, 0, 0, .75); color: #DEE1FE;
+        background: var(--kva-surface); border: 1px solid var(--kva-border); border-radius: 8px;
+        padding: 22px; box-shadow: var(--kva-shadow); color: var(--kva-text);
       }
-      .kv-admin-shell .kv-section-title { color: #DEE1FE; letter-spacing: -0.01em; }
-      .kv-admin-shell .kv-card { background: #171A27; border: 1px solid #2B304C; border-radius: 8px; box-shadow: 0 10px 28px -24px rgba(0, 0, 0, .6); }
+      .kv-admin-shell .kv-section-title { color: var(--kva-text); letter-spacing: -0.01em; }
+      .kv-admin-shell .kv-card { background: var(--kva-surface); border: 1px solid var(--kva-border); border-radius: 8px; box-shadow: var(--kva-shadow); }
       .kv-admin-shell .kv-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
-      .kv-admin-shell .kv-kpi { background: #171A27; border: 1px solid #2B304C; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
-      .kv-admin-shell .kv-kpi .ico { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; background: rgba(101, 88, 217, .18); color: #C6C0FF; margin-bottom: 6px; }
-      .kv-admin-shell .kv-kpi .lbl { font-family: 'JetBrains Mono', monospace; font-size: .65rem; letter-spacing: .04em; text-transform: uppercase; color: #737B91; }
-      .kv-admin-shell .kv-kpi .val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.45rem; font-weight: 700; color: #DEE1FE; line-height: 1.15; }
-      .kv-admin-shell .kv-kpi .delta { font-size: .72rem; color: #737B91; }
+      .kv-admin-shell .kv-kpi { background: var(--kva-surface); border: 1px solid var(--kva-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+      .kv-admin-shell .kv-kpi .ico { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; background: var(--kva-glow-soft); color: var(--kva-accent-soft); margin-bottom: 6px; }
+      .kv-admin-shell .kv-kpi .lbl { font-family: 'JetBrains Mono', monospace; font-size: .65rem; letter-spacing: .04em; text-transform: uppercase; color: var(--kva-text-3); }
+      .kv-admin-shell .kv-kpi .val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.45rem; font-weight: 700; color: var(--kva-text); line-height: 1.15; }
+      .kv-admin-shell .kv-kpi .delta { font-size: .72rem; color: var(--kva-text-3); }
       .kv-admin-shell .kv-two-col { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 14px; }
-      .kv-admin-shell .kv-chart-card { background: #171A27; border: 1px solid #2B304C; border-radius: 8px; padding: 18px; }
-      .kv-admin-shell .kv-chart-title { font-size: .95rem; font-weight: 600; color: #DEE1FE; margin: 0 0 4px; }
-      .kv-admin-shell .kv-chart-sub { font-size: .75rem; color: #737B91; margin: 0 0 14px; }
+      .kv-admin-shell .kv-chart-card { background: var(--kva-surface); border: 1px solid var(--kva-border); border-radius: 8px; padding: 18px; }
+      .kv-admin-shell .kv-chart-title { font-size: .95rem; font-weight: 600; color: var(--kva-text); margin: 0 0 4px; }
+      .kv-admin-shell .kv-chart-sub { font-size: .75rem; color: var(--kva-text-3); margin: 0 0 14px; }
       .kv-admin-shell .kv-bar-chart { display: flex; align-items: flex-end; gap: 10px; min-height: 180px; }
       .kv-admin-shell .kv-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
-      .kv-admin-shell .kv-bar-val { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: #C6C0FF; }
-      .kv-admin-shell .kv-bar { width: 100%; max-width: 44px; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, #6558D9, #3A2DC2); }
-      .kv-admin-shell .kv-bar-label { font-size: .68rem; color: #737B91; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+      .kv-admin-shell .kv-bar-val { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--kva-accent-soft); }
+      .kv-admin-shell .kv-bar { width: 100%; max-width: 44px; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--kva-accent), var(--kva-accent-hover)); }
+      .kv-admin-shell .kv-bar-label { font-size: .68rem; color: var(--kva-text-3); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
       .kv-admin-shell .kv-qa-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-      .kv-admin-shell .kv-qa { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 8px; border: 1px solid #2B304C; background: #161A30; cursor: pointer; transition: border-color .15s, transform .15s, background .15s; }
-      .kv-admin-shell .kv-qa:hover { border-color: #6558D9; transform: translateY(-1px); background: #20243A; }
-      .kv-admin-shell .kv-qa-ico { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; background: rgba(101, 88, 217, .18); color: #C6C0FF; flex-shrink: 0; }
-      .kv-admin-shell .kv-qa-title { display: block; font-size: .85rem; font-weight: 600; color: #DEE1FE; }
-      .kv-admin-shell .kv-qa-desc { display: block; font-size: .72rem; color: #737B91; margin-top: 2px; }
-      .kv-admin-shell .kv-table-wrap { background: #171A27; border: 1px solid #2B304C; border-radius: 8px; overflow: auto; }
+      .kv-admin-shell .kv-qa { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 8px; border: 1px solid var(--kva-border); background: var(--kva-surface-2); cursor: pointer; transition: border-color .15s, transform .15s, background .15s; }
+      .kv-admin-shell .kv-qa:hover { border-color: var(--kva-accent); transform: translateY(-1px); background: var(--kva-surface-3); }
+      .kv-admin-shell .kv-qa-ico { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; background: var(--kva-glow-soft); color: var(--kva-accent-soft); flex-shrink: 0; }
+      .kv-admin-shell .kv-qa-title { display: block; font-size: .85rem; font-weight: 600; color: var(--kva-text); }
+      .kv-admin-shell .kv-qa-desc { display: block; font-size: .72rem; color: var(--kva-text-3); margin-top: 2px; }
+      .kv-admin-shell .kv-table-wrap { background: var(--kva-surface); border: 1px solid var(--kva-border); border-radius: 8px; overflow: auto; }
       .kv-admin-shell .kv-table { border: 0; }
-      .kv-admin-shell .kv-table th { background: #161A30; font-family: 'JetBrains Mono', monospace; font-size: .65rem; letter-spacing: .04em; text-transform: uppercase; color: #737B91; padding: 11px 14px; }
-      .kv-admin-shell .kv-table td { padding: 12px 14px; border-top: 1px solid #2B304C; color: #C8C4D6; vertical-align: middle; }
-      .kv-admin-shell .kv-table tbody tr:hover { background: rgba(101, 88, 217, .08); }
-      .kv-admin-shell .kv-chapter-row { border-bottom: 1px solid #2B304C; background: transparent; }
-      .kv-admin-shell .kv-chapter-row:hover { background: rgba(101, 88, 217, .08); }
-      .kv-admin-chapter-panel { background: #161A30; border-top: 1px solid #2B304C; padding: 14px 16px; }
+      .kv-admin-shell .kv-table th { background: var(--kva-surface-2); font-family: 'JetBrains Mono', monospace; font-size: .65rem; letter-spacing: .04em; text-transform: uppercase; color: var(--kva-text-3); padding: 11px 14px; }
+      .kv-admin-shell .kv-table td { padding: 12px 14px; border-top: 1px solid var(--kva-border); color: var(--kva-text-2); vertical-align: middle; }
+      .kv-admin-shell .kv-table tbody tr:hover { background: var(--kva-glow-soft); }
+      .kv-admin-shell .kv-chapter-row { border-bottom: 1px solid var(--kva-border); background: transparent; }
+      .kv-admin-shell .kv-chapter-row:hover { background: var(--kva-glow-soft); }
+      .kv-admin-chapter-panel { background: var(--kva-surface-2); border-top: 1px solid var(--kva-border); padding: 14px 16px; }
       .kv-admin-chapter-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
       .kv-admin-chapter-heading { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-      .kv-admin-chapter-heading strong { font-size: .875rem; color: #DEE1FE; }
-      .kv-admin-chapter-sub { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: #737B91; }
+      .kv-admin-chapter-heading strong { font-size: .875rem; color: var(--kva-text); }
+      .kv-admin-chapter-sub { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--kva-text-3); }
       .kv-admin-chapter-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-      .kv-admin-chapter-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #2B304C; cursor: default; }
+      .kv-admin-chapter-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--kva-border); cursor: default; }
       .kv-admin-chapter-row:last-child { border-bottom: 0; }
       .kv-admin-chapter-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
       .kv-admin-chapter-info .kv-badge { flex-shrink: 0; }
-      .kv-admin-chapter-title { color: #C8C4D6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .kv-admin-chapter-meta { color: #737B91; font-size: .72rem; flex-shrink: 0; }
+      .kv-admin-chapter-title { color: var(--kva-text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .kv-admin-chapter-meta { color: var(--kva-text-3); font-size: .72rem; flex-shrink: 0; }
       .kv-admin-chapter-actions { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
-      .kv-admin-chapter-empty { color: #737B91; font-size: .875rem; margin: 0; }
+      .kv-admin-chapter-empty { color: var(--kva-text-3); font-size: .875rem; margin: 0; }
       .kv-info-content { white-space: pre-wrap; line-height: 1.75; color: var(--kv-text-muted); }
-      .kv-site-logo-preview { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; min-height: 110px; border: 1px dashed #2B304C; border-radius: 10px; background: #161A30; color: #737B91; font-size: .8rem; overflow: hidden; }
+      .kv-site-logo-preview { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; min-height: 110px; border: 1px dashed var(--kva-border); border-radius: 10px; background: var(--kva-surface-2); color: var(--kva-text-3); font-size: .8rem; overflow: hidden; }
       .kv-site-logo-preview img { max-width: 100%; max-height: 110px; object-fit: contain; display: block; }
       @media (max-width: 900px) {
         .kv-admin-chapter-row { flex-direction: column; align-items: stretch; gap: 8px; }
@@ -1404,82 +1486,81 @@
         .kv-admin-chapter-title { white-space: normal; }
       }
       .kv-admin-shell .kv-btn { border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: .8rem; font-weight: 600; }
-      .kv-admin-shell .kv-btn-primary { background: #6558D9; color: #EFEBFF; border: none; box-shadow: 0 8px 20px -14px rgba(101, 88, 217, .8); }
-      .kv-admin-shell .kv-btn-primary:hover { background: #7A6FE0; color: #EFEBFF; }
-      .kv-admin-shell .kv-btn-ghost { background: #20243A; color: #C8C4D6; border: 1px solid #2B304C; }
-      .kv-admin-shell .kv-btn-ghost:hover { background: #25293F; color: #DEE1FE; border-color: #6558D9; }
-      .kv-admin-shell .kv-btn-danger-ghost { background: transparent; border: 1px solid rgba(251, 113, 133, .45); color: #FB7185; }
-      .kv-admin-shell .kv-btn-danger-ghost:hover { background: rgba(251, 113, 133, .12); color: #FB7185; }
+      .kv-admin-shell .kv-btn-primary { background: var(--kva-accent); color: var(--kva-on-accent); border: none; box-shadow: 0 8px 20px -14px var(--kva-glow); }
+      .kv-admin-shell .kv-btn-primary:hover { background: var(--kva-accent-hover); color: var(--kva-on-accent); }
+      .kv-admin-shell .kv-btn-ghost { background: var(--kva-surface-3); color: var(--kva-text-2); border: 1px solid var(--kva-border); }
+      .kv-admin-shell .kv-btn-ghost:hover { background: var(--kva-surface-2); color: var(--kva-text); border-color: var(--kva-accent); }
+      .kv-admin-shell .kv-btn-danger-ghost { background: transparent; border: 1px solid color-mix(in srgb, var(--kva-danger) 45%, transparent); color: var(--kva-danger); }
+      .kv-admin-shell .kv-btn-danger-ghost:hover { background: color-mix(in srgb, var(--kva-danger) 12%, transparent); color: var(--kva-danger); }
       .kv-admin-shell .kv-input, .kv-admin-shell .kv-select, .kv-admin-shell .kv-textarea {
-        background: #0F111A; border: 1px solid #2B304C; border-radius: 6px; color: #DEE1FE;
+        background: var(--kva-bg); border: 1px solid var(--kva-border); border-radius: 6px; color: var(--kva-text);
         font-family: 'Plus Jakarta Sans', sans-serif; font-size: .82rem; padding: 10px 12px;
       }
-      .kv-admin-shell .kv-input:focus, .kv-admin-shell .kv-select:focus, .kv-admin-shell .kv-textarea:focus { outline: none; border-color: #6558D9; box-shadow: 0 0 0 3px rgba(101, 88, 217, .22); background: #161A30; }
+      .kv-admin-shell .kv-input:focus, .kv-admin-shell .kv-select:focus, .kv-admin-shell .kv-textarea:focus { outline: none; border-color: var(--kva-accent); box-shadow: 0 0 0 3px var(--kva-glow-soft); background: var(--kva-surface-2); }
       .kv-admin-shell .kv-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-      .kv-admin-shell .kv-form-grid > label { display: flex; flex-direction: column; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .03em; text-transform: uppercase; color: #737B91; }
+      .kv-admin-shell .kv-form-grid > label { display: flex; flex-direction: column; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .03em; text-transform: uppercase; color: var(--kva-text-3); }
       .kv-admin-shell .kv-form-grid > label input, .kv-admin-shell .kv-form-grid > label select, .kv-admin-shell .kv-form-grid > label textarea { margin-top: 0; }
-      .kv-admin-shell .kv-toolbar { background: #171A27; border: 1px solid #2B304C; border-radius: 8px; padding: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+      .kv-admin-shell .kv-toolbar { background: var(--kva-surface); border: 1px solid var(--kva-border); border-radius: 8px; padding: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
       .kv-admin-shell .kv-manga-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-      .kv-admin-shell .kv-manga-card { background: #171A27; border: 1px solid #2B304C; border-radius: 8px; overflow: hidden; cursor: default; }
+      .kv-admin-shell .kv-manga-card { background: var(--kva-surface); border: 1px solid var(--kva-border); border-radius: 8px; overflow: hidden; cursor: default; }
       .kv-admin-shell .kv-card { cursor: default; }
-      .kv-admin-shell .kv-manga-card:hover { transform: none; border-color: #2B304C; }
-      .kv-admin-shell .kv-manga-grid { gap: 12px; }
-      .kv-admin-shell .kv-manga-card-cover { aspect-ratio: 3 / 4; background: #0F111A; }
+      .kv-admin-shell .kv-manga-card:hover { transform: none; border-color: var(--kva-border); }
+      .kv-admin-shell .kv-manga-card-cover { aspect-ratio: 3 / 4; background: var(--kva-bg); }
       .kv-admin-shell .kv-manga-card-body { padding: 12px; }
-      .kv-admin-shell .kv-manga-card-title { color: #DEE1FE; font-size: .9rem; }
-      .kv-admin-shell .kv-manga-card-slug { color: #737B91; font-family: 'JetBrains Mono', monospace; font-size: .68rem; }
-      .kv-admin-shell .kv-manga-card-meta { color: #737B91; font-size: .72rem; }
-      .kv-admin-shell .kv-manga-card-actions { border-top: 1px solid #2B304C; padding-top: 10px; }
-      .kv-admin-shell .kv-page-thumb { border-radius: 6px; border: 1px solid #2B304C; }
+      .kv-admin-shell .kv-manga-card-title { color: var(--kva-text); font-size: .9rem; }
+      .kv-admin-shell .kv-manga-card-slug { color: var(--kva-text-3); font-family: 'JetBrains Mono', monospace; font-size: .68rem; }
+      .kv-admin-shell .kv-manga-card-meta { color: var(--kva-text-3); font-size: .72rem; }
+      .kv-admin-shell .kv-manga-card-actions { border-top: 1px solid var(--kva-border); padding-top: 10px; }
+      .kv-admin-shell .kv-page-thumb { border-radius: 6px; border: 1px solid var(--kva-border); }
       .kv-admin-shell .kv-role-badge { font-family: 'JetBrains Mono', monospace; font-size: .68rem; border-radius: 4px; padding: 3px 7px; }
-      .kv-admin-shell .kv-role-badge.admin { background: rgba(78, 222, 163, .15); color: #4EDEA3; }
-      .kv-admin-shell .kv-role-badge.member { background: rgba(198, 192, 255, .15); color: #C6C0FF; }
+      .kv-admin-shell .kv-role-badge.admin { background: color-mix(in srgb, var(--kva-success) 15%, transparent); color: var(--kva-success-2, var(--kva-success)); }
+      .kv-admin-shell .kv-role-badge.member { background: var(--kva-glow-soft); color: var(--kva-accent-soft); }
       .kv-admin-shell .kv-user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
-      .kv-admin-shell .kv-user-card { background: #171A27; border: 1px solid #2B304C; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+      .kv-admin-shell .kv-user-card { background: var(--kva-surface); border: 1px solid var(--kva-border); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
       .kv-admin-shell .kv-user-card-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
       .kv-admin-shell .kv-user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
       .kv-admin-shell .kv-user-meta { flex: 1; min-width: 0; }
-      .kv-admin-shell .kv-user-name { font-size: .88rem; font-weight: 700; color: #DEE1FE; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .kv-admin-shell .kv-user-self { font-size: .72rem; font-weight: 400; color: #737B91; }
-      .kv-admin-shell .kv-user-email { font-size: .74rem; color: #737B91; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .kv-admin-shell .kv-user-card-body { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-top: 1px solid #2B304C; border-bottom: 1px solid #2B304C; }
-      .kv-admin-shell .kv-user-row { display: flex; justify-content: space-between; gap: 12px; font-size: .76rem; color: #A0A7B8; }
-      .kv-admin-shell .kv-user-row strong { color: #DEE1FE; font-weight: 500; }
+      .kv-admin-shell .kv-user-name { font-size: .88rem; font-weight: 700; color: var(--kva-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .kv-admin-shell .kv-user-self { font-size: .72rem; font-weight: 400; color: var(--kva-text-3); }
+      .kv-admin-shell .kv-user-email { font-size: .74rem; color: var(--kva-text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .kv-admin-shell .kv-user-card-body { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-top: 1px solid var(--kva-border); border-bottom: 1px solid var(--kva-border); }
+      .kv-admin-shell .kv-user-row { display: flex; justify-content: space-between; gap: 12px; font-size: .76rem; color: var(--kva-text-2); }
+      .kv-admin-shell .kv-user-row strong { color: var(--kva-text); font-weight: 500; }
       .kv-admin-shell .kv-user-card-actions { display: flex; gap: 8px; align-items: center; margin-top: auto; }
       .kv-admin-shell .kv-user-card-head .kv-role-badge { flex-shrink: 0; }
       .kv-admin-shell .kv-user-role { flex: 1; }
       .kv-admin-shell .kv-user-card-actions .kv-btn { flex-shrink: 0; }
-      .kv-admin-shell .kv-admin-empty { color: #737B91; text-align: center; padding: 24px 0; margin: 0; }
-      .kv-admin-shell .kv-admin-side { background: rgba(22, 26, 48, .9); border-right: 1px solid #2B304C; }
+      .kv-admin-shell .kv-admin-empty { color: var(--kva-text-3); text-align: center; padding: 24px 0; margin: 0; }
+      .kv-admin-shell .kv-admin-side { background: color-mix(in srgb, var(--kva-surface-2) 92%, transparent); border-right: 1px solid var(--kva-border); }
       .kv-admin-shell .kv-admin-nav-item { border-radius: 6px; transition: background .12s, color .12s; }
-      .kv-admin-shell .kv-admin-nav-item.active { background: #6558D9; color: #EFEBFF; font-weight: 600; }
+      .kv-admin-shell .kv-admin-nav-item.active { background: var(--kva-accent); color: var(--kva-on-accent); font-weight: 600; }
       .kv-admin-shell .kv-admin-logo { font-weight: 700; letter-spacing: -0.01em; }
-      .kv-admin-shell .kv-admin-logo span { color: #C6C0FF; }
-      .kv-admin-shell .kv-admin-chip { background: #20243A; border: 1px solid #2B304C; border-radius: 999px; padding: 6px 12px; font-size: .68rem; }
+      .kv-admin-shell .kv-admin-logo span { color: var(--kva-accent-soft); }
+      .kv-admin-shell .kv-admin-chip { background: var(--kva-surface-3); border: 1px solid var(--kva-border); border-radius: 999px; padding: 6px 12px; font-size: .68rem; }
       .kv-admin-shell .kv-admin-topbar { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
       .kv-admin-shell .kv-admin-title { font-size: 1.55rem; font-weight: 600; letter-spacing: -0.01em; }
-      .kv-admin-shell .kv-admin-sub { color: #737B91; font-size: .8rem; margin-top: 4px; }
-      .kv-admin-shell .kv-page-thumb { border-radius: 6px; border: 1px solid #2B304C; }
+      .kv-admin-shell .kv-admin-sub { color: var(--kva-text-3); font-size: .8rem; margin-top: 4px; }
+      .kv-admin-shell .kv-page-thumb { border-radius: 6px; border: 1px solid var(--kva-border); }
       @media (max-width: 1100px) {
         .kv-admin-shell .kv-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .kv-admin-shell .kv-two-col { grid-template-columns: 1fr; }
         .kv-admin-shell .kv-manga-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       }
       .kv-admin-shell { overflow-x: hidden; }
-      .kv-admin-hamburger { display: none; width: 38px; height: 38px; align-items: center; justify-content: center; border: 1px solid #2B304C; border-radius: 8px; background: #20243A; color: #DEE1FE; cursor: pointer; }
+      .kv-admin-hamburger { display: none; width: 38px; height: 38px; align-items: center; justify-content: center; border: 1px solid var(--kva-border); border-radius: 8px; background: var(--kva-surface-3); color: var(--kva-text); cursor: pointer; }
       .kv-admin-hamburger .material-symbols-outlined { font-size: 20px; }
       .kv-admin-overlay { display: none; }
       @media (max-width: 1024px) {
         .kv-admin-top { display: block; }
         .kv-admin-sidebar {
           position: fixed; top: 0; left: 0; z-index: 80; width: min(280px, 86vw); height: 100vh;
-          transform: translateX(-105%); transition: transform .25s ease; box-shadow: 0 0 48px rgba(0,0,0,.45);
-          overflow-y: auto; border-right: 1px solid #2B304C; padding: 18px 14px;
+          transform: translateX(-105%); transition: transform .25s ease; box-shadow: 0 0 48px var(--kva-overlay);
+          overflow-y: auto; border-right: 1px solid var(--kva-border); padding: 18px 14px;
         }
         .kv-admin-drawer-open .kv-admin-sidebar { transform: translateX(0); }
         .kv-admin-content { width: 100%; }
         .kv-admin-hamburger { display: inline-flex; }
-        .kv-admin-overlay { display: block; position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.55); backdrop-filter: blur(2px); }
+        .kv-admin-overlay { display: block; position: fixed; inset: 0; z-index: 70; background: var(--kva-overlay); backdrop-filter: blur(2px); }
       }
       @media (max-width: 760px) {
         .kv-admin-topbar-new { padding: 12px 16px; gap: 10px; flex-direction: column; align-items: stretch; }
@@ -2569,7 +2650,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           - POST /api/admin/delete-chapter  -> { id }
           - POST /api/admin/delete-comment  -> { id }
           - POST /api/admin/comment-status  -> { id, status }
-          - POST /api/admin/pin-comment     -> { id } � sematkan komentar (admin)
+          - POST /api/admin/pin-comment     -> { id } ÃƒÂ¯Ã‚Â¿Ã‚Â½ sematkan komentar (admin)
           Semua endpoint admin memverifikasi header: Authorization: Bearer <token>.
        3. NEON POSTGRES menjadi database katalog/akun/komentar: archive
           disimpan sebagai dokumen JSONB pada tabel nexamanga_snapshot di
@@ -2598,7 +2679,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
          Harus identik dengan PUBLIC_API_URL di .env / Vercel Environment Variables.
          Kosongkan hanya jika ingin mode lokal tanpa backend. */
       API_BASE_URL: 'https://nexamanga-nexamanga.vercel.app',
-      DEFAULT_THEME: 'light', /* 'dark' atau 'light' */
+      DEFAULT_THEME: 'sepia', /* 'sepia' atau 'dark' */
       ITEMS_PER_PAGE: 8,
       CONTACT_EMAIL: 'redaksi@nexamanga.example' /* UBAH: email redaksi */
     };
@@ -2614,7 +2695,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     var state = {
       route: 'home',
       params: {},
-       theme: localStorage.getItem('kv_theme') || CONFIG.DEFAULT_THEME,
+       theme: (function () { var t = localStorage.getItem('kv_theme') || CONFIG.DEFAULT_THEME; return t === 'light' ? 'sepia' : t; })(),
        imageCompressionEnabled: localStorage.getItem('kv_img_compress_enabled') !== '0',
        imageCompressionQuality: (function () { if (localStorage.getItem('kv_img_compress_ver') !== '2') { localStorage.setItem('kv_img_compress_ver', '2'); localStorage.setItem('kv_img_compress_quality', '0.8'); localStorage.setItem('kv_img_compress_maxdim', '1600'); localStorage.setItem('kv_img_compress_enabled', '1'); return 0.8; } return parseFloat(localStorage.getItem('kv_img_compress_quality') || '0.8') || 0.8; })(),
        imageCompressionMaxDim: (function () { if (localStorage.getItem('kv_img_compress_ver') !== '2') return 1600; return parseInt(localStorage.getItem('kv_img_compress_maxdim') || '1600', 10) || 1600; })(),
@@ -3071,14 +3152,16 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     }
 
     function applyTheme() {
+      document.documentElement.classList.remove('dark', 'sepia');
       if (state.theme === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
-        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('sepia');
       }
+      state.readerTheme = state.theme;
       localStorage.setItem('kv_theme', state.theme);
       var metaTheme = document.querySelector('meta[name="theme-color"]');
-      if (metaTheme) metaTheme.setAttribute('content', state.theme === 'dark' ? '#0B0E17' : '#F5F7FB');
+      if (metaTheme) metaTheme.setAttribute('content', state.theme === 'dark' ? '#0B0E17' : '#FAF7F2');
     }
 
     function escapeHtml(str) {
@@ -4086,7 +4169,7 @@ mobileMenu +
         '<div class="kv-reader-sheet-head"><span>Pengaturan Pembaca</span><button type="button" class="kv-reader-sheet-close" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div>' +
          '<div class="kv-reader-sheet-body">' +
            '<div class="kv-reader-sheet-row"><span class="kv-reader-sheet-label">Tema</span>' +
-             '<button type="button" class="kv-btn kv-btn-ghost kv-theme-toggle" data-action="toggle-theme" aria-label="' + (state.theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap') + '" title="' + (state.theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap') + '" style="width:44px;height:44px;flex-basis:44px;">' +
+             '<button type="button" class="kv-btn kv-btn-ghost kv-theme-toggle" data-action="toggle-theme" aria-label="' + (state.theme === 'dark' ? 'Aktifkan mode sepia' : 'Aktifkan mode gelap') + '" title="' + (state.theme === 'dark' ? 'Aktifkan mode sepia' : 'Aktifkan mode gelap') + '" style="width:44px;height:44px;flex-basis:44px;">' +
                (state.theme === 'dark'
                  ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>'
                  : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/></svg>') +
@@ -4209,7 +4292,7 @@ mobileMenu +
               brandMedia +
               '<span class="kv-login-kicker">' + escapeHtml(siteName()) + '</span>' +
               '<h1 class="kv-login-title">Selamat datang di ' + escapeHtml(siteName()) + '</h1>' +
-              '<p class="kv-login-sub">Masuk untuk membuka semua fitur pembaca � dari favorit hingga komentar. Satu akun untuk semua, tanpa password tambahan.</p>' +
+              '<p class="kv-login-sub">Masuk untuk membuka semua fitur pembaca ÃƒÂ¯Ã‚Â¿Ã‚Â½ dari favorit hingga komentar. Satu akun untuk semua, tanpa password tambahan.</p>' +
               '<ul class="kv-login-features">' + guestFeatures + '</ul>' +
             '</div>' +
             '<div class="kv-login-card">' +
@@ -4334,7 +4417,7 @@ mobileMenu +
             '<section class="rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
               '<div class="text-base font-bold text-[#1C1917] dark:text-white mb-3">Preferensi Membaca</div>' +
               '<div class="flex items-center gap-3 p-3 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A]">' +
-                '<div class="w-9 h-9 rounded-xl bg-[#E2DFFF] dark:bg-[#2A2F4C] text-[#694F36] dark:text-[#A69AF4] flex items-center justify-center text-lg">☰</div>' +
+                '<div class="w-9 h-9 rounded-xl bg-[#E2DFFF] dark:bg-[#2A2F4C] text-[#694F36] dark:text-[#A69AF4] flex items-center justify-center text-lg">ÃƒÂ¢Ã‹Å“Ã‚Â°</div>' +
                 '<div class="flex-1 min-w-0"><div class="text-sm font-bold text-[#1C1917] dark:text-white">Gaya Pembaca</div><div class="text-xs text-[#78716C] dark:text-neutral-400">' + readerModeLabel + '</div></div>' +
                 '<button type="button" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-white dark:bg-[#1A1A1E] border border-[#E6DCCF] dark:border-[#2B304C] text-[#574431] dark:text-neutral-200" data-action="toggle-reader-mode">Ubah</button>' +
               '</div>' +
@@ -4342,9 +4425,9 @@ mobileMenu +
             '<section class="rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
               '<div class="text-base font-bold text-[#1C1917] dark:text-white mb-3">Pintasan</div>' +
               '<div class="flex flex-col gap-2">' +
-                '<a href="#/archive" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Archive <span>→</span></a>' +
-                '<a href="#/tentang" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Tentang NexaManga <span>→</span></a>' +
-                '<a href="#/ketentuan" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Ketentuan Layanan <span>→</span></a>' +
+                '<a href="#/archive" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Archive <span>ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</span></a>' +
+                '<a href="#/tentang" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Tentang NexaManga <span>ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</span></a>' +
+                '<a href="#/ketentuan" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#1C1917] dark:text-white text-sm font-semibold hover:bg-[#EFE8DC] dark:hover:bg-[#2A2F4C] transition-colors">Ketentuan Layanan <span>ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</span></a>' +
               '</div>' +
             '</section>' +
             '<button type="button" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#F3EDE2] dark:bg-[#20243A] text-[#464555] dark:text-neutral-300 border border-[#E6DCCF] dark:border-[#2B304C] text-sm font-bold hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors" data-action="logout-user">Keluar dari Akun</button>' +
@@ -4560,7 +4643,7 @@ mobileMenu +
             '<div class="kv-admin-leader-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</div>' +
             '<div class="kv-admin-leader-body">' +
               '<div class="kv-admin-leader-title">' + escapeHtml(m.title) + '</div>' +
-              '<div class="kv-admin-leader-meta">' + escapeHtml(m.type || 'Manga') + ' � ' + escapeHtml(m.status || 'Ongoing') + ' � ' + chs + ' chapter' + (m.rating ? ' � ? ' + escapeHtml(m.rating) : '') + '</div>' +
+              '<div class="kv-admin-leader-meta">' + escapeHtml(m.type || 'Manga') + ' ÃƒÂ¯Ã‚Â¿Ã‚Â½ ' + escapeHtml(m.status || 'Ongoing') + ' ÃƒÂ¯Ã‚Â¿Ã‚Â½ ' + chs + ' chapter' + (m.rating ? ' ÃƒÂ¯Ã‚Â¿Ã‚Â½ ? ' + escapeHtml(m.rating) : '') + '</div>' +
               '<div class="kv-admin-leader-barwrap"><div class="kv-admin-leader-bar" style="width:' + w + '%;"></div></div>' +
             '</div>' +
             '<div class="kv-admin-leader-views">' + v.toLocaleString('id-ID') + ' <span>views</span></div>' +
@@ -4616,8 +4699,6 @@ mobileMenu +
           '<h3 class="kv-section-title" style="margin:0 0 8px;">Analitik Traffic</h3>' +
           '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Halaman ini menampilkan rincian traffic situs. Tanggal otomatis dari awal bulan ini sampai hari ini. Ubah rentang tanggal lalu tekan Refresh.</p>' +
           (CONFIG.API_BASE_URL ? '' : '<p style="color:var(--kv-warning);font-size:0.85rem;">Backend tidak terhubung (mode lokal): data traffic tidak dapat dicatat.</p>') +
-          '<p style="color:var(--kv-text-muted);font-size:0.8rem;margin:0 0 12px;">Hari tercatat: ' + trackedDays + ' � Total pageviews: ' + (t.pageviews || 0) + '</p>' +
-          '<button type="button" class="kv-btn kv-btn-ghost kv-btn-sm" data-action="kv-traffic-test" style="margin-bottom:12px;">Catat kunjungan uji</button>' +
           '</div>' +
           '<section class="kv-traffic">' +
             '<div class="kv-traffic-toolbar">' +
@@ -4631,56 +4712,6 @@ mobileMenu +
               '<article class="kv-traffic-card"><div class="kv-traffic-label">TOTAL VISITS</div><div class="kv-traffic-value" id="kv-traffic-visits">' + (t.visits || 0).toLocaleString('id-ID') + '</div><div class="kv-traffic-note">Session-based estimate</div></article>' +
               '<article class="kv-traffic-card"><div class="kv-traffic-label">AVG. PAGES/VISIT</div><div class="kv-traffic-value" id="kv-traffic-average">' + (t.average || 0) + '</div><div class="kv-traffic-note">Engagement metric</div></article>' +
             '</div>' +
-               '<div class="kv-traffic-chart">' +
-               '<h3 class="kv-chart-title">&#9635; Traffic Overview</h3>' +
-               '<p class="kv-chart-sub">Pageviews, visitors, and visits over time</p>' +
-               '<div class="kv-traffic-legend"><span><i class="kv-traffic-dot" style="background:#62a5ff"></i>Pageviews</span><span><i class="kv-traffic-dot" style="background:#d77aa9"></i>Unique Visitors</span><span><i class="kv-traffic-dot" style="background:#e6d36f"></i>Visits</span></div>' +
-               (function () {
-                 var tracked = (d.daily && d.daily.length) ? d.daily : [];
-                 if (!tracked.length) return '<p style="color:var(--kv-text-muted);text-align:center;padding:24px 0;">Belum ada data traffic pada rentang ini. Kunjungi halaman situs (frontend) agar pageview tercatat.</p>';
-                 var byDate = {};
-                 tracked.forEach(function (r) { byDate[String(r.date)] = r; });
-                 var daily = [];
-                 var cur = new Date(fromStr + 'T00:00:00');
-                 var end = new Date(toStr + 'T00:00:00');
-                 while (cur <= end) {
-                   var key = cur.toISOString().slice(0, 10);
-                   var r = byDate[key] || { date: key, pageviews: 0, visitors: 0, visits: 0 };
-                   r.date = key;
-                   daily.push(r);
-                   cur.setDate(cur.getDate() + 1);
-                 }
-                 if (!daily.length) return '<p style="color:var(--kv-text-muted);text-align:center;padding:24px 0;">Belum ada data traffic pada rentang ini.</p>';
-                 var maxV = 1;
-                 daily.forEach(function (r) { maxV = Math.max(maxV, r.pageviews || 0, r.visitors || 0, r.visits || 0); });
-                 var left = 55, right = 1080, top = 35, bottom = 275;
-                 var span = right - left;
-                 var range = bottom - top;
-                 function x(i) { return daily.length === 1 ? (left + right) / 2 : left + (i * span) / (daily.length - 1); }
-                 function y(v) { return bottom - ((v || 0) / maxV) * range; }
-                 function path(key, color) {
-                   var pts = daily.map(function (r, i) { return x(i) + ',' + y(r[key]); }).join(' ');
-                   return '<polyline points="' + pts + '" class="kv-traffic-line" stroke="' + color + '" fill="none"><title>' + key + '</title></polyline>';
-                 }
-                 var labels = daily.map(function (r, i) {
-                   var dt = String(r.date || '');
-                   var short = dt.length >= 10 ? dt.slice(8, 10) + ' ' + ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][parseInt(dt.slice(5, 7), 10) - 1] : dt;
-                   return '<text class="kv-traffic-axis" x="' + x(i) + '" y="302" text-anchor="middle">' + short + '</text>';
-                 }).join('');
-                 var yLabels = [0, 0.25, 0.5, 0.75, 1].map(function (f) {
-                   var v = Math.round(maxV * f);
-                   return '<text class="kv-traffic-axis" x="38" y="' + (bottom - f * range + 4) + '">' + v + '</text>' +
-                     '<line class="kv-traffic-grid" x1="55" y1="' + (bottom - f * range) + '" x2="1080" y2="' + (bottom - f * range) + '"/>';
-                 }).join('');
-                 return '<svg viewBox="0 0 1100 355" role="img" aria-label="Grafik traffic"><title>Traffic Overview</title>' +
-                   yLabels +
-                   path('pageviews', '#62a5ff') +
-                   path('visitors', '#d77aa9') +
-                   path('visits', '#e6d36f') +
-                   '<g text-anchor="middle">' + labels + '</g>' +
-                   '</svg>';
-               })() +
-             '</div>' +
            '</section>';
 
       }
@@ -4913,10 +4944,10 @@ mobileMenu +
                '<div class="kv-manga-card-badges">' + (m.featured ? '<span class="kv-badge kv-badge-ok">Unggulan</span> ' : '') + (m.recommended ? '<span class="kv-badge">Rekomendasi</span>' : '') + '</div>' +
              '</div>' +
              '<div class="kv-manga-card-meta">' +
-               '<span>' + escapeHtml(m.type) + '</span><span class="dot">�</span>' +
-               '<span>' + escapeHtml(m.status) + '</span><span class="dot">�</span>' +
+               '<span>' + escapeHtml(m.type) + '</span><span class="dot">ÃƒÂ¯Ã‚Â¿Ã‚Â½</span>' +
+               '<span>' + escapeHtml(m.status) + '</span><span class="dot">ÃƒÂ¯Ã‚Â¿Ã‚Â½</span>' +
                '<span>' + chs.length + ' chapter</span>' +
-               (m.rating ? '<span class="dot">�</span><span>? ' + escapeHtml(m.rating) + '</span>' : '') +
+               (m.rating ? '<span class="dot">ÃƒÂ¯Ã‚Â¿Ã‚Â½</span><span>? ' + escapeHtml(m.rating) + '</span>' : '') +
              '</div>' +
              '<div class="kv-manga-card-actions">' +
                '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-toggle-expand" data-id="' + escapeHtml(m.id) + '">' + kvIcon('chev') + ' ' + (expanded ? 'Tutup' : 'Chapter') + '</button>' +
@@ -4937,7 +4968,7 @@ mobileMenu +
        '</div>';
      }
 
-    /* Panel chapter terintegrasi di baris manga � selalu diurut otomatis by nomor */
+    /* Panel chapter terintegrasi di baris manga ÃƒÂ¯Ã‚Â¿Ã‚Â½ selalu diurut otomatis by nomor */
     function renderAdminChapterPanel(m, chs) {
       var sorted = chs.slice().sort(function (a, b) { return a.number - b.number; });
       var rows = sorted.map(function (c) {
@@ -5125,7 +5156,7 @@ mobileMenu +
             avatar +
             '<div class="kv-admin-comment-meta">' +
               '<div class="kv-admin-comment-author">' + escapeHtml(authorName) + (c.pinned ? ' <span class="kv-comment-pinned">Disematkan</span>' : '') + '</div>' +
-              '<div class="kv-admin-comment-sub">' + escapeHtml(m ? m.title : '(manga dihapus)') + (ch ? ' � Ch. ' + escapeHtml(ch.number) : '') + ' � ' + escapeHtml(c.createdAt || '') + '</div>' +
+              '<div class="kv-admin-comment-sub">' + escapeHtml(m ? m.title : '(manga dihapus)') + (ch ? ' ÃƒÂ¯Ã‚Â¿Ã‚Â½ Ch. ' + escapeHtml(ch.number) : '') + ' ÃƒÂ¯Ã‚Â¿Ã‚Â½ ' + escapeHtml(c.createdAt || '') + '</div>' +
             '</div>' +
             badge +
           '</div>' +
@@ -5820,7 +5851,7 @@ mobileMenu +
           bodyHtml += '<div class="kv-scrape-indicator" role="status" aria-live="polite">' +
             '<div class="kv-scrape-indicator-bar"><div class="kv-scrape-indicator-fill" style="width:' + mppct + '%;"></div></div>' +
             '<span class="kv-scrape-indicator-text">Scrape ' + mp.done + '/' + mp.total + '</span>' +
-            '<button type="button" class="kv-scrape-indicator-btn" data-action="md-progress-open" aria-label="Buka progres">�</button>' +
+            '<button type="button" class="kv-scrape-indicator-btn" data-action="md-progress-open" aria-label="Buka progres">ÃƒÂ¯Ã‚Â¿Ã‚Â½</button>' +
           '</div>';
         }
       }
@@ -6377,7 +6408,7 @@ mobileMenu +
       var el = e.target.closest('[data-action]');
       if (!el) return;
       var act = el.getAttribute('data-action');
-      if (act === 'toggle-theme') { state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme(); render(); }
+      if (act === 'toggle-theme') { state.theme = state.theme === 'dark' ? 'sepia' : 'dark'; state.readerTheme = state.theme; applyTheme(); render(); }
       else if (act === 'oauth-login') {
         if (!CONFIG.API_BASE_URL) { toast('Backend Vercel belum dikonfigurasi.', 'warn'); return; }
         var provider = el.getAttribute('data-provider');
@@ -6420,7 +6451,7 @@ mobileMenu +
       else if (act === 'scroll-reader-up') { window.scrollBy({ top: -Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
       else if (act === 'scroll-reader-down') { window.scrollBy({ top: Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
        else if (act === 'toggle-auto-scroll') { toggleAutoScroll(); }
-       else if (act === 'set-reader-theme') { state.theme = el.getAttribute('data-theme'); applyTheme(); render(); }
+       else if (act === 'set-reader-theme') { state.theme = el.getAttribute('data-theme') === 'dark' ? 'dark' : 'sepia'; state.readerTheme = state.theme; applyTheme(); render(); }
        else if (act === 'set-scroll-speed') { state.autoScrollSpeed = parseFloat(el.getAttribute('data-speed')) || 2.5; render(); }
       else if (act === 'toggle-reader-settings') { state.readerSettingsOpen = !state.readerSettingsOpen; state.readerMenuOpen = false; render(); }
       else if (act === 'scroll-banner-dot') {
@@ -6709,6 +6740,13 @@ mobileMenu +
     window.addEventListener('popstate', handleRouteChange);
     window.addEventListener('hashchange', handleRouteChange);
 
+
+    window.addEventListener('storage', function (e) {
+      if (e.key === 'kv_theme') {
+        var t = e.newValue === 'dark' ? 'dark' : 'sepia';
+        if (state.theme !== t) { state.theme = t; applyTheme(); render(); }
+      }
+    });
      applyTheme();
      parseRoute();
      initializeAuth();
