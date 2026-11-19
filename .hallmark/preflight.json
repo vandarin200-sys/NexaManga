@@ -1,0 +1,12 @@
+﻿{
+  "scanned": "2026-11-19",
+  "findings": {
+    "fonts": "Plus Jakarta Sans + JetBrains Mono via Google Fonts in nexamanga.xml; none in nexamanga/index.html (system-ui)",
+    "palette": "CSS custom properties --kv-* light/dark in nexamanga.xml <b:skin>; hardcoded literals in nexamanga/index.html",
+    "motion": "Tailwind CDN + inline transitions in nexamanga.xml; none significant in nexamanga/index.html",
+    "spacing": "ad-hoc px/rem values, no shared scale",
+    "framework": "Blogger XML SPA template (single file nexamanga.xml) + Vercel serverless backend in nexamanga/ (Node >=20)"
+  },
+  "preserve": ["all content/copy and routes", "links/forms/fields/handlers/ids/data-actions", "API/auth/storage wiring and scripts", "Blogger required structure"],
+  "introduce": ["Hallmark token systems (Almanac for SPA, Cobalt for status page)", "floor-compliant base (focus/overflow/motion/reduced-motion)", "restyled chrome and page compositions", "stamps and sweep records"]
+}

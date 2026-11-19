@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' class='light' lang='id' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+  <meta charset='UTF-8'/>
+  <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
+  <title><data:blog.pageTitle/></title>
+  <meta expr:content='data:blog.metaDescription' name='description'/>
+  <b:include data='blog' name='all-head-content'/>
+  <meta content='#F7F8FA' name='theme-color'/>
+  <script>(function(){try{var t=localStorage.getItem('kv_theme')==='dark'?'dark':'light';var c=document.documentElement.classList;c.remove('dark','light');c.add(t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#0B0E17':'#F7F8FA');}catch(e){}})();</script>
+
+  <!-- =========================================================================
+       NexaManga Blogger XML Theme
+       CARA PASANG:
+       1. Buka Dashboard Blogger -> Tema -> klik panah bawah -> Edit HTML.
+       2. Hapus semua kode lama, tempel seluruh isi file .xml ini, lalu Simpan.
+        3. Ubah konfigurasi SITE_NAME dan API_BASE_URL di bagian <script> bawah.
+           API_BASE_URL wajib sama dengan PUBLIC_API_URL di .env / Vercel
+           (origin HTTPS tanpa garis miring di akhir).
+       ========================================================================= -->
+
+  <link href='https://fonts.googleapis.com' rel='preconnect'/>
+  <link crossorigin='' href='https://fonts.gstatic.com' rel='preconnect'/>
+  <link href='https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
+  <link href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap' rel='stylesheet'/>
+  <link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&amp;display=swap' rel='stylesheet'/>
+  <script src='https://cdn.tailwindcss.com'></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"','sans-serif'], brand: ['Cinzel','serif'] }, colors: { brand: { red:'#DC2626', amber:'#D97706', dark:'#121215', surface:'#1A1A1E', lightBg:'#F7F8FA', lightSurface:'#F1F3F5', lightBorder:'#D1D5DB' } } } } };
+  </script>
+
+  <b:skin><![CDATA[
+    /* =========================================================================
+       UBAH WARNA & VARIABEL TEMA DI SINI
+       ========================================================================= */
+    :root {
+      --kv-bg: #F7F8FA;
+      --kv-surface: #FFFFFF;
+      --kv-surface-2: #F1F3F5;
+      --kv-surface-3: #E5E7EB;
+      --kv-border: #D1D5DB;
+      --kv-text: #111827;
+      --kv-text-muted: #4B5563;
+      --kv-accent: #4F46E5;
+      --kv-accent-hover: #4338CA;
+      --kv-neon: #6366F1;
+      --kv-success: #15803D;
+      --kv-warning: #B45309;
+      --kv-danger: #DC2626;
+      --kv-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --kv-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --kv-radius: 14px;
+    }
+
+    html.dark {
+      --kv-bg: #0F111A;
+      --kv-surface: #171A27;
+      --kv-surface-2: #20243A;
+      --kv-border: #2B304C;
+      --kv-text: #DEE1FE;
+      --kv-text-muted: #A0A7B8;
+      --kv-accent: #A69AF4;       /* Ubah warna aksen dark mode di sini */
+      --kv-accent-hover: #B8AEFF;
+      --kv-neon: #70CFC0;
+      --kv-success: #22C55E;
+      --kv-warning: #F59E0B;
+    }
+
+    html.light {
+      --kv-bg: #F7F8FA;
+      --kv-surface: #FFFFFF;
+      --kv-surface-2: #F1F3F5;
+      --kv-surface-3: #E5E7EB;
+      --kv-border: #D1D5DB;
+      --kv-text: #111827;
+      --kv-text-muted: #4B5563;
+      --kv-accent: #4F46E5;
+      --kv-accent-hover: #4338CA;
+      --kv-neon: #6366F1;
+      --kv-success: #15803D;
+      --kv-warning: #B45309;
+      --kv-danger: #DC2626;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      overflow-x: hidden;
+      background: var(--kv-bg);
+      color: var(--kv-text);
+      font-family: var(--kv-font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font-family: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--kv-accent);
+      outline-offset: 2px;
+    }
+
+    .kv-mono { font-family: var(--kv-font-mono); font-variant-numeric: tabular-nums; }
+    .kv-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* Top Bar (3-Zone Contract) */
+    .kv-header {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--kv-bg);
+      border-bottom: 1px solid var(--kv-border);
+    }
+    .kv-header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 32px; height: 64px;
+    }
+    .kv-brand {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;
+      white-space: nowrap; flex-shrink: 0;
+      color: var(--kv-text);
+    }
+    .kv-nav { display: flex; align-items: center; gap: 24px; }
+    .kv-nav-link {
