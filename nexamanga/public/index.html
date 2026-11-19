@@ -1,25 +1,261 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NexaManga Vercel Backend</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NexaManga backend status</title>
+  <meta name="description" content="Status backend NexaManga di Vercel: periksa kesehatan API, endpoint katalog, dan koneksi layanan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 40px 20px; background: #0f172a; color: #e2e8f0; }
-    .card { max-width: 640px; margin: 0 auto; background: #1e293b; border-radius: 12px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
-    h1 { margin: 0 0 8px; font-size: 1.6rem; }
-    p { line-height: 1.6; color: #cbd5e1; }
-    a { color: #38bdf8; }
-    code { background: #0f172a; padding: 2px 6px; border-radius: 4px; }
-    .status { display: inline-block; margin-top: 16px; padding: 8px 12px; background: #16a34a; color: #fff; border-radius: 6px; text-decoration: none; }
+/* Hallmark · checked: 2026-11-19 · genre: modern-minimal (inferred)
+ * floor: 0 FAIL · fixed: 11 (26a, 34, 48, 24b, 26b, 40, 41, F3, F23) · structural: 0 printed
+ * built: the project · redesign: full · v2.0.0 */
+@import url("./tokens.css");
+:root {
+  color-scheme: light;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: clip;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  line-height: 1.55;
+}
+body {
+  min-height: 100dvh;
+}
+*, *::before, *::after { box-sizing: border-box; }
+a { color: var(--color-ink); text-decoration-color: var(--color-rule-2); text-underline-offset: 0.2em; }
+a:hover { text-decoration-color: var(--color-accent); }
+a:focus-visible, .key:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  text-wrap: balance;
+  margin: 0;
+}
+p { margin: 0; }
+.skip {
+  position: absolute;
+  left: var(--space-md);
+  top: calc(-1 * var(--space-4xl));
+  z-index: var(--z-toast);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-radius: var(--radius-input);
+}
+.skip:focus-visible { top: var(--space-md); }
+.wrap {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--gutter) var(--space-3xl);
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-bottom: var(--space-lg);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+.mark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: var(--tracking-display);
+  font-size: var(--text-lg);
+}
+.pill {
+  font-family: var(--font-outlier);
+  font-size: var(--text-xs);
+  color: var(--color-accent-deep);
+  background: var(--color-accent-wash);
+  border: var(--rule-hair) solid var(--color-rule-2);
+  border-radius: var(--cut) 4px;
+  padding: var(--space-2xs) var(--space-sm);
+}
+@supports (corner-shape: bevel) {
+  .pill { border-radius: var(--cut) 4px var(--cut) 4px; corner-shape: bevel round bevel round; }
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-2xl);
+  align-items: center;
+  min-height: calc(100dvh - 140px);
+  padding: var(--space-2xl) 0 var(--section-gap-s);
+}
+.hero-copy { max-width: 32rem; }
+.kicker {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-muted);
+  margin-bottom: var(--space-md);
+}
+h1 {
+  font-size: var(--text-display-s);
+  line-height: 1.02;
+  margin-bottom: var(--space-lg);
+}
+.lead {
+  font-size: var(--text-lead);
+  color: var(--color-ink-2);
+  max-width: 28ch;
+  margin-bottom: var(--space-xl);
+}
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: center; }
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--space-lg);
+  border: var(--rule-hair) solid var(--color-rule-2);
+  border-radius: var(--radius-input);
+  background: var(--color-key-face);
+  color: var(--color-ink);
+  font: 500 var(--text-md)/1 var(--font-display);
+  text-decoration: none;
+  box-shadow: var(--shadow-key);
+  transition: transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out), background-color var(--dur-short) var(--ease-out);
+  cursor: pointer;
+}
+.key:hover { transform: translateY(-1px); }
+.key:active { transform: translateY(3px); box-shadow: var(--shadow-key-press); }
+.key--primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent-edge);
+  color: var(--color-accent-ink);
+  box-shadow: var(--shadow-key-accent);
+}
+.panel {
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-card);
+  background: var(--color-paper);
+  box-shadow: var(--shadow-card);
+  overflow: clip;
+}
+@supports (corner-shape: bevel) {
+  .panel { border-radius: var(--cut-l) 4px var(--cut-l) 4px; corner-shape: bevel round bevel round; }
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-outlier);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+.panel-body { padding: var(--space-lg); background: linear-gradient(180deg, var(--color-paper), var(--color-paper-2)); }
+.status-grid { display: grid; gap: var(--space-md); }
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-md);
+  align-items: baseline;
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+.row:last-child { border-bottom: 0; padding-bottom: 0; }
+.row dt { font: 500 var(--text-sm)/1.4 var(--font-display); color: var(--color-ink-2); }
+.row dd { margin: 0; font: 500 var(--text-sm)/1.4 var(--font-outlier); color: var(--color-accent-deep); }
+.note {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+.graphite {
+  margin-top: var(--section-gap-s);
+  background: var(--color-graphite);
+  color: var(--color-graphite-ink);
+  border-radius: var(--radius-card);
+  padding: var(--space-xl);
+}
+.graphite h2 { color: var(--color-graphite-ink); font-size: var(--text-section); margin-bottom: var(--space-md); }
+.graphite p { color: var(--color-graphite-muted); max-width: 60ch; }
+.graphite code {
+  font-family: var(--font-outlier);
+  color: var(--color-accent-2);
+  background: var(--color-graphite-2);
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-input);
+}
+.foot {
+  margin-top: var(--section-gap-s);
+  padding-top: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+@media (max-width: 60rem) {
+  .wrap { padding-inline: var(--space-lg); }
+  .hero { grid-template-columns: minmax(0, 1fr); min-height: auto; padding-top: var(--space-xl); }
+  .panel { max-width: 36rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .key { transition: background-color var(--dur-short) linear; }
+  .key:hover, .key:active { transform: none; }
+}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>NexaManga Vercel Backend</h1>
-    <p>Backend serverless untuk tema Blogger NexaManga. API tersedia di <code>/api/*</code>.</p>
-    <p>Periksa status layanan:</p>
-    <a class="status" href="/api/health">Cek Health</a>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="wrap">
+    <header class="top">
+      <div class="mark">NexaManga</div>
+      <div class="pill">Vercel API</div>
+    </header>
+    <main id="main">
+      <section class="hero" aria-labelledby="status-title">
+        <div class="hero-copy">
+          <p class="kicker">Backend service</p>
+          <h1 id="status-title">API status and health checks</h1>
+          <p class="lead">Serverless routes for catalog, auth, media, and admin tools run from this deployment.</p>
+          <div class="actions">
+            <a class="key key--primary" href="/api/health">Open health endpoint</a>
+            <a class="key" href="/api/catalog">View catalog API</a>
+          </div>
+        </div>
+        <aside class="panel" aria-label="Service map">
+          <div class="panel-head"><span>nexamanga deployment</span><span>ready</span></div>
+          <div class="panel-body">
+            <dl class="status-grid">
+              <div class="row"><dt>Health check</dt><dd>/api/health</dd></div>
+              <div class="row"><dt>Public catalog</dt><dd>/api/catalog</dd></div>
+              <div class="row"><dt>Media proxy</dt><dd>/api/media/{id}</dd></div>
+              <div class="row"><dt>Auth callbacks</dt><dd>/api/auth/*</dd></div>
+            </dl>
+            <p class="note">Use the frontend theme with <code style="font-family:var(--font-outlier);color:var(--color-accent-deep)">CONFIG.API_BASE_URL</code> pointed at this origin.</p>
+          </div>
+        </aside>
+      </section>
+      <section class="graphite" aria-labelledby="ops-title">
+        <h2 id="ops-title">Operational notes</h2>
+        <p>Catalog and account data live in Neon Postgres. Chapter images and covers are stored in Telegram and served through the media proxy. Check <code>/api/health</code> first when diagnosing a deployment.</p>
+      </section>
+    </main>
+    <footer class="foot">
+      <span>NexaManga backend</span>
+      <span>Static status page for the Vercel deployment</span>
+    </footer>
   </div>
 </body>
 </html>
