@@ -498,7 +498,18 @@
     table.kv-table tbody tr:hover { background: var(--kv-surface-2); }
     .kv-stat-box { border-radius: 14px; }
     .kv-footer { background: var(--kv-surface); }
-    .kv-404 { text-shadow: 0 0 40px rgba(99, 102, 241, 0.55); }
+      .kv-404 { text-shadow: 0 0 40px rgba(99, 102, 241, 0.55); }
+      .kv-reader-404 { width: 100%; min-height: calc(100vh - 56px); display: flex; align-items: center; justify-content: center; padding: 24px 16px 88px; background: #000; color: #f3f4f6; }
+      .kv-reader-404-card { width: min(720px, 100%); padding: 28px; border: 1px solid #2a2a2a; background: #0a0a0a; text-align: center; box-shadow: 0 24px 60px -36px rgba(0,0,0,.9); }
+      .kv-reader-404-code { font-family: 'JetBrains Mono', monospace; font-size: clamp(2.8rem, 8vw, 5rem); font-weight: 700; line-height: 1; color: #f2a93b; letter-spacing: .04em; }
+      .kv-reader-404 h1 { margin: 14px 0 8px; font-size: clamp(1.25rem, 3vw, 2rem); font-weight: 700; color: #fff; }
+      .kv-reader-404 p { margin: 0 auto; max-width: 52ch; color: #a3a3a3; line-height: 1.7; }
+      .kv-reader-404-actions { margin-top: 22px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+      .kv-reader-404 .kv-btn { border-radius: 2px; min-height: 42px; }
+      .kv-reader-404 .kv-btn-primary { background: #f2a93b; color: #111; border-color: #f2a93b; }
+      .kv-reader-404 .kv-btn-primary:hover { filter: brightness(1.03); }
+      .kv-reader-404 .kv-btn-ghost { background: transparent; color: #e5e5e5; border-color: #404040; }
+      .kv-reader-404 .kv-btn-ghost:hover { border-color: #737373; background: #171717; }
     ::-webkit-scrollbar { width: 10px; height: 10px; }
     ::-webkit-scrollbar-thumb { background: var(--kv-border); border-radius: 999px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--kv-text-muted); }
@@ -3758,19 +3769,18 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     }
 
     function parseRoute() {
-      var legacyRoute = window.location.hash.indexOf('#/') === 0 ? window.location.hash.slice(1) : '';
-      var routePath = legacyRoute || window.location.pathname;
-      if (!routePath || routePath === '/') routePath = '/';
+      var hash = window.location.hash || '';
+      var legacyRoute = hash.indexOf('#/') === 0 ? hash.slice(1) : (hash.charAt(0) === '#' && hash.length > 1 ? '/' + hash.slice(1).replace(/^\/+/, '') : '');
+      var routePath = legacyRoute || window.location.pathname || '/';
+      if (!routePath || routePath === '/index.html') routePath = '/';
       if (routePath.charAt(0) !== '/') routePath = '/' + routePath;
 
       var query = window.location.search.replace(/^\?/, '').split('&').filter(function (part) {
         var pair = part.split('=');
         return part && !(pair[0] === 'm' && pair[1] === '1');
       }).join('&');
-      var cleanUrl = legacyRoute
-        ? window.location.pathname + (query ? '?' + query : '') + '#' + routePath
-        : routePath + (query ? '?' + query : '');
-      if (window.location.pathname + window.location.search + window.location.hash !== cleanUrl) {
+      var cleanUrl = routePath + (query ? '?' + query : '');
+      if (window.location.pathname + window.location.search !== cleanUrl || window.location.hash) {
         window.history.replaceState(null, '', cleanUrl);
       }
 
@@ -3801,11 +3811,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
      }
 
      function navigate(path) {
-       var routePath = String(path || '/').replace(/^#/, '');
+       var routePath = String(path || '/').replace(/^#/, '').replace(/^\/+/, '/');
        if (routePath.charAt(0) !== '/') routePath = '/' + routePath;
-       var routeHash = '#' + routePath;
-       if (window.location.hash !== routeHash) {
-         window.history.pushState(null, '', routeHash);
+       var current = window.location.pathname + window.location.search;
+       if (current !== routePath) {
+         window.history.pushState(null, '', routePath);
        }
         state.mobileMenuOpen = false;
         state.filterDrawerOpen = false;
@@ -3912,7 +3922,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     function renderLightCard(m) {
       var latest = latestChapterOf(m);
       var rating = Number(m.rating || 0).toFixed(1);
-      return '<a class="kv-home-card" href="#/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
+      return '<a class="kv-home-card" href="/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
         '<div class="kv-home-card-cover">' + renderCover(m.coverBloggerUrl, m.title) +
           (latest ? '<span class="kv-home-card-badge">Ch. ' + escapeHtml(latest.number) + '</span>' : '') +
         '</div>' +
@@ -3954,10 +3964,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
          return '<a href="' + item.path + '" class="' + cls + '">' + escapeHtml(item.label) + '</a>';
        }).join('');
        var userHtml = state.user
-         ? '<a href="#/akun" class="inline-flex items-center gap-2 px-2 py-1.5 rounded-full bg-[#F1F3F5] hover:bg-[#E5E7EB] transition-colors dark:bg-[#20243A]" title="' + escapeHtml(currentDisplayName(state.user.name)) + '">' +
+         ? '<a href="/akun" class="inline-flex items-center gap-2 px-2 py-1.5 rounded-full bg-[#F1F3F5] hover:bg-[#E5E7EB] transition-colors dark:bg-[#20243A]" title="' + escapeHtml(currentDisplayName(state.user.name)) + '">' +
              (currentDisplayAvatar(state.user.avatar) ? '<img src="' + escapeHtml(currentDisplayAvatar(state.user.avatar)) + '" alt="" class="w-8 h-8 rounded-full object-cover border border-[#E6DCCF] dark:border-[#2B304C]"/>' : '<div class="w-8 h-8 rounded-full bg-[#4F46E5] text-white flex items-center justify-center font-bold text-sm">' + escapeHtml(String(currentDisplayName(state.user.name)).charAt(0).toUpperCase()) + '</div>') +
            '</a>'
-         : '<a href="#/akun" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm bg-gradient-to-r from-[#4F46E5] to-[#4338CA] hover:from-[#4338CA] hover:to-[#3F2D1C] text-white shadow-sm hover:shadow transition-all duration-200"><svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span>Masuk</span></a>';
+         : '<a href="/akun" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm bg-gradient-to-r from-[#4F46E5] to-[#4338CA] hover:from-[#4338CA] hover:to-[#3F2D1C] text-white shadow-sm hover:shadow transition-all duration-200"><svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span>Masuk</span></a>';
        var mobileMenu = state.mobileMenuOpen
          ? '<div class="md:hidden mx-4 mb-3 mt-1 flex flex-col gap-1 p-2 rounded-2xl bg-white border border-[#E6DCCF] shadow-lg dark:bg-[#1A1A1E] dark:border-[#2B304C]">' + navItems.map(function(item){ var active=state.route===item.key; return '<a href="'+item.path+'" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors '+(active?'bg-[#4F46E5] text-white':'text-[#4F46E5] hover:bg-[#F1F3F5] dark:text-neutral-300 dark:hover:bg-[#20243A]')+'">'+escapeHtml(item.label)+'</a>'; }).join('') + '</div>'
          : '';
@@ -3983,7 +3993,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        return        '<header class="relative bg-[#F7F8FA] border-b border-[#E6DCCF] shadow-sm dark:bg-[#121215] dark:border-[#2B304C]">' +
          '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">' +
            '<div class="flex items-center justify-between h-20 gap-4 lg:gap-8 min-w-0 overflow-hidden">' +
-             '<a href="#/" class="flex items-center gap-3 group focus:outline-none flex-shrink-0">' +
+             '<a href="/" class="flex items-center gap-3 group focus:outline-none flex-shrink-0">' +
                logoHtml +
                nameHtml +
              '</a>' +
@@ -4014,10 +4024,10 @@ mobileMenu +
         '<div class="kv-container kv-footer-inner">' +
           '<div><strong' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</strong> &middot; ' + escapeHtml(siteTagline()) + '</div>' +
           '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">' +
-            '<a href="#/tentang">Tentang</a>' +
-            '<a href="#/kontak">Kontak</a>' +
-            '<a href="#/privasi">Kebijakan Privasi</a>' +
-            '<a href="#/ketentuan">Ketentuan</a>' +
+            '<a href="/tentang">Tentang</a>' +
+            '<a href="/kontak">Kontak</a>' +
+            '<a href="/privasi">Kebijakan Privasi</a>' +
+            '<a href="/ketentuan">Ketentuan</a>' +
           '</div>' +
         '</div>' +
       '</footer>';
@@ -4042,7 +4052,7 @@ mobileMenu +
       function homeCard(m) {
         var latest = latestChapter(m);
         var rating = Number(m.rating || 0).toFixed(1);
-        return '<a class="kv-home-card" href="#/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
+        return '<a class="kv-home-card" href="/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
           '<div class="kv-home-card-cover">' + renderCover(m.coverBloggerUrl, m.title) +
             (latest ? '<span class="kv-home-card-badge">Ch. ' + escapeHtml(latest.number) + '</span>' : '') +
           '</div>' +
@@ -4054,7 +4064,7 @@ mobileMenu +
       function rankingCard(m, idx) {
         var latest = latestChapter(m);
         var rating = Number(m.rating || 0).toFixed(2);
-        return '<a class="kv-home-rank" href="#/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
+        return '<a class="kv-home-rank" href="/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
           '<div class="kv-home-rank-cover"><img src="' + escapeHtml(m.coverBloggerUrl || '') + '" alt="' + escapeHtml(m.title) + '" loading="lazy" referrerpolicy="no-referrer"/><div class="kv-home-rank-num">' + (idx + 1) + '</div></div>' +
           '<div style="flex:1;min-width:0;">' +
             '<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><span class="kv-home-card-tag">' + escapeHtml(m.type || 'Manga') + '</span><span style="font-size:.72rem;font-weight:700;color:#f59e0b;">&#9733; ' + escapeHtml(rating) + '</span></div>' +
@@ -4096,7 +4106,7 @@ mobileMenu +
       var recommended = state.data.manga.filter(function (m) { return m.recommended; });
       var curated = (recommended.length ? recommended : popular).slice(0, 2).map(function (m) {
         var rating = Number(m.rating || 0).toFixed(1);
-        return '<a class="kv-home-curated-card" href="#/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
+        return '<a class="kv-home-curated-card" href="/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
           '<div class="kv-home-curated-cover"><img src="' + escapeHtml(m.coverBloggerUrl || '') + '" alt="' + escapeHtml(m.title) + '" loading="lazy" referrerpolicy="no-referrer"/></div>' +
           '<div style="flex:1;min-width:0;display:flex;flex-direction:column;">' +
             '<span class="kv-home-curated-tag">Staff Pick</span>' +
@@ -4118,7 +4128,7 @@ mobileMenu +
         var rating = Number(m.rating || 0).toFixed(1);
         var chCount = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
         var views = (m.views || 0).toLocaleString('id-ID');
-        return '<a class="kv-home-banner-card" href="#/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
+        return '<a class="kv-home-banner-card" href="/manga/' + escapeHtml(m.slug) + '" aria-label="Buka ' + escapeHtml(m.title) + '">' +
           (m.coverBloggerUrl
             ? '<img class="kv-home-banner-img" src="' + escapeHtml(m.coverBloggerUrl) + '" alt="" aria-hidden="true" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';"/>'
             : '<div class="kv-home-banner-img kv-home-banner-img-empty"></div>') +
@@ -4155,21 +4165,21 @@ mobileMenu +
         '<section class="kv-home-section" aria-labelledby="heading-updates">' +
           '<div class="kv-home-section-head">' +
             '<div><h2 class="kv-home-section-title" id="heading-updates">Update Terbaru</h2></div>' +
-            '<a class="kv-home-link" href="#/archive">Lihat Semua &rarr;</a>' +
+            '<a class="kv-home-link" href="/archive">Lihat Semua &rarr;</a>' +
           '</div>' +
           '<div class="kv-home-grid">' + latestCards + '</div>' +
           homePagination +
         '<section class="kv-home-section" aria-labelledby="heading-popular">' +
           '<div class="kv-home-section-head">' +
             '<div><h2 class="kv-home-section-title" id="heading-popular">Komik Populer &amp; Trending</h2></div>' +
-            '<a class="kv-home-link" href="#/archive">Lihat Semua &rarr;</a>' +
+            '<a class="kv-home-link" href="/archive">Lihat Semua &rarr;</a>' +
           '</div>' +
           '<div class="kv-home-popular">' + popular.map(rankingCard).join('') + '</div>' +
         '</section>' +
         '<section class="kv-home-section" aria-labelledby="heading-curated">' +
           '<div class="kv-home-section-head">' +
             '<div><h2 class="kv-home-section-title" id="heading-curated">Rekomendasi</h2></div>' +
-            '<a class="kv-home-link" href="#/archive">Koleksi Lengkap &rarr;</a>' +
+            '<a class="kv-home-link" href="/archive">Koleksi Lengkap &rarr;</a>' +
           '</div>' +
           '<div class="kv-home-curated">' + curated + '</div>' +
         '</section>' +
@@ -4550,7 +4560,7 @@ mobileMenu +
 
       return '<main class="kv-container kv-detail-page">' +
         '<nav class="kv-detail-breadcrumb" aria-label="Breadcrumb">' +
-          '<ol><li><a href="#/">Beranda</a></li><li>/</li><li><a href="#/archive">Archive</a></li><li>/</li><li aria-current="page">' + escapeHtml(manga.title) + '</li></ol>' +
+          '<ol><li><a href="/">Beranda</a></li><li>/</li><li><a href="/archive">Archive</a></li><li>/</li><li aria-current="page">' + escapeHtml(manga.title) + '</li></ol>' +
         '</nav>' +
         '<section class="kv-detail-hero">' +
                     '<div class="kv-detail-hero-cover">' + (manga.coverBloggerUrl ? '<img src="' + escapeHtml(manga.coverBloggerUrl) + '" alt="Sampul ' + escapeHtml(manga.title) + '" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:auto;object-fit:contain;display:block;"/>' : svgFallbackCover(manga.title)) + '</div>' +
@@ -4570,8 +4580,8 @@ mobileMenu +
             '</div>' +
             '<div class="kv-detail-genres">' + (manga.genres || []).map(function (g) { return '<button type="button" class="kv-detail-genre kv-detail-genre-link" data-action="quick-genre" data-genre="' + escapeHtml(g) + '">' + escapeHtml(g) + '</button>'; }).join('') + '</div>' +
             '<div class="kv-detail-actions">' +
-              (latestChapter ? '<a class="kv-detail-primary" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(latestChapter.id) + '">Baca Chapter Terbaru (Ch. ' + latestChapter.number + ')</a>' : '') +
-              (firstCh && firstCh.id !== (latestChapter && latestChapter.id) ? '<a class="kv-detail-secondary" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(firstCh.id) + '">Chapter Pertama (Ch. ' + firstCh.number + ')</a>' : '') +
+              (latestChapter ? '<a class="kv-detail-primary" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(latestChapter.id) + '">Baca Chapter Terbaru (Ch. ' + latestChapter.number + ')</a>' : '') +
+              (firstCh && firstCh.id !== (latestChapter && latestChapter.id) ? '<a class="kv-detail-secondary" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(firstCh.id) + '">Chapter Pertama (Ch. ' + firstCh.number + ')</a>' : '') +
               '<button type="button" class="kv-detail-secondary" data-action="toggle-bookmark" data-id="' + escapeHtml(manga.id) + '">' + (isBookmarked ? 'Tersimpan di Favorit' : 'Simpan Favorit') + '</button>' +
               '<button type="button" class="kv-detail-icon-btn" data-action="share-manga" title="Bagikan tautan">' + kvIcon('share') + '</button>' +
             '</div>' +
@@ -4619,13 +4629,13 @@ mobileMenu +
             '<section class="kv-detail-card">' +
               '<div class="kv-detail-card-head">' +
                 '<div class="kv-detail-card-title">Komik Rekomendasi</div>' +
-                '<a class="kv-detail-card-note kv-detail-link" href="#/archive">Lihat Semua</a>' +
+                '<a class="kv-detail-card-note kv-detail-link" href="/archive">Lihat Semua</a>' +
               '</div>' +
               '<div class="kv-detail-reco-list">' +
                 recommended.map(function (m) {
                   var latest = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).sort(function (a, b) { return b.number - a.number; })[0];
                   var r = Number(m.rating || 0).toFixed(1);
-                  return '<a class="kv-detail-reco-item" href="#/manga/' + escapeHtml(m.slug) + '">' +
+                  return '<a class="kv-detail-reco-item" href="/manga/' + escapeHtml(m.slug) + '">' +
                     '<div class="kv-detail-reco-cover"><img src="' + escapeHtml(m.coverBloggerUrl || '') + '" alt="' + escapeHtml(m.title) + '" loading="lazy" referrerpolicy="no-referrer"/></div>' +
                     '<div class="kv-detail-reco-body">' +
                       '<h4>' + escapeHtml(m.title) + '</h4>' +
@@ -4703,7 +4713,7 @@ mobileMenu +
        var chapterRows = filteredCh.map(function (c) {
          var active = c.id === chapter.id;
 
-        return '<a class="kv-reader-chapter-row' + (active ? ' is-active' : '') + '" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(c.id) + '">' +
+        return '<a class="kv-reader-chapter-row' + (active ? ' is-active' : '') + '" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(c.id) + '">' +
           '<span class="kv-reader-chapter-num">Ch. ' + escapeHtml(c.number) + '</span>' +
           '<span class="kv-reader-chapter-name">' + (c.title ? escapeHtml(c.title) : 'Chapter ' + escapeHtml(c.number)) + '</span>' +
         '</a>';
@@ -4742,7 +4752,7 @@ mobileMenu +
         '<div class="kv-reader-sheet-head"><span>' + escapeHtml(manga.title) + ' &middot; Ch. ' + escapeHtml(chapter.number) + '</span><button type="button" class="kv-reader-sheet-close" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div>' +
         '<div class="kv-reader-sheet-body">' +
            '<div class="kv-reader-sheet-actions">' +
-              '<a class="kv-reader-ctl" href="#/manga/' + escapeHtml(manga.slug) + '">&#8592; ' + escapeHtml(manga.title) + '</a>' +
+              '<a class="kv-reader-ctl" href="/manga/' + escapeHtml(manga.slug) + '">&#8592; ' + escapeHtml(manga.title) + '</a>' +
            '</div>' +
            '<div class="kv-reader-sheet-row">' +
              '<input id="kv-reader-chapter-search" class="kv-input" type="search" placeholder="Cari chapter..." value="' + escapeHtml(state.readerChapterSearch || '') + '" aria-label="Cari chapter"/>' +
@@ -4759,16 +4769,16 @@ mobileMenu +
         '</div>' +
         '<div class="kv-reader-bottom-controls">' +
            (prevCh
-             ? '<a class="kv-round-btn" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '</a>'
+             ? '<a class="kv-round-btn" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '</a>'
              : '<button type="button" class="kv-round-btn is-disabled" disabled aria-label="Tidak ada chapter sebelumnya">' + prevIcon + '</button>') +
            (nextCh
-             ? '<a class="kv-round-btn kv-round-btn-next" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" aria-label="Chapter berikutnya">' + nextIcon + '</a>'
+             ? '<a class="kv-round-btn kv-round-btn-next" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" aria-label="Chapter berikutnya">' + nextIcon + '</a>'
              : '<button type="button" class="kv-round-btn is-disabled" disabled aria-label="Tidak ada chapter berikutnya">' + nextIcon + '</button>') +
 
           '<button type="button" class="kv-round-btn" data-action="toggle-reader-settings" aria-label="Pengaturan pembaca" aria-expanded="' + (state.readerSettingsOpen ? 'true' : 'false') + '">' + gearIcon + '</button>' +
           '<button type="button" class="kv-round-btn kv-round-btn-play' + (isPlaying ? ' is-active' : '') + '" data-action="toggle-auto-scroll" aria-label="' + (isPlaying ? 'Hentikan' : 'Mulai') + ' gulir otomatis" aria-pressed="' + (isPlaying ? 'true' : 'false') + '">' + (isPlaying ? pauseIcon : playIcon) + '</button>' +
           '<button type="button" class="kv-round-btn" data-action="toggle-reader-menu" aria-label="Daftar chapter" aria-expanded="' + (state.readerMenuOpen ? 'true' : 'false') + '">' + menuIcon + '</button>' +
-          '<a class="kv-round-btn" href="#/" aria-label="Kembali ke Beranda">' + homeIcon + '</a>' +
+          '<a class="kv-round-btn" href="/" aria-label="Kembali ke Beranda">' + homeIcon + '</a>' +
         '</div>' +
       '</div>' +
       ((state.readerSettingsOpen || state.readerMenuOpen) ? '<div class="kv-reader-scrim" data-action="close-reader-panels" aria-hidden="true"></div>' : '') +
@@ -4888,7 +4898,7 @@ mobileMenu +
                 '<span class="text-[10px] font-bold uppercase tracking-wider text-[#8C6D4F] dark:text-[#A69AF4]">' + escapeHtml(m.type || 'Manga') + '</span>' +
                 '<h3 class="text-sm font-bold text-[#111827] dark:text-white line-clamp-1">' + escapeHtml(m.title) + '</h3>' +
                 '<div class="text-xs text-[#78716C] dark:text-neutral-400">Terakhir dibaca: Chapter ' + escapeHtml(h.chapterNumber) + ' &middot; ' + escapeHtml(h.lastReadAt || '') + '</div>' +
-                '<a class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-white bg-[#4F46E5] hover:bg-[#3F2D1C] px-3 py-1.5 rounded-lg w-fit transition-colors" href="#/baca/' + escapeHtml(m.slug) + '/' + escapeHtml(h.chapterId) + '">Lanjut Baca Ch. ' + escapeHtml(h.chapterNumber) + ' &rarr;</a>' +
+                '<a class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-white bg-[#4F46E5] hover:bg-[#3F2D1C] px-3 py-1.5 rounded-lg w-fit transition-colors" href="/baca/' + escapeHtml(m.slug) + '/' + escapeHtml(h.chapterId) + '">Lanjut Baca Ch. ' + escapeHtml(h.chapterNumber) + ' &rarr;</a>' +
               '</div>' +
             '</article>';
           }).join('')
@@ -4959,7 +4969,7 @@ mobileMenu +
             '<section class="rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
               '<div class="flex items-center justify-between mb-4">' +
                 '<div class="flex items-center gap-2 text-base font-bold text-[#111827] dark:text-white"><span class="w-2.5 h-2.5 rounded-full bg-[#8C6D4F]"></span>Koleksi Bookmark</div>' +
-                '<a class="text-xs font-semibold text-[#4F46E5] hover:underline dark:text-[#A69AF4]" href="#/archive">Archive &rarr;</a>' +
+                '<a class="text-xs font-semibold text-[#4F46E5] hover:underline dark:text-[#A69AF4]" href="/archive">Archive &rarr;</a>' +
               '</div>' +
               bookmarkHtml +
             '</section>' +
@@ -4976,9 +4986,9 @@ mobileMenu +
             '<section class="rounded-2xl border border-[#E6DCCF] dark:border-[#2B304C] bg-white dark:bg-[#1A1A1E] p-5">' +
               '<div class="text-base font-bold text-[#111827] dark:text-white mb-3">Pintasan</div>' +
               '<div class="flex flex-col gap-2">' +
-                '<a href="#/archive" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F1F3F5] dark:bg-[#20243A] text-[#111827] dark:text-white text-sm font-semibold hover:bg-[#F1F3F5] dark:hover:bg-[#2A2F4C] transition-colors">Archive <span>â†’</span></a>' +
-                '<a href="#/tentang" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F1F3F5] dark:bg-[#20243A] text-[#111827] dark:text-white text-sm font-semibold hover:bg-[#F1F3F5] dark:hover:bg-[#2A2F4C] transition-colors">Tentang NexaManga <span>â†’</span></a>' +
-                '<a href="#/ketentuan" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F1F3F5] dark:bg-[#20243A] text-[#111827] dark:text-white text-sm font-semibold hover:bg-[#F1F3F5] dark:hover:bg-[#2A2F4C] transition-colors">Ketentuan Layanan <span>â†’</span></a>' +
+                '<a href="/archive" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F1F3F5] dark:bg-[#20243A] text-[#111827] dark:text-white text-sm font-semibold hover:bg-[#F1F3F5] dark:hover:bg-[#2A2F4C] transition-colors">Archive <span>â†’</span></a>' +
+                '<a href="/tentang" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F1F3F5] dark:bg-[#20243A] text-[#111827] dark:text-white text-sm font-semibold hover:bg-[#F1F3F5] dark:hover:bg-[#2A2F4C] transition-colors">Tentang NexaManga <span>â†’</span></a>' +
+                '<a href="/ketentuan" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#F1F3F5] dark:bg-[#20243A] text-[#111827] dark:text-white text-sm font-semibold hover:bg-[#F1F3F5] dark:hover:bg-[#2A2F4C] transition-colors">Ketentuan Layanan <span>â†’</span></a>' +
               '</div>' +
             '</section>' +
             '<button type="button" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#F1F3F5] dark:bg-[#20243A] text-[#464555] dark:text-neutral-300 border border-[#E6DCCF] dark:border-[#2B304C] text-sm font-bold hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors" data-action="logout-user">Keluar dari Akun</button>' +
@@ -5041,18 +5051,18 @@ mobileMenu +
       var t = titles[tab] || titles.dashboard;
       var topActions;
       if (tab === 'dashboard') {
-        topActions = '<a class="kv-btn kv-btn-ghost" href="#/">Lihat Situs</a>' +
+        topActions = '<a class="kv-btn kv-btn-ghost" href="/">Lihat Situs</a>' +
           '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-new-chapter">+ Chapter</button>' +
           '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-manga">+ Manga</button>';
        } else if (tab === 'manga') {
-         topActions = '<a class="kv-btn kv-btn-ghost" href="#/archive">Buka Archive</a>' +
+         topActions = '<a class="kv-btn kv-btn-ghost" href="/archive">Buka Archive</a>' +
            (state.adminForm || state.adminChapterForm
              ? '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-cancel-form">Batal Edit</button>'
              : '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-manga">+ Tambah Manga</button>');
        } else if (tab === 'komentar') {
-        topActions = '<a class="kv-btn kv-btn-ghost" href="#/">Lihat Situs</a>';
+        topActions = '<a class="kv-btn kv-btn-ghost" href="/">Lihat Situs</a>';
       } else {
-        topActions = '<a class="kv-btn kv-btn-ghost" href="#/">Lihat Situs</a>';
+        topActions = '<a class="kv-btn kv-btn-ghost" href="/">Lihat Situs</a>';
       }
 
        var navMain = [
@@ -5080,7 +5090,7 @@ mobileMenu +
           : '<span class="kv-admin-logo-icon">' + kvIcon('book') + '</span>')
         : '';
       var adminBrandText = adminBrandMode !== 'logo-only'
-        ? '<a class="kv-admin-logo" href="#/"><span' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</span> <span>Console</span></a>'
+        ? '<a class="kv-admin-logo" href="/"><span' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</span> <span>Console</span></a>'
         : '';
 
        var quickHtml = [
@@ -5108,9 +5118,9 @@ mobileMenu +
               '<div class="kv-admin-side-quick">' + quickHtml + '</div>' +
             '</div>' +
             '<div class="kv-admin-side-foot">' +
-              '<a class="kv-admin-quicklink" href="#/">' + kvIcon('globe') + ' Lihat Situs</a>' +
-              '<a class="kv-admin-quicklink" href="#/archive">' + kvIcon('book') + ' Archive</a>' +
-              '<a class="kv-admin-quicklink" href="#/akun">' + kvIcon('users') + ' Pustaka</a>' +
+              '<a class="kv-admin-quicklink" href="/">' + kvIcon('globe') + ' Lihat Situs</a>' +
+              '<a class="kv-admin-quicklink" href="/archive">' + kvIcon('book') + ' Archive</a>' +
+              '<a class="kv-admin-quicklink" href="/akun">' + kvIcon('users') + ' Pustaka</a>' +
             '</div>' +
           '</aside>' +
           '<div class="kv-admin-content">' +
@@ -5120,7 +5130,7 @@ mobileMenu +
 
               '<div class="kv-admin-top-actions">' +
                 '<span class="kv-admin-live"><i></i>LIVE</span>' +
-                '<a class="kv-admin-avatar" href="#/akun" aria-label="Akun saya">' + (state.user.avatar ? '<img src="' + escapeHtml(state.user.avatar) + '" alt=""/>' : escapeHtml(String(state.user.name || 'A').charAt(0).toUpperCase())) + '</a>' +
+                '<a class="kv-admin-avatar" href="/akun" aria-label="Akun saya">' + (state.user.avatar ? '<img src="' + escapeHtml(state.user.avatar) + '" alt=""/>' : escapeHtml(String(state.user.name || 'A').charAt(0).toUpperCase())) + '</a>' +
                 '<button type="button" class="kv-btn kv-btn-ghost" data-action="logout-admin">' + kvIcon('out') + ' Keluar</button>' +
               '</div>' +
             '</header>' +
@@ -6553,11 +6563,24 @@ mobileMenu +
     }
 
     function render404() {
-      return '<main class="kv-container" style="text-align:center;margin-top:64px;">' +
-        '<div class="kv-mono kv-404" style="font-size:3rem;font-weight:800;color:var(--kv-accent);">404</div>' +
-        '<h1>Halaman Tidak Ditemukan</h1>' +
-        '<p style="color:var(--kv-text-muted);">Tautan manga atau chapter yang Anda tuju tidak tersedia.</p>' +
-        '<a class="kv-btn kv-btn-primary" href="#/">Kembali ke Beranda</a>' +
+      var path = window.location.pathname || '/';
+      var isReaderPath = path.indexOf('/baca/') === 0;
+      var title = isReaderPath ? 'Chapter Tidak Ditemukan' : 'Halaman Tidak Ditemukan';
+      var desc = isReaderPath
+        ? 'Chapter atau manga yang Anda buka tidak tersedia. Periksa URL, atau kembali ke daftar chapter.'
+        : 'Tautan yang Anda tuju tidak tersedia atau sudah dipindahkan.';
+      var primaryHref = isReaderPath ? (state.params && state.params.slug ? '/manga/' + escapeHtml(state.params.slug) : '/archive') : '/';
+      var primaryLabel = isReaderPath ? 'Kembali ke Detail Manga' : 'Kembali ke Beranda';
+      return '<main class="' + (isReaderPath ? 'kv-reader-404' : 'kv-container') + '" style="' + (isReaderPath ? '' : 'text-align:center;margin-top:64px;max-width:760px;') + '">' +
+        '<div class="' + (isReaderPath ? 'kv-reader-404-card' : 'kv-stat-box') + '" style="' + (isReaderPath ? '' : 'padding:40px 24px;') + '">' +
+          '<div class="' + (isReaderPath ? 'kv-reader-404-code' : 'kv-mono kv-404') + '" style="' + (isReaderPath ? '' : 'font-size:3rem;font-weight:800;color:var(--kv-accent);') + '">404</div>' +
+          '<h1' + (isReaderPath ? '' : ' style="margin-top:12px;"') + '>' + title + '</h1>' +
+          '<p style="' + (isReaderPath ? '' : 'color:var(--kv-text-muted);margin:8px 0 0;') + '">' + desc + '</p>' +
+          '<div class="' + (isReaderPath ? 'kv-reader-404-actions' : '') + '" style="' + (isReaderPath ? '' : 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;') + '">' +
+            '<a class="kv-btn kv-btn-primary" href="' + primaryHref + '">' + primaryLabel + '</a>' +
+            '<a class="kv-btn kv-btn-ghost" href="/archive">Jelajahi Katalog</a>' +
+          '</div>' +
+        '</div>' +
       '</main>';
     }
 
@@ -7575,3 +7598,4 @@ mobileMenu +
   </script>
 </body>
 </html>
+
