@@ -3255,6 +3255,15 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     function today() {
       return new Date().toISOString().slice(0, 10);
     }
+    function formatDateLabel(value) {
+      var raw = String(value || '').trim();
+      if (!raw) return '-';
+      var iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (iso) return iso[3] + '/' + iso[2] + '/' + iso[1];
+      var d = new Date(raw);
+      if (!isNaN(d.getTime())) return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+      return raw.length > 16 ? raw.slice(0, 16) : raw;
+    }
 
      function siteSetting(key, fallback) {
        var settings = (state.data && state.data.settings) ? state.data.settings : {};
@@ -5210,15 +5219,15 @@ mobileMenu +
         var labels = list.map(function (r, i) {
           if (i % labelEvery !== 0 && i !== list.length - 1) return '';
           var p = point(r, i, 'pageviews');
-          var dayLabel = r.date || r.day || '';
-          return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(String(dayLabel)) + '</text>';
+          var dayLabel = formatDateLabel(r.date || r.day || '');
+          return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(dayLabel) + '</text>';
         }).join('');
         var dots = list.map(function (r, i) {
           var p = point(r, i, 'pageviews');
-          var dayLabel = r.date || r.day || '';
-          return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" style="fill:var(--ad-amber)"><title>' + escapeHtml(String(dayLabel)) + ': ' + (r.pageviews || 0).toLocaleString('id-ID') + ' pageviews</title></circle>';
+          var dayLabel = formatDateLabel(r.date || r.day || '');
+          return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" style="fill:var(--ad-amber)"><title>' + escapeHtml(dayLabel) + ': ' + (r.pageviews || 0).toLocaleString('id-ID') + ' pageviews</title></circle>';
         }).join('');
-        var rangeText = String(list[0].date || list[0].day || '') + ' - ' + String(list[list.length - 1].date || list[list.length - 1].day || '');
+        var rangeText = formatDateLabel(list[0].date || list[0].day || '') + ' - ' + formatDateLabel(list[list.length - 1].date || list[list.length - 1].day || '');
         return '<div class="kv-chart-card" style="margin-top:16px;">' +
           '<h3 class="kv-chart-title" style="margin:0;">Tren Traffic Harian</h3>' +
           '<p class="kv-chart-sub" style="margin:0 0 12px;">Periode ' + escapeHtml(rangeText) + '. Menampilkan tayangan halaman dan pengunjung unik per hari.</p>' +
@@ -5237,13 +5246,13 @@ mobileMenu +
         var max = list.reduce(function (a, r) { return Math.max(a, r.pageviews || 0); }, 1) || 1;
         var rowsHtml = list.map(function (r) {
           var pct = Math.round(((r.pageviews || 0) / max) * 100);
-          var dayLabel = r.date || r.day || '';
-          return '<tr><td class="kv-traffic-date kv-mono" title="' + escapeHtml(String(dayLabel)) + '">' + escapeHtml(String(dayLabel)) + '</td>' +
+          var dayLabel = formatDateLabel(r.date || r.day || '');
+          return '<tr><td class="kv-traffic-date kv-mono" title="' + escapeHtml(dayLabel) + '">' + escapeHtml(dayLabel) + '</td>' +
             '<td>' + (r.visitors || 0).toLocaleString('id-ID') + '</td>' +
             '<td>' + (r.visits || 0).toLocaleString('id-ID') + '</td>' +
             '<td><div class="kv-traffic-bar"><span style="width:' + pct + '%;"></span><b>' + (r.pageviews || 0).toLocaleString('id-ID') + '</b></div></td></tr>';
         }).join('');
-        var rangeText = String(list[list.length - 1].date || list[list.length - 1].day || '') + ' - ' + String(list[0].date || list[0].day || '');
+        var rangeText = formatDateLabel(list[list.length - 1].date || list[list.length - 1].day || '') + ' - ' + formatDateLabel(list[0].date || list[0].day || '');
         return '<div class="kv-chart-card" style="margin-top:14px;">' +
           '<h3 class="kv-section-title" style="margin:0 0 12px;">Aktivitas 7 Hari Terakhir · ' + escapeHtml(rangeText) + '</h3>' +
           '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>TANGGAL</th><th>PENGUNJUNG UNIK</th><th>KUNJUNGAN</th><th>PAGEVIEWS</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' +
@@ -5664,7 +5673,6 @@ mobileMenu +
       });
       var mangaSelect = '<div class="kv-manga-picker">' +
         '<button type="button" class="kv-manga-picker-btn" data-action="admin-toggle-manga-picker" aria-expanded="' + (state.adminMangaPickerOpen ? 'true' : 'false') + '">' +
-          '<span class="kv-manga-picker-thumb">' + renderCover(selManga ? selManga.coverBloggerUrl : '', selManga ? selManga.title : 'Manga') + '</span>' +
           '<span class="kv-manga-picker-meta"><span class="kv-manga-picker-label">Manga Dipilih</span><span class="kv-manga-picker-title">' + escapeHtml(selManga ? selManga.title : 'Pilih manga') + '</span></span>' +
           '<span class="kv-manga-picker-caret">' + kvIcon('chev') + '</span>' +
         '</button>' +
@@ -5674,7 +5682,6 @@ mobileMenu +
             (chList.length ? chList.map(function (m) {
               var cCount = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
               return '<button type="button" class="kv-manga-picker-item' + (m.id === sel ? ' is-active' : '') + '" data-action="admin-pick-chapter-manga" data-id="' + escapeHtml(m.id) + '">' +
-                '<span class="kv-manga-picker-item-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</span>' +
                 '<span class="kv-manga-picker-item-body"><span class="kv-manga-picker-item-title">' + escapeHtml(m.title) + '</span><span class="kv-manga-picker-item-sub">' + cCount + ' chapter · ' + escapeHtml(m.status || 'Ongoing') + '</span></span>' +
               '</button>';
             }).join('') : '<div class="kv-manga-picker-empty">Manga tidak ditemukan.</div>') +
@@ -5723,7 +5730,6 @@ mobileMenu +
       var mangaField = '<div class="kv-manga-picker">' +
         '<span class="kv-manga-picker-field-label">Manga *</span>' +
         '<button type="button" class="kv-manga-picker-btn" data-action="admin-toggle-form-manga-picker" aria-expanded="' + (state.adminFormMangaPickerOpen ? 'true' : 'false') + '">' +
-          '<span class="kv-manga-picker-thumb">' + renderCover(selManga ? selManga.coverBloggerUrl : '', selManga ? selManga.title : 'Manga') + '</span>' +
           '<span class="kv-manga-picker-meta"><span class="kv-manga-picker-label">Manga Dipilih</span><span class="kv-manga-picker-title">' + escapeHtml(selManga ? selManga.title : 'Pilih manga') + '</span></span>' +
           '<span class="kv-manga-picker-caret">' + kvIcon('chev') + '</span>' +
         '</button>' +
@@ -5733,7 +5739,6 @@ mobileMenu +
             (formList.length ? formList.map(function (m) {
               var cCount = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
               return '<button type="button" class="kv-manga-picker-item' + (m.id === f.mangaId ? ' is-active' : '') + '" data-action="admin-pick-form-manga" data-id="' + escapeHtml(m.id) + '">' +
-                '<span class="kv-manga-picker-item-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</span>' +
                 '<span class="kv-manga-picker-item-body"><span class="kv-manga-picker-item-title">' + escapeHtml(m.title) + '</span><span class="kv-manga-picker-item-sub">' + cCount + ' chapter · ' + escapeHtml(m.status || 'Ongoing') + '</span></span>' +
               '</button>';
             }).join('') : '<div class="kv-manga-picker-empty">Manga tidak ditemukan.</div>') +
