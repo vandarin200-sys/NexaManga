@@ -2572,19 +2572,50 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        .kv-admin-comment-body { color: var(--kv-text); font-size: .875rem; white-space: pre-wrap; overflow-wrap: anywhere; }
        .kv-admin-comment-img { max-width: 200px; max-height: 120px; border-radius: 8px; margin-top: 6px; object-fit: cover; border: 1px solid var(--kv-border); }
        .kv-admin-comment-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-       .kv-admin-leader-list { display: flex; flex-direction: column; gap: 8px; }
-       .kv-admin-leader-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--kv-border); border-radius: 10px; background: var(--kv-surface); }
-       .kv-admin-leader-rank { font-weight: 700; color: var(--kv-accent); width: 28px; text-align: center; }
-       .kv-admin-leader-cover { width: 40px; height: 56px; border-radius: 6px; overflow: hidden; flex: 0 0 40px; }
-       .kv-admin-leader-cover img { width: 100%; height: 100%; object-fit: cover; }
-       .kv-admin-leader-body { flex: 1; min-width: 0; }
-       .kv-admin-leader-title { font-weight: 600; color: var(--kv-text); font-size: .875rem; }
-       .kv-admin-leader-meta { color: var(--kv-text-muted); font-size: .75rem; }
-       .kv-admin-leader-barwrap { height: 6px; background: var(--kv-surface-2); border-radius: 999px; margin-top: 6px; overflow: hidden; }
-       .kv-admin-leader-bar { height: 100%; background: var(--kv-accent); border-radius: 999px; }
-       .kv-admin-leader-views { font-weight: 700; color: var(--kv-text); font-size: .875rem; white-space: nowrap; }
-       .kv-admin-leader-views span { color: var(--kv-text-muted); font-weight: 400; font-size: .7rem; }
-        .kv-admin-leader-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+       .kv-lb { display: grid; gap: 18px; }
+       .kv-lb-head { display: flex; justify-content: space-between; gap: 16px; align-items: end; padding: 20px 22px; border: 1px solid var(--kv-border); border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface)), var(--kv-surface) 55%); }
+       .kv-lb-eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--kv-accent); }
+       .kv-lb-title { margin: 6px 0 0; font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1; letter-spacing: -.03em; }
+       .kv-lb-sub { margin: 8px 0 0; color: var(--kv-text-muted); font-size: .85rem; max-width: 56ch; }
+       .kv-lb-stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; min-width: min(100%, 360px); }
+       .kv-lb-stat { padding: 12px 14px; border: 1px solid var(--kv-border); border-radius: 14px; background: color-mix(in srgb, var(--kv-surface-2) 72%, transparent); }
+       .kv-lb-stat span { display: block; font-size: .67rem; letter-spacing: .12em; text-transform: uppercase; color: var(--kv-text-muted); }
+       .kv-lb-stat strong { display: block; margin-top: 4px; font-size: 1.2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+       .kv-lb-podium { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+       .kv-lb-pod { position: relative; overflow: hidden; padding: 16px; border: 1px solid var(--kv-border); border-radius: 18px; background: var(--kv-surface); display: grid; gap: 12px; min-width: 0; }
+       .kv-lb-pod::before { content: ''; position: absolute; inset: 0 auto auto 0; width: 100%; height: 3px; background: var(--kv-accent); opacity: .55; }
+       .kv-lb-pod.is-top { background: linear-gradient(180deg, color-mix(in srgb, var(--kv-accent) 14%, var(--kv-surface)), var(--kv-surface) 42%); }
+       .kv-lb-pod.is-top::before { opacity: 1; }
+       .kv-lb-rank { display: inline-flex; align-items: center; gap: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--kv-text-muted); }
+       .kv-lb-rank b { font-size: 1.7rem; line-height: 1; letter-spacing: -.04em; color: var(--kv-accent); }
+       .kv-lb-pod-main { display: grid; grid-template-columns: 72px minmax(0,1fr); gap: 12px; align-items: center; }
+       .kv-lb-cover { width: 72px; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden; background: var(--kv-surface-2); border: 1px solid var(--kv-border); }
+       .kv-lb-cover img, .kv-lb-row-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+       .kv-lb-name { font-size: 1rem; font-weight: 700; line-height: 1.3; margin: 0; overflow-wrap: anywhere; }
+       .kv-lb-meta { margin-top: 4px; color: var(--kv-text-muted); font-size: .75rem; line-height: 1.45; }
+       .kv-lb-meter { height: 7px; border-radius: 999px; background: var(--kv-surface-2); overflow: hidden; }
+       .kv-lb-meter > i, .kv-lb-row-meter > i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--kv-accent), color-mix(in srgb, var(--kv-accent) 45%, #fff)); }
+       .kv-lb-pod-foot { display: flex; justify-content: space-between; gap: 10px; align-items: end; }
+       .kv-lb-views { font-size: 1.35rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+       .kv-lb-views small { display: block; margin-top: 3px; font-size: .66rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--kv-text-muted); }
+       .kv-lb-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+       .kv-lb-table { border: 1px solid var(--kv-border); border-radius: 18px; overflow: hidden; background: var(--kv-surface); }
+       .kv-lb-table-head { display: grid; grid-template-columns: 72px minmax(0,1.7fr) minmax(120px,.7fr) minmax(180px,1fr) auto; gap: 14px; padding: 12px 18px; font-size: .66rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--kv-text-muted); background: var(--kv-surface-2); border-bottom: 1px solid var(--kv-border); }
+       .kv-lb-row { display: grid; grid-template-columns: 72px minmax(0,1.7fr) minmax(120px,.7fr) minmax(180px,1fr) auto; gap: 14px; padding: 14px 18px; align-items: center; border-bottom: 1px solid var(--kv-border); }
+       .kv-lb-row:last-child { border-bottom: 0; }
+       .kv-lb-row:hover { background: color-mix(in srgb, var(--kv-accent) 6%, var(--kv-surface)); }
+       .kv-lb-row-rank { font-size: 1rem; font-weight: 800; color: var(--kv-text-muted); font-variant-numeric: tabular-nums; }
+       .kv-lb-row-rank.is-top { color: var(--kv-accent); }
+       .kv-lb-row-title { display: grid; grid-template-columns: 46px minmax(0,1fr); gap: 12px; align-items: center; min-width: 0; }
+       .kv-lb-row-cover { width: 46px; aspect-ratio: 3/4; border-radius: 8px; overflow: hidden; border: 1px solid var(--kv-border); background: var(--kv-surface-2); }
+       .kv-lb-row-name { font-weight: 650; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+       .kv-lb-row-meta { font-size: .74rem; color: var(--kv-text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+       .kv-lb-row-views { font-weight: 750; font-variant-numeric: tabular-nums; }
+       .kv-lb-row-views span { display: block; font-size: .67rem; font-weight: 500; color: var(--kv-text-muted); text-transform: uppercase; letter-spacing: .08em; }
+       .kv-lb-row-meter { height: 8px; border-radius: 999px; background: var(--kv-surface-2); overflow: hidden; }
+       @media (max-width: 1100px) { .kv-lb-podium { grid-template-columns: 1fr; } .kv-lb-head { flex-direction: column; align-items: stretch; } }
+       @media (max-width: 900px) { .kv-lb-table-head { display: none; } .kv-lb-row { grid-template-columns: 56px minmax(0,1fr); grid-template-areas: "rank title" "rank views" "rank meter" "rank actions"; gap: 8px 12px; } .kv-lb-row-rank { grid-area: rank; } .kv-lb-row-title { grid-area: title; } .kv-lb-row-views { grid-area: views; } .kv-lb-row-meter { grid-area: meter; } .kv-lb-row .kv-lb-actions { grid-area: actions; justify-content: flex-start; } }
+       @media (max-width: 640px) { .kv-lb-stats { grid-template-columns: 1fr; } .kv-lb-pod-main { grid-template-columns: 60px minmax(0,1fr); } .kv-lb-cover { width: 60px; } }
 
       .kv-admin-shell.kv-admin-top {
         --ad-bg: #0B1015;
@@ -2671,16 +2702,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       }
       .kv-admin-shell.kv-admin-top .kv-admin-side-label::after { content: ''; height: 1px; flex: 1; background: var(--ad-line); }
       .kv-admin-shell.kv-admin-top .kv-admin-nav,
-      .kv-admin-shell.kv-admin-top .kv-admin-side-quick { counter-reset: adx-nav; gap: 3px; }
+      .kv-admin-shell.kv-admin-top .kv-admin-side-quick { gap: 3px; }
       .kv-admin-shell.kv-admin-top .kv-admin-nav .kv-admin-nav-item {
-        counter-increment: adx-nav; position: relative; gap: 10px;
+        position: relative; gap: 10px;
         min-height: 38px; padding: 8px 10px; border-radius: 2px;
         font-family: 'JetBrains Mono', monospace; font-size: .69rem; font-weight: 500;
         letter-spacing: .02em; color: var(--ad-muted);
-      }
-      .kv-admin-shell.kv-admin-top .kv-admin-nav .kv-admin-nav-item::before {
-        content: counter(adx-nav, decimal-leading-zero); width: 19px; flex-shrink: 0;
-        font-size: .57rem; color: var(--ad-dim);
       }
       .kv-admin-shell.kv-admin-top .kv-admin-nav .kv-admin-nav-item svg { width: 15px; height: 15px; }
       .kv-admin-shell.kv-admin-top .kv-admin-nav .kv-admin-nav-item:hover {
@@ -2690,7 +2717,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         color: var(--ad-amber); background: linear-gradient(90deg, var(--ad-amber-soft), transparent 92%);
         box-shadow: inset 3px 0 0 var(--ad-amber); font-weight: 600; transform: none;
       }
-      .kv-admin-shell.kv-admin-top .kv-admin-nav .kv-admin-nav-item.active::before { color: var(--ad-amber); }
+
       .kv-admin-shell.kv-admin-top .kv-admin-nav-badge {
         min-width: 17px; height: 17px; border-radius: 2px; background: var(--ad-red);
         color: #140B0C; font-family: 'JetBrains Mono', monospace; font-size: .58rem;
@@ -2827,7 +2854,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         border-radius: 3px; background: var(--ad-raised);
       }
       .kv-admin-shell.kv-admin-top .kv-qa::after {
-        content: 'â†—'; position: absolute; top: 10px; right: 12px;
+        content: '↗'; position: absolute; top: 10px; right: 12px;
         font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--ad-dim);
         transition: transform .18s ease, color .18s ease;
       }
@@ -2900,13 +2927,16 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-user-card,
       .kv-admin-shell.kv-admin-top .kv-admin-chapter-card,
       .kv-admin-shell.kv-admin-top .kv-admin-comment-card,
-      .kv-admin-shell.kv-admin-top .kv-admin-leader-row,
+      .kv-admin-shell.kv-admin-top .kv-lb-head,
+      .kv-admin-shell.kv-admin-top .kv-lb-pod,
+      .kv-admin-shell.kv-admin-top .kv-lb-table,
       .kv-admin-shell.kv-admin-top .kv-md-result {
         border: 1px solid var(--ad-line); border-radius: 3px; background: var(--ad-panel); box-shadow: var(--ad-shadow);
       }
       .kv-admin-shell.kv-admin-top .kv-manga-card:hover { border-color: var(--ad-amber); transform: translateY(-2px); }
       .kv-admin-shell.kv-admin-top .kv-manga-card-cover,
-      .kv-admin-shell.kv-admin-top .kv-admin-leader-cover,
+      .kv-admin-shell.kv-admin-top .kv-lb-cover,
+      .kv-admin-shell.kv-admin-top .kv-lb-row-cover,
       .kv-admin-shell.kv-admin-top .md-cover,
       .kv-admin-shell.kv-admin-top .kv-md-cover { border-radius: 2px; }
       .kv-admin-shell.kv-admin-top .kv-dropzone {
@@ -2914,14 +2944,28 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       }
       .kv-admin-shell.kv-admin-top .kv-dropzone.drag { border-color: var(--ad-amber); background: var(--ad-amber-soft); }
       .kv-admin-shell.kv-admin-top .kv-admin-chapter-card-bar,
-      .kv-admin-shell.kv-admin-top .kv-admin-leader-barwrap,
+      .kv-admin-shell.kv-admin-top .kv-lb-meter,
+      .kv-admin-shell.kv-admin-top .kv-lb-row-meter,
       .kv-admin-shell.kv-admin-top .kv-md-progress-bar {
         border-radius: 0; background: var(--ad-raised);
       }
       .kv-admin-shell.kv-admin-top .kv-admin-chapter-card-barfill,
-      .kv-admin-shell.kv-admin-top .kv-admin-leader-bar,
+      .kv-admin-shell.kv-admin-top .kv-lb-meter > i,
+      .kv-admin-shell.kv-admin-top .kv-lb-row-meter > i,
       .kv-admin-shell.kv-admin-top .kv-md-progress-fill { border-radius: 0; background: var(--ad-amber); }
-      .kv-admin-shell.kv-admin-top .kv-admin-leader-rank { color: var(--ad-amber); font-family: 'JetBrains Mono', monospace; }
+      .kv-admin-shell.kv-admin-top .kv-lb-rank b,
+      .kv-admin-shell.kv-admin-top .kv-lb-row-rank.is-top,
+      .kv-admin-shell.kv-admin-top .kv-lb-views { color: var(--ad-amber); }
+      .kv-admin-shell.kv-admin-top .kv-lb-eyebrow,
+      .kv-admin-shell.kv-admin-top .kv-lb-stat span,
+      .kv-admin-shell.kv-admin-top .kv-lb-table-head,
+      .kv-admin-shell.kv-admin-top .kv-lb-views small,
+      .kv-admin-shell.kv-admin-top .kv-lb-row-views span { font-family: 'JetBrains Mono', monospace; }
+      .kv-admin-shell.kv-admin-top .kv-lb-head { background: linear-gradient(135deg, rgba(242,169,59,.08), var(--ad-panel) 55%); }
+      .kv-admin-shell.kv-admin-top .kv-lb-pod.is-top { background: linear-gradient(180deg, rgba(242,169,59,.08), var(--ad-panel) 42%); }
+      .kv-admin-shell.kv-admin-top .kv-lb-stat,
+      .kv-admin-shell.kv-admin-top .kv-lb-table-head { background: var(--ad-raised); }
+      .kv-admin-shell.kv-admin-top .kv-lb-row:hover { background: rgba(242,169,59,.06); }
       .kv-admin-shell.kv-admin-top .kv-traffic-card {
         border: 1px solid var(--ad-line); border-radius: 3px; background: var(--ad-panel); box-shadow: var(--ad-shadow);
       }
@@ -3152,6 +3196,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       adminForm: null,            // form manga aktif (objek) atau null = daftar
       adminChapterForm: null,     // form chapter aktif (objek) atau null
        adminChapterMangaId: '',
+        adminChapterMangaSearch: '',
+        adminChapterFormMangaSearch: '',
+        adminMangaPickerOpen: false,
+        adminFormMangaPickerOpen: false,
        adminChapterFullId: null,
 
       adminSearch: '',
@@ -5075,33 +5123,66 @@ mobileMenu +
       function renderAdminLeaderboard() {
         var sorted = state.data.manga.slice().sort(function (a, b) { return (b.views || 0) - (a.views || 0); });
         var maxV = sorted.reduce(function (a, m) { return Math.max(a, m.views || 0); }, 1) || 1;
-        var rows = sorted.map(function (m, i) {
+        var totalViews = sorted.reduce(function (a, m) { return a + (m.views || 0); }, 0);
+        var totalCh = sorted.reduce(function (a, m) { return a + state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length; }, 0);
+        var top = sorted.slice(0, 3);
+        var rest = sorted.slice(3);
+        function meta(m, chs) { return escapeHtml(m.type || 'Manga') + ' · ' + escapeHtml(m.status || 'Ongoing') + ' · ' + chs + ' chapter' + (m.rating ? ' · Rating ' + escapeHtml(String(m.rating)) : ''); }
+        function actions(m) {
+          return '<div class="kv-lb-actions">' +
+            '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-preview-manga" data-slug="' + escapeHtml(m.slug) + '">Preview</button>' +
+            '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-edit-manga" data-id="' + escapeHtml(m.id) + '">Ubah</button>' +
+          '</div>';
+        }
+        var podium = top.map(function (m, i) {
           var v = m.views || 0;
           var w = Math.round((v / maxV) * 100);
           var chs = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
-          return '<div class="kv-admin-leader-row">' +
-            '<div class="kv-admin-leader-rank">' + (i + 1) + '</div>' +
-            '<div class="kv-admin-leader-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</div>' +
-            '<div class="kv-admin-leader-body">' +
-              '<div class="kv-admin-leader-title">' + escapeHtml(m.title) + '</div>' +
-              '<div class="kv-admin-leader-meta">' + escapeHtml(m.type || 'Manga') + ' â€¢ ' + escapeHtml(m.status || 'Ongoing') + ' â€¢ ' + chs + ' chapter' + (m.rating ? ' â˜… ' + escapeHtml(m.rating) : '') + '</div>' +
-              '<div class="kv-admin-leader-barwrap"><div class="kv-admin-leader-bar" style="width:' + w + '%;"></div></div>' +
+          return '<article class="kv-lb-pod' + (i === 0 ? ' is-top' : '') + '">' +
+            '<div class="kv-lb-rank"><b>#' + (i + 1) + '</b> Peringkat</div>' +
+            '<div class="kv-lb-pod-main">' +
+              '<div class="kv-lb-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</div>' +
+              '<div><h3 class="kv-lb-name">' + escapeHtml(m.title) + '</h3><div class="kv-lb-meta">' + meta(m, chs) + '</div></div>' +
             '</div>' +
-            '<div class="kv-admin-leader-views">' + v.toLocaleString('id-ID') + ' <span>views</span></div>' +
-            '<div class="kv-admin-leader-actions">' +
-              '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-preview-manga" data-slug="' + escapeHtml(m.slug) + '">Preview</button>' +
-              '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-edit-manga" data-id="' + escapeHtml(m.id) + '">Ubah</button>' +
+            '<div class="kv-lb-meter"><i style="width:' + w + '%"></i></div>' +
+            '<div class="kv-lb-pod-foot">' +
+              '<div class="kv-lb-views">' + v.toLocaleString('id-ID') + '<small>Total Pembacaan</small></div>' +
+              actions(m) +
             '</div>' +
+          '</article>';
+        }).join('');
+        var rows = rest.map(function (m, i) {
+          var rank = i + 4;
+          var v = m.views || 0;
+          var w = Math.round((v / maxV) * 100);
+          var chs = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
+          return '<div class="kv-lb-row">' +
+            '<div class="kv-lb-row-rank' + (rank <= 3 ? ' is-top' : '') + '">#' + rank + '</div>' +
+            '<div class="kv-lb-row-title">' +
+              '<div class="kv-lb-row-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</div>' +
+              '<div style="min-width:0;"><div class="kv-lb-row-name">' + escapeHtml(m.title) + '</div><div class="kv-lb-row-meta">' + meta(m, chs) + '</div></div>' +
+            '</div>' +
+            '<div class="kv-lb-row-views">' + v.toLocaleString('id-ID') + '<span>Pembacaan</span></div>' +
+            '<div class="kv-lb-row-meter"><i style="width:' + w + '%"></i></div>' +
+            actions(m) +
           '</div>';
         }).join('');
-        return '<div class="kv-card">' +
-          '<div class="kv-toolbar" style="justify-content:space-between;align-items:center;">' +
-            '<h3 style="margin:0;">Leaderboard Semua Judul</h3>' +
-            '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-tab" data-tab="dashboard">Kembali ke Dashboard</button>' +
+        return '<section class="kv-lb">' +
+          '<div class="kv-lb-head">' +
+            '<div>' +
+              '<div class="kv-lb-eyebrow">Reader Performance</div>' +
+              '<h2 class="kv-lb-title">Peringkat Pembacaan Manga</h2>' +
+              '<p class="kv-lb-sub">Pantau judul dengan performa terbaik dan bandingkan kontribusi pembacaan di seluruh katalog.</p>' +
+            '</div>' +
+            '<div class="kv-lb-stats">' +
+              '<div class="kv-lb-stat"><span>Total Judul</span><strong>' + sorted.length.toLocaleString('id-ID') + '</strong></div>' +
+              '<div class="kv-lb-stat"><span>Total Pembacaan</span><strong>' + totalViews.toLocaleString('id-ID') + '</strong></div>' +
+              '<div class="kv-lb-stat"><span>Total Chapter</span><strong>' + totalCh.toLocaleString('id-ID') + '</strong></div>' +
+            '</div>' +
           '</div>' +
-          '<p style="color:var(--kv-text-muted);font-size:0.8125rem;margin:8px 0 16px;">Menampilkan ' + sorted.length + ' judul, diurutkan berdasarkan total pembacaan.</p>' +
-          (rows ? '<div class="kv-admin-leader-list">' + rows + '</div>' : '<p class="kv-admin-empty">Belum ada data manga untuk ditampilkan.</p>') +
-        '</div>';
+          (podium ? '<div class="kv-lb-podium">' + podium + '</div>' : '') +
+          (rows ? '<div class="kv-lb-table"><div class="kv-lb-table-head"><div>Peringkat</div><div>Judul</div><div>Pembacaan</div><div>Performa Relatif</div><div>Aksi</div></div>' + rows + '</div>' : (!podium ? '<div class="kv-card"><p class="kv-admin-empty">Belum ada data manga untuk ditampilkan.</p></div>' : '')) +
+        '</section>';
       }
 
       function renderTrafficChart(rows) {
@@ -5129,14 +5210,14 @@ mobileMenu +
         var labels = list.map(function (r, i) {
           if (i % labelEvery !== 0 && i !== list.length - 1) return '';
           var p = point(r, i, 'pageviews');
-          return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(String(r.day)) + '</text>';
-        }).join('');
+          var dayLabel = r.date || r.day || '';
+          return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(String(dayLabel)) + '</text>';
         var dots = list.map(function (r, i) {
           var p = point(r, i, 'pageviews');
-          return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" style="fill:var(--ad-amber)"><title>' + escapeHtml(r.day) + ': ' + (r.pageviews || 0).toLocaleString('id-ID') + ' pageviews</title></circle>';
-        }).join('');
+          var dayLabel = r.date || r.day || '';
+          return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" style="fill:var(--ad-amber)"><title>' + escapeHtml(String(dayLabel)) + ': ' + (r.pageviews || 0).toLocaleString('id-ID') + ' pageviews</title></circle>';
         var rangeText = String(list[0].day) + ' â€” ' + String(list[list.length - 1].day);
-        return '<div class="kv-traffic-chart">' +
+        var rangeText = String(list[0].date || list[0].day || '') + ' – ' + String(list[list.length - 1].date || list[list.length - 1].day || '');
           '<h3 class="kv-chart-title" style="margin:0;">Tren Traffic Harian</h3>' +
           '<p class="kv-chart-sub" style="margin:0 0 12px;">Periode ' + escapeHtml(rangeText) + '. Menampilkan tayangan halaman dan pengunjung unik per hari.</p>' +
           '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Grafik traffic harian" style="width:100%;height:auto;overflow:visible;">' +
@@ -5154,13 +5235,13 @@ mobileMenu +
         var max = list.reduce(function (a, r) { return Math.max(a, r.pageviews || 0); }, 1) || 1;
         var rowsHtml = list.map(function (r) {
           var pct = Math.round(((r.pageviews || 0) / max) * 100);
-          return '<tr><td class="kv-traffic-date kv-mono" title="' + escapeHtml(r.day) + '">' + escapeHtml(r.day) + '</td>' +
-            '<td>' + (r.pageviews || 0).toLocaleString('id-ID') + '<div class="kv-traffic-mini"><i style="width:' + pct + '%;"></i></div></td>' +
+          var dayLabel = r.date || r.day || '';
+          return '<tr><td class="kv-traffic-date kv-mono" title="' + escapeHtml(String(dayLabel)) + '">' + escapeHtml(String(dayLabel)) + '</td>' +
             '<td>' + (r.visitors || 0).toLocaleString('id-ID') + '</td>' +
             '<td>' + (r.visits || 0).toLocaleString('id-ID') + '</td></tr>';
         }).join('');
         var rangeText = String(list[list.length - 1].day) + ' â€” ' + String(list[0].day);
-        return '<div class="kv-card kv-traffic-history" style="margin-top:16px;">' +
+        var rangeText = String(list[list.length - 1].date || list[list.length - 1].day || '') + ' – ' + String(list[0].date || list[0].day || '');
           '<h3 class="kv-section-title" style="margin:0 0 12px;">Aktivitas 7 Hari Terakhir · ' + escapeHtml(rangeText) + '</h3>' +
           '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>TANGGAL</th><th>PAGEVIEWS</th><th>PENGUNJUNG</th><th>KUNJUNGAN</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' +
         '</div>';
@@ -5285,6 +5366,17 @@ mobileMenu +
         if (!upRes.ok) throw new Error(json.error || ('HTTP ' + upRes.status));
         return { fileName: fileName, bloggerUrl: json.bloggerUrl || '', telegramFileId: json.telegramFileId || '', status: 'Telegram: ' + (json.telegramStatus || 'gagal') + ' | Proxy: ' + (json.bloggerStatus || 'gagal') };
       }
+      async function mdFetchRating(id) {
+        try {
+          var r = await fetch('https://api.mangadex.org/statistics/manga/' + encodeURIComponent(id));
+          if (!r.ok) return 0;
+          var data = await r.json();
+          var stat = data && data.statistics && data.statistics[id];
+          var rating = stat && stat.rating ? (stat.rating.bayesian || stat.rating.average || 0) : 0;
+          var n = parseFloat(rating);
+          return isNaN(n) ? 0 : Math.round(n * 100) / 100;
+        } catch (e) { return 0; }
+      }
       async function mdScrape(input) {
         var id = mdParseId(input);
         if (!id) { toast('URL/ID MangaDex tidak valid.', 'err'); return; }
@@ -5307,6 +5399,7 @@ mobileMenu +
           var author = authorRel && authorRel.attributes ? authorRel.attributes.name : '';
           var cover = mdCoverUrl(m);
           var tags = (attrs.tags || []).map(function (t) { return (t.attributes && t.attributes.name && (t.attributes.name.en || Object.values(t.attributes.name)[0])) || ''; }).filter(Boolean);
+          var mdRating = await mdFetchRating(id);
           state.mdProgress.current = 'Mengunggah cover manga...';
           render();
           var coverUploaded = cover;
@@ -5316,12 +5409,16 @@ mobileMenu +
               if (coverPage && coverPage.bloggerUrl) coverUploaded = coverPage.bloggerUrl;
             } catch (e) { /* keep original url */ }
           }
-          var manga = state.data.manga.filter(function (x) { return x.title === title; })[0];
+          var manga = state.data.manga.filter(function (x) { return x.title.toLowerCase() === title.toLowerCase(); })[0];
           if (!manga) {
-            manga = { id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author, synopsis: desc, coverBloggerUrl: coverUploaded, genres: tags, type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: '', featured: false, recommended: false, views: 0, updatedAt: today() };
+            manga = { id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author, synopsis: desc, coverBloggerUrl: coverUploaded, genres: tags, type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: mdRating || '', featured: false, recommended: false, views: 0, updatedAt: today() };
             state.data.manga.push(manga);
           } else {
             manga.coverBloggerUrl = manga.coverBloggerUrl || coverUploaded;
+            manga.author = manga.author || author;
+            manga.synopsis = manga.synopsis || desc;
+            manga.genres = (manga.genres && manga.genres.length) ? manga.genres : tags;
+            if (mdRating) manga.rating = mdRating;
             manga.updatedAt = today();
           }
           persistData();
@@ -5557,9 +5654,30 @@ mobileMenu +
       }
       if (!state.adminChapterMangaId || !mangaById(state.adminChapterMangaId)) state.adminChapterMangaId = state.data.manga[0].id;
       var sel = state.adminChapterMangaId;
-      var mangaSelect = '<select id="kv-ch-manga" class="kv-select" aria-label="Pilih manga">' +
-        state.data.manga.map(function (m) { return '<option value="' + escapeHtml(m.id) + '"' + (m.id === sel ? ' selected' : '') + '>' + escapeHtml(m.title) + '</option>'; }).join('') +
-      '</select>';
+      var selManga = mangaById(sel);
+      var chSearch = String(state.adminChapterMangaSearch || '').toLowerCase();
+      var chList = state.data.manga.filter(function (m) {
+        return !chSearch || m.title.toLowerCase().indexOf(chSearch) !== -1 || String(m.slug || '').toLowerCase().indexOf(chSearch) !== -1;
+      });
+      var mangaSelect = '<div class="kv-manga-picker">' +
+        '<button type="button" class="kv-manga-picker-btn" data-action="admin-toggle-manga-picker" aria-expanded="' + (state.adminMangaPickerOpen ? 'true' : 'false') + '">' +
+          '<span class="kv-manga-picker-thumb">' + renderCover(selManga ? selManga.coverBloggerUrl : '', selManga ? selManga.title : 'Manga') + '</span>' +
+          '<span class="kv-manga-picker-meta"><span class="kv-manga-picker-label">Manga Dipilih</span><span class="kv-manga-picker-title">' + escapeHtml(selManga ? selManga.title : 'Pilih manga') + '</span></span>' +
+          '<span class="kv-manga-picker-caret">' + kvIcon('chev') + '</span>' +
+        '</button>' +
+        (state.adminMangaPickerOpen ? '<div class="kv-manga-picker-panel">' +
+          '<input id="kv-ch-manga-search" class="kv-input" type="search" placeholder="Cari judul atau slug manga..." value="' + escapeHtml(state.adminChapterMangaSearch || '') + '" aria-label="Cari manga"/>' +
+          '<div class="kv-manga-picker-list">' +
+            (chList.length ? chList.map(function (m) {
+              var cCount = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
+              return '<button type="button" class="kv-manga-picker-item' + (m.id === sel ? ' is-active' : '') + '" data-action="admin-pick-chapter-manga" data-id="' + escapeHtml(m.id) + '">' +
+                '<span class="kv-manga-picker-item-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</span>' +
+                '<span class="kv-manga-picker-item-body"><span class="kv-manga-picker-item-title">' + escapeHtml(m.title) + '</span><span class="kv-manga-picker-item-sub">' + cCount + ' chapter · ' + escapeHtml(m.status || 'Ongoing') + '</span></span>' +
+              '</button>';
+            }).join('') : '<div class="kv-manga-picker-empty">Manga tidak ditemukan.</div>') +
+          '</div>' +
+        '</div>' : '') +
+      '</div>';
       var chs = state.data.chapters.filter(function (c) { return c.mangaId === sel; }).sort(function (a, b) { return a.number - b.number; });
       var cards = chs.map(function (c, i) {
         var uploaded = c.pages.filter(function (p) { return p.bloggerUrl; }).length;
@@ -5594,6 +5712,31 @@ mobileMenu +
     function renderAdminChapterForm() {
       var f = state.adminChapterForm;
       f.pages = f.pages || [];
+      var selManga = mangaById(f.mangaId);
+      var formSearch = String(state.adminChapterFormMangaSearch || '').toLowerCase();
+      var formList = state.data.manga.filter(function (m) {
+        return !formSearch || m.title.toLowerCase().indexOf(formSearch) !== -1 || String(m.slug || '').toLowerCase().indexOf(formSearch) !== -1;
+      });
+      var mangaField = '<div class="kv-manga-picker">' +
+        '<span class="kv-manga-picker-field-label">Manga *</span>' +
+        '<button type="button" class="kv-manga-picker-btn" data-action="admin-toggle-form-manga-picker" aria-expanded="' + (state.adminFormMangaPickerOpen ? 'true' : 'false') + '">' +
+          '<span class="kv-manga-picker-thumb">' + renderCover(selManga ? selManga.coverBloggerUrl : '', selManga ? selManga.title : 'Manga') + '</span>' +
+          '<span class="kv-manga-picker-meta"><span class="kv-manga-picker-label">Manga Dipilih</span><span class="kv-manga-picker-title">' + escapeHtml(selManga ? selManga.title : 'Pilih manga') + '</span></span>' +
+          '<span class="kv-manga-picker-caret">' + kvIcon('chev') + '</span>' +
+        '</button>' +
+        (state.adminFormMangaPickerOpen ? '<div class="kv-manga-picker-panel">' +
+          '<input id="kv-ch-form-manga-search" class="kv-input" type="search" placeholder="Cari judul atau slug manga..." value="' + escapeHtml(state.adminChapterFormMangaSearch || '') + '" aria-label="Cari manga"/>' +
+          '<div class="kv-manga-picker-list">' +
+            (formList.length ? formList.map(function (m) {
+              var cCount = state.data.chapters.filter(function (c) { return c.mangaId === m.id; }).length;
+              return '<button type="button" class="kv-manga-picker-item' + (m.id === f.mangaId ? ' is-active' : '') + '" data-action="admin-pick-form-manga" data-id="' + escapeHtml(m.id) + '">' +
+                '<span class="kv-manga-picker-item-cover">' + renderCover(m.coverBloggerUrl, m.title) + '</span>' +
+                '<span class="kv-manga-picker-item-body"><span class="kv-manga-picker-item-title">' + escapeHtml(m.title) + '</span><span class="kv-manga-picker-item-sub">' + cCount + ' chapter · ' + escapeHtml(m.status || 'Ongoing') + '</span></span>' +
+              '</button>';
+            }).join('') : '<div class="kv-manga-picker-empty">Manga tidak ditemukan.</div>') +
+          '</div>' +
+        '</div>' : '') +
+      '</div>';
       var pagesRows = f.pages.map(function (p, i) {
         return '<tr>' +
           '<td class="kv-mono">' + (i + 1) + '</td>' +
@@ -5616,9 +5759,8 @@ mobileMenu +
         '</div>' +
         '<input type="hidden" name="id" value="' + escapeHtml(f.id || '') + '"/>' +
         '<div class="kv-form-grid">' +
-          '<label>Manga *<select class="kv-select" name="mangaId" id="kv-ch-form-manga" style="width:100%;display:block;margin-top:4px;">' +
-            state.data.manga.map(function (m) { return '<option value="' + escapeHtml(m.id) + '"' + (m.id === f.mangaId ? ' selected' : '') + '>' + escapeHtml(m.title) + '</option>'; }).join('') +
-          '</select></label>' +
+          '<input type="hidden" name="mangaId" id="kv-ch-form-manga" value="' + escapeHtml(f.mangaId || '') + '"/>' +
+          mangaField +
            '<label>Nomor Chapter *<input class="kv-input kv-mono" name="number" type="number" min="0.1" step="0.1" value="' + escapeHtml(f.number) + '" required style="width:100%;display:block;margin-top:4px;"/></label>' +
 
           '<label>Judul Chapter<input class="kv-input" name="title" value="' + escapeHtml(f.title || '') + '" style="width:100%;display:block;margin-top:4px;"/></label>' +
@@ -6922,12 +7064,12 @@ mobileMenu +
            ta.selectionEnd = start + wrap[0].length + (sel || 'teks').length;
          };
        });
-      var chMangaSel = document.getElementById('kv-ch-manga');
-      if (chMangaSel) chMangaSel.onchange = function (e) { state.adminChapterMangaId = e.target.value; render(); };
       var chForm = document.getElementById('kv-chapter-form');
       if (chForm) chForm.onsubmit = function (e) { e.preventDefault(); saveChapterForm(chForm); };
-      var chFormSel = document.getElementById('kv-ch-form-manga');
-      if (chFormSel) chFormSel.onchange = function (e) { if (state.adminChapterForm) state.adminChapterForm.mangaId = e.target.value; };
+      var chMangaSearch = document.getElementById('kv-ch-manga-search');
+      if (chMangaSearch) chMangaSearch.oninput = function (e) { state.adminChapterMangaSearch = e.target.value; render(); var next = document.getElementById('kv-ch-manga-search'); if (next) { next.focus(); next.selectionStart = next.selectionEnd = next.value.length; } };
+      var chFormMangaSearch = document.getElementById('kv-ch-form-manga-search');
+      if (chFormMangaSearch) chFormMangaSearch.oninput = function (e) { state.adminChapterFormMangaSearch = e.target.value; render(); var next2 = document.getElementById('kv-ch-form-manga-search'); if (next2) { next2.focus(); next2.selectionStart = next2.selectionEnd = next2.value.length; } };
        var chFiles = document.getElementById('kv-ch-files');
        if (chFiles) chFiles.onchange = function (e) {
          var files = Array.prototype.slice.call(e.target.files);
@@ -6969,6 +7111,13 @@ mobileMenu +
       var insideDropdown = e.target && e.target.closest ? e.target.closest('.kv-dropdown, .kv-dropdown-btn') : null;
       if (!insideDropdown && state.openCatalogDropdown) {
         state.openCatalogDropdown = null;
+        render();
+        return;
+      }
+      var insideMangaPicker = e.target && e.target.closest ? e.target.closest('.kv-manga-picker') : null;
+      if (!insideMangaPicker && (state.adminMangaPickerOpen || state.adminFormMangaPickerOpen)) {
+        state.adminMangaPickerOpen = false;
+        state.adminFormMangaPickerOpen = false;
         render();
         return;
       }
@@ -7111,9 +7260,12 @@ mobileMenu +
         else if (act === 'md-import-manga') {
          var mid = el.getAttribute('data-id');
          state.mdImporting = true; render();
-         fetch('https://api.mangadex.org/manga/' + encodeURIComponent(mid) + '?includes[]=cover_art&includes[]=author&includes[]=artist')
-           .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-           .then(function (res) {
+         Promise.all([
+           fetch('https://api.mangadex.org/manga/' + encodeURIComponent(mid) + '?includes[]=cover_art&includes[]=author&includes[]=artist').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+           mdFetchRating(mid)
+         ]).then(function (resArr) {
+             var res = resArr[0];
+             var mdRating = resArr[1] || 0;
              var m = res.data;
              if (!m) throw new Error('Data manga tidak ditemukan.');
              var attrs = m.attributes || {};
@@ -7123,7 +7275,7 @@ mobileMenu +
              var author = authorRel && authorRel.attributes ? authorRel.attributes.name : '';
              var cover = mdCoverUrl(m);
              var tags = (attrs.tags || []).map(function (t) { return (t.attributes && t.attributes.name && (t.attributes.name.en || Object.values(t.attributes.name)[0])) || ''; }).filter(Boolean);
-             var existing = state.data.manga.filter(function (x) { return x.title === title; })[0];
+             var existing = state.data.manga.filter(function (x) { return x.title.toLowerCase() === title.toLowerCase(); })[0];
              var obj;
              if (existing) {
                existing.author = existing.author || author;
@@ -7132,13 +7284,14 @@ mobileMenu +
                existing.genres = (existing.genres && existing.genres.length) ? existing.genres : tags;
                existing.type = existing.type || mdType(attrs.originalLanguage);
                existing.status = existing.status || mdStatus(attrs.status);
+               if (mdRating) existing.rating = mdRating;
                existing.updatedAt = today();
                obj = existing;
              } else {
                obj = {
                  id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author,
                  synopsis: desc, coverBloggerUrl: cover, genres: tags,
-                 type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: '',
+                 type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: mdRating || '',
                  featured: false, recommended: false, views: 0, updatedAt: today()
                };
                state.data.manga.push(obj);
@@ -7154,7 +7307,7 @@ mobileMenu +
        else if (act === 'md-import-chapters') {
          var mid = el.getAttribute('data-id');
          var mtitle = el.getAttribute('data-title') || '';
-         var existingManga = state.data.manga.filter(function (m) { return m.title === mtitle; })[0];
+         var existingManga = state.data.manga.filter(function (m) { return m.title.toLowerCase() === String(mtitle).toLowerCase(); })[0];
          if (!existingManga) { toast('Impor manga terlebih dahulu.', 'warn'); return; }
          state.mdImporting = true; render();
          fetch('https://api.mangadex.org/manga/' + encodeURIComponent(mid) + '/feed?translatedLanguage[]=en&limit=500&order[chapter]=asc')
@@ -7208,16 +7361,26 @@ mobileMenu +
         var am = mangaById(el.getAttribute('data-id'));
         if (am) { state.adminForm = JSON.parse(JSON.stringify(am)); state.adminForm.genresText = (am.genres || []).join(', '); state.adminTab = 'manga'; state.adminDrawerOpen = false; render(); }
       }
-      else if (act === 'admin-cancel-form') { state.adminForm = null; state.adminChapterForm = null; render(); }
+       else if (act === 'admin-cancel-form') { state.adminForm = null; state.adminChapterForm = null; state.adminMangaPickerOpen = false; state.adminFormMangaPickerOpen = false; render(); }
       else if (act === 'admin-preview-manga') { navigate('#/manga/' + el.getAttribute('data-slug')); }
       else if (act === 'admin-delete-manga') {
         var dm = mangaById(el.getAttribute('data-id'));
         if (dm) confirmDelete('manga', dm.id, 'Hapus manga "' + dm.title + '" beserta seluruh chapter dan komentarnya?', 'Hapus Manga');
       }
-       else if (act === 'admin-new-chapter') {
+        else if (act === 'admin-new-chapter') {
          if (el.getAttribute('data-id')) { state.adminChapterMangaId = el.getAttribute('data-id'); state.adminExpandedManga = el.getAttribute('data-id'); }
          if (!state.data.manga.length) { toast('Tambahkan manga terlebih dahulu sebelum membuat chapter.', 'warn'); }
-          else { state.adminChapterForm = blankChapter(state.adminChapterMangaId); state.adminTab = 'manga'; state.adminDrawerOpen = false; render(); }
+          else { state.adminChapterForm = blankChapter(state.adminChapterMangaId); state.adminTab = 'manga'; state.adminDrawerOpen = false; state.adminMangaPickerOpen = false; state.adminFormMangaPickerOpen = false; render(); }
+       }
+       else if (act === 'admin-toggle-manga-picker') { state.adminMangaPickerOpen = !state.adminMangaPickerOpen; state.adminFormMangaPickerOpen = false; render(); }
+       else if (act === 'admin-toggle-form-manga-picker') { state.adminFormMangaPickerOpen = !state.adminFormMangaPickerOpen; state.adminMangaPickerOpen = false; render(); }
+       else if (act === 'admin-pick-chapter-manga') { state.adminChapterMangaId = el.getAttribute('data-id'); state.adminMangaPickerOpen = false; render(); }
+       else if (act === 'admin-pick-form-manga') {
+         if (state.adminChapterForm) state.adminChapterForm.mangaId = el.getAttribute('data-id');
+         var hiddenManga = document.getElementById('kv-ch-form-manga');
+         if (hiddenManga) hiddenManga.value = el.getAttribute('data-id') || '';
+         state.adminFormMangaPickerOpen = false;
+         render();
        }
       else if (act === 'admin-toggle-expand') {
         var expId = el.getAttribute('data-id');
