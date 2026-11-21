@@ -175,7 +175,18 @@ function deleteChapter(catalog, id) {
 }
 
 function deleteComment(catalog, id) {
-  catalog.comments = catalog.comments.filter((comment) => comment.id !== id);
+  const ids = new Set([id]);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const comment of catalog.comments) {
+      if (comment && comment.parentId && ids.has(comment.parentId) && !ids.has(comment.id)) {
+        ids.add(comment.id);
+        changed = true;
+      }
+    }
+  }
+  catalog.comments = catalog.comments.filter((comment) => !ids.has(comment.id));
 }
 
 function enrichCommentsWithUsers(catalog) {

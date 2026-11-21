@@ -3417,23 +3417,39 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
      function adminPinComment(id) {
        var comment = state.data.comments.filter(function (x) { return x.id === id; })[0];
        if (!comment) return;
-       comment.pinned = !comment.pinned;
+       var prev = !!comment.pinned;
+       comment.pinned = !prev;
        persistData();
        render();
-       if (CONFIG.API_BASE_URL) {
-         fetch(CONFIG.API_BASE_URL + '/api/admin/pin-comment', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
-           body: JSON.stringify({ id: id })
-         }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
-           if (res && typeof res.pinned === 'boolean' && comment) comment.pinned = res.pinned;
-           render();
-         }).catch(function () {
-           comment.pinned = !comment.pinned;
-           render();
-           toast('Gagal mengubah pin komentar.', 'warn');
-         });
+       if (!CONFIG.API_BASE_URL || !state.adminToken) {
+         comment.pinned = prev; persistData(); render();
+         toast('Backend tidak terhubung.', 'error');
+         return;
        }
+       fetch(CONFIG.API_BASE_URL + '/api/admin/pin-comment', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+         body: JSON.stringify({ id: id })
+       }).then(function (r) {
+         return r.json().catch(function () { return {}; }).then(function (j) {
+           if (r.status === 401) {
+             state.adminToken = ''; state.user = null;
+             localStorage.removeItem('kv_admin_token'); localStorage.removeItem('kv_session');
+             throw new Error('Sesi admin berakhir. Silakan login ulang.');
+           }
+           if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+           return j;
+         });
+       }).then(function (res) {
+         if (res && typeof res.pinned === 'boolean') comment.pinned = res.pinned;
+         persistData();
+         render();
+       }).catch(function (e) {
+         comment.pinned = prev;
+         persistData();
+         render();
+         toast((e && e.message) ? e.message : 'Gagal mengubah pin komentar.', 'warn');
+       });
      }
 
      function upvoteCommentLocal(id) {
@@ -3497,18 +3513,30 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     /* Sinkronisasi ke Vercel (hanya jika API_BASE_URL aktif) */
     var apiSyncQueue = Promise.resolve();
     function apiSync(path, payload) {
-      if (!CONFIG.API_BASE_URL) return;
+      if (!CONFIG.API_BASE_URL) return Promise.resolve();
       apiSyncQueue = apiSyncQueue.then(function () {
         return fetch(CONFIG.API_BASE_URL + path, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (state.adminToken || '') },
           body: JSON.stringify(payload)
         }).then(function (res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
+          if (res.status === 401) {
+            state.adminToken = '';
+            state.user = null;
+            localStorage.removeItem('kv_admin_token');
+            localStorage.removeItem('kv_session');
+            toast('Sesi admin berakhir. Silakan login ulang.', 'error');
+            render();
+            throw new Error('Sesi admin berakhir');
+          }
+          if (!res.ok) return res.json().catch(function () { return {}; }).then(function (j) { throw new Error(j.error || ('HTTP ' + res.status)); });
+          return res.json().catch(function () { return {}; });
         });
       }).catch(function (err) {
-        toast('Tersimpan lokal, tetapi gagal sinkron ke server (' + path + '): ' + err.message, 'warn');
+        if (err && err.message === 'Sesi admin berakhir') return;
+        toast('Tersimpan lokal, tetapi gagal sinkron ke server (' + path + '): ' + (err && err.message ? err.message : err), 'warn');
       });
+      return apiSyncQueue;
     }
 
     /* Notifikasi toast (tidak ikut terhapus saat render ulang: diluar #kv-app) */
@@ -3522,8 +3550,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         wrap.setAttribute('aria-live', 'polite');
         document.body.appendChild(wrap);
       }
+      var kind = type === 'error' ? 'err' : type === 'success' ? 'ok' : (type || '');
       var t = document.createElement('div');
-      t.className = 'kv-toast' + (type ? ' kv-toast-' + type : '');
+      t.className = 'kv-toast' + (kind ? ' kv-toast-' + kind : '');
       t.textContent = msg;
       wrap.appendChild(t);
       setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
@@ -4888,14 +4917,14 @@ mobileMenu +
 
 
        var titles = {
-         dashboard: ['Dashboard Analitik', 'KPI, grafik, dan pintasan cepat.'],
-         manga: ['Manajemen Manga & Chapter', 'Tambah, ubah, hapus manga dan kelola chapter per judul.'],
-          komentar: ['Moderasi Komentar', 'Setujui, tolak, atau hapus komentar pembaca.'],
-          analytics: ['Analitik Traffic', 'Rincian traffic situs dari awal bulan ini sampai hari ini.'],
-          mangadex: ['Import MangaDex', 'Cari dan impor manga beserta daftar chapter dari MangaDex.'],
-          leaderboard: ['Leaderboard Judul', 'Semua judul diurutkan berdasarkan jumlah pembaca.'],
-         pengguna: ['Manajemen Pengguna', 'Daftar akun, ubah role, dan hapus pengguna.'],
-         pengaturan: ['Pengaturan', 'Konfigurasi tema, integrasi backend, dan zona bahaya.']
+         dashboard: ['Ringkasan Dashboard', 'Pantau performa konten, aktivitas pengguna, dan metrik utama situs.'],
+         manga: ['Kelola Manga & Chapter', 'Atur katalog manga, detail publikasi, dan struktur chapter dalam satu tempat.'],
+         komentar: ['Moderasi Komentar', 'Tinjau, setujui, atau kelola komentar untuk menjaga kualitas diskusi.'],
+         analytics: ['Analitik Kunjungan', 'Lihat tren trafik, kunjungan unik, dan performa halaman berdasarkan periode.'],
+         mangadex: ['Impor MangaDex', 'Impor metadata dan chapter dari MangaDex ke katalog NexaManga.'],
+         leaderboard: ['Peringkat Manga', 'Pantau judul dengan performa pembacaan tertinggi di seluruh katalog.'],
+         pengguna: ['Manajemen Pengguna', 'Kelola akun pengguna, peran akses, dan status keanggotaan.'],
+         pengaturan: ['Pengaturan Situs', 'Kelola identitas situs, preferensi konten, dan konfigurasi operasional.']
        };
       var t = titles[tab] || titles.dashboard;
       var topActions;
@@ -5001,10 +5030,10 @@ mobileMenu +
       var totalViews = state.data.manga.reduce(function (acc, m) { return acc + (m.views || 0); }, 0);
       var totalUsers = (state.usersCache || []).length;
       var kpis =
-        '<div class="kv-kpi"><div class="ico">' + kvIcon('book') + '</div><div class="lbl">Total Manga</div><div class="val">' + state.data.manga.length + '</div><div class="delta">Judul terdaftar</div></div>' +
-        '<div class="kv-kpi"><div class="ico">' + kvIcon('layers') + '</div><div class="lbl">Total Chapter</div><div class="val">' + state.data.chapters.length + '</div><div class="delta">Halaman tersimpan</div></div>' +
-        '<div class="kv-kpi"><div class="ico">' + kvIcon('chat') + '</div><div class="lbl">Komentar Menunggu</div><div class="val">' + pending + '</div><div class="delta">Perlu moderasi</div></div>' +
-        '<div class="kv-kpi"><div class="ico">' + kvIcon('trend') + '</div><div class="lbl">Total Dibaca</div><div class="val">' + totalViews.toLocaleString('id-ID') + '</div><div class="delta">Akumulasi views</div></div>';
+        '<div class="kv-kpi"><div class="ico">' + kvIcon('book') + '</div><div class="lbl">Total Manga</div><div class="val">' + state.data.manga.length + '</div><div class="delta">Judul dalam katalog</div></div>' +
+        '<div class="kv-kpi"><div class="ico">' + kvIcon('layers') + '</div><div class="lbl">Total Chapter</div><div class="val">' + state.data.chapters.length + '</div><div class="delta">Chapter dipublikasikan</div></div>' +
+        '<div class="kv-kpi"><div class="ico">' + kvIcon('chat') + '</div><div class="lbl">Komentar Menunggu</div><div class="val">' + pending + '</div><div class="delta">Menunggu peninjauan</div></div>' +
+        '<div class="kv-kpi"><div class="ico">' + kvIcon('trend') + '</div><div class="lbl">Total Pembacaan</div><div class="val">' + totalViews.toLocaleString('id-ID') + '</div><div class="delta">Akumulasi seluruh judul</div></div>';
       // Bar chart: views per manga (top 8)
       var counts = state.data.manga.map(function (m) {
         return { title: m.title, count: m.views || 0 };
@@ -5018,16 +5047,16 @@ mobileMenu +
           '<div class="kv-bar-label">' + escapeHtml(c.title) + '</div>' +
         '</div>';
       }).join('');
-       var chart = '<div class="kv-chart-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;"><h3 class="kv-chart-title" style="margin:0;">View per Manga</h3><button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-open-leaderboard">Lihat Semua &rarr;</button></div><p class="kv-chart-sub">Top 8 manga berdasarkan jumlah pembaca.</p>' +
-         (bars ? '<div class="kv-bar-chart">' + bars + '</div>' : '<p style="color:var(--kv-text-muted);">Belum ada data.</p>') + '</div>';
+       var chart = '<div class="kv-chart-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;"><h3 class="kv-chart-title" style="margin:0;">Performa Pembacaan Manga</h3><button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-open-leaderboard">Lihat Semua &rarr;</button></div><p class="kv-chart-sub">Delapan judul dengan jumlah pembacaan tertinggi.</p>' +
+         (bars ? '<div class="kv-bar-chart">' + bars + '</div>' : '<p style="color:var(--kv-text-muted);">Data pembacaan belum tersedia.</p>') + '</div>';
 
       var qas = [
-        { icon: 'plus', t: 'Tambah Manga', d: 'Publikasikan judul baru ke archive.', act: 'admin-new-manga' },
-        { icon: 'layers', t: 'Tambah Chapter', d: 'Unggah halaman ke penyimpanan Telegram.', act: 'admin-new-chapter' },
-        { icon: 'chat', t: 'Moderasi Komentar', d: pending + ' komentar menunggu review.', act: 'admin-tab', tab: 'komentar' },
-        { icon: 'book', t: 'Kelola Manga', d: 'Ubah metadata, unggulan & rekomendasi.', act: 'admin-tab', tab: 'manga' },
-        { icon: 'eye', t: 'Kelola Chapter', d: 'Urutan, progres gambar, dan preview.', act: 'admin-tab', tab: 'chapter' },
-        { icon: 'gear', t: 'Pengaturan', d: 'Konfigurasi integrasi & data.', act: 'admin-tab', tab: 'pengaturan' }
+        { icon: 'plus', t: 'Tambah Manga', d: 'Buat dan publikasikan judul baru ke katalog.', act: 'admin-new-manga' },
+        { icon: 'layers', t: 'Tambah Chapter', d: 'Unggah chapter baru dan kelola halaman pembacaan.', act: 'admin-new-chapter' },
+        { icon: 'chat', t: 'Moderasi Komentar', d: pending + ' komentar menunggu peninjauan.', act: 'admin-tab', tab: 'komentar' },
+        { icon: 'book', t: 'Kelola Manga', d: 'Perbarui informasi, status, dan visibilitas judul.', act: 'admin-tab', tab: 'manga' },
+        { icon: 'eye', t: 'Kelola Chapter', d: 'Atur urutan chapter, konten, dan pratinjau.', act: 'admin-tab', tab: 'manga' },
+        { icon: 'gear', t: 'Pengaturan Situs', d: 'Kelola identitas situs dan konfigurasi layanan.', act: 'admin-tab', tab: 'pengaturan' }
       ].map(function (q) {
         return '<button type="button" class="kv-qa" data-action="' + q.act + '"' + (q.tab ? ' data-tab="' + q.tab + '"' : '') + '>' +
           '<span class="kv-qa-ico">' + kvIcon(q.icon) + '</span>' +
@@ -5070,8 +5099,8 @@ mobileMenu +
             '<h3 style="margin:0;">Leaderboard Semua Judul</h3>' +
             '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-tab" data-tab="dashboard">Kembali ke Dashboard</button>' +
           '</div>' +
-          '<p style="color:var(--kv-text-muted);font-size:0.8125rem;margin:8px 0 16px;">' + sorted.length + ' judul, diurutkan dari views tertinggi ke terendah.</p>' +
-          (rows ? '<div class="kv-admin-leader-list">' + rows + '</div>' : '<p class="kv-admin-empty">Belum ada manga.</p>') +
+          '<p style="color:var(--kv-text-muted);font-size:0.8125rem;margin:8px 0 16px;">Menampilkan ' + sorted.length + ' judul, diurutkan berdasarkan total pembacaan.</p>' +
+          (rows ? '<div class="kv-admin-leader-list">' + rows + '</div>' : '<p class="kv-admin-empty">Belum ada data manga untuk ditampilkan.</p>') +
         '</div>';
       }
 
@@ -5109,7 +5138,7 @@ mobileMenu +
         var rangeText = String(list[0].day) + ' â€” ' + String(list[list.length - 1].day);
         return '<div class="kv-traffic-chart">' +
           '<h3 class="kv-chart-title" style="margin:0;">Tren Traffic Harian</h3>' +
-          '<p class="kv-chart-sub" style="margin:0 0 12px;">' + escapeHtml(rangeText) + ' Â· pageviews dan pengunjung unik per hari</p>' +
+          '<p class="kv-chart-sub" style="margin:0 0 12px;">Periode ' + escapeHtml(rangeText) + '. Menampilkan tayangan halaman dan pengunjung unik per hari.</p>' +
           '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Grafik traffic harian" style="width:100%;height:auto;overflow:visible;">' +
             grid + labels +
             '<polyline class="kv-traffic-line" points="' + line('pageviews') + '" style="stroke:var(--ad-amber);"/>' +
@@ -5132,7 +5161,7 @@ mobileMenu +
         }).join('');
         var rangeText = String(list[list.length - 1].day) + ' â€” ' + String(list[0].day);
         return '<div class="kv-card kv-traffic-history" style="margin-top:16px;">' +
-          '<h3 class="kv-section-title" style="margin:0 0 12px;">aktivitas 7 hari terakhir Â· ' + escapeHtml(rangeText) + '</h3>' +
+          '<h3 class="kv-section-title" style="margin:0 0 12px;">Aktivitas 7 Hari Terakhir · ' + escapeHtml(rangeText) + '</h3>' +
           '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>TANGGAL</th><th>PAGEVIEWS</th><th>PENGUNJUNG</th><th>KUNJUNGAN</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' +
         '</div>';
       }
@@ -5170,19 +5199,19 @@ mobileMenu +
           ? '<div class="kv-traffic-banner kv-traffic-banner-error"><span class="kv-traffic-badge">GAGAL MEMUAT</span><span>' + escapeHtml(state.analyticsError) + '</span></div>'
           : '';
         var emptyHtml = hasData ? ''
-          : '<div class="kv-traffic-banner"><span class="kv-traffic-badge">BELUM ADA DATA</span><span>Belum ada traffic tercatat pada rentang ini. Kunjungan akan muncul setelah pelacakan aktif.</span><button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="kv-traffic-test">Catat uji</button></div>';
+          : '<div class="kv-traffic-banner"><span class="kv-traffic-badge">DATA BELUM TERSEDIA</span><span>Belum ada data kunjungan pada rentang tanggal yang dipilih. Data akan ditampilkan setelah aktivitas pelacakan tercatat.</span><button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="kv-traffic-test">Kirim Data Uji</button></div>';
         return '<div class="kv-card" style="margin-bottom:16px;">' +
-          '<h3 class="kv-section-title" style="margin:0 0 8px;">Analitik Traffic</h3>' +
-          '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Halaman ini menampilkan rincian traffic situs. Tanggal otomatis dari awal bulan ini sampai hari ini. Ubah rentang tanggal lalu tekan Refresh.</p>' +
-          (CONFIG.API_BASE_URL ? '' : '<p style="color:var(--kv-warning);font-size:0.85rem;">Backend tidak terhubung (mode lokal): data traffic tidak dapat dicatat.</p>') +
-          '</div>' +
+          '<h3 class="kv-section-title" style="margin:0 0 8px;">Ringkasan Analitik Kunjungan</h3>' +
+          '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Pantau performa trafik situs berdasarkan rentang tanggal yang dipilih. Secara default, data ditampilkan dari awal bulan berjalan hingga hari ini.</p>' +
+          (CONFIG.API_BASE_URL ? '' : '<p style="color:var(--kv-warning);font-size:0.85rem;">Koneksi backend tidak aktif. Data analitik tidak dapat dimuat dalam mode lokal.</p>') +
+        '</div>' +
           errorHtml + emptyHtml +
           '<section class="kv-traffic">' +
             '<div class="kv-traffic-toolbar">' +
               '<div class="kv-traffic-field"><label>DARI</label><input type="date" id="kv-traffic-from" value="' + fromStr + '"/></div>' +
               '<div class="kv-traffic-field"><label>SAMPAI</label><input type="date" id="kv-traffic-to" value="' + toStr + '"/></div>' +
               '<button type="button" class="kv-btn kv-btn-primary" data-action="kv-traffic-refresh">&#8635; Refresh</button>' +
-              '<button type="button" class="kv-btn kv-btn-ghost" data-action="kv-traffic-test">Catat uji</button>' +
+              '<button type="button" class="kv-btn kv-btn-ghost" data-action="kv-traffic-test">Kirim Data Uji</button>' +
             '</div>' +
             '<div class="kv-traffic-cards">' +
               '<article class="kv-traffic-card"><div class="kv-traffic-label">TOTAL PAGEVIEWS</div><div class="kv-traffic-value" id="kv-traffic-pageviews">' + (t.pageviews || 0).toLocaleString('id-ID') + '</div><div class="kv-traffic-note" id="kv-traffic-period">Period: ' + fromStr + ' to ' + toStr + '</div></article>' +
@@ -5367,7 +5396,7 @@ mobileMenu +
           apiSync('/api/admin/save-manga', manga);
           state.mdImporting = false;
           state.mdProgress.active = false;
-          toast('Scrape selesai: ' + manga.title, 'ok');
+          toast('Impor selesai: ' + manga.title, 'ok');
           render();
         } catch (e) {
           state.mdImporting = false;
@@ -5389,20 +5418,20 @@ mobileMenu +
         return '<div class="kv-card kv-md-card">' +
           '<div class="kv-md-head">' +
             '<div class="kv-md-head-icon">' + kvIcon('globe') + '</div>' +
-            '<div><h3 class="kv-section-title" style="margin:0;">Scrape MangaDex</h3><p style="color:var(--kv-text-muted);font-size:0.8rem;margin:4px 0 0;">Tempel URL detail manga, pilih bahasa, lalu impor metadata + chapter + gambar.</p></div>' +
+            '<div><h3 class="kv-section-title" style="margin:0;">Impor dari MangaDex</h3><p style="color:var(--kv-text-muted);font-size:0.8rem;margin:4px 0 0;">Masukkan URL judul MangaDex, pilih bahasa chapter, lalu mulai proses impor ke katalog.</p></div>' +
           '</div>' +
           '<div class="kv-md-form">' +
             '<input id="kv-md-url" class="kv-input" type="text" placeholder="https://mangadex.org/title/..." value="' + escapeHtml(state.mdUrl || '') + '" aria-label="URL manga MangaDex"/>' +
             '<select id="kv-md-lang" class="kv-select" aria-label="Bahasa chapter">' +
               [['en','Inggris'],['id','Indonesia'],['ja','Jepang'],['ko','Korea'],['zh','China'],['zh-hk','China (HK)'],['es','Spanyol'],['fr','Prancis'],['de','Jerman'],['pt-br','Portugis (BR)'],['ru','Rusia'],['all','Semua']].map(function (o) { return '<option value="' + o[0] + '"' + (state.mdLang === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
             '</select>' +
-            '<button type="button" class="kv-btn kv-btn-primary" data-action="md-scrape" ' + (state.mdImporting ? 'disabled' : '') + '>Scrape &amp; Impor</button>' +
+            '<button type="button" class="kv-btn kv-btn-primary" data-action="md-scrape" ' + (state.mdImporting ? 'disabled' : '') + '>Mulai Impor</button>' +
           '</div>' +
           '<ul class="kv-md-tips">' +
-            '<li>Metadata, cover, dan genre diambil otomatis.</li>' +
-            '<li>Chapter dengan nomor sama (bahasa sama) hanya satu yang diimpor.</li>' +
-            '<li>Gambar diunduh dan diunggah ke Telegram (3 paralel).</li>' +
-            '<li>Progres bisa ditutup; scraping tetap berjalan (indikator di kanan).</li>' +
+            '<li>Metadata, sampul, dan genre akan diambil secara otomatis.</li>' +
+            '<li>Chapter dengan nomor yang sama pada bahasa yang dipilih tidak akan diduplikasi.</li>' +
+            '<li>Gambar chapter akan diproses dan diunggah ke penyimpanan yang terkonfigurasi.</li>' +
+            '<li>Anda dapat menutup panel progres; proses impor akan tetap berjalan di latar belakang.</li>' +
           '</ul>' +
           progHtml +
         '</div>';
@@ -5445,7 +5474,7 @@ mobileMenu +
            '<input id="kv-admin-manga-search" class="kv-input" type="search" placeholder="Cari judul atau slug..." value="' + escapeHtml(state.adminSearch) + '" aria-label="Cari manga di panel admin"/>' +
            '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-manga">+ Tambah Manga</button>' +
          '</div>' +
-         (cards ? '<div class="kv-manga-grid">' + cards + '</div>' : '<p style="text-align:center;color:var(--kv-text-muted);padding:24px 0;">Tidak ada manga.</p>') +
+         (cards ? '<div class="kv-manga-grid">' + cards + '</div>' : '<p style="text-align:center;color:var(--kv-text-muted);padding:24px 0;">Tidak ada manga yang sesuai dengan pencarian.</p>') +
        '</div>';
      }
 
@@ -5524,7 +5553,7 @@ mobileMenu +
 
     function renderAdminChapterList() {
       if (!state.data.manga.length) {
-        return '<div class="kv-stat-box" style="margin-top:16px;"><p style="color:var(--kv-text-muted);margin:0;">Tambahkan manga terlebih dahulu di tab Manga sebelum mengelola chapter.</p></div>';
+        return '<div class="kv-stat-box" style="margin-top:16px;"><p style="color:var(--kv-text-muted);margin:0;">Tambahkan manga terlebih dahulu sebelum mengelola chapter.</p></div>';
       }
       if (!state.adminChapterMangaId || !mangaById(state.adminChapterMangaId)) state.adminChapterMangaId = state.data.manga[0].id;
       var sel = state.adminChapterMangaId;
@@ -5559,7 +5588,7 @@ mobileMenu +
           mangaSelect +
           '<button type="button" class="kv-btn kv-btn-primary" data-action="admin-new-chapter">+ Tambah Chapter</button>' +
         '</div>' +
-        (cards ? '<div class="kv-admin-chapter-card-list">' + cards + '</div>' : '<p class="kv-admin-empty" style="margin-top:16px;">Belum ada chapter untuk manga ini.</p>');
+        (cards ? '<div class="kv-admin-chapter-card-list">' + cards + '</div>' : '<p class="kv-admin-empty" style="margin-top:16px;">Belum ada chapter untuk manga ini. Tambahkan chapter baru untuk mulai mempublikasikan konten.</p>');
     }
 
     function renderAdminChapterForm() {
@@ -5656,29 +5685,56 @@ mobileMenu +
       '</div>';
     }
 
-     function loadAdminAnalytics(from, to) {
-       if (!CONFIG.API_BASE_URL || !state.adminToken) return;
+    function loadAdminAnalytics(from, to) {
+       if (!CONFIG.API_BASE_URL || !state.adminToken) {
+         state.analyticsData = null;
+         state.analyticsError = 'Backend tidak terhubung.';
+         render();
+         return;
+       }
        var f = from || (state.analyticsFrom || '');
        var t = to || (state.analyticsTo || '');
        if (!f || !t) return;
        fetch(CONFIG.API_BASE_URL + '/api/analytics?from=' + encodeURIComponent(f) + '&to=' + encodeURIComponent(t), { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
-         .then(function (r) { if (!r.ok) throw new Error('Gagal memuat analitik (HTTP ' + r.status + ').'); return r.json(); })
-         .then(function (res) { state.analyticsData = res; state.analyticsError = ''; render(); })
-         .catch(function (e) { state.analyticsData = null; state.analyticsError = (e && e.message) ? e.message : 'Gagal memuat analitik.'; render(); });
+        .then(function (r) {
+          if (r.status === 401) {
+            state.adminToken = ''; state.user = null;
+            localStorage.removeItem('kv_admin_token'); localStorage.removeItem('kv_session');
+            throw new Error('Sesi admin berakhir. Silakan login ulang.');
+          }
+          if (!r.ok) throw new Error('Gagal memuat analitik (HTTP ' + r.status + ').');
+          return r.json();
+        })
+        .then(function (res) { state.analyticsData = res; state.analyticsError = ''; render(); })
+        .catch(function (e) { state.analyticsData = null; state.analyticsError = (e && e.message) ? e.message : 'Gagal memuat analitik.'; render(); });
      }
 
-     function loadAdminUsers() {
-
-      if (!CONFIG.API_BASE_URL || !state.adminToken) return;
+    function loadAdminUsers() {
+      if (!CONFIG.API_BASE_URL || !state.adminToken) {
+        state.usersCache = [];
+        state.usersError = 'Backend tidak terhubung.';
+        render();
+        return;
+      }
+      state.usersError = '';
       fetch(CONFIG.API_BASE_URL + '/api/admin/users', { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
-        .then(function (r) { if (!r.ok) throw new Error('Gagal memuat pengguna.'); return r.json(); })
-        .then(function (res) { state.usersCache = res.users || []; render(); })
-        .catch(function () { state.usersCache = []; });
+        .then(function (r) {
+          if (r.status === 401) {
+            state.adminToken = ''; state.user = null;
+            localStorage.removeItem('kv_admin_token'); localStorage.removeItem('kv_session');
+            throw new Error('Sesi admin berakhir. Silakan login ulang.');
+          }
+          if (!r.ok) throw new Error('Gagal memuat pengguna (HTTP ' + r.status + ').');
+          return r.json();
+        })
+        .then(function (res) { state.usersCache = res.users || []; state.usersError = ''; render(); })
+        .catch(function (e) { state.usersCache = []; state.usersError = (e && e.message) ? e.message : 'Gagal memuat pengguna.'; render(); });
     }
 
     function renderAdminUsers() {
       if (state.usersCache === undefined) { state.usersCache = null; loadAdminUsers(); }
-      if (state.usersCache === null) return '<div class="kv-card"><p style="color:var(--kv-text-muted);">Memuat pengguna...</p></div>';
+      if (state.usersCache === null) return '<div class="kv-card"><p style="color:var(--kv-text-muted);">Memuat data pengguna...</p></div>';
+      if (state.usersError) return '<div class="kv-card"><p style="color:var(--kv-danger);">' + escapeHtml(state.usersError) + '</p><button type="button" class="kv-btn kv-btn-ghost" data-action="admin-reload-users">Muat Ulang</button></div>';
       var rows = state.usersCache.map(function (u) {
         var isSelf = state.user && state.user.id === u.id;
         var avatar = u.avatar || ('https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(u.name));
@@ -5705,39 +5761,36 @@ mobileMenu +
         '</div>';
       }).join('');
       return '<div class="kv-card"><h3>Daftar Pengguna (' + state.usersCache.length + ')</h3>' +
-        (rows ? '<div class="kv-user-grid">' + rows + '</div>' : '<p class="kv-admin-empty">Belum ada pengguna.</p>') +
+        '<p style="color:var(--kv-text-muted);font-size:0.8125rem;margin:4px 0 14px;">Kelola peran akses dan status akun pengguna terdaftar.</p>' +
+        (rows ? '<div class="kv-user-grid">' + rows + '</div>' : '<p class="kv-admin-empty">Belum ada pengguna terdaftar.</p>') +
       '</div>';
     }
 
     function changeUserRoleAdmin(userId, role) {
-      if (!CONFIG.API_BASE_URL || !state.adminToken) { alert('Backend tidak terhubung.'); return; }
+      if (!CONFIG.API_BASE_URL || !state.adminToken) { toast('Backend tidak terhubung.', 'error'); return; }
       fetch(CONFIG.API_BASE_URL + '/api/admin/user-role', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
         body: JSON.stringify({ id: userId, role: role })
       }).then(function (r) {
-        return r.json().then(function (j) { return { ok: r.ok, status: r.status, body: j }; });
+        return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, status: r.status, body: j }; });
       }).then(function (res) {
-        if (res.ok) {
-          if (state.usersCache) {
-            state.usersCache = state.usersCache.map(function (u) { if (u.id === userId) { u.role = role; } return u; });
-          }
-          alert('Role berhasil diubah menjadi ' + role + '.');
-        } else {
-          alert('Gagal: ' + (res.body && res.body.error ? res.body.error : ('HTTP ' + res.status)));
+        if (res.status === 401) throw new Error('Sesi admin berakhir. Silakan login ulang.');
+        if (!res.ok) throw new Error(res.body && res.body.error ? res.body.error : ('HTTP ' + res.status));
+        if (state.usersCache) {
+          state.usersCache = state.usersCache.map(function (u) { if (u.id === userId) { u.role = role; } return u; });
         }
-        state.usersCache = undefined;
-        loadAdminUsers();
-      }).catch(function (e) { alert('Error jaringan: ' + e.message); });
+        toast('Role berhasil diubah menjadi ' + role + '.', 'success');
+        render();
+      }).catch(function (e) { toast(e.message || 'Gagal mengubah role.', 'error'); state.usersCache = undefined; loadAdminUsers(); });
     }
     function deleteUserAdmin(userId) {
-      if (!confirm('Hapus pengguna ini?')) return;
       if (!CONFIG.API_BASE_URL || !state.adminToken) { toast('Backend tidak terhubung.', 'error'); return; }
       fetch(CONFIG.API_BASE_URL + '/api/admin/delete-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
         body: JSON.stringify({ id: userId })
-      }).then(function (r) { if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Gagal menghapus pengguna.'); }); return r.json(); })
+      }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) throw new Error('Sesi admin berakhir. Silakan login ulang.'); if (!r.ok) throw new Error(j.error || 'Gagal menghapus pengguna.'); return j; }); })
         .then(function () { toast('Pengguna dihapus.', 'success'); state.usersCache = undefined; loadAdminUsers(); })
         .catch(function (e) { toast(e.message, 'error'); });
     }
@@ -5747,44 +5800,49 @@ mobileMenu +
       try { current = Object.assign({}, JSON.parse(localStorage.getItem('kv_site_settings') || '{}'), (state.data && state.data.settings) ? state.data.settings : {}); } catch (e) { current = {}; }
       values = Object.assign({}, current, values);
       var isBackend = CONFIG.API_BASE_URL && state.adminToken;
-      var done = function () { toast('Pengaturan logo & nama disimpan.', 'ok'); render(); };
+      var done = function (msg) { toast(msg || 'Pengaturan disimpan.', 'ok'); render(); };
       if (isBackend) {
         return fetch(CONFIG.API_BASE_URL + '/api/admin/settings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
           body: JSON.stringify(values)
         }).then(function (r) {
-          return r.json().then(function (j) {
+          return r.json().catch(function () { return {}; }).then(function (j) {
+            if (r.status === 401) {
+              state.adminToken = ''; state.user = null;
+              localStorage.removeItem('kv_admin_token'); localStorage.removeItem('kv_session');
+              throw new Error('Sesi admin berakhir. Silakan login ulang.');
+            }
             if (!r.ok) throw new Error((j && j.error) || ('HTTP ' + r.status));
-            return j.settings;
+            return j.settings || values;
           });
         }).then(function (saved) {
           state.data.settings = saved;
           try { localStorage.setItem('kv_site_settings', JSON.stringify(saved)); } catch (e) {}
-          done();
+          done('Pengaturan disimpan.');
         }).catch(function (err) {
-          console.warn('Gagal menyimpan ke server, fallback ke browser:', err);
-          try {
-            localStorage.setItem('kv_site_settings', JSON.stringify(values));
-            state.data.settings = values;
-            toast('Gagal ke server, tersimpan di browser ini.', 'warn');
-            render();
-          } catch (e) {
-            toast('Gagal menyimpan pengaturan: ' + err.message, 'error');
-          }
+          toast('Gagal menyimpan pengaturan: ' + (err && err.message ? err.message : err), 'error');
+          render();
         });
       }
       try {
         localStorage.setItem('kv_site_settings', JSON.stringify(values));
         state.data.settings = values;
-        done();
+        done('Pengaturan disimpan di browser ini.');
       } catch (e) {
-        toast('Gagal menyimpan pengaturan di browser.', 'warn');
+        toast('Gagal menyimpan pengaturan di browser.', 'error');
       }
     }
 
     function resetSiteSettings() {
-      persistSiteSettings({ siteName: '', siteTagline: '', logoUrl: '', contactEmail: '', brandMode: '', siteNameColor: '' });
+      persistSiteSettings({
+        siteName: CONFIG.SITE_NAME || '',
+        siteTagline: CONFIG.SITE_TAGLINE || '',
+        logoUrl: '',
+        contactEmail: CONFIG.CONTACT_EMAIL || '',
+        brandMode: 'logo-name',
+        siteNameColor: ''
+      });
     }
 
     function renderAdminSettings() {
@@ -5795,8 +5853,8 @@ mobileMenu +
        var logoValue = escapeHtml(siteLogo());
        var contactValue = escapeHtml(siteSetting('contactEmail', CONFIG.CONTACT_EMAIL));
        return '<div class="kv-card" style="margin-top:16px;">' +
-          '<h2 class="kv-section-title" style="margin-bottom:4px;">Logo &amp; Nama Situs</h2>' +
-          '<p class="kv-admin-sub" style="margin-bottom:14px;">Gunakan URL gambar atau unggah berkas logo. Logo &amp; nama tampil di beranda, archive, reader, footer, dan sidebar admin.</p>' +
+          '<h2 class="kv-section-title" style="margin-bottom:4px;">Identitas Situs</h2>' +
+          '<p class="kv-admin-sub" style="margin-bottom:14px;">Atur nama, logo, dan informasi utama yang ditampilkan di seluruh halaman NexaManga.</p>' +
           '<form id="kv-site-settings-form" class="kv-form-grid" novalidate>' +
             '<label>Nama Situs<input class="kv-input" name="siteName" value="' + siteNameValue + '" required/></label>' +
             '<label>Tagline<input class="kv-input" name="siteTagline" value="' + siteTaglineValue + '"/></label>' +
@@ -5818,8 +5876,8 @@ mobileMenu +
           '</form>' +
           '</div>' +
           '<div class="kv-card" style="margin-top:16px;">' +
-            '<h2 class="kv-section-title" style="margin-bottom:4px;">Kompresi Gambar</h2>' +
-            '<p class="kv-admin-sub" style="margin-bottom:14px;">Atur kompresi sebelum upload ke Telegram (WebP/JPEG). Berlaku untuk upload chapter, scrape MangaDex, dan gambar komentar.</p>' +
+            '<h2 class="kv-section-title" style="margin-bottom:4px;">Optimasi Gambar</h2>' +
+            '<p class="kv-admin-sub" style="margin-bottom:14px;">Konfigurasikan kompresi gambar sebelum proses unggah untuk menjaga kualitas visual dan efisiensi penyimpanan.</p>' +
             '<form id="kv-compress-settings-form" class="kv-form-grid" novalidate>' +
               '<label style="display:flex;align-items:center;gap:8px;grid-column:1/-1;"><input type="checkbox" name="enabled"' + (state.imageCompressionEnabled ? ' checked' : '') + '/> Aktifkan kompresi gambar</label>' +
               '<label>Kualitas (0.1 - 1.0)<input class="kv-input" name="quality" type="number" min="0.1" max="1" step="0.05" value="' + (state.imageCompressionQuality || 0.95) + '"/></label>' +
@@ -5830,9 +5888,8 @@ mobileMenu +
             '</form>' +
           '</div>' +
           '<div class="kv-card" style="margin-top:16px;">' +
-            '<h2 class="kv-section-title" style="margin-bottom:4px;">Halaman Info</h2>' +
-
-           '<p class="kv-admin-sub" style="margin-bottom:14px;">Kelola isi halaman Tentang, Kontak, Kebijakan Privasi, dan Ketentuan.</p>' +
+            '<h2 class="kv-section-title" style="margin-bottom:4px;">Konten Halaman Informasi</h2>' +
+           '<p class="kv-admin-sub" style="margin-bottom:14px;">Kelola konten halaman Tentang, Kontak, Kebijakan Privasi, dan Ketentuan Penggunaan.</p>' +
            '<form id="kv-info-settings-form" class="kv-form-grid" novalidate>' +
              '<label style="grid-column:1/-1;">Tentang<textarea class="kv-textarea" name="aboutContent" rows="5" placeholder="Tulis tentang situs...">' + escapeHtml(siteSetting('aboutContent', '')) + '</textarea></label>' +
              '<label style="grid-column:1/-1;">Kontak<textarea class="kv-textarea" name="contactContent" rows="5" placeholder="Tulis kontak...">' + escapeHtml(siteSetting('contactContent', '')) + '</textarea></label>' +
@@ -5994,11 +6051,12 @@ mobileMenu +
 
     function setCommentStatus(id, status) {
       var c = state.data.comments.filter(function (x) { return x.id === id; })[0];
-      if (!c) return;
+      if (!c) { toast('Komentar tidak ditemukan.', 'warn'); return; }
+      if (status !== 'approved' && status !== 'rejected' && status !== 'pending') return;
       c.status = status;
       persistData();
       apiSync('/api/admin/comment-status', { id: id, status: status });
-      toast(status === 'approved' ? 'Komentar disetujui & tampil publik.' : 'Komentar ditolak.', 'ok');
+      toast(status === 'approved' ? 'Komentar disetujui & tampil publik.' : status === 'rejected' ? 'Komentar ditolak.' : 'Status komentar diperbarui.', 'ok');
       render();
     }
 
@@ -6020,13 +6078,34 @@ mobileMenu +
         apiSync('/api/admin/delete-chapter', { id: d.id });
         persistData();
       } else if (d.type === 'comment') {
-        state.data.comments = state.data.comments.filter(function (c) { return c.id !== d.id; });
+        var ids = {};
+        ids[d.id] = true;
+        var changed = true;
+        while (changed) {
+          changed = false;
+          state.data.comments.forEach(function (c) {
+            if (c && c.parentId && ids[c.parentId] && !ids[c.id]) { ids[c.id] = true; changed = true; }
+          });
+        }
+        state.data.comments = state.data.comments.filter(function (c) { return !ids[c.id]; });
         toast('Komentar dihapus.', 'ok');
         apiSync('/api/admin/delete-comment', { id: d.id });
         persistData();
+      } else if (d.type === 'user') {
+        if (!CONFIG.API_BASE_URL || !state.adminToken) { toast('Backend tidak terhubung.', 'error'); render(); return; }
+        fetch(CONFIG.API_BASE_URL + '/api/admin/delete-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+          body: JSON.stringify({ id: d.id })
+        }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) throw new Error('Sesi admin berakhir. Silakan login ulang.'); if (!r.ok) throw new Error(j.error || 'Gagal menghapus pengguna.'); return j; }); })
+          .then(function () { toast('Pengguna dihapus.', 'success'); state.usersCache = undefined; loadAdminUsers(); })
+          .catch(function (e) { toast(e.message, 'error'); });
+        return;
       } else if (d.type === 'reset') {
         localStorage.removeItem('kv_local_data');
-         state.data = { manga: [], chapters: [], comments: [] };
+        localStorage.removeItem('kv_catalog_snapshot');
+        state.data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        persistData();
         toast('Data lokal dikembalikan ke data contoh.', 'ok');
       }
       render();
@@ -6155,13 +6234,15 @@ mobileMenu +
         if (file.size > 3 * 1024 * 1024) {
           page.status = 'gagal: ukuran maksimal 3 MiB';
           toast('Ukuran ' + file.name + ' melebihi batas 3 MiB untuk backend Vercel.', 'err');
+          f.pages = f.pages.filter(function (p) { return p !== page; });
           render();
           resolve();
           return;
         }
         render();
         if (!CONFIG.API_BASE_URL) {
-          page.status = 'siap (mode lokal - proxy belum diatur)';
+          page.status = 'gagal: backend belum dikonfigurasi';
+          toast('Backend belum dikonfigurasi untuk upload halaman.', 'warn');
           render();
           resolve();
           return;
@@ -6175,7 +6256,12 @@ mobileMenu +
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
             body: JSON.stringify({ fileName: file.name, mimeType: file.type || mimeFromName(file.name), dataBase64: fr.result })
           }).then(function (r) {
-            return r.json().then(function (res) {
+            return r.json().catch(function () { return {}; }).then(function (res) {
+              if (r.status === 401) {
+                state.adminToken = ''; state.user = null;
+                localStorage.removeItem('kv_admin_token'); localStorage.removeItem('kv_session');
+                throw new Error('Sesi admin berakhir. Silakan login ulang.');
+              }
               if (!r.ok) throw new Error(res.error || 'HTTP ' + r.status);
               return res;
             });
@@ -6191,6 +6277,7 @@ mobileMenu +
           }).catch(function (err) {
             page.status = 'gagal: ' + err.message;
             toast('Gagal mengunggah ' + file.name + ': ' + err.message, 'err');
+            if (String(err.message || '').indexOf('Sesi admin berakhir') !== -1) { render(); resolve(); return; }
             render();
             resolve();
           });
@@ -6321,19 +6408,19 @@ mobileMenu +
         var mp = state.mdProgress;
         var mppct = mp.total ? Math.round((mp.done / mp.total) * 100) : 0;
         if (!mp.dismissed) {
-          bodyHtml += '<div class="kv-upload-overlay" role="dialog" aria-modal="true" aria-label="Scrape MangaDex">' +
+          bodyHtml += '<div class="kv-upload-overlay" role="dialog" aria-modal="true" aria-label="Impor MangaDex">' +
             '<div class="kv-upload-box">' +
               '<button type="button" class="kv-upload-close" data-action="md-progress-close" aria-label="Tutup">&times;</button>' +
-              '<div class="kv-upload-title">Scraping MangaDex</div>' +
+              '<div class="kv-upload-title">Impor MangaDex</div>' +
               '<div class="kv-upload-sub">' + escapeHtml(mp.current || '') + '</div>' +
               '<div class="kv-upload-bar"><div class="kv-upload-bar-fill" style="width:' + mppct + '%;"></div></div>' +
               '<div class="kv-upload-count">' + mp.done + ' / ' + mp.total + ' chapter (' + mppct + '%)</div>' +
             '</div>' +
           '</div>';
         } else {
-          bodyHtml += '<div class="kv-scrape-indicator" role="status" aria-live="polite">' +
+            bodyHtml += '<div class="kv-scrape-indicator" role="status" aria-live="polite">' +
             '<div class="kv-scrape-indicator-bar"><div class="kv-scrape-indicator-fill" style="width:' + mppct + '%;"></div></div>' +
-            '<span class="kv-scrape-indicator-text">Scrape ' + mp.done + '/' + mp.total + '</span>' +
+            '<span class="kv-scrape-indicator-text">Impor ' + mp.done + '/' + mp.total + '</span>' +
             '<button type="button" class="kv-scrape-indicator-btn" data-action="md-progress-open" aria-label="Buka progres">â€¦</button>' +
           '</div>';
         }
@@ -6634,13 +6721,18 @@ mobileMenu +
           var file = e.target.files && e.target.files[0];
           if (!file) return;
           var reader = new FileReader();
-          reader.onload = function () {
+            reader.onload = function () {
             fetch(CONFIG.API_BASE_URL + '/api/admin/upload-dual', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
               body: JSON.stringify({ fileName: file.name, mimeType: file.type, dataBase64: reader.result })
             }).then(function (r) {
-              return r.json().then(function (res) {
+              return r.json().catch(function () { return {}; }).then(function (res) {
+                if (r.status === 401) {
+                  state.adminToken = ''; state.user = null;
+                  localStorage.removeItem('kv_admin_token'); localStorage.removeItem('kv_session');
+                  throw new Error('Sesi admin berakhir. Silakan login ulang.');
+                }
                 if (!r.ok) throw new Error(res.error || ('HTTP ' + r.status));
                 return res;
               });
@@ -6653,7 +6745,7 @@ mobileMenu +
               toast('Logo berhasil diunggah. Klik Simpan Pengaturan untuk menerapkan.', 'ok');
             }).catch(function (err) { toast('Gagal mengunggah logo: ' + err.message, 'error'); });
             };
-            compressImageFile(file).then(function (cf) { uploadFile = cf; reader.readAsDataURL(cf); }).catch(function () { reader.readAsDataURL(file); });
+            compressImageFile(file).then(function (cf) { reader.readAsDataURL(cf); }).catch(function () { reader.readAsDataURL(file); });
           };
 
       }
@@ -7016,7 +7108,7 @@ mobileMenu +
            .then(function (res) { state.mdResults = res.data || []; state.mdLoading = false; render(); })
            .catch(function (e) { state.mdLoading = false; state.mdError = 'Gagal mencari: ' + (e && e.message ? e.message : e); render(); });
        }
-       else if (act === 'md-import-manga') {
+        else if (act === 'md-import-manga') {
          var mid = el.getAttribute('data-id');
          state.mdImporting = true; render();
          fetch('https://api.mangadex.org/manga/' + encodeURIComponent(mid) + '?includes[]=cover_art&includes[]=author&includes[]=artist')
@@ -7031,17 +7123,30 @@ mobileMenu +
              var author = authorRel && authorRel.attributes ? authorRel.attributes.name : '';
              var cover = mdCoverUrl(m);
              var tags = (attrs.tags || []).map(function (t) { return (t.attributes && t.attributes.name && (t.attributes.name.en || Object.values(t.attributes.name)[0])) || ''; }).filter(Boolean);
-             var obj = {
-               id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author,
-               synopsis: desc, coverBloggerUrl: cover, genres: tags,
-               type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: '',
-               featured: false, recommended: false, views: 0, updatedAt: today()
-             };
-             state.data.manga.push(obj);
+             var existing = state.data.manga.filter(function (x) { return x.title === title; })[0];
+             var obj;
+             if (existing) {
+               existing.author = existing.author || author;
+               existing.synopsis = existing.synopsis || desc;
+               existing.coverBloggerUrl = existing.coverBloggerUrl || cover;
+               existing.genres = (existing.genres && existing.genres.length) ? existing.genres : tags;
+               existing.type = existing.type || mdType(attrs.originalLanguage);
+               existing.status = existing.status || mdStatus(attrs.status);
+               existing.updatedAt = today();
+               obj = existing;
+             } else {
+               obj = {
+                 id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author,
+                 synopsis: desc, coverBloggerUrl: cover, genres: tags,
+                 type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: '',
+                 featured: false, recommended: false, views: 0, updatedAt: today()
+               };
+               state.data.manga.push(obj);
+             }
              persistData();
              apiSync('/api/admin/save-manga', obj);
              state.mdImporting = false;
-             toast('Manga "' + title + '" diimpor.', 'ok');
+             toast(existing ? 'Manga "' + title + '" diperbarui dari MangaDex.' : 'Manga "' + title + '" diimpor.', 'ok');
              render();
            })
            .catch(function (e) { state.mdImporting = false; toast('Gagal impor: ' + (e && e.message ? e.message : e), 'err'); render(); });
@@ -7075,10 +7180,10 @@ mobileMenu +
            })
            .catch(function (e) { state.mdImporting = false; toast('Gagal impor chapter: ' + (e && e.message ? e.message : e), 'err'); render(); });
        }
-       else if (act === 'kv-traffic-refresh') {
+        else if (act === 'kv-traffic-refresh') {
          var from = document.getElementById('kv-traffic-from');
          var to = document.getElementById('kv-traffic-to');
-         if (from && to && from.value && to.value && from.value > to.value) { alert('Tanggal awal tidak boleh melewati tanggal akhir.'); return; }
+         if (from && to && from.value && to.value && from.value > to.value) { toast('Tanggal awal tidak boleh melewati tanggal akhir.', 'warn'); return; }
          state.analyticsFrom = from && from.value ? from.value : state.analyticsFrom;
          state.analyticsTo = to && to.value ? to.value : state.analyticsTo;
          state.analyticsUserChanged = true;
@@ -7093,7 +7198,11 @@ mobileMenu +
           }, 800);
         }
 
-      else if (act === 'admin-delete-user') { deleteUserAdmin(el.getAttribute('data-id')); }
+      else if (act === 'admin-delete-user') {
+        var du = (state.usersCache || []).filter(function (u) { return u.id === el.getAttribute('data-id'); })[0];
+        if (du) confirmDelete('user', du.id, 'Hapus pengguna "' + (du.name || du.email || du.id) + '"?', 'Hapus Pengguna');
+      }
+      else if (act === 'admin-reload-users') { state.usersCache = undefined; state.usersError = ''; render(); }
       else if (act === 'admin-new-manga') { state.adminForm = blankManga(); state.adminTab = 'manga'; state.adminDrawerOpen = false; render(); }
       else if (act === 'admin-edit-manga') {
         var am = mangaById(el.getAttribute('data-id'));
@@ -7107,7 +7216,7 @@ mobileMenu +
       }
        else if (act === 'admin-new-chapter') {
          if (el.getAttribute('data-id')) { state.adminChapterMangaId = el.getAttribute('data-id'); state.adminExpandedManga = el.getAttribute('data-id'); }
-         if (!state.data.manga.length) { toast('Tambahkan manga terlebih dahulu di tab Manga.', 'warn'); }
+         if (!state.data.manga.length) { toast('Tambahkan manga terlebih dahulu sebelum membuat chapter.', 'warn'); }
           else { state.adminChapterForm = blankChapter(state.adminChapterMangaId); state.adminTab = 'manga'; state.adminDrawerOpen = false; render(); }
        }
       else if (act === 'admin-toggle-expand') {
