@@ -199,6 +199,9 @@ function allowedReturnOrigin(value) {
     .map((item) => {
       try { return new URL(item).origin; } catch { return ''; }
     });
+  if (!allowed.includes(origin)) {
+    try { if (origin === apiBaseUrl()) allowed.push(origin); } catch {}
+  }
   return allowed.includes(origin) ? origin : null;
 }
 
@@ -737,14 +740,26 @@ async function handler(req, res) {
     if (route.startsWith('media/') && req.method === 'GET') {
       const fileId = validatePathId(route.slice('media/'.length));
       const { bytes, filePath } = await getMedia(fileId);
-      const extension = filePath.split('.').pop().toLowerCase();
-      const contentType = ({ jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' })[extension];
+      const extension = String(filePath || '').split('.').pop().toLowerCase();
+      let contentType = ({ jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif' })[extension];
+      if (!contentType && Buffer.isBuffer(bytes)) {
+        if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) contentType = 'image/jpeg';
+        else if (bytes.length >= 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) contentType = 'image/png';
+        else if (bytes.length >= 12 && bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP') contentType = 'image/webp';
+        else if (bytes.length >= 6 && (bytes.toString('ascii', 0, 6) === 'GIF87a' || bytes.toString('ascii', 0, 6) === 'GIF89a')) contentType = 'image/gif';
+      }
       if (!contentType) throw new HttpError(415, 'Format media tidak didukung.');
       res.statusCode = 200;
       res.setHeader('Content-Type', contentType);
       res.setHeader('Content-Length', bytes.length);
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       return res.end(bytes);
+    }
+
+    if (route === 'favicon.ico' && req.method === 'GET') {
+      res.statusCode = 204;
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.end();
     }
 
     if (route === 'health' && req.method === 'GET') {
