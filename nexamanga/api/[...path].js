@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 const {
   createOAuthState,
@@ -329,10 +329,11 @@ async function handler(req, res) {
     .replace(/^api\//, '')
     .replace(/\/+$/, '');
   if ((route === '' || route === 'index.html') && req.method === 'GET') {
+    const html = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'public', 'index.html'), 'utf8');
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');
-    return res.end(LANDING_HTML);
+    return res.end(html);
   }
   try {
     const oauthRoute = route.match(/^auth\/(google|discord)\/(start|callback)$/);
@@ -774,3 +775,4 @@ async function handler(req, res) {
 }
 
 module.exports = handler;
+

@@ -2958,6 +2958,35 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-traffic-field input {
         border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised); color: var(--ad-text);
       }
+      .kv-admin-shell.kv-admin-top .kv-traffic-chart { margin-top: 16px; }
+      .kv-admin-shell.kv-admin-top .kv-traffic-chart svg { display: block; }
+      .kv-admin-shell.kv-admin-top .kv-traffic-legend { margin: 12px 0 0; }
+      .kv-admin-shell.kv-admin-top .kv-traffic-dot { width: 7px; height: 7px; border-radius: 1px; }
+      .kv-admin-shell.kv-admin-top .kv-traffic-banner {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin-bottom: 16px; padding: 12px 14px;
+        border: 1px solid var(--ad-line); border-left: 3px solid var(--ad-amber); border-radius: 3px;
+        background: var(--ad-amber-soft); color: var(--ad-muted); font-size: .74rem;
+      }
+      .kv-admin-shell.kv-admin-top .kv-traffic-banner-error {
+        border-left-color: var(--ad-red); background: rgba(255, 112, 119, .1);
+      }
+      .kv-admin-shell.kv-admin-top .kv-traffic-banner > span:nth-child(2) { flex: 1; min-width: 180px; }
+      .kv-admin-shell.kv-admin-top .kv-traffic-badge {
+        flex-shrink: 0; padding: 4px 7px; border: 1px solid currentColor; border-radius: 2px;
+        font-family: 'JetBrains Mono', monospace; font-size: .56rem; letter-spacing: .14em;
+        color: var(--ad-amber); text-transform: uppercase;
+      }
+      .kv-admin-shell.kv-admin-top .kv-traffic-banner-error .kv-traffic-badge { color: var(--ad-red); }
+      .kv-admin-shell.kv-admin-top .kv-traffic-mini {
+        width: 100%; max-width: 140px; height: 3px; margin-top: 5px; background: var(--ad-raised);
+      }
+      .kv-admin-shell.kv-admin-top .kv-traffic-mini i { display: block; height: 100%; background: var(--ad-amber); }
+      .kv-admin-shell.kv-admin-top .kv-traffic-history .kv-table td { font-family: 'JetBrains Mono', monospace; }
+      .kv-admin-shell.kv-admin-top .kv-traffic-history .kv-table th:first-child,
+      .kv-admin-shell.kv-admin-top .kv-traffic-history .kv-table td.kv-traffic-date {
+        color: var(--ad-amber); font-weight: 600; white-space: nowrap; overflow-wrap: normal;
+      }
       .kv-admin-shell.kv-admin-top .kv-admin-empty,
       .kv-admin-shell.kv-admin-top .kv-admin-chapter-empty { color: var(--ad-dim); font-family: 'JetBrains Mono', monospace; font-size: .7rem; }
       .kv-admin-shell.kv-admin-top .kv-mono { color: var(--ad-muted); }
@@ -5055,38 +5084,6 @@ mobileMenu +
         '</div>';
       }
 
-      function adxHash(str) {
-        var h = 2166136261;
-        for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-        return (h >>> 0) / 4294967295;
-      }
-      function analyticsDemoData(from, to) {
-        var start = new Date(String(from) + 'T00:00:00Z');
-        var end = new Date(String(to) + 'T00:00:00Z');
-        if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
-          end = new Date();
-          start = new Date(end.getTime() - 6 * 86400000);
-        }
-        if ((end.getTime() - start.getTime()) / 86400000 > 29) start = new Date(end.getTime() - 29 * 86400000);
-        var daily = [];
-        var total = { pageviews: 0, visitors: 0, visits: 0 };
-        var boost = Math.min(state.data.manga.length || 0, 20) * 4;
-        for (var d = new Date(start); d <= end; d = new Date(d.getTime() + 86400000)) {
-          var key = d.toISOString().slice(0, 10);
-          var pv = 38 + Math.round(adxHash(key + 'pv') * 170) + boost;
-          var uv = 14 + Math.round(adxHash(key + 'uv') * 62);
-          var vs = uv + Math.round(adxHash(key + 'vs') * 18);
-          if (uv > pv) uv = pv;
-          if (vs > pv) vs = pv;
-          total.pageviews += pv; total.visitors += uv; total.visits += vs;
-          daily.push({ day: key, pageviews: pv, visitors: uv, visits: vs });
-        }
-        return {
-          from: start.toISOString().slice(0, 10), to: end.toISOString().slice(0, 10),
-          totals: { pageviews: total.pageviews, visitors: total.visitors, visits: total.visits, average: total.visits ? +(total.pageviews / total.visits).toFixed(1) : 0 },
-          daily: daily, demo: true
-        };
-      }
       function renderTrafficChart(rows) {
         var list = (rows || []).slice(-30);
         if (!list.length) return '';
@@ -5112,15 +5109,16 @@ mobileMenu +
         var labels = list.map(function (r, i) {
           if (i % labelEvery !== 0 && i !== list.length - 1) return '';
           var p = point(r, i, 'pageviews');
-          return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(String(r.day).slice(5)) + '</text>';
+          return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(String(r.day)) + '</text>';
         }).join('');
         var dots = list.map(function (r, i) {
           var p = point(r, i, 'pageviews');
           return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" style="fill:var(--ad-amber)"><title>' + escapeHtml(r.day) + ': ' + (r.pageviews || 0).toLocaleString('id-ID') + ' pageviews</title></circle>';
         }).join('');
+        var rangeText = String(list[0].day) + ' — ' + String(list[list.length - 1].day);
         return '<div class="kv-traffic-chart">' +
           '<h3 class="kv-chart-title" style="margin:0;">Tren Traffic Harian</h3>' +
-          '<p class="kv-chart-sub" style="margin:0 0 12px;">Pageviews dan pengunjung unik per hari</p>' +
+          '<p class="kv-chart-sub" style="margin:0 0 12px;">' + escapeHtml(rangeText) + ' · pageviews dan pengunjung unik per hari</p>' +
           '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Grafik traffic harian" style="width:100%;height:auto;overflow:visible;">' +
             grid + labels +
             '<polyline class="kv-traffic-line" points="' + line('pageviews') + '" style="stroke:var(--ad-amber);"/>' +
@@ -5136,13 +5134,14 @@ mobileMenu +
         var max = list.reduce(function (a, r) { return Math.max(a, r.pageviews || 0); }, 1) || 1;
         var rowsHtml = list.map(function (r) {
           var pct = Math.round(((r.pageviews || 0) / max) * 100);
-          return '<tr><td class="kv-mono">' + escapeHtml(r.day) + '</td>' +
+          return '<tr><td class="kv-traffic-date kv-mono" title="' + escapeHtml(r.day) + '">' + escapeHtml(r.day) + '</td>' +
             '<td>' + (r.pageviews || 0).toLocaleString('id-ID') + '<div class="kv-traffic-mini"><i style="width:' + pct + '%;"></i></div></td>' +
             '<td>' + (r.visitors || 0).toLocaleString('id-ID') + '</td>' +
             '<td>' + (r.visits || 0).toLocaleString('id-ID') + '</td></tr>';
         }).join('');
+        var rangeText = String(list[list.length - 1].day) + ' — ' + String(list[0].day);
         return '<div class="kv-card kv-traffic-history" style="margin-top:16px;">' +
-          '<h3 class="kv-section-title" style="margin:0 0 12px;">aktivitas 7 hari terakhir</h3>' +
+          '<h3 class="kv-section-title" style="margin:0 0 12px;">aktivitas 7 hari terakhir · ' + escapeHtml(rangeText) + '</h3>' +
           '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>TANGGAL</th><th>PAGEVIEWS</th><th>PENGUNJUNG</th><th>KUNJUNGAN</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' +
         '</div>';
       }
@@ -5174,22 +5173,19 @@ mobileMenu +
         var raw = state.analyticsData || {};
         var rawTotals = raw.totals || {};
         var hasData = ((raw.daily && raw.daily.length) || 0) > 0 && (rawTotals.pageviews || 0) > 0;
-        var d = hasData ? raw : analyticsDemoData(fromStr, toStr);
-        var t = d.totals || { pageviews: 0, visitors: 0, visits: 0, average: 0 };
-        var daily = d.daily || [];
-        var demo = !hasData;
+        var t = raw.totals || { pageviews: 0, visitors: 0, visits: 0, average: 0 };
+        var daily = raw.daily || [];
         var errorHtml = (state.analyticsData === null && state.analyticsError)
           ? '<div class="kv-traffic-banner kv-traffic-banner-error"><span class="kv-traffic-badge">GAGAL MEMUAT</span><span>' + escapeHtml(state.analyticsError) + '</span></div>'
           : '';
-        var demoHtml = demo
-          ? '<div class="kv-traffic-banner"><span class="kv-traffic-badge">DATA CONTOH</span><span>Belum ada traffic tercatat pada rentang ini. Berikut pratinjau tampilan; kunjungan uji akan tersimpan jika backend terhubung.</span><button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="kv-traffic-test">Catat kunjungan uji</button></div>'
-          : '';
+        var emptyHtml = hasData ? ''
+          : '<div class="kv-traffic-banner"><span class="kv-traffic-badge">BELUM ADA DATA</span><span>Belum ada traffic tercatat pada rentang ini. Kunjungan akan muncul setelah pelacakan aktif.</span><button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="kv-traffic-test">Catat uji</button></div>';
         return '<div class="kv-card" style="margin-bottom:16px;">' +
           '<h3 class="kv-section-title" style="margin:0 0 8px;">Analitik Traffic</h3>' +
           '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Halaman ini menampilkan rincian traffic situs. Tanggal otomatis dari awal bulan ini sampai hari ini. Ubah rentang tanggal lalu tekan Refresh.</p>' +
           (CONFIG.API_BASE_URL ? '' : '<p style="color:var(--kv-warning);font-size:0.85rem;">Backend tidak terhubung (mode lokal): data traffic tidak dapat dicatat.</p>') +
           '</div>' +
-          errorHtml + demoHtml +
+          errorHtml + emptyHtml +
           '<section class="kv-traffic">' +
             '<div class="kv-traffic-toolbar">' +
               '<div class="kv-traffic-field"><label>DARI</label><input type="date" id="kv-traffic-from" value="' + fromStr + '"/></div>' +
