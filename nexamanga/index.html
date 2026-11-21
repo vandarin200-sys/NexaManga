@@ -5212,12 +5212,14 @@ mobileMenu +
           var p = point(r, i, 'pageviews');
           var dayLabel = r.date || r.day || '';
           return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(String(dayLabel)) + '</text>';
+        }).join('');
         var dots = list.map(function (r, i) {
           var p = point(r, i, 'pageviews');
           var dayLabel = r.date || r.day || '';
           return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" style="fill:var(--ad-amber)"><title>' + escapeHtml(String(dayLabel)) + ': ' + (r.pageviews || 0).toLocaleString('id-ID') + ' pageviews</title></circle>';
-        var rangeText = String(list[0].day) + ' â€” ' + String(list[list.length - 1].day);
-        var rangeText = String(list[0].date || list[0].day || '') + ' – ' + String(list[list.length - 1].date || list[list.length - 1].day || '');
+        }).join('');
+        var rangeText = String(list[0].date || list[0].day || '') + ' - ' + String(list[list.length - 1].date || list[list.length - 1].day || '');
+        return '<div class="kv-chart-card" style="margin-top:16px;">' +
           '<h3 class="kv-chart-title" style="margin:0;">Tren Traffic Harian</h3>' +
           '<p class="kv-chart-sub" style="margin:0 0 12px;">Periode ' + escapeHtml(rangeText) + '. Menampilkan tayangan halaman dan pengunjung unik per hari.</p>' +
           '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Grafik traffic harian" style="width:100%;height:auto;overflow:visible;">' +
@@ -5238,12 +5240,13 @@ mobileMenu +
           var dayLabel = r.date || r.day || '';
           return '<tr><td class="kv-traffic-date kv-mono" title="' + escapeHtml(String(dayLabel)) + '">' + escapeHtml(String(dayLabel)) + '</td>' +
             '<td>' + (r.visitors || 0).toLocaleString('id-ID') + '</td>' +
-            '<td>' + (r.visits || 0).toLocaleString('id-ID') + '</td></tr>';
+            '<td>' + (r.visits || 0).toLocaleString('id-ID') + '</td>' +
+            '<td><div class="kv-traffic-bar"><span style="width:' + pct + '%;"></span><b>' + (r.pageviews || 0).toLocaleString('id-ID') + '</b></div></td></tr>';
         }).join('');
-        var rangeText = String(list[list.length - 1].day) + ' â€” ' + String(list[0].day);
-        var rangeText = String(list[list.length - 1].date || list[list.length - 1].day || '') + ' – ' + String(list[0].date || list[0].day || '');
+        var rangeText = String(list[list.length - 1].date || list[list.length - 1].day || '') + ' - ' + String(list[0].date || list[0].day || '');
+        return '<div class="kv-chart-card" style="margin-top:14px;">' +
           '<h3 class="kv-section-title" style="margin:0 0 12px;">Aktivitas 7 Hari Terakhir · ' + escapeHtml(rangeText) + '</h3>' +
-          '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>TANGGAL</th><th>PAGEVIEWS</th><th>PENGUNJUNG</th><th>KUNJUNGAN</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' +
+          '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>TANGGAL</th><th>PENGUNJUNG UNIK</th><th>KUNJUNGAN</th><th>PAGEVIEWS</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' +
         '</div>';
       }
       function renderAdminAnalytics() {
