@@ -53,27 +53,6 @@ function registerOAuthUser(catalog, identity) {
   return user;
 }
 
-function claimAdminRole(catalog, userId) {
-  if (typeof userId !== 'string' || !userId) {
-    throw new ValidationError('ID pengguna tidak valid.');
-  }
-  const user = catalog.users.find((item) => item.id === userId);
-  if (!user) throw new ValidationError('Pengguna tidak ditemukan.');
-  const hasAdmin = catalog.users.some((item) => item.role === 'admin');
-  const firstUser = catalog.users.reduce((oldest, item) => {
-    if (!oldest) return item;
-    const a = typeof oldest.createdAt === 'string' ? oldest.createdAt : '';
-    const b = typeof item.createdAt === 'string' ? item.createdAt : '';
-    return b && (!a || b < a) ? item : oldest;
-  }, null);
-  const isFirstUser = !!firstUser && firstUser.id === user.id;
-  if (hasAdmin && !isFirstUser) {
-    return { promoted: false, user };
-  }
-  user.role = 'admin';
-  return { promoted: true, user };
-}
-
 function requireText(value, label, maxLength, minLength = 1) {
   if (typeof value !== 'string' || value.trim().length < minLength || value.length > maxLength) {
     throw new ValidationError(`${label} harus berisi ${minLength}-${maxLength} karakter.`);
@@ -340,6 +319,7 @@ function addComment(catalog, input) {
     throw new ValidationError('URL gambar komentar harus menggunakan HTTP atau HTTPS.');
   }
   const replyTo = typeof input.replyTo === 'string' && input.replyTo.trim() ? input.replyTo.trim().slice(0, 100) : null;
+  const userId = typeof input.userId === 'string' && input.userId ? input.userId : null;
   const comment = {
     id: `c-${crypto.randomUUID()}`,
     mangaId,
@@ -347,12 +327,13 @@ function addComment(catalog, input) {
     parentId,
     replyTo,
     imageUrl,
-    userId: typeof input.userId === 'string' && input.userId ? input.userId : null,
-    authorName: requireText(input.authorName, 'Nama', 80),
-    authorAvatar: typeof input.authorAvatar === 'string' ? input.authorAvatar.slice(0, 2048) : null,
+    userId,
+    authorKey: userId ? null : (typeof input.authorKey === 'string' && input.authorKey ? input.authorKey.slice(0, 100) : null),
+    authorName: userId ? requireText(input.authorName, 'Nama', 80) : 'Pengunjung',
+    authorAvatar: userId && typeof input.authorAvatar === 'string' ? input.authorAvatar.slice(0, 2048) : null,
     content: requireText(input.content, 'Komentar', 2000, 2),
     createdAt: new Date().toISOString().slice(0, 10),
-    status: 'approved',
+    status: 'pending',
     upvotes: []
   };
   catalog.comments.unshift(comment);
@@ -379,13 +360,13 @@ module.exports = {
   addComment,
   addChapterReaction,
   addMangaReaction,
+  REACTION_KEYS,
   deleteChapter,
   deleteComment,
   deleteManga,
   pinComment,
   enrichCommentsWithUsers,
   incrementMangaViews,
-  claimAdminRole,
   registerOAuthUser,
   saveChapter,
   saveManga,

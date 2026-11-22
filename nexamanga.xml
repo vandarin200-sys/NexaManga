@@ -3057,12 +3057,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           Endpoint minimum yang dipanggil frontend:
           - GET  /api/auth/{google|discord}/start dan /callback -> login OAuth
           - GET  /api/auth/me                -> profil dan role sesi aktif
-          - GET  /api/catalog               -> { manga, chapters, comments }
+          - GET  /api/catalog               -> { manga, chapters, comments, reactions, mangaReactions }
           - POST /api/admin/upload-dual     -> simpan ke Telegram dan kembalikan
                                                URL proxy /api/media/{file_id}
-          - POST /api/comment               -> { mangaId, content, ... }
-          - POST /api/chapter/reaction      -> { chapterId, voterId, reaction }
-          - POST /api/comment/upvote        -> { id, voterId }
+          - POST /api/comment               -> { mangaId, content, ... } (menunggu moderasi)
+          - POST /api/chapter/reaction      -> { chapterId, reaction }
+          - POST /api/comment/upvote        -> { id }
           - POST /api/admin/save-manga      -> simpan/ubah data manga
           - POST /api/admin/save-chapter    -> simpan/ubah data chapter
           - POST /api/admin/delete-manga    -> { id }
@@ -3254,11 +3254,21 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        return state.data.manga.filter(function (m) { return m.id === id; })[0] || null;
      }
 
-      function voterId() {
-        var id = localStorage.getItem('kv_voter_id');
-        if (!id) { id = 'v-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); localStorage.setItem('kv_voter_id', id); }
-        return id;
-      }
+       function normalizeReactionSummary(entry) {
+         var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
+         var counts = {};
+         var userVote = null;
+         for (var i = 0; i < keys.length; i++) {
+           if (entry && entry.counts && typeof entry.counts === 'object') {
+             counts[keys[i]] = Number(entry.counts[keys[i]]) || 0;
+           } else {
+             var list = entry && Array.isArray(entry[keys[i]]) ? entry[keys[i]] : [];
+             counts[keys[i]] = list.length;
+           }
+           if (entry && entry.userVote === keys[i]) userVote = keys[i];
+         }
+         return { counts: counts, userVote: userVote };
+       }
 
       function purgeLegacyProfileOverrides() {
         try {
@@ -3313,98 +3323,67 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 
      function chapterReactionSummary(chapterId) {
        var all = (state.data && state.data.reactions) || {};
-       var forChapter = (all[chapterId] && typeof all[chapterId] === 'object' && !Array.isArray(all[chapterId])) ? all[chapterId] : {};
+       return normalizeReactionSummary(all[chapterId]);
+     }
+
+     function applyReactionLocal(collection, targetId, reaction) {
        var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
-       var key = state.user ? state.user.id : voterId();
-       var counts = {};
-       var userVote = null;
-       for (var i = 0; i < keys.length; i++) {
-         var list = Array.isArray(forChapter[keys[i]]) ? forChapter[keys[i]] : [];
-         counts[keys[i]] = list.length;
-         if (list.indexOf(key) !== -1) userVote = keys[i];
+       if (keys.indexOf(reaction) === -1) return null;
+       if (!state.data[collection] || typeof state.data[collection] !== 'object' || Array.isArray(state.data[collection])) {
+         state.data[collection] = {};
        }
-       return { counts: counts, userVote: userVote };
+       var summary = normalizeReactionSummary(state.data[collection][targetId]);
+       if (summary.userVote === reaction) {
+         summary.counts[reaction] = Math.max(0, summary.counts[reaction] - 1);
+         summary.userVote = null;
+       } else {
+         if (summary.userVote) summary.counts[summary.userVote] = Math.max(0, summary.counts[summary.userVote] - 1);
+         summary.counts[reaction] += 1;
+         summary.userVote = reaction;
+       }
+       state.data[collection][targetId] = summary;
+       persistData();
+       render();
+       return summary;
      }
 
      function chapterReactionLocal(chapterId, reaction) {
-       var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
-       if (keys.indexOf(reaction) === -1) return;
-       if (!state.data.reactions || typeof state.data.reactions !== 'object' || Array.isArray(state.data.reactions)) {
-         state.data.reactions = {};
-       }
-       var forChapter = state.data.reactions[chapterId];
-       if (!forChapter || typeof forChapter !== 'object' || Array.isArray(forChapter)) forChapter = {};
-       for (var i = 0; i < keys.length; i++) {
-         if (!Array.isArray(forChapter[keys[i]])) forChapter[keys[i]] = [];
-       }
-       var key = state.user ? state.user.id : voterId();
-       var removeOnly = false;
-       for (var j = 0; j < keys.length; j++) {
-         var idx = forChapter[keys[j]].indexOf(key);
-         if (idx !== -1) {
-           forChapter[keys[j]].splice(idx, 1);
-           if (keys[j] === reaction) removeOnly = true;
-         }
-       }
-       if (!removeOnly) forChapter[reaction].push(key);
-       state.data.reactions[chapterId] = forChapter;
-       persistData();
+       if (!applyReactionLocal('reactions', chapterId, reaction)) return;
        if (CONFIG.API_BASE_URL) {
          fetch(CONFIG.API_BASE_URL + '/api/chapter/reaction', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ chapterId: chapterId, voterId: key, reaction: reaction })
-         }).then(function (r) { return r.ok ? r.json() : null; }).then(function () { render(); }).catch(function () {});
+           body: JSON.stringify({ chapterId: chapterId, reaction: reaction })
+         }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
+           if (res && res.counts && state.data.reactions) {
+             state.data.reactions[chapterId] = { counts: res.counts, userVote: res.userVote || null };
+             persistData();
+             render();
+           }
+         }).catch(function () {});
        }
-       render();
      }
 
      function mangaReactionSummary(mangaId) {
        var all = (state.data && state.data.mangaReactions) || {};
-       var forManga = (all[mangaId] && typeof all[mangaId] === 'object' && !Array.isArray(all[mangaId])) ? all[mangaId] : {};
-       var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
-       var key = state.user ? state.user.id : voterId();
-       var counts = {};
-       var userVote = null;
-       for (var i = 0; i < keys.length; i++) {
-         var list = Array.isArray(forManga[keys[i]]) ? forManga[keys[i]] : [];
-         counts[keys[i]] = list.length;
-         if (list.indexOf(key) !== -1) userVote = keys[i];
-       }
-       return { counts: counts, userVote: userVote };
+       return normalizeReactionSummary(all[mangaId]);
      }
 
      function mangaReactionLocal(mangaId, reaction) {
-       var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
-       if (keys.indexOf(reaction) === -1) return;
-       if (!state.data.mangaReactions || typeof state.data.mangaReactions !== 'object' || Array.isArray(state.data.mangaReactions)) {
-         state.data.mangaReactions = {};
-       }
-       var forManga = state.data.mangaReactions[mangaId];
-       if (!forManga || typeof forManga !== 'object' || Array.isArray(forManga)) forManga = {};
-       for (var i = 0; i < keys.length; i++) {
-         if (!Array.isArray(forManga[keys[i]])) forManga[keys[i]] = [];
-       }
-       var key = state.user ? state.user.id : voterId();
-       var removeOnly = false;
-       for (var j = 0; j < keys.length; j++) {
-         var idx = forManga[keys[j]].indexOf(key);
-         if (idx !== -1) {
-           forManga[keys[j]].splice(idx, 1);
-           if (keys[j] === reaction) removeOnly = true;
-         }
-       }
-       if (!removeOnly) forManga[reaction].push(key);
-       state.data.mangaReactions[mangaId] = forManga;
-       persistData();
+       if (!applyReactionLocal('mangaReactions', mangaId, reaction)) return;
        if (CONFIG.API_BASE_URL) {
          fetch(CONFIG.API_BASE_URL + '/api/manga/reaction', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ mangaId: mangaId, voterId: key, reaction: reaction })
-         }).then(function (r) { return r.ok ? r.json() : null; }).then(function () { render(); }).catch(function () {});
+           body: JSON.stringify({ mangaId: mangaId, reaction: reaction })
+         }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
+           if (res && res.counts && state.data.mangaReactions) {
+             state.data.mangaReactions[mangaId] = { counts: res.counts, userVote: res.userVote || null };
+             persistData();
+             render();
+           }
+         }).catch(function () {});
        }
-       render();
      }
 
      function aggregateChapterReactions(manga) {
@@ -3414,10 +3393,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        var chapterIds = state.data.chapters.filter(function (c) { return c.mangaId === manga.id; }).map(function (c) { return c.id; });
        var all = (state.data && state.data.reactions) || {};
        for (var i = 0; i < chapterIds.length; i++) {
-         var forChapter = all[chapterIds[i]];
-         if (!forChapter || typeof forChapter !== 'object' || Array.isArray(forChapter)) continue;
+         var forChapter = normalizeReactionSummary(all[chapterIds[i]]);
          for (var j = 0; j < keys.length; j++) {
-           if (Array.isArray(forChapter[keys[j]])) counts[keys[j]] += forChapter[keys[j]].length;
+           counts[keys[j]] += forChapter.counts[keys[j]];
          }
        }
        return { counts: counts, userVote: null };
@@ -3448,24 +3426,27 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
      function upvoteCommentLocal(id) {
        var c = state.data.comments.filter(function (x) { return x.id === id; })[0];
        if (!c) return;
-       if (!Array.isArray(c.upvotes)) c.upvotes = [];
-       var key = state.user ? state.user.id : voterId();
-       var idx = c.upvotes.indexOf(key);
-       if (idx === -1) c.upvotes.push(key); else c.upvotes.splice(idx, 1);
+       var count = typeof c.upvoteCount === 'number' ? c.upvoteCount : (Array.isArray(c.upvotes) ? c.upvotes.length : 0);
+       var voted = typeof c.userUpvoted === 'boolean' ? c.userUpvoted : false;
+       c.upvoteCount = Math.max(0, count + (voted ? -1 : 1));
+       c.userUpvoted = !voted;
+       delete c.upvotes;
        persistData();
+       render();
        if (CONFIG.API_BASE_URL) {
          fetch(CONFIG.API_BASE_URL + '/api/comment/upvote', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ id: id, voterId: key })
+           body: JSON.stringify({ id: id })
          }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
-           if (res && res.comment && Array.isArray(res.comment.upvotes)) {
-             c.upvotes = res.comment.upvotes;
+           if (res && res.comment && typeof res.comment.upvoteCount === 'number') {
+             c.upvoteCount = res.comment.upvoteCount;
+             c.userUpvoted = !!res.comment.userUpvoted;
+             persistData();
              render();
            }
          }).catch(function () {});
        }
-       render();
      }
 
     function chapterById(id) {
@@ -3655,18 +3636,14 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       state.route = '404'; state.params = {};
     }
 
-     function trackPageview() {
-       if (!CONFIG.API_BASE_URL) return;
-       try {
-         var vid = localStorage.getItem('kv_visitor_id');
-         if (!vid) { vid = 'v-' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('kv_visitor_id', vid); }
-         fetch(CONFIG.API_BASE_URL + '/api/track', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ visitorId: vid })
-         }).catch(function () {});
-       } catch (e) {}
-     }
+      function trackPageview() {
+        if (!CONFIG.API_BASE_URL) return;
+        fetch(CONFIG.API_BASE_URL + '/api/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{}'
+        }).catch(function () {});
+      }
 
      function navigate(path) {
        var routePath = String(path || '/').replace(/^#/, '');
@@ -3727,36 +3704,21 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
          return;
        }
        render();
-       (function claimAdminIfNeeded() {
-         return fetch(CONFIG.API_BASE_URL + '/api/auth/claim-admin', {
-           method: 'POST',
-           headers: { Authorization: 'Bearer ' + state.adminToken }
-         }).then(function (response) {
-           if (!response.ok) return null;
-           return response.json();
-         }).then(function (result) {
-           if (result && result.token) {
-             state.adminToken = result.token;
-              localStorage.setItem('kv_session_token', result.token);
-           }
-         }).catch(function () {});
-       })().then(function () {
-         fetch(CONFIG.API_BASE_URL + '/api/auth/me', {
-           headers: { Authorization: 'Bearer ' + state.adminToken }
-         }).then(function (response) {
-           if (!response.ok) throw new Error('Sesi tidak valid.');
-           return response.json();
-          }).then(function (result) {
-            state.user = result.user || null;
-            if (state.user && result.role) state.user.role = result.role;
-          }).catch(function () {
-           state.adminToken = '';
-           state.user = null;
-           localStorage.removeItem('kv_session_token');
-         }).then(function () {
-           render();
-           syncFromApi();
-         });
+       fetch(CONFIG.API_BASE_URL + '/api/auth/me', {
+         headers: { Authorization: 'Bearer ' + state.adminToken }
+       }).then(function (response) {
+         if (!response.ok) throw new Error('Sesi tidak valid.');
+         return response.json();
+       }).then(function (result) {
+         state.user = result.user || null;
+         if (state.user && result.role) state.user.role = result.role;
+       }).catch(function () {
+         state.adminToken = '';
+         state.user = null;
+         localStorage.removeItem('kv_session_token');
+       }).then(function () {
+         render();
+         syncFromApi();
        });
     }
 
@@ -4270,7 +4232,7 @@ mobileMenu +
                   (myDisplayAvatar ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="kv-comment-avatar" referrerpolicy="no-referrer"/>' : '<div class="kv-comment-avatar kv-comment-avatar-fallback">' + escapeHtml(myDisplayName.charAt(0).toUpperCase()) + '</div>') +
                   '<div><div class="kv-comment-name">' + (state.user ? escapeHtml(myDisplayName) : 'Tulis komentar Anda') + '</div><div class="kv-comment-hint">Profile kamu.</div></div>' +
                 '</div>' +
-                (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
+                (state.user ? '' : '<div class="kv-comment-hint">Komentar anonim ditampilkan sebagai Pengunjung.</div>') +
                 '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis komentar..." required rows="3"></textarea>' +
                 '<div class="kv-comment-form-foot">' +
                   '<span class="kv-comment-hint">Gunakan **tebal**, *miring*, ||spoiler||</span>' +
@@ -4279,9 +4241,8 @@ mobileMenu +
                 '</div>' +
               '</form>' +
               '<input type="file" id="kv-comment-image-file" accept="image/jpeg,image/png,image/webp" style="display:none;"/>' +
-              (function () {
-                var voterKey = state.user ? state.user.id : voterId();
-                var byParent = {};
+               (function () {
+                 var byParent = {};
                 comments.forEach(function (c) {
                   var key = c.parentId || '';
                   if (!byParent[key]) byParent[key] = [];
@@ -4310,9 +4271,9 @@ mobileMenu +
                   return '<button type="button" class="kv-comment-action kv-comment-action-admin' + (c.pinned ? ' active' : '') + '" data-action="admin-pin-comment" data-id="' + escapeHtml(c.id) + '" aria-pressed="' + (c.pinned ? 'true' : 'false') + '" title="' + (c.pinned ? 'Lepas pin' : 'Sematkan komentar') + '">' + pinIcon + '</button>' +
                     '<button type="button" class="kv-comment-action kv-comment-action-admin kv-comment-action-danger" data-action="admin-delete-comment" data-id="' + escapeHtml(c.id) + '" title="Hapus komentar">' + trashIcon + '</button>';
                 }
-                function renderComment(c, depth) {
-                  var upvotes = Array.isArray(c.upvotes) ? c.upvotes : [];
-                  var voted = upvotes.indexOf(voterKey) !== -1;
+                 function renderComment(c, depth) {
+                   var upvoteCount = typeof c.upvoteCount === 'number' ? c.upvoteCount : (Array.isArray(c.upvotes) ? c.upvotes.length : 0);
+                   var voted = typeof c.userUpvoted === 'boolean' ? c.userUpvoted : false;
                   var own = state.user && c.userId && c.userId === state.user.id;
                   var authorName = own ? myDisplayName : c.authorName;
                   var authorAvatar = own ? myDisplayAvatar : c.authorAvatar;
@@ -4323,7 +4284,7 @@ mobileMenu +
                   var imageHtml = c.imageUrl ? '<img class="kv-comment-image" src="' + escapeHtml(c.imageUrl) + '" alt="Gambar dari ' + escapeHtml(authorName) + '" loading="lazy" referrerpolicy="no-referrer"/>' : '';
                   var replyForm = state.replyingTo === c.id
                     ? '<form class="kv-reply-form kv-comment-reply-form" data-manga-id="' + escapeHtml(manga.id) + '" data-chapter-id="' + escapeHtml(chapterId || '') + '" data-parent-id="' + escapeHtml(rootId) + '" data-reply-to="' + escapeHtml(authorName) + '">' +
-                        (state.user ? '' : '<input class="kv-input kv-detail-input" name="author" placeholder="Nama Anda" required/>') +
+                        (state.user ? '' : '<div class="kv-comment-hint">Komentar anonim ditampilkan sebagai Pengunjung.</div>') +
                         '<textarea class="kv-textarea kv-detail-textarea" name="content" placeholder="Tulis balasan..." required rows="3"></textarea>' +
                         '<div class="kv-comment-reply-actions">' +
                           '<button type="button" class="kv-btn kv-btn-ghost kv-comment-image-btn" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>' +
@@ -4355,7 +4316,7 @@ mobileMenu +
                           '<div class="kv-detail-comment-text">' + contentHtml + '</div>' +
                           imageHtml +
                            '<div class="kv-detail-comment-actions">' +
-                             '<button type="button" class="kv-comment-action' + (voted ? ' active' : '') + '" data-action="upvote-comment" data-id="' + escapeHtml(c.id) + '" aria-pressed="' + (voted ? 'true' : 'false') + '" title="' + (voted ? 'Batalkan suka' : 'Suka') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v10h11.28a2 2 0 0 0 2-1.7l.96-6.5A2 2 0 0 0 19.28 10H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>' + ' ' + upvotes.length + '</button>' +
+                             '<button type="button" class="kv-comment-action' + (voted ? ' active' : '') + '" data-action="upvote-comment" data-id="' + escapeHtml(c.id) + '" aria-pressed="' + (voted ? 'true' : 'false') + '" title="' + (voted ? 'Batalkan suka' : 'Suka') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v10h11.28a2 2 0 0 0 2-1.7l.96-6.5A2 2 0 0 0 19.28 10H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>' + ' ' + upvoteCount + '</button>' +
                              '<button type="button" class="kv-comment-action" data-action="reply-comment" data-id="' + escapeHtml(c.id) + '">Balas</button>' +
                              adminCommentActions(c) +
                            '</div>' +
@@ -6676,7 +6637,7 @@ mobileMenu +
             var mangaId = cForm.getAttribute('data-manga-id');
             var chapterId = cForm.getAttribute('data-chapter-id') || null;
             var parentId = cForm.getAttribute('data-parent-id') || null;
-            var authorName = state.user ? state.user.name : String(fd.get('author') || '').trim();
+            var authorName = state.user ? state.user.name : 'Pengunjung';
             var authorAvatar = state.user ? (state.user.avatar || null) : null;
             var userId = state.user ? state.user.id : null;
             var content = replaceImageTokens(String(fd.get('content') || ''));
@@ -6690,11 +6651,12 @@ mobileMenu +
               authorAvatar: authorAvatar,
               content: content,
               createdAt: new Date().toISOString().slice(0, 10),
-              status: 'approved',
-              upvotes: []
+              status: 'pending',
+              upvoteCount: 0,
+              userUpvoted: false
             });
             persistData();
-            state.commentNotice = 'Komentar Anda berhasil dikirim dan langsung ditampilkan. Terima kasih!';
+            state.commentNotice = 'Komentar Anda berhasil dikirim dan menunggu moderasi. Terima kasih!';
             state.replyingTo = null;
             if (CONFIG.API_BASE_URL) {
               var headers = { 'Content-Type': 'application/json' };
@@ -6716,7 +6678,7 @@ mobileMenu +
            var mangaId = rf.getAttribute('data-manga-id');
            var chapterId = rf.getAttribute('data-chapter-id') || null;
            var parentId = rf.getAttribute('data-parent-id');
-            var authorName = state.user ? state.user.name : String(fd.get('author') || '').trim();
+            var authorName = state.user ? state.user.name : 'Pengunjung';
             var authorAvatar = state.user ? (state.user.avatar || null) : null;
             var userId = state.user ? state.user.id : null;
             var replyTo = rf.getAttribute('data-reply-to') || null;
@@ -6732,11 +6694,12 @@ mobileMenu +
               authorAvatar: authorAvatar,
               content: content,
               createdAt: new Date().toISOString().slice(0, 10),
-              status: 'approved',
-              upvotes: []
+              status: 'pending',
+              upvoteCount: 0,
+              userUpvoted: false
             });
             persistData();
-            state.commentNotice = 'Balasan Anda berhasil dikirim.';
+            state.commentNotice = 'Balasan Anda berhasil dikirim dan menunggu moderasi.';
             state.replyingTo = null;
             if (CONFIG.API_BASE_URL) {
               var headers = { 'Content-Type': 'application/json' };

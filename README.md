@@ -59,7 +59,7 @@ Deploy folder proyek ini sebagai aplikasi Vercel dengan runtime Node.js 20 atau 
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth client credentials Google |
 | `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` | OAuth application credentials Discord |
 
-Template [`.env.example`](./.env.example) menunjukkan formatnya. Untuk pengaturan lokal, salin menjadi `.env` dan ganti nilai contoh. Di Vercel, masukkan nilainya langsung tanpa tanda kutip. Jangan pernah commit `.env` atau membagikan secrets.
+Template [`.env.example`](./nexamanga/.env.example) menunjukkan formatnya. Untuk pengaturan lokal, salin menjadi `.env` dan ganti nilai contoh. Di Vercel, masukkan nilainya langsung tanpa tanda kutip. Jangan pernah commit `.env` atau membagikan secrets.
 
 `TOKEN_SECRET` dapat dibuat dengan `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`. Jangan gunakan `*` pada `ALLOWED_ORIGINS` untuk situs publik.
 
@@ -107,9 +107,10 @@ Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/h
 - `GET /api/auth/{google|discord}/callback` — callback OAuth.
 - `GET /api/auth/me` — mengembalikan profil dan role sesi aktif.
 - `POST /api/admin/storage/init` — inisialisasi sekali, memerlukan sesi admin; biasanya tidak diperlukan karena pendaftaran pertama menginisialisasi otomatis.
-- `GET /api/catalog` — katalog publik; hanya komentar disetujui yang dikirim ke pengunjung. Sesi admin juga menerima komentar untuk moderasi.
-- `POST /api/chapter/reaction` — reaksi chapter (`fire`, `shock`, `cry`, `laugh`, `angry`); toggle per `voterId`.
-- `POST /api/comment` — kirim komentar. `chapterId` opsional; isi untuk komentar di halaman chapter. Balasan mewarisi chapter induk.
+- `GET /api/catalog` — katalog publik; hanya komentar disetujui (dan komentar pending milik pengirimnya) yang dikirim ke pengunjung. Sesi admin menerima semua komentar untuk moderasi. Reaksi dikirim sebagai jumlah suara dan status suara pengirim, bukan daftar identitas pemilih.
+- `POST /api/chapter/reaction`, `POST /api/manga/reaction` — reaksi (`fire`, `shock`, `cry`, `laugh`, `angry`); toggle. Identitas pemilih ditentukan backend dari sesi atau sidik jari anonim; `voterId` dari klien diabaikan.
+- `POST /api/comment` — kirim komentar berstatus `pending` sampai disetujui admin. `chapterId` opsional; isi untuk komentar di halaman chapter. Balasan mewarisi chapter induk. Komentar tanpa sesi ditampilkan sebagai `Pengunjung`.
+- `POST /api/comment/upvote` — suka komentar; identitas pemilih juga ditentukan backend.
 - `POST /api/admin/save-manga`, `/api/admin/save-chapter`
 - `POST /api/admin/delete-manga`, `/api/admin/delete-chapter`
 - `POST /api/admin/delete-comment`, `/api/admin/comment-status`, `/api/admin/pin-comment` — hapus, moderasi status, atau sematkan komentar (admin).
@@ -119,17 +120,19 @@ Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/h
 - `GET /api/analytics?from=&to=` — analitik traffic (admin).
 - `GET /api/mangadex/manga`, `/chapters`, `/athome`, `/image` — proxy MangaDex (admin).
 
-Seluruh endpoint admin memerlukan `Authorization: Bearer <token>` dengan role `admin`; sesi berlaku 8 jam. Backend tidak menyediakan login password. Perubahan katalog di Neon memakai optimistic concurrency control: jika dua request menulis bersamaan, yang kalah mendapat `409` dan bisa mengulang. Instance serverless masih menangani satu request per invocation, jadi sesi admin tunggal tetap disarankan saat pengubahan massal.
+Seluruh endpoint admin memerlukan `Authorization: Bearer <token>` dengan role `admin`; sesi berlaku 8 jam. Backend tidak menyediakan login password. Endpoint tulis publik dibatasi 15 komentar atau 120 reaksi/pageview per menit per pengunjung (`429` jika terlalu sering); pembatasan ini best-effort karena instance serverless tidak berbagi memori. Perubahan katalog di Neon memakai optimistic concurrency control: jika dua request menulis bersamaan, yang kalah mendapat `409` dan bisa mengulang. Instance serverless masih menangani satu request per invocation, jadi sesi admin tunggal tetap disarankan saat pengubahan massal.
 
 ## Pemeriksaan lokal
 
 ```powershell
+cd nexamanga
 npm test
 ```
 
 ## Struktur proyek
 
 - `nexamanga.xml` — template Blogger (SPA frontend).
+- `nexamanga/public/index.html` — SPA statis untuk deployment Vercel (satu-satunya salinan frontend).
 - `nexamanga/` — backend Vercel (api, lib, test, scripts).
 
 ## Fitur frontend
@@ -141,4 +144,3 @@ npm test
 ## Lisensi
 
 Private project.
-EOF

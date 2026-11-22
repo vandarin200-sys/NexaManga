@@ -1,5 +1,6 @@
 ﻿'use strict';
 
+const crypto = require('node:crypto');
 const {
   createOAuthState,
   createSessionToken,
@@ -10,7 +11,7 @@ const {
   EMPTY_CATALOG,
   ValidationError,
   addComment,
-  claimAdminRole,
+  REACTION_KEYS,
   deleteChapter,
   deleteComment,
   deleteManga,
@@ -49,6 +50,82 @@ class HttpError extends Error {
     super(message);
     this.status = status;
   }
+}
+
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const rateLimits = new Map();
+
+function requestIp(req) {
+  const forwarded = String(req.headers['x-forwarded-for'] || '');
+  const first = forwarded.split(',')[0].trim();
+  if (first) return first;
+  const real = String(req.headers['x-real-ip'] || '').trim();
+  if (real) return real;
+  return (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+function requestViewerKey(req, claims) {
+  if (claims && claims.sub) return claims.sub;
+  const ip = requestIp(req);
+  const agent = String(req.headers['user-agent'] || '');
+  const secret = String(process.env.TOKEN_SECRET || '');
+  return 'anon-' + crypto.createHmac('sha256', secret).update(`${ip}|${agent}`).digest('hex').slice(0, 32);
+}
+
+function enforceRateLimit(req, action, limit) {
+  const key = `${action}:${requestViewerKey(req, sessionClaims(req))}`;
+  const now = Date.now();
+  if (rateLimits.size > 5000) {
+    for (const [entryKey, entry] of rateLimits) {
+      if (now - entry.start >= RATE_LIMIT_WINDOW_MS) rateLimits.delete(entryKey);
+    }
+  }
+  const bucket = rateLimits.get(key);
+  if (!bucket || now - bucket.start >= RATE_LIMIT_WINDOW_MS) {
+    rateLimits.set(key, { start: now, count: 1 });
+    return;
+  }
+  if (bucket.count >= limit) throw new HttpError(429, 'Terlalu banyak permintaan. Coba lagi beberapa saat lagi.');
+  bucket.count += 1;
+}
+
+function reactionSummaries(collection, viewerKey) {
+  const summaries = {};
+  if (!collection || typeof collection !== 'object' || Array.isArray(collection)) return summaries;
+  for (const [targetId, groups] of Object.entries(collection)) {
+    const counts = {};
+    let userVote = null;
+    for (const key of REACTION_KEYS) {
+      const voters = groups && Array.isArray(groups[key]) ? groups[key] : [];
+      counts[key] = voters.length;
+      if (voters.includes(viewerKey)) userVote = key;
+    }
+    summaries[targetId] = { counts, userVote };
+  }
+  return summaries;
+}
+
+function sanitizeComment(comment, viewerKey) {
+  const output = { ...comment };
+  delete output.upvotes;
+  delete output.authorKey;
+  const voters = Array.isArray(comment.upvotes) ? comment.upvotes : [];
+  output.upvoteCount = voters.length;
+  output.userUpvoted = voters.includes(viewerKey);
+  return output;
+}
+
+function sanitizeCatalog(catalog, viewerKey, claims, showAllComments) {
+  const output = { ...catalog };
+  if (catalog.reactions) output.reactions = reactionSummaries(catalog.reactions, viewerKey);
+  if (catalog.mangaReactions) output.mangaReactions = reactionSummaries(catalog.mangaReactions, viewerKey);
+  output.comments = (catalog.comments || [])
+    .filter((comment) => showAllComments || comment.status === 'approved' ||
+      (claims && comment.userId === claims.sub) ||
+      (!claims && viewerKey && comment.authorKey === viewerKey))
+    .map((comment) => sanitizeComment(comment, viewerKey));
+  delete output.users;
+  return output;
 }
 
 function sendJson(res, status, value) {
@@ -392,23 +469,6 @@ async function handler(req, res) {
       return sendJson(res, 200, { user: claims.user, role: claims.role });
     }
 
-    if (route === 'auth/claim-admin' && req.method === 'POST') {
-      const claims = sessionClaims(req);
-      if (!claims) throw new HttpError(401, 'Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.');
-      let promoted = false;
-      let updatedUser = null;
-      await updateCatalog((catalog) => {
-        const result = claimAdminRole(catalog, claims.sub);
-        promoted = result.promoted;
-        updatedUser = result.user;
-      });
-      if (!promoted) {
-        return sendJson(res, 409, { error: 'Sudah ada admin. Tidak ada perubahan.' });
-      }
-      const token = createSessionToken(updatedUser);
-      return sendJson(res, 200, { ok: true, token, user: updatedUser });
-    }
-
     if (route === 'admin/settings' && req.method === 'POST') {
       await requireAdmin(req);
       const body = await readBody(req);
@@ -427,6 +487,7 @@ async function handler(req, res) {
     }
 
     if (route === 'manga/view' && req.method === 'POST') {
+      enforceRateLimit(req, 'manga-view', 120);
       const body = await readBody(req);
       const id = typeof body.id === 'string' ? body.id : (typeof body.slug === 'string' ? body.slug : '');
       if (!id) throw new HttpError(400, 'ID atau slug manga tidak valid.');
@@ -501,9 +562,9 @@ async function handler(req, res) {
     }
 
     if (route === 'track' && req.method === 'POST') {
-      const body = await readBody(req);
-      const visitorId = typeof body.visitorId === 'string' ? body.visitorId.slice(0, 100) : '';
-      await recordTrack(visitorId);
+      enforceRateLimit(req, 'track', 120);
+      await readBody(req);
+      await recordTrack(requestViewerKey(req, sessionClaims(req)));
       return sendJson(res, 200, { ok: true });
     }
 
@@ -524,30 +585,34 @@ async function handler(req, res) {
     }
 
     if (route === 'chapter/reaction' && req.method === 'POST') {
+      enforceRateLimit(req, 'chapter-reaction', 120);
       const body = await readBody(req);
-      if (typeof body.voterId !== 'string' || !body.voterId) throw new HttpError(400, 'ID voter tidak valid.');
+      const key = requestViewerKey(req, await freshSessionClaims(req));
       let result;
-      await updateCatalog((catalog) => { result = addChapterReaction(catalog, body); });
+      await updateCatalog((catalog) => { result = addChapterReaction(catalog, { ...body, voterId: key }); });
       return sendJson(res, 200, result);
     }
 
     if (route === 'manga/reaction' && req.method === 'POST') {
+      enforceRateLimit(req, 'manga-reaction', 120);
       const body = await readBody(req);
-      if (typeof body.voterId !== 'string' || !body.voterId) throw new HttpError(400, 'ID voter tidak valid.');
+      const key = requestViewerKey(req, await freshSessionClaims(req));
       let result;
-      await updateCatalog((catalog) => { result = addMangaReaction(catalog, body); });
+      await updateCatalog((catalog) => { result = addMangaReaction(catalog, { ...body, voterId: key }); });
       return sendJson(res, 200, result);
     }
 
     if (route === 'comment/upvote' && req.method === 'POST') {
+      enforceRateLimit(req, 'comment-upvote', 120);
       const body = await readBody(req);
-      if (typeof body.voterId !== 'string' || !body.voterId) throw new HttpError(400, 'ID voter tidak valid.');
+      const key = requestViewerKey(req, await freshSessionClaims(req));
       let updated;
-      await updateCatalog((catalog) => { updated = upvoteComment(catalog, body); });
-      return sendJson(res, 200, { comment: updated });
+      await updateCatalog((catalog) => { updated = upvoteComment(catalog, { ...body, voterId: key }); });
+      return sendJson(res, 200, { comment: sanitizeComment(updated, key) });
     }
 
     if (route === 'comment/image' && req.method === 'POST') {
+      enforceRateLimit(req, 'comment-image', 20);
       const rawClaims = sessionClaims(req);
       const claims = await freshSessionClaims(req);
       if (!claims) throw new HttpError(401, rawClaims ? 'Akun tidak ditemukan atau sudah dihapus. Silakan masuk kembali.' : 'Masuk terlebih dahulu untuk mengunggah gambar.');
@@ -567,31 +632,34 @@ async function handler(req, res) {
         catalog = { manga: [], chapters: [], comments: [], users: [] };
       }
       enrichCommentsWithUsers(catalog);
-      if (!(await isAdmin(req))) {
-        catalog.comments = catalog.comments.filter((comment) => comment.status === 'approved');
-      }
-      delete catalog.users;
-      return sendJson(res, 200, catalog);
+      const claims = await freshSessionClaims(req);
+      const showAllComments = Boolean(claims && claims.role === 'admin');
+      const viewerKey = requestViewerKey(req, claims);
+      return sendJson(res, 200, sanitizeCatalog(catalog, viewerKey, claims, showAllComments));
     }
 
     if (route === 'comment' && req.method === 'POST') {
+      enforceRateLimit(req, 'comment', 15);
       const body = await readBody(req);
       const rawClaims = sessionClaims(req);
       const claims = await freshSessionClaims(req);
       if (rawClaims && !claims) {
         throw new HttpError(401, 'Akun tidak ditemukan atau sudah dihapus. Silakan masuk kembali.');
       }
+      const key = requestViewerKey(req, claims);
+      body.authorKey = key;
       if (claims) {
         body.userId = claims.sub;
         body.authorName = claims.user && claims.user.name ? claims.user.name : 'Pengguna';
         body.authorAvatar = claims.user && claims.user.avatar ? claims.user.avatar : null;
       } else {
         body.userId = null;
+        body.authorName = 'Pengunjung';
         body.authorAvatar = null;
       }
       let created;
       await updateCatalog((catalog) => { created = addComment(catalog, body); });
-      return sendJson(res, 201, { comment: created });
+      return sendJson(res, 201, { comment: sanitizeComment(created, key) });
     }
 
     if (route === 'admin/save-manga' && req.method === 'POST') {
@@ -636,8 +704,8 @@ async function handler(req, res) {
       await requireAdmin(req);
       const body = await readBody(req);
       if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID komentar tidak valid.');
-      if (!['approved', 'rejected'].includes(body.status)) {
-        throw new HttpError(400, 'Status komentar harus approved atau rejected.');
+      if (!['pending', 'approved', 'rejected'].includes(body.status)) {
+        throw new HttpError(400, 'Status komentar harus pending, approved, atau rejected.');
       }
       await updateCatalog((catalog) => {
         const comment = catalog.comments.find((item) => item.id === body.id);
