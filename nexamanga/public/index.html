@@ -193,21 +193,6 @@
     }
     .kv-login-title em { font-style: normal; color: var(--kv-login-accent); }
     .kv-login-sub { margin: 0; font-size: .82rem; line-height: 1.6; color: var(--kv-login-muted); }
-    .kv-login-features {
-      list-style: none; margin: 0; padding: 0;
-      display: flex; flex-direction: column;
-      border: 1px solid var(--kv-login-border); border-radius: 12px; overflow: hidden;
-    }
-    .kv-login-features li {
-      display: flex; align-items: center; gap: 12px; padding: 10px 12px;
-      border-bottom: 1px solid var(--kv-login-border);
-      font-size: .8rem; color: var(--kv-login-text);
-    }
-    .kv-login-features li:last-child { border-bottom: 0; }
-    .kv-login-feature-index {
-      flex: 0 0 auto; min-width: 42px; font-family: var(--kv-font-mono);
-      font-size: .72rem; font-weight: 700; color: var(--kv-login-accent);
-    }
     .kv-login-section-title {
       margin: 2px 0 -6px; font-size: .86rem; font-weight: 800; color: var(--kv-login-text);
     }
@@ -4872,13 +4857,6 @@ mobileMenu +
         var brandMedia = guestLogo
           ? '<div class="kv-login-brand-logo"><img src="' + escapeHtml(guestLogo) + '" alt="Logo ' + escapeHtml(siteName()) + '"/></div>'
           : '<div class="kv-login-brand-mark" aria-hidden="true">NM</div>';
-        var guestFeatures = [
-          'Simpan manga favorit ke bookmark',
-          'Lanjutkan bacaan dari chapter terakhir',
-          'Ikut berdiskusi di komentar tiap judul'
-        ].map(function (text, index) {
-          return '<li><span class="kv-login-feature-index">0' + (index + 1) + '</span><span>' + escapeHtml(text) + '</span></li>';
-        }).join('');
         return '<main class="kv-container kv-home-light kv-account-page">' +
           '<section class="kv-login-shell" aria-label="Halaman masuk ' + escapeHtml(siteName()) + '">' +
             '<div class="kv-login-sheet">' +
@@ -4891,7 +4869,6 @@ mobileMenu +
                   '<h1 class="kv-login-title">Selamat datang di <em>' + escapeHtml(siteName()) + '</em></h1>' +
                   '<p class="kv-login-sub">Masuk untuk menyimpan bookmark, melanjutkan chapter terakhir, dan ikut berdiskusi. Tanpa kata sandi tambahan.</p>' +
                 '</div>' +
-                '<ul class="kv-login-features">' + guestFeatures + '</ul>' +
                 '<h2 class="kv-login-section-title">Masuk ke akunmu</h2>' +
                 '<div class="kv-login-providers">' + renderOAuthButtons() + '</div>' +
                 '<p class="kv-login-foot"><strong>Tanpa kata sandi.</strong> Kredensial dikelola sepenuhnya oleh Google atau Discord; NexaManga hanya menyimpan identitas akun kamu.</p>' +
@@ -5044,7 +5021,7 @@ mobileMenu +
         '<path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2C29.3 35.4 26.8 36 24 36c-5.2 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.5 16.2 44 24 44z"/>' +
         '<path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4 5.9l6.2 5.2C37.3 39.5 44 34 44 24c0-1.2-.1-2.3-.4-3.5z"/>' +
       '</svg>';
-      var discordIcon = '<svg viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true">' +
+      var discordIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
         '<path d="M20.3 4.4A19.9 19.9 0 0 0 15.4 3c-.2.4-.4.8-.6 1.2a18.4 18.4 0 0 0-5.6 0A12.6 12.6 0 0 0 8.6 3a19.9 19.9 0 0 0-4.9 1.4C.7 8.7.1 13 .6 17.1a19.9 19.9 0 0 0 6 2.9c.5-.6.9-1.3 1.3-2a13 13 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4a13 13 0 0 1-2 1c.4.7.8 1.4 1.3 2a19.8 19.8 0 0 0 6-2.9c.6-4.7-1.1-9-3.7-12.7zM9.7 13.6c-1.1 0-2-1-2-2.3s.9-2.3 2-2.3 2 1 2 2.3-.9 2.3-2 2.3zm4.6 0c-1.1 0-2-1-2-2.3s.9-2.3 2-2.3 2 1 2 2.3-.9 2.3-2 2.3z"/>' +
       '</svg>';
       return '<button type="button" class="kv-login-btn kv-login-btn-google" data-action="oauth-login" data-provider="google">' +
