@@ -160,7 +160,6 @@
       --kv-login-amber-wash: rgba(12,11,10,.08);
       --kv-login-amber-line: rgba(12,11,10,.22);
       --kv-login-on-amber: rgba(12,11,10,.72);
-      --kv-login-logo-bg: rgba(243,237,226,.92);
       position: relative;
       display: flex; align-items: center; justify-content: center;
       min-height: 560px; margin-top: 16px; padding: 40px 16px;
@@ -191,7 +190,6 @@
       --kv-login-amber-wash: rgba(243,236,224,.18);
       --kv-login-amber-line: rgba(243,236,224,.4);
       --kv-login-on-amber: rgba(243,236,224,.82);
-      --kv-login-logo-bg: transparent;
     }
     .kv-login-shell::before {
       content: "";
@@ -216,8 +214,7 @@
     }
     .kv-login-brand-logo {
       height: 46px; display: flex; align-items: center;
-      padding: 4px 8px; background: var(--kv-login-logo-bg);
-      border: 1px solid var(--kv-login-line);
+      padding: 4px 8px; border: 1px solid var(--kv-login-line);
     }
     .kv-login-brand-logo img {
       height: 100%; width: auto; max-width: 150px; object-fit: contain; display: block;
@@ -230,18 +227,18 @@
     }
     .kv-login-sheet-body { grid-column: 1 / -1; display: grid; grid-template-columns: 1.05fr .95fr; }
     .kv-login-brand-copy {
-      display: grid; align-content: center; justify-items: start; gap: 24px;
+      display: grid; align-content: center; justify-items: center; text-align: center; gap: 24px;
       padding: 44px 34px;
     }
-    .kv-login-overline {
-      display: flex; align-items: center; gap: 10px;
-      font-family: var(--kv-font-mono); font-size: .64rem; font-weight: 700;
-      letter-spacing: .22em; text-transform: uppercase; color: var(--kv-login-amber);
+    .kv-login-brand-logo-hero {
+      height: 120px; max-width: 100%; padding: 0;
+      background: transparent; border: 0;
     }
-    .kv-login-overline::before { content: ""; width: 26px; height: 1px; background: var(--kv-login-amber); }
-    .kv-login-brand-logo-hero { height: 120px; max-width: 100%; padding: 14px 18px; }
     .kv-login-brand-logo-hero img { max-width: 320px; }
-    .kv-login-brand-mark-hero { width: 120px; height: 120px; font-size: 1.8rem; }
+    .kv-login-brand-mark-hero {
+      width: 120px; height: 120px; font-size: 1.8rem;
+      background: transparent; border: 0;
+    }
     .kv-login-brand-copy::after { content: ""; width: 56px; height: 1px; background: var(--kv-login-line); }
     .kv-login-auth {
       display: grid; align-content: center; gap: 14px;
@@ -303,7 +300,6 @@
     @keyframes kv-login-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
     @keyframes kv-login-spin { to { transform: rotate(360deg); } }
     .kv-login-brand-copy > *, .kv-login-auth > * { animation: kv-login-rise .5s cubic-bezier(.2,.7,.2,1) both; }
-    .kv-login-brand-copy > :nth-child(2) { animation-delay: .1s; }
     .kv-login-auth > :nth-child(2) { animation-delay: .14s; }
     .kv-login-auth > :nth-child(3) { animation-delay: .2s; }
     @media (prefers-reduced-motion: reduce) {
@@ -315,7 +311,7 @@
       .kv-login-sheet { grid-template-columns: 1fr; }
       .kv-login-sheet-body { grid-template-columns: 1fr; }
       .kv-login-brand-copy, .kv-login-auth { padding: 30px 18px; }
-      .kv-login-brand-logo-hero { height: 96px; padding: 10px 14px; }
+      .kv-login-brand-logo-hero { height: 96px; padding: 0; }
       .kv-login-brand-logo-hero img { max-width: 240px; }
       .kv-login-brand-mark-hero { width: 96px; height: 96px; font-size: 1.4rem; }
       .kv-login-auth { border-left: 0; border-top: 1px solid var(--kv-login-line); }
@@ -4769,7 +4765,6 @@ mobileMenu +
             '<div class="kv-login-sheet">' +
               '<div class="kv-login-sheet-body">' +
                 '<div class="kv-login-brand-copy">' +
-                  '<span class="kv-login-overline">Vol. 01 / Akun</span>' +
                   brandMedia +
                 '</div>' +
                 '<div class="kv-login-auth">' +
