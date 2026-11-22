@@ -2502,6 +2502,106 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         body.kv-account-route .kv-acct-edit,
         body.kv-account-route .kv-acct-guest-sheet { animation: none; }
       }
+      body.kv-account-route .kv-acct-notif-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 6px; border-radius: 999px; background: var(--kv-acct-accent); color: #F7F1E6; font-family: 'JetBrains Mono', monospace; font-size: .58rem; font-weight: 700; }
+      html.dark body.kv-account-route .kv-acct-notif-badge { color: #101014; }
+      body.kv-notification-route {
+        --kv-notif-canvas: #E7D8BF;
+        --kv-notif-panel: #F7F1E6;
+        --kv-notif-panel-2: #EFE3D0;
+        --kv-notif-line: #BFA986;
+        --kv-notif-ink: #33281E;
+        --kv-notif-muted: #4C3B2B;
+        --kv-notif-accent: #7A4A1F;
+        --kv-notif-stamp: #A44424;
+        --kv-notif-shadow: 0 24px 54px -36px rgba(82, 52, 22, .62);
+        background: var(--kv-notif-canvas);
+        color: var(--kv-notif-ink);
+        font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+      }
+      html.dark body.kv-notification-route {
+        --kv-notif-canvas: #08080A;
+        --kv-notif-panel: #19191F;
+        --kv-notif-panel-2: #22222A;
+        --kv-notif-line: #30303A;
+        --kv-notif-ink: #F4F4F6;
+        --kv-notif-muted: #A3A3AD;
+        --kv-notif-accent: #8B5CF6;
+        --kv-notif-stamp: #F0A477;
+        --kv-notif-shadow: 0 28px 64px -36px rgba(0, 0, 0, .9);
+      }
+      .kv-nav-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 17px; padding: 0 4px; margin-left: 6px; border-radius: 999px; background: #A44424; color: #FFF7ED; font-family: var(--kv-font-mono); font-size: .58rem; font-weight: 700; line-height: 1; }
+      html.dark .kv-nav-badge { background: #F0A477; color: #101014; }
+      body.kv-notification-route .kv-notif-page { max-width: 1040px; margin: 0 auto; padding: 14px 16px 56px; }
+      body.kv-notification-route .kv-notif-topline { height: 14px; margin: -14px -16px 22px; border-bottom: 1px solid var(--kv-notif-line); background: var(--kv-notif-canvas); }
+      body.kv-notification-route .kv-notif-hero { position: relative; overflow: hidden; border: 1px solid var(--kv-notif-line); border-radius: 18px; background: var(--kv-notif-panel); box-shadow: var(--kv-notif-shadow); animation: kv-notif-rise .34s ease both; }
+      body.kv-notification-route .kv-notif-hero::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 17px, rgba(164, 68, 36, .07) 17px 18px); pointer-events: none; }
+      html.dark body.kv-notification-route .kv-notif-hero::before { background: repeating-linear-gradient(135deg, transparent 0 17px, rgba(240, 164, 119, .08) 17px 18px); }
+      body.kv-notification-route .kv-notif-hero::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 5px; background: var(--kv-notif-stamp); }
+      body.kv-notification-route .kv-notif-hero-inner { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 30px 32px 24px 36px; flex-wrap: wrap; }
+      body.kv-notification-route .kv-notif-eyebrow { display: block; font-family: 'JetBrains Mono', monospace; font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--kv-notif-stamp); font-weight: 700; }
+      body.kv-notification-route .kv-notif-title { margin: 5px 0 4px; font-family: 'Cinzel', Georgia, serif; font-size: clamp(1.45rem, 4vw, 2.1rem); line-height: 1.15; letter-spacing: -.01em; color: var(--kv-notif-ink); }
+      body.kv-notification-route .kv-notif-sub { margin: 0; max-width: 54ch; font-size: .8rem; color: var(--kv-notif-muted); }
+      body.kv-notification-route .kv-notif-stats { display: flex; align-items: center; gap: 18px; }
+      body.kv-notification-route .kv-notif-stat { min-width: 74px; padding-left: 16px; border-left: 1px solid var(--kv-notif-line); }
+      body.kv-notification-route .kv-notif-stat-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: .56rem; letter-spacing: .1em; text-transform: uppercase; color: var(--kv-notif-muted); }
+      body.kv-notification-route .kv-notif-stat-value { display: block; margin-top: 2px; font-family: 'JetBrains Mono', monospace; font-size: 1.65rem; line-height: 1; color: var(--kv-notif-stamp); }
+      body.kv-notification-route .kv-notif-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 12px; flex-wrap: wrap; }
+      body.kv-notification-route .kv-notif-count { font-family: 'JetBrains Mono', monospace; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--kv-notif-muted); }
+      body.kv-notification-route .kv-notif-markall { appearance: none; border: 1px solid var(--kv-notif-line); border-radius: 10px; padding: 8px 12px; background: var(--kv-notif-panel); color: var(--kv-notif-ink); font-family: inherit; font-size: .72rem; font-weight: 700; cursor: pointer; transition: border-color .16s ease, transform .16s ease; }
+      body.kv-notification-route .kv-notif-markall:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--kv-notif-stamp); }
+      body.kv-notification-route .kv-notif-markall:disabled { opacity: .45; cursor: not-allowed; }
+      body.kv-notification-route .kv-notif-list { display: grid; gap: 12px; }
+      body.kv-notification-route .kv-notif-card { display: grid; grid-template-columns: 48px minmax(0, 1fr); border: 1px solid var(--kv-notif-line); border-radius: 16px; background: var(--kv-notif-panel); box-shadow: var(--kv-notif-shadow); overflow: hidden; animation: kv-notif-rise .36s ease both; animation-delay: calc(var(--i) * 40ms); }
+      body.kv-notification-route .kv-notif-card.is-unread { border-left: 3px solid var(--kv-notif-stamp); }
+      body.kv-notification-route .kv-notif-rail { display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px 0; background: var(--kv-notif-panel-2); border-right: 1px solid var(--kv-notif-line); }
+      body.kv-notification-route .kv-notif-num { font-family: 'JetBrains Mono', monospace; font-size: .66rem; color: var(--kv-notif-muted); writing-mode: vertical-rl; transform: rotate(180deg); }
+      body.kv-notification-route .kv-notif-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--kv-notif-line); }
+      body.kv-notification-route .kv-notif-card.is-unread .kv-notif-dot { background: var(--kv-notif-stamp); box-shadow: 0 0 0 4px rgba(164, 68, 36, .16); }
+      html.dark body.kv-notification-route .kv-notif-card.is-unread .kv-notif-dot { box-shadow: 0 0 0 4px rgba(240, 164, 119, .14); }
+      body.kv-notification-route .kv-notif-body { padding: 16px 18px; min-width: 0; }
+      body.kv-notification-route .kv-notif-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-family: 'JetBrains Mono', monospace; font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--kv-notif-muted); }
+      body.kv-notification-route .kv-notif-new { padding: 2px 7px; border-radius: 999px; background: var(--kv-notif-stamp); color: #FFF7ED; font-weight: 700; }
+      html.dark body.kv-notification-route .kv-notif-new { color: #101014; }
+      body.kv-notification-route .kv-notif-name { margin: 7px 0 2px; font-size: 1rem; font-weight: 800; color: var(--kv-notif-ink); }
+      body.kv-notification-route .kv-notif-target { display: flex; align-items: center; gap: 8px; margin: 0 0 9px; font-size: .74rem; color: var(--kv-notif-muted); }
+      body.kv-notification-route .kv-notif-cover { width: 30px; height: 40px; flex: 0 0 30px; border-radius: 6px; border: 1px solid var(--kv-notif-line); object-fit: cover; background: var(--kv-notif-panel-2); }
+      body.kv-notification-route .kv-notif-cover-fallback { display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: .48rem; font-weight: 700; color: var(--kv-notif-stamp); }
+      body.kv-notification-route .kv-notif-target strong { color: var(--kv-notif-ink); }
+      body.kv-notification-route .kv-notif-excerpt { padding-left: 12px; border-left: 2px solid var(--kv-notif-line); font-size: .82rem; line-height: 1.55; color: var(--kv-notif-ink); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      body.kv-notification-route .kv-notif-excerpt p { margin: 0; }
+      body.kv-notification-route .kv-notif-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      body.kv-notification-route .kv-notif-action { appearance: none; border: 1px solid var(--kv-notif-line); border-radius: 10px; padding: 7px 11px; background: transparent; color: var(--kv-notif-ink); font-family: inherit; font-size: .7rem; font-weight: 700; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease; }
+      body.kv-notification-route .kv-notif-action:hover { transform: translateY(-1px); border-color: var(--kv-notif-accent); }
+      body.kv-notification-route .kv-notif-action-primary { background: var(--kv-notif-accent); border-color: var(--kv-notif-accent); color: #F7F1E6; }
+      html.dark body.kv-notification-route .kv-notif-action-primary { color: #101014; }
+      body.kv-notification-route .kv-notif-empty { padding: 34px 22px; border: 1px dashed var(--kv-notif-line); border-radius: 16px; background: var(--kv-notif-panel); text-align: center; animation: kv-notif-rise .36s ease both; }
+      body.kv-notification-route .kv-notif-empty-mark { font-family: 'Cinzel', Georgia, serif; font-size: 1.8rem; color: var(--kv-notif-stamp); }
+      body.kv-notification-route .kv-notif-empty-title { margin: 8px 0 4px; font-size: 1rem; font-weight: 800; color: var(--kv-notif-ink); }
+      body.kv-notification-route .kv-notif-empty-text { margin: 0; font-size: .8rem; color: var(--kv-notif-muted); }
+      body.kv-notification-route .kv-notif-guest-wrap { display: grid; place-items: center; min-height: calc(100vh - 190px); }
+      body.kv-notification-route .kv-notif-guest-sheet { width: min(100%, 560px); border: 1px solid var(--kv-notif-line); border-radius: 18px; background: var(--kv-notif-panel); box-shadow: var(--kv-notif-shadow); overflow: hidden; animation: kv-notif-rise .36s ease both; }
+      body.kv-notification-route .kv-notif-guest-brand { display: grid; place-items: center; min-height: 96px; border-bottom: 1px solid var(--kv-notif-line); background: linear-gradient(135deg, var(--kv-notif-stamp), var(--kv-notif-line)); }
+      body.kv-notification-route .kv-notif-guest-mark { font-family: 'Cinzel', Georgia, serif; font-size: 1.5rem; letter-spacing: .08em; color: #FFF7ED; }
+      html.dark body.kv-notification-route .kv-notif-guest-mark { color: #101014; }
+      body.kv-notification-route .kv-notif-guest-body { padding: 26px 28px 28px; }
+      body.kv-notification-route .kv-notif-guest-providers { display: grid; gap: 9px; }
+      body.kv-notification-route .kv-notif-guest-note { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--kv-notif-line); font-size: .7rem; line-height: 1.55; color: var(--kv-notif-muted); }
+      @keyframes kv-notif-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      @media (max-width: 720px) {
+        body.kv-notification-route .kv-notif-page { padding: 10px 12px 40px; }
+        body.kv-notification-route .kv-notif-topline { margin: -10px -12px 16px; }
+        body.kv-notification-route .kv-notif-hero-inner { padding: 24px 18px 20px 22px; }
+        body.kv-notification-route .kv-notif-stats { width: 100%; padding-top: 14px; border-top: 1px solid var(--kv-notif-line); }
+        body.kv-notification-route .kv-notif-card { grid-template-columns: 34px minmax(0, 1fr); }
+        body.kv-notification-route .kv-notif-body { padding: 14px; }
+        body.kv-notification-route .kv-notif-guest-body { padding: 22px 18px 24px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        body.kv-notification-route .kv-notif-hero,
+        body.kv-notification-route .kv-notif-card,
+        body.kv-notification-route .kv-notif-empty,
+        body.kv-notification-route .kv-notif-guest-sheet { animation: none; }
+      }
       </style>
 </head>
 <body>
@@ -3116,6 +3216,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       if (parts[0] === 'manga' && parts[1]) { state.route = 'detail'; state.params = { slug: parts[1] }; return; }
       if (parts[0] === 'baca' && parts[1] && parts[2]) { state.route = 'reader'; state.params = { slug: parts[1], chapterId: parts[2] }; state.currentPageIdx = 0; return; }
       if (parts[0] === 'akun') { state.route = 'account'; state.params = {}; return; }
+      if (parts[0] === 'notifikasi') { state.route = 'notification'; state.params = {}; return; }
       if (parts[0] === 'admin') { state.route = 'admin'; state.params = {}; return; }
       if (['tentang', 'kontak', 'privasi', 'ketentuan'].indexOf(parts[0]) !== -1) {
         state.route = 'info'; state.params = { page: parts[0] }; return;
@@ -3244,13 +3345,17 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        ========================================================================= */
      function renderHeader() {
        if (state.route === 'admin' || state.route === 'reader') return '';
-       var navItems = [
-         { path: '/', label: 'Beranda', key: 'home' },
-         { path: '/archive', label: 'Archive / Daftar', key: 'catalog' },
-         { path: '/akun', label: state.user ? 'Akun Saya' : 'Masuk', key: 'account' },
-         { path: '/tentang', label: 'Tentang', key: 'info' }
-       ];
-       if (state.user && state.user.role === 'admin') navItems.splice(3, 0, { path: '/admin', label: 'Admin', key: 'admin' });
+        var navItems = [
+          { path: '/', label: 'Beranda', key: 'home' },
+          { path: '/archive', label: 'Archive / Daftar', key: 'catalog' },
+          { path: '/akun', label: state.user ? 'Akun Saya' : 'Masuk', key: 'account' },
+          { path: '/tentang', label: 'Tentang', key: 'info' }
+        ];
+        if (state.user) {
+          var unreadNotifications = getUnreadNotificationCount();
+          navItems.splice(3, 0, { path: '/notifikasi', label: 'Notifikasi', key: 'notification', badge: unreadNotifications });
+        }
+        if (state.user && state.user.role === 'admin') navItems.splice(4, 0, { path: '/admin', label: 'Admin', key: 'admin' });
         var themeLabel = state.theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap';
        var themeIcon = state.theme === 'dark'
          ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>'
@@ -3268,7 +3373,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
          var cls = active
            ? 'px-4 py-2 rounded-full font-bold text-sm bg-[#7A4A1F] text-white shadow-sm transition-all'
            : 'px-4 py-2 rounded-full font-semibold text-sm text-[#7A4A1F] hover:bg-[#F2E8D8] transition-colors dark:text-neutral-300 dark:hover:bg-[#20243A]';
-          return '<a href="' + item.path + '" class="' + cls + '"' + (active ? ' aria-current="page"' : '') + '>' + escapeHtml(item.label) + '</a>';
+           return '<a href="' + item.path + '" class="' + cls + '"' + (active ? ' aria-current="page"' : '') + '>' + escapeHtml(item.label) + (item.badge ? '<span class="kv-nav-badge">' + item.badge + '</span>' : '') + '</a>';
        }).join('');
        var userHtml = state.user
           ? '<a href="/akun" class="inline-flex items-center gap-2 px-2 py-1.5 rounded-full bg-[#F2E8D8] hover:bg-[#E9DAC2] transition-colors dark:bg-[#20243A]" title="' + escapeHtml(currentDisplayName(state.user.name)) + '">' +
@@ -3773,7 +3878,7 @@ mobileMenu +
                       '</button>'
                     : '';
                   var childrenHtml = (isExpanded && children.length) ? '<div class="kv-detail-comment-children">' + children.map(function (k) { return renderComment(k, 1); }).join('') + '</div>' : '';
-                  return '<div class="kv-detail-comment' + (depth ? ' kv-detail-comment-child' : '') + '">' +
+                  return '<div class="kv-detail-comment' + (depth ? ' kv-detail-comment-child' : '') + '" id="kv-comment-' + escapeHtml(c.id || '') + '">' +
                     '<div class="kv-detail-comment-card">' +
                       '<div class="kv-detail-comment-main">' + avatar +
                         '<div class="kv-detail-comment-body">' +
@@ -4111,6 +4216,129 @@ mobileMenu +
       localStorage.setItem('kv_history', JSON.stringify(state.history));
     }
 
+    function notificationStorageKey() {
+      return 'kv_notification_read_' + (state.user && state.user.id ? state.user.id : 'guest');
+    }
+
+    function readNotificationIds() {
+      try {
+        var ids = JSON.parse(localStorage.getItem(notificationStorageKey()) || '[]');
+        return Array.isArray(ids) ? ids : [];
+      } catch (e) { return []; }
+    }
+
+    function markNotificationsRead(ids, skipRender) {
+      if (!state.user || !state.user.id || !Array.isArray(ids) || !ids.length) return;
+      var key = notificationStorageKey();
+      var readIds = readNotificationIds();
+      var changed = false;
+      ids.forEach(function (id) {
+        if (id && readIds.indexOf(id) === -1) {
+          readIds.push(id);
+          changed = true;
+        }
+      });
+      if (!changed) return;
+      try { localStorage.setItem(key, JSON.stringify(readIds)); } catch (e) {}
+      if (!skipRender) render();
+    }
+
+    function getReplyNotifications() {
+      if (!state.user || !state.user.id || !state.data || !Array.isArray(state.data.comments)) return [];
+      var comments = state.data.comments;
+      var byId = {};
+      var readIds = readNotificationIds();
+      comments.forEach(function (c) { if (c && c.id) byId[c.id] = c; });
+      return comments.filter(function (reply) {
+        if (!reply || !reply.id || !reply.parentId) return false;
+        var parent = byId[reply.parentId];
+        return parent && parent.userId && parent.userId === state.user.id && reply.userId !== state.user.id;
+      }).map(function (reply) {
+        var parent = byId[reply.parentId];
+        var manga = (state.data.manga || []).filter(function (m) { return m.id === reply.mangaId; })[0] || null;
+        var chapter = (state.data.chapters || []).filter(function (ch) { return ch.id === reply.chapterId; })[0] || null;
+        return {
+          id: reply.id,
+          parentId: parent.id,
+          mangaSlug: manga ? manga.slug : '',
+          mangaTitle: manga ? manga.title : 'Manga tidak ditemukan',
+          mangaCover: manga ? (manga.coverBloggerUrl || '') : '',
+          chapterLabel: chapter ? 'Chapter ' + chapter.number : (reply.chapterId ? 'Chapter' : 'Diskusi manga'),
+          authorName: reply.authorName || 'Pembaca',
+          createdAt: reply.createdAt || '',
+          content: reply.content || '',
+          unread: readIds.indexOf(reply.id) === -1
+        };
+      }).sort(function (a, b) {
+        return String(b.createdAt).localeCompare(String(a.createdAt)) || String(b.id).localeCompare(String(a.id));
+      });
+    }
+
+    function getUnreadNotificationCount() {
+      return getReplyNotifications().filter(function (n) { return n.unread; }).length;
+    }
+
+    function renderNotifications() {
+      if (!state.user) {
+        return '<main class="kv-notif-page">' +
+          '<div class="kv-notif-topline" aria-hidden="true"></div>' +
+          '<section class="kv-notif-guest-wrap" aria-label="Halaman notifikasi ' + escapeHtml(siteName()) + '">' +
+            '<div class="kv-notif-guest-sheet">' +
+              '<div class="kv-notif-guest-brand"><span class="kv-notif-guest-mark">NOTIFIKASI</span></div>' +
+              '<div class="kv-notif-guest-body">' +
+                '<span class="kv-notif-eyebrow">Kotak masuk pembaca</span>' +
+                '<h1 class="kv-notif-title">Balasan untuk komentarmu</h1>' +
+                '<p class="kv-notif-sub" style="margin:4px 0 18px;">Masuk untuk melihat balasan komentar dan menandainya sebagai sudah dibaca.</p>' +
+                '<div class="kv-notif-guest-providers">' + renderOAuthButtons() + '</div>' +
+                '<p class="kv-notif-guest-note">Notifikasi dihitung dari balasan langsung pada komentar yang kamu kirim.</p>' +
+              '</div>' +
+            '</div>' +
+          '</section>' +
+        '</main>';
+      }
+      var items = getReplyNotifications();
+      var unread = items.filter(function (n) { return n.unread; }).length;
+      var hero = '<section class="kv-notif-hero">' +
+        '<div class="kv-notif-hero-inner">' +
+          '<div>' +
+            '<span class="kv-notif-eyebrow">Kotak masuk · ' + escapeHtml(siteName()) + '</span>' +
+            '<h1 class="kv-notif-title">Balasan komentar</h1>' +
+            '<p class="kv-notif-sub">Setiap balasan langsung pada komentarmu dikumpulkan di sini. Buka untuk melompat ke percakapan aslinya.</p>' +
+          '</div>' +
+          '<div class="kv-notif-stats">' +
+            '<div class="kv-notif-stat"><span class="kv-notif-stat-label">Total</span><strong class="kv-notif-stat-value">' + items.length + '</strong></div>' +
+            '<div class="kv-notif-stat"><span class="kv-notif-stat-label">Belum dibaca</span><strong class="kv-notif-stat-value">' + unread + '</strong></div>' +
+          '</div>' +
+        '</div>' +
+      '</section>';
+      var list = items.length
+        ? '<div class="kv-notif-list">' + items.map(function (item, index) {
+            var cover = item.mangaCover
+              ? '<img class="kv-notif-cover" src="' + escapeHtml(item.mangaCover) + '" alt="" loading="lazy" referrerpolicy="no-referrer"/>'
+              : '<span class="kv-notif-cover kv-notif-cover-fallback" aria-hidden="true">NM</span>';
+            return '<article class="kv-notif-card' + (item.unread ? ' is-unread' : '') + '" style="--i:' + index + '">' +
+              '<div class="kv-notif-rail"><span class="kv-notif-num">' + ('0' + (index + 1)).slice(-2) + '</span><span class="kv-notif-dot" aria-hidden="true"></span></div>' +
+              '<div class="kv-notif-body">' +
+                '<div class="kv-notif-meta"><span>Balasan komentar</span>' + (item.unread ? '<span class="kv-notif-new">Baru</span>' : '') + '<time>' + escapeHtml(item.createdAt) + '</time></div>' +
+                '<h2 class="kv-notif-name">' + escapeHtml(item.authorName) + ' membalas komentarmu</h2>' +
+                '<p class="kv-notif-target">' + cover + '<span><strong>' + escapeHtml(item.mangaTitle) + '</strong> · ' + escapeHtml(item.chapterLabel) + '</span></p>' +
+                '<div class="kv-notif-excerpt">' + renderCommentContent(item.content) + '</div>' +
+                '<div class="kv-notif-actions">' +
+                  '<button type="button" class="kv-notif-action kv-notif-action-primary" data-action="open-notification" data-id="' + escapeHtml(item.id) + '" data-slug="' + escapeHtml(item.mangaSlug) + '">Lihat balasan <span aria-hidden="true">&rarr;</span></button>' +
+                  (item.unread ? '<button type="button" class="kv-notif-action" data-action="mark-notification-read" data-id="' + escapeHtml(item.id) + '">Tandai dibaca</button>' : '') +
+                '</div>' +
+              '</div>' +
+            '</article>';
+          }).join('') + '</div>'
+        : '<div class="kv-notif-empty"><div class="kv-notif-empty-mark" aria-hidden="true">NM</div><div class="kv-notif-empty-title">Belum ada balasan</div><p class="kv-notif-empty-text">Balasan pada komentarmu akan muncul di sini setelah tersedia.</p></div>';
+      return '<main class="kv-notif-page">' +
+        '<div class="kv-notif-topline" aria-hidden="true"></div>' +
+        hero +
+        '<div class="kv-notif-toolbar"><span class="kv-notif-count">' + items.length + ' balasan · ' + unread + ' belum dibaca</span><button type="button" class="kv-notif-markall" data-action="mark-all-notifications-read"' + (unread ? '' : ' disabled') + '>Tandai semua dibaca</button></div>' +
+        list +
+      '</main>';
+    }
+
     /* =========================================================================
        AKUN PEMBACA & HALAMAN INFORMASI & ADMIN
        ========================================================================= */
@@ -4121,6 +4349,7 @@ mobileMenu +
         return m ? { manga: m, history: h } : null;
       }).filter(Boolean);
       var myComments = state.data.comments.filter(function (c) { return state.user && c.userId === state.user.id; }).length;
+      var unreadNotifications = getUnreadNotificationCount();
       var komikDibaca = historyItems.length;
       var chapterSelesai = historyItems.length;
 
@@ -4225,6 +4454,7 @@ mobileMenu +
             '</div>' +
             '<div class="kv-acct-actions">' +
               '<button type="button" class="kv-acct-btn kv-acct-btn-primary" data-action="toggle-edit-profile">Edit Profil</button>' +
+              '<a class="kv-acct-btn kv-acct-btn-quiet" href="/notifikasi">Notifikasi' + (unreadNotifications ? '<span class="kv-acct-notif-badge">' + unreadNotifications + '</span>' : '') + '</a>' +
               '<button type="button" class="kv-acct-btn kv-acct-btn-quiet" data-action="logout-user">Keluar</button>' +
             '</div>' +
           '</div>' +
@@ -5884,9 +6114,10 @@ mobileMenu +
       var app = document.getElementById('kv-app');
       if (!app) return;
        if (document.body) {
-         document.body.classList.toggle('kv-home-route', state.route === 'home' || state.route === 'catalog' || state.route === 'account' || state.route === 'info');
-         document.body.classList.toggle('kv-detail-route', state.route === 'detail');
-         document.body.classList.toggle('kv-account-route', state.route === 'account');
+          document.body.classList.toggle('kv-home-route', state.route === 'home' || state.route === 'catalog' || state.route === 'account' || state.route === 'notification' || state.route === 'info');
+          document.body.classList.toggle('kv-detail-route', state.route === 'detail');
+          document.body.classList.toggle('kv-account-route', state.route === 'account');
+          document.body.classList.toggle('kv-notification-route', state.route === 'notification');
           document.body.classList.toggle('kv-reader-route', state.route === 'reader');
        }
 
@@ -5901,6 +6132,7 @@ mobileMenu +
         else if (state.route === 'detail') bodyHtml = renderDetail();
         else if (state.route === 'reader') bodyHtml = renderReader();
         else if (state.route === 'account') bodyHtml = renderAccount();
+        else if (state.route === 'notification') bodyHtml = renderNotifications();
         else if (state.route === 'admin') bodyHtml = renderAdmin();
         else if (state.route === 'info') bodyHtml = renderInfo();
         else bodyHtml = render404();
@@ -6516,6 +6748,23 @@ mobileMenu +
         if (!state.expandedComments) state.expandedComments = {};
         state.expandedComments[rid] = !state.expandedComments[rid];
         render();
+      }
+      else if (act === 'mark-notification-read') { markNotificationsRead([el.getAttribute('data-id')]); }
+      else if (act === 'mark-all-notifications-read') { markNotificationsRead(getReplyNotifications().map(function (n) { return n.id; })); }
+      else if (act === 'open-notification') {
+        var nid = el.getAttribute('data-id');
+        var note = getReplyNotifications().filter(function (n) { return n.id === nid; })[0];
+        markNotificationsRead([nid], true);
+        if (!note) return;
+        if (!state.expandedComments) state.expandedComments = {};
+        state.expandedComments[note.parentId] = true;
+        var slug = note.mangaSlug || el.getAttribute('data-slug');
+        if (!slug) { toast('Manga untuk balasan ini tidak ditemukan.', 'warn'); return; }
+        navigate('/manga/' + encodeURIComponent(slug));
+        setTimeout(function () {
+          var target = document.getElementById('kv-comment-' + nid);
+          if (target && typeof target.scrollIntoView === 'function') target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 80);
       }
       else if (act === 'admin-pin-comment') { adminPinComment(el.getAttribute('data-id')); }
       else if (act === 'admin-delete-comment') {
