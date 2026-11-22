@@ -148,7 +148,7 @@
       --kv-login-amber-wash: rgba(12,11,10,.08);
       --kv-login-amber-line: rgba(12,11,10,.22);
       --kv-login-on-amber: rgba(12,11,10,.72);
-      --kv-login-logo-filter: brightness(0) invert(1);
+      --kv-login-logo-bg: rgba(243,237,226,.92);
       position: relative;
       display: flex; align-items: center; justify-content: center;
       min-height: 560px; margin-top: 16px; padding: 40px 16px;
@@ -180,7 +180,7 @@
       --kv-login-amber-wash: rgba(243,236,224,.18);
       --kv-login-amber-line: rgba(243,236,224,.4);
       --kv-login-on-amber: rgba(243,236,224,.82);
-      --kv-login-logo-filter: brightness(0);
+      --kv-login-logo-bg: transparent;
     }
     .kv-login-shell::before {
       content: "";
@@ -214,10 +214,13 @@
       font-family: var(--kv-font-mono); font-size: .6rem; font-weight: 700;
       letter-spacing: .22em; color: var(--kv-login-muted);
     }
-    .kv-login-brand-logo { height: 38px; display: flex; align-items: center; }
+    .kv-login-brand-logo {
+      height: 46px; display: flex; align-items: center;
+      padding: 4px 8px; background: var(--kv-login-logo-bg);
+      border: 1px solid var(--kv-login-line);
+    }
     .kv-login-brand-logo img {
       height: 100%; width: auto; max-width: 150px; object-fit: contain; display: block;
-      filter: var(--kv-login-logo-filter); opacity: .92;
     }
     .kv-login-brand-mark {
       width: 38px; height: 38px;
