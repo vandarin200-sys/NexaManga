@@ -68,6 +68,8 @@
       --kv-success: #3F5A2E;
       --kv-warning: #8A560C;
       --kv-danger: #8E332A;
+      --kv-shadow-crisp: 0 1px 2px rgba(58, 43, 20, .12);
+      --kv-focus-crisp: 0 0 0 2px rgba(122, 74, 31, .28);
     }
     html, body {
       margin: 0; padding: 0;
@@ -1677,10 +1679,9 @@
          --kv-success: #3F5A2E;
          --kv-warning: #8A560C;
          --kv-danger: #8E332A;
-         --kv-radius: 16px;
-         background: #F7F1E6;
-         -webkit-font-smoothing: antialiased;
-       }
+          --kv-radius: 16px;
+          background: #F7F1E6;
+        }
       html.sepia body.kv-home-route .kv-container { max-width: 1280px; }
       html.sepia body.kv-home-route .kv-header {
         background: #F7F1E6; border-bottom: 1px solid #BFA986;
@@ -1794,10 +1795,9 @@
          --kv-success: #3F5A2E;
          --kv-warning: #8A560C;
          --kv-danger: #8E332A;
-         --kv-radius: 12px;
-         background: #F7F1E6;
-         -webkit-font-smoothing: antialiased;
-       }
+          --kv-radius: 12px;
+          background: #F7F1E6;
+        }
       html.sepia body.kv-detail-route .kv-container { max-width: 1280px; }
       html.sepia body.kv-detail-route .kv-header { background: #F7F1E6; border-bottom: 1px solid #BFA986; position: sticky; top: 0; z-index: 30; box-shadow: 0 1px 2px rgba(17, 24, 39,.04); }
       html.sepia body.kv-detail-route .kv-header-inner { height: 64px; }
@@ -3276,6 +3276,104 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         .kv-admin-shell.kv-admin-top .kv-traffic-cards { grid-template-columns: 1fr; }
       }
       
+      html.sepia body,
+      html.sepia body.kv-home-route,
+      html.sepia body.kv-detail-route,
+      html.sepia body.kv-reader-route { background: #F7F1E6; }
+      html.sepia .kv-header,
+      html.sepia .kv-hero,
+      html.sepia .kv-card,
+      html.sepia .kv-toolbar,
+      html.sepia .kv-stat-card,
+      html.sepia .kv-stat-box,
+      html.sepia .kv-table-wrap,
+      html.sepia .kv-qa,
+      html.sepia .kv-modal-box,
+      html.sepia .kv-chart-card,
+      html.sepia .kv-kpi,
+      html.sepia .kv-hero .kv-cover-wrap,
+      html.sepia .kv-detail-grid > .kv-cover-wrap { box-shadow: none; }
+      html.sepia .kv-404 { text-shadow: none; }
+      html.sepia .kv-login-sheet { box-shadow: inset 3px 0 0 var(--kv-login-amber); }
+      html.sepia .kv-login-btn { box-shadow: none; }
+      html.sepia .kv-input::placeholder,
+      html.sepia .kv-textarea::placeholder { color: #6A563F; opacity: 1; }
+      html.sepia .kv-login-section-title { font-size: .72rem; }
+      html.sepia .kv-login-btn-text small { font-size: .66rem; }
+      html.sepia body.kv-home-route .kv-header,
+      html.sepia body.kv-home-route .kv-brand-mark,
+      html.sepia body.kv-home-route .kv-home-card,
+      html.sepia body.kv-home-route .kv-home-card:hover,
+      html.sepia body.kv-home-route .kv-home-rank,
+      html.sepia body.kv-home-route .kv-home-rank:hover,
+      html.sepia body.kv-home-route .kv-home-curated-card,
+      html.sepia body.kv-home-route .kv-home-curated-card:hover,
+      html.sepia body.kv-home-route .kv-catalog-toolbar,
+      html.sepia body.kv-home-route .kv-account-hero,
+      html.sepia body.kv-home-route .kv-account-primary,
+      html.sepia body.kv-home-route .kv-account-history-card:hover,
+      html.sepia body.kv-home-route .kv-account-edit,
+      html.sepia body.kv-detail-route .kv-header,
+      html.sepia body.kv-detail-route .kv-brand-mark,
+      html.sepia body.kv-detail-route .kv-detail-hero,
+      html.sepia body.kv-detail-route .kv-detail-card,
+      html.sepia body.kv-detail-route .kv-detail-genre:hover,
+      html.sepia body.kv-detail-route .kv-detail-primary { box-shadow: none; }
+      html.sepia body.kv-detail-route .kv-detail-hero-cover,
+      html.sepia body.kv-home-route .kv-account-avatar-img,
+      html.sepia body.kv-home-route .kv-account-avatar-fallback { box-shadow: var(--kv-shadow-crisp); }
+      html.sepia .kv-input:focus,
+      html.sepia .kv-select:focus,
+      html.sepia .kv-textarea:focus,
+      html.sepia body.kv-home-route .kv-catalog-toolbar .kv-search-wrap .kv-input:focus,
+      html.sepia body.kv-home-route .kv-dropdown-btn[aria-expanded="true"],
+      html.sepia body.kv-detail-route .kv-detail-search-wrap input:focus,
+      html.sepia body.kv-detail-route .kv-detail-input:focus,
+      html.sepia body.kv-detail-route .kv-detail-textarea:focus { box-shadow: var(--kv-focus-crisp); }
+      html.sepia body.kv-home-route .kv-home-banner-card { background: #3A2D20; box-shadow: none; }
+      html.sepia body.kv-home-route .kv-home-banner-overlay { background: linear-gradient(90deg, #3A2D20 0%, rgba(58,45,32,.94) 48%, rgba(58,45,32,.32) 100%); }
+      html.sepia body.kv-home-route .kv-home-banner-body { text-shadow: none; }
+      html.sepia body.kv-home-route .kv-home-banner-title { color: #FFFCF6; }
+      html.sepia body.kv-home-route .kv-home-banner-meta { color: #F7F1E6; }
+      html.sepia body.kv-home-route .kv-home-banner-cta { background: #FFFCF6; color: #3A2D20; box-shadow: none; }
+      html.sepia body.kv-home-route .kv-home-banner-poster { border-color: rgba(255,252,246,.6); box-shadow: none; }
+      html.sepia body.kv-home-route .kv-home-banner-poster-empty { background: #E9DAC2; color: #3A2D20; }
+      html.sepia body.kv-home-route .kv-home-banner-dot { background: #BFA986; }
+      html.sepia body.kv-home-route .kv-home-banner-dot.is-active { background: #7A4A1F; box-shadow: none; }
+      html.sepia body.kv-reader-route .kv-round-btn,
+      html.sepia body.kv-reader-route .kv-round-btn.is-active { box-shadow: none; }
+      html.sepia body.kv-reader-route .kv-reader-scrim { background: rgba(42,33,24,.55); }
+      html.sepia body.kv-reader-route .kv-reader-sheet { box-shadow: 0 4px 12px rgba(58,43,20,.18); }
+      html.sepia body.kv-home-route .kv-filter-drawer-backdrop { background: rgba(42,33,24,.5); }
+      html.sepia body.kv-home-route .kv-filter-drawer { box-shadow: 0 -4px 12px rgba(58,43,20,.18); }
+      html.sepia body.kv-home-route .kv-dropdown-panel { box-shadow: 0 4px 12px rgba(58,43,20,.18); }
+      html.sepia .kv-admin-shell.kv-admin-top { --kva-shadow: var(--kv-shadow-crisp); --ad-shadow: var(--kv-shadow-crisp); }
+      html.sepia .kv-admin-shell.kv-admin-top .kv-admin-content { background-image: linear-gradient(rgba(122,74,31,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(122,74,31,.06) 1px, transparent 1px); }
+      html.sepia .kv-admin-shell.kv-admin-top .kv-admin-sidebar,
+      html.sepia .kv-admin-shell.kv-admin-top .kv-kpi:hover,
+      html.sepia .kv-admin-shell.kv-admin-top .kv-qa:hover { box-shadow: none; }
+      html.sepia .kv-admin-shell.kv-admin-top .kv-admin-overlay { background: rgba(42,33,24,.55); }
+      html.sepia body.kv-home-route .kv-home-card-badge,
+      html.sepia body.kv-home-route .kv-home-card-tag { font-size: .68rem; }
+      html.sepia body.kv-home-route .kv-home-rank-num,
+      html.sepia body.kv-home-route .kv-home-curated-tag,
+      html.sepia body.kv-home-route .kv-account-role { font-size: .7rem; }
+      html.sepia body.kv-detail-route .kv-detail-metric-label,
+      html.sepia body.kv-detail-route .kv-detail-chapter-new,
+      html.sepia body.kv-home-route .kv-account-metric-label,
+      html.sepia body.kv-home-route .kv-account-history-type { font-size: .68rem; }
+      html.sepia .kv-hero .kv-cover-wrap { box-shadow: 0 0 0 1px var(--kv-border); }
+      html.sepia .kv-card:hover .kv-cover-wrap img { transform: none; }
+      html.sepia .kv-btn-primary,
+      html.sepia .kv-btn-primary:hover { box-shadow: none; }
+      html.sepia .kv-toast { box-shadow: 0 2px 6px rgba(58,43,20,.18); }
+      html.sepia .kv-modal { background: rgba(42,33,24,.55); }
+      html.sepia .kv-reader-404 { background: #F7F1E6; color: #2A2118; }
+      html.sepia .kv-reader-404-card { background: #FFFCF6; border-color: #BFA986; color: #2A2118; box-shadow: none; }
+      html.sepia .kv-reader-404-code { color: #7A4A1F; }
+      html.sepia .kv-reader-404 h1 { color: #2A2118; }
+      html.sepia .kv-reader-404 p { color: #574535; }
+      html.sepia .kv-reader-404 .kv-btn-primary { background: #7A4A1F; color: #FFFCF6; border-color: #7A4A1F; }
   </style>
 </head>
 <body>
@@ -3891,7 +3989,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 
     function svgFallbackCover(title) {
       var safe = escapeHtml(title || 'Manga');
-      return '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;background:linear-gradient(145deg,#2A2118,#3A2D20);color:#E9DAC2;">' +
+      var isSepiaCover = typeof state === 'undefined' || state.theme !== 'dark';
+      var coverBg = isSepiaCover ? 'linear-gradient(145deg,#E9DAC2,#F2E8D8)' : 'linear-gradient(145deg,#2A2118,#3A2D20)';
+      var coverInk = isSepiaCover ? '#3A2D20' : '#E9DAC2';
+      return '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;background:' + coverBg + ';color:' + coverInk + ';">' +
         '<div style="font-size:0.75rem;opacity:0.7;margin-bottom:6px;">SAMPUL CONTOH</div>' +
         '<div style="font-weight:700;font-size:0.95rem;">' + safe + '</div>' +
       '</div>';
@@ -3901,8 +4002,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       if (!url || url.indexOf('SamplePlaceholder') !== -1) {
         return svgFallbackCover(title);
       }
+      var isSepiaFallback = typeof state === 'undefined' || state.theme !== 'dark';
+      var fallbackBg = isSepiaFallback ? '#E9DAC2' : '#2A2118';
+      var fallbackInk = isSepiaFallback ? '#3A2D20' : '#cbd5e1';
       return '<img src="' + escapeHtml(url) + '" alt="Sampul ' + escapeHtml(title) + '" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';"/>' +
-        '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;padding:16px;text-align:center;background:#2A2118;color:#cbd5e1;">' + escapeHtml(title) + '</div>';
+        '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;padding:16px;text-align:center;background:' + fallbackBg + ';color:' + fallbackInk + ';">' + escapeHtml(title) + '</div>';
     }
 
     function parseRoute() {
