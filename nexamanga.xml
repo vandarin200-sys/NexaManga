@@ -3000,6 +3000,59 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-textarea:focus {
         border-color: var(--ad-amber); box-shadow: 0 0 0 3px var(--ad-amber-soft); background: var(--ad-panel);
       }
+      .kv-admin-shell.kv-admin-top .kv-user-role-menu { position: relative; flex: 1; min-width: 0; }
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn {
+        width: 100%; display: flex; align-items: center; gap: 9px; min-height: 40px; padding: 9px 10px;
+        border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised);
+        color: var(--ad-text); cursor: pointer; text-align: left;
+        transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
+      }
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn:hover,
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn[aria-expanded="true"] { border-color: var(--ad-amber); background: var(--ad-panel); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn[aria-expanded="true"] { box-shadow: 0 0 0 3px var(--ad-amber-soft); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn:focus-visible,
+      .kv-admin-shell.kv-admin-top .kv-user-role-option:focus-visible { outline: 2px solid var(--ad-teal); outline-offset: 1px; }
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn-dot {
+        width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: var(--ad-muted);
+        box-shadow: 0 0 0 3px var(--ad-raised);
+      }
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn-dot.admin { background: var(--ad-teal); box-shadow: 0 0 0 3px var(--ad-teal-soft); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn-label {
+        flex: 1; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .05em;
+        text-transform: uppercase; color: var(--ad-text);
+      }
+      .kv-admin-shell.kv-admin-top .kv-user-role-caret { color: var(--ad-muted); font-size: .72rem; transition: transform .12s ease, color .12s ease; }
+      .kv-admin-shell.kv-admin-top .kv-user-role-btn[aria-expanded="true"] .kv-user-role-caret { color: var(--ad-amber); transform: rotate(180deg); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-panel {
+        position: absolute; z-index: 60; left: 0; right: 0; bottom: calc(100% + 6px);
+        padding: 6px; border: 1px solid var(--ad-line); border-radius: 2px;
+        background: var(--ad-panel); box-shadow: var(--ad-shadow); animation: kvUserRoleIn .12s ease;
+      }
+      .kv-admin-shell.kv-admin-top .kv-user-role-panel-head {
+        display: flex; justify-content: space-between; gap: 8px; margin-bottom: 5px; padding: 5px 7px 7px;
+        border-bottom: 1px solid var(--ad-line); font-family: 'JetBrains Mono', monospace;
+        font-size: .56rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ad-dim);
+      }
+      .kv-admin-shell.kv-admin-top .kv-user-role-panel-head span:last-child { color: var(--ad-amber); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option {
+        width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px 7px;
+        border: 1px solid transparent; border-radius: 2px; background: transparent;
+        color: var(--ad-text); cursor: pointer; text-align: left;
+      }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option:hover { background: var(--ad-raised); border-color: var(--ad-line); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option.is-active { background: var(--ad-amber-soft); border-color: rgba(242,169,59,.35); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option-mark {
+        width: 26px; height: 26px; flex: 0 0 auto; display: grid; place-items: center;
+        border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised);
+        font-family: 'JetBrains Mono', monospace; font-size: .68rem; font-weight: 700; color: var(--ad-muted);
+      }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option.is-active .kv-user-role-option-mark { border-color: var(--ad-amber); color: var(--ad-amber); background: var(--ad-amber-soft); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option-body { min-width: 0; flex: 1; display: grid; gap: 2px; }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option-body strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .78rem; font-weight: 600; color: var(--ad-text); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option-body small { font-family: 'JetBrains Mono', monospace; font-size: .56rem; line-height: 1.35; color: var(--ad-muted); }
+      .kv-admin-shell.kv-admin-top .kv-user-role-option-check { width: 14px; flex: 0 0 auto; color: var(--ad-amber); font-size: .8rem; text-align: center; }
+      @keyframes kvUserRoleIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+      @media (prefers-reduced-motion: reduce) { .kv-admin-shell.kv-admin-top .kv-user-role-panel { animation: none; } }
       .kv-admin-shell.kv-admin-top input[type='checkbox'] { accent-color: var(--ad-amber); width: 15px; height: 15px; }
       .kv-admin-shell.kv-admin-top .kv-badge,
       .kv-admin-shell.kv-admin-top .kv-role-badge,
@@ -3263,6 +3316,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       adminForm: null,            // form manga aktif (objek) atau null = daftar
       adminChapterForm: null,     // form chapter aktif (objek) atau null
        adminChapterMangaId: '',
+       adminRoleMenuOpen: null,
        adminChapterFullId: null,
 
       adminSearch: '',
@@ -4770,7 +4824,7 @@ mobileMenu +
                 '<div class="kv-login-auth">' +
                   '<h2 class="kv-login-section-title">Masuk ke akunmu</h2>' +
                   '<div class="kv-login-providers">' + renderOAuthButtons() + '</div>' +
-                  '<p class="kv-login-foot"><strong>Tanpa kata sandi.</strong> Kredensial dikelola sepenuhnya oleh Google atau Discord; NexaManga hanya menyimpan identitas akun kamu.</p>' +
+                  '<p class="kv-login-foot"><strong>Tanpa kata sandi.</strong> Kredensial dikelola sepenuhnya oleh Google atau Discord; ' + escapeHtml(siteName()) + ' hanya menyimpan identitas akun kamu.</p>' +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -5753,6 +5807,34 @@ mobileMenu +
       var rows = state.usersCache.map(function (u) {
         var isSelf = state.user && state.user.id === u.id;
         var avatar = u.avatar || ('https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(u.name));
+        var roleId = escapeHtml(u.id);
+        var roleIsAdmin = u.role === 'admin';
+        var roleValue = roleIsAdmin ? 'admin' : 'member';
+        var roleLabel = roleIsAdmin ? 'Administrator' : 'Pembaca';
+        var roleOpen = state.adminRoleMenuOpen === u.id;
+        var roleOptions = [
+          { value: 'member', mark: 'P', label: 'Pembaca', desc: 'Akses baca, bookmark, dan komentar.' },
+          { value: 'admin', mark: 'A', label: 'Administrator', desc: 'Kelola manga, komentar, dan pengguna.' }
+        ].map(function (opt) {
+          var active = opt.value === roleValue;
+          return '<button type="button" class="kv-user-role-option' + (active ? ' is-active' : '') + '" role="option" aria-selected="' + (active ? 'true' : 'false') + '" data-action="admin-set-user-role" data-id="' + roleId + '" data-role="' + opt.value + '">' +
+            '<span class="kv-user-role-option-mark" aria-hidden="true">' + opt.mark + '</span>' +
+            '<span class="kv-user-role-option-body"><strong>' + opt.label + '</strong><small>' + opt.desc + '</small></span>' +
+            '<span class="kv-user-role-option-check" aria-hidden="true">' + (active ? '✓' : '') + '</span>' +
+          '</button>';
+        }).join('');
+        var roleMenu =
+          '<div class="kv-user-role-menu' + (roleOpen ? ' is-open' : '') + '">' +
+            '<button type="button" class="kv-user-role-btn" data-action="admin-toggle-role-menu" data-id="' + roleId + '" aria-haspopup="listbox" aria-expanded="' + (roleOpen ? 'true' : 'false') + '" aria-label="Ubah peran ' + escapeHtml(u.name) + '">' +
+              '<span class="kv-user-role-btn-dot ' + roleValue + '" aria-hidden="true"></span>' +
+              '<span class="kv-user-role-btn-label">' + roleLabel + '</span>' +
+              '<span class="kv-user-role-caret" aria-hidden="true">▾</span>' +
+            '</button>' +
+            (roleOpen ? '<div class="kv-user-role-panel" role="listbox" aria-label="Peran ' + escapeHtml(u.name) + '">' +
+              '<div class="kv-user-role-panel-head"><span>Hak akses</span><span>' + roleValue + '</span></div>' +
+              roleOptions +
+            '</div>' : '') +
+          '</div>';
         return '<div class="kv-user-card">' +
           '<div class="kv-user-card-head">' +
             '<img class="kv-user-avatar" src="' + escapeHtml(avatar) + '" alt=""/>' +
@@ -5767,10 +5849,7 @@ mobileMenu +
             '<div class="kv-user-row"><span>Dibuat</span><strong>' + escapeHtml(u.createdAt || '-') + '</strong></div>' +
           '</div>' +
           '<div class="kv-user-card-actions">' +
-            '<select class="kv-input kv-user-role" data-action="admin-user-role" data-id="' + escapeHtml(u.id) + '">' +
-              '<option value="member"' + (u.role === 'member' ? ' selected' : '') + '>member</option>' +
-              '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>admin</option>' +
-            '</select>' +
+            roleMenu +
             (isSelf ? '' : '<button type="button" class="kv-btn kv-btn-danger-ghost" data-action="admin-delete-user" data-id="' + escapeHtml(u.id) + '">Hapus</button>') +
           '</div>' +
         '</div>';
@@ -6953,6 +7032,11 @@ mobileMenu +
         render();
         return;
       }
+      var insideRoleMenu = e.target && e.target.closest ? e.target.closest('.kv-user-role-menu') : null;
+      if (!insideRoleMenu && state.adminRoleMenuOpen) {
+        state.adminRoleMenuOpen = null;
+        if (!e.target.closest || !e.target.closest('[data-action]')) { render(); return; }
+      }
       var trigger = e.target.closest && e.target.closest('.kv-dropdown-btn');
       if (trigger) {
         var container = trigger.closest('.kv-dropdown');
@@ -7072,7 +7156,19 @@ mobileMenu +
         syncFromApi();
       }
       /* --- Aksi panel admin --- */
-       else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; state.adminChapterFullId = null; state.adminDrawerOpen = false; if (state.adminTab === 'pengguna') state.usersCache = undefined; render(); }
+       else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; state.adminChapterFullId = null; state.adminDrawerOpen = false; state.adminRoleMenuOpen = null; if (state.adminTab === 'pengguna') state.usersCache = undefined; render(); }
+       else if (act === 'admin-toggle-role-menu') {
+         var roleMenuId = el.getAttribute('data-id');
+         state.adminRoleMenuOpen = state.adminRoleMenuOpen === roleMenuId ? null : roleMenuId;
+         render();
+       }
+       else if (act === 'admin-set-user-role') {
+         var roleUserId = el.getAttribute('data-id');
+         var roleNext = el.getAttribute('data-role');
+         state.adminRoleMenuOpen = null;
+         render();
+         if (roleNext === 'member' || roleNext === 'admin') changeUserRoleAdmin(roleUserId, roleNext);
+       }
        else if (act === 'admin-comment-filter') { state.commentFilter = el.getAttribute('data-filter'); render(); }
        else if (act === 'admin-open-leaderboard') { state.adminTab = 'leaderboard'; state.adminDrawerOpen = false; render(); }
        else if (act === 'md-progress-close') { if (state.mdProgress) { state.mdProgress.dismissed = true; render(); } }
@@ -7261,6 +7357,11 @@ mobileMenu +
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && state.openCatalogDropdown) {
         state.openCatalogDropdown = null;
+        render();
+        return;
+      }
+      if (e.key === 'Escape' && state.adminRoleMenuOpen) {
+        state.adminRoleMenuOpen = null;
         render();
         return;
       }
