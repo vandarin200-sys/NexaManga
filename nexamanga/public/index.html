@@ -128,134 +128,170 @@
     .kv-btn-ghost:hover { border-color: var(--kv-accent); }
     .kv-btn-danger { background: var(--kv-danger); color: #FFFFFF; }
 
-    /* Halaman Login — selaras dengan reader */
+    /* Halaman Login — noir editorial */
     .kv-login-shell {
-      --kv-login-reader-bg: #e6e6eb;
-      --kv-login-surface: #F7F8FA;
-      --kv-login-surface-2: #f0f0f4;
-      --kv-login-border: #dedee5;
-      --kv-login-text: #17171d;
-      --kv-login-muted: #686875;
-      --kv-login-accent: #4F46E5;
-      --kv-login-accent-hover: #4338CA;
+      --kv-login-bg: #0c0b0a;
+      --kv-login-panel: #15120f;
+      --kv-login-panel-2: #1d1915;
+      --kv-login-line: #332c24;
+      --kv-login-ink: #f3ede2;
+      --kv-login-muted: #a89c8b;
+      --kv-login-amber: #e4a947;
+      --kv-login-amber-hi: #f4c877;
       position: relative;
       display: flex; align-items: center; justify-content: center;
-      min-height: 540px; margin-top: 16px; padding: 28px 12px 36px;
-      background: var(--kv-login-reader-bg);
-      border: 1px solid var(--kv-login-border);
-      border-radius: 18px;
+      min-height: 560px; margin-top: 16px; padding: 40px 16px;
+      background:
+        radial-gradient(circle at 78% 16%, rgba(228,169,71,.16), transparent 34%),
+        repeating-linear-gradient(90deg, transparent 0 39px, rgba(243,237,226,.025) 39px 40px),
+        var(--kv-login-bg);
+      border: 1px solid var(--kv-login-line);
+      border-radius: 2px;
       overflow: hidden;
+      isolation: isolate;
     }
-    html.dark .kv-login-shell {
-      --kv-login-reader-bg: #08080a;
-      --kv-login-surface: #19191f;
-      --kv-login-surface-2: #22222a;
-      --kv-login-border: #30303a;
-      --kv-login-text: #f4f4f6;
-      --kv-login-muted: #a3a3ad;
-      --kv-login-accent: #8b5cf6;
-      --kv-login-accent-hover: #7c3aed;
+    .kv-login-shell::before {
+      content: "";
+      position: absolute; inset: 0; z-index: -1;
+      background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.018) 3px 4px);
+      pointer-events: none;
+    }
+    .kv-login-shell::after {
+      content: "NEXA";
+      position: absolute; right: -4px; bottom: -28px; z-index: -1;
+      font-family: 'Cinzel', Georgia, serif; font-size: clamp(7rem, 18vw, 15rem);
+      line-height: .8; letter-spacing: .12em; color: rgba(243,237,226,.035);
+      pointer-events: none; user-select: none;
     }
     .kv-login-sheet {
-      width: min(480px, 100%);
-      background: var(--kv-login-surface);
-      border: 1px solid var(--kv-login-border);
-      border-radius: 18px;
-      box-shadow: 0 28px 60px -30px rgba(0,0,0,.35);
-      overflow: hidden;
-      animation: kv-login-sheet-in .22s ease;
+      width: min(940px, 100%);
+      display: grid; grid-template-columns: 1.05fr .95fr;
+      background: var(--kv-login-panel);
+      border: 1px solid var(--kv-login-line);
+      box-shadow: inset 3px 0 0 var(--kv-login-amber), 0 40px 80px -40px #000;
+      animation: kv-login-sheet-in .45s cubic-bezier(.2,.7,.2,1) both;
     }
     .kv-login-sheet-head {
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 14px 16px; border-bottom: 1px solid var(--kv-login-border);
+      grid-column: 1 / -1;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 14px 24px; border-bottom: 1px solid var(--kv-login-line);
+      background: rgba(255,255,255,.02);
     }
-    .kv-login-brand-logo { height: 34px; display: flex; align-items: center; }
-    .kv-login-brand-logo img { height: 100%; width: auto; max-width: 140px; object-fit: contain; display: block; }
+    .kv-login-sheet-head::after {
+      content: "VOL. 01 / AKUN";
+      font-family: var(--kv-font-mono); font-size: .6rem; font-weight: 700;
+      letter-spacing: .22em; color: var(--kv-login-muted);
+    }
+    .kv-login-brand-logo { height: 38px; display: flex; align-items: center; }
+    .kv-login-brand-logo img {
+      height: 100%; width: auto; max-width: 150px; object-fit: contain; display: block;
+      filter: brightness(0) invert(1); opacity: .92;
+    }
     .kv-login-brand-mark {
-      width: 34px; height: 34px; border-radius: 10px;
+      width: 38px; height: 38px;
       display: inline-flex; align-items: center; justify-content: center;
-      background: var(--kv-login-accent); color: #FFFFFF;
-      font-family: var(--kv-font-mono); font-size: .72rem; font-weight: 700;
+      border: 1px solid var(--kv-login-amber); color: var(--kv-login-amber);
+      font-family: 'Cinzel', Georgia, serif; font-size: .82rem; font-weight: 700; letter-spacing: .06em;
     }
-    .kv-login-kicker {
-      font-family: var(--kv-font-mono); font-size: .72rem; font-weight: 700;
-      letter-spacing: .08em; text-transform: uppercase; color: var(--kv-login-accent);
+    .kv-login-sheet-body { grid-column: 1 / -1; display: grid; grid-template-columns: 1.05fr .95fr; }
+    .kv-login-brand-copy {
+      display: grid; align-content: center; gap: 16px;
+      padding: 34px 28px;
     }
-    .kv-login-sheet-body { display: flex; flex-direction: column; gap: 16px; padding: 20px 16px 18px; }
-    .kv-login-brand-copy { display: grid; gap: 6px; }
     .kv-login-overline {
-      font-family: var(--kv-font-mono); font-size: .68rem; font-weight: 700;
-      letter-spacing: .12em; text-transform: uppercase; color: var(--kv-login-muted);
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--kv-font-mono); font-size: .64rem; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: var(--kv-login-amber);
     }
+    .kv-login-overline::before { content: ""; width: 26px; height: 1px; background: var(--kv-login-amber); }
     .kv-login-title {
-      margin: 0; font-size: 1.35rem; line-height: 1.22;
-      font-weight: 800; letter-spacing: -.02em; color: var(--kv-login-text);
+      margin: 0; font-family: 'Cinzel', Georgia, serif; font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.08; font-weight: 700; letter-spacing: -.015em; color: var(--kv-login-ink);
+      text-wrap: balance;
     }
-    .kv-login-title em { font-style: normal; color: var(--kv-login-accent); }
-    .kv-login-sub { margin: 0; font-size: .82rem; line-height: 1.6; color: var(--kv-login-muted); }
+    .kv-login-title em { display: block; margin-top: 6px; font-style: normal; color: var(--kv-login-amber-hi); }
+    .kv-login-sub {
+      margin: 0; max-width: 34ch; padding-left: 14px;
+      border-left: 2px solid var(--kv-login-amber);
+      font-size: .84rem; line-height: 1.7; color: var(--kv-login-muted);
+    }
+    .kv-login-brand-copy::after { content: ""; width: 56px; height: 1px; background: var(--kv-login-line); }
+    .kv-login-auth {
+      display: grid; align-content: center; gap: 14px;
+      padding: 34px 28px; border-left: 1px solid var(--kv-login-line);
+      background: rgba(0,0,0,.12);
+    }
     .kv-login-section-title {
-      margin: 2px 0 -6px; font-size: .86rem; font-weight: 800; color: var(--kv-login-text);
+      display: flex; align-items: center; gap: 12px; margin: 0;
+      font-family: var(--kv-font-mono); font-size: .66rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--kv-login-ink);
     }
-    .kv-login-providers { display: grid; gap: 10px; }
+    .kv-login-section-title::after { content: ""; flex: 1; height: 1px; background: var(--kv-login-line); }
+    .kv-login-providers { display: grid; gap: 12px; }
     .kv-login-btn {
-      display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px;
-      padding: 0 14px; border: 1px solid var(--kv-login-border); border-radius: 12px;
-      background: var(--kv-login-surface-2); color: var(--kv-login-text);
+      display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px;
+      padding: 0 16px; border: 1px solid var(--kv-login-line); border-radius: 2px;
+      background: var(--kv-login-panel-2); color: var(--kv-login-ink);
       font-size: 13px; text-align: left; cursor: pointer;
-      box-shadow: 0 7px 18px -14px rgba(0,0,0,.35);
-      transition: border-color .15s ease, color .15s ease, background .15s ease, transform .15s ease;
+      box-shadow: 0 14px 26px -20px #000;
+      transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
     }
-    .kv-login-btn:hover { border-color: var(--kv-login-accent); color: var(--kv-login-accent); }
-    .kv-login-btn:active { transform: scale(.98); }
-    .kv-login-btn:focus-visible { outline: 2px solid var(--kv-login-accent); outline-offset: 2px; }
-    .kv-login-btn:disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+    .kv-login-btn:hover { background: var(--kv-login-amber); border-color: var(--kv-login-amber); color: var(--kv-login-bg); transform: translateY(-2px); }
+    .kv-login-btn:active { transform: translateY(0); }
+    .kv-login-btn:focus-visible { outline: 2px solid var(--kv-login-amber-hi); outline-offset: 2px; }
+    .kv-login-btn:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
     .kv-login-btn-icon {
-      flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px;
-      border: 1px solid var(--kv-login-border); background: var(--kv-login-surface);
+      flex: 0 0 auto; width: 30px; height: 30px;
       display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--kv-login-line); background: rgba(255,255,255,.03);
     }
     .kv-login-btn-icon svg { width: 18px; height: 18px; display: block; }
-    .kv-login-btn-text { flex: 1 1 auto; min-width: 0; display: grid; line-height: 1.25; }
-    .kv-login-btn-text strong { font-size: .84rem; font-weight: 800; }
+    .kv-login-btn-text { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; line-height: 1.25; }
+    .kv-login-btn-text strong { font-size: .82rem; font-weight: 700; letter-spacing: .01em; }
     .kv-login-btn-text small {
-      font-family: var(--kv-font-mono); font-size: .62rem; letter-spacing: .06em;
+      font-family: var(--kv-font-mono); font-size: .6rem; letter-spacing: .14em;
       text-transform: uppercase; color: var(--kv-login-muted);
     }
     .kv-login-btn-arrow {
-      flex: 0 0 auto; font-family: var(--kv-font-mono); font-size: .9rem;
-      color: var(--kv-login-muted); transition: transform .15s ease, color .15s ease;
+      flex: 0 0 auto; font-family: var(--kv-font-mono); font-size: .95rem;
+      color: var(--kv-login-amber); transition: transform .18s ease, color .18s ease;
     }
-    .kv-login-btn:hover .kv-login-btn-arrow { transform: translateX(3px); color: var(--kv-login-accent); }
+    .kv-login-btn:hover .kv-login-btn-arrow { transform: translateX(4px); color: var(--kv-login-bg); }
+    .kv-login-btn:hover .kv-login-btn-text small { color: rgba(12,11,10,.72); }
     .kv-login-btn-google {
-      background: var(--kv-login-accent); border-color: var(--kv-login-accent); color: #FFFFFF;
+      background: var(--kv-login-amber); border-color: var(--kv-login-amber); color: var(--kv-login-bg);
     }
-    .kv-login-btn-google .kv-login-btn-icon { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.28); }
+    .kv-login-btn-google .kv-login-btn-icon { background: rgba(12,11,10,.08); border-color: rgba(12,11,10,.22); }
     .kv-login-btn-google .kv-login-btn-text small,
-    .kv-login-btn-google .kv-login-btn-arrow { color: rgba(255,255,255,.72); }
-    .kv-login-btn-google:hover {
-      background: var(--kv-login-accent-hover); border-color: var(--kv-login-accent-hover); color: #FFFFFF;
-    }
+    .kv-login-btn-google .kv-login-btn-arrow { color: rgba(12,11,10,.72); }
+    .kv-login-btn-google:hover { background: var(--kv-login-amber-hi); border-color: var(--kv-login-amber-hi); color: var(--kv-login-bg); }
+    .kv-login-btn-google:hover .kv-login-btn-arrow { color: var(--kv-login-bg); }
     .kv-login-btn.is-pending .kv-login-btn-arrow { animation: kv-login-spin .8s linear infinite; }
-    .kv-login-foot { margin: 0; font-size: .72rem; line-height: 1.6; color: var(--kv-login-muted); }
-    .kv-login-foot strong { color: var(--kv-login-text); font-weight: 800; }
-    .kv-login-back {
-      align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
-      min-height: 38px; padding: 0 12px; border: 1px solid var(--kv-login-border);
-      border-radius: 10px; background: var(--kv-login-surface); color: var(--kv-login-text);
-      font-size: 13px; text-decoration: none;
-      transition: border-color .15s ease, color .15s ease;
+    .kv-login-foot {
+      margin: 0; padding-top: 12px; border-top: 1px dashed var(--kv-login-line);
+      font-size: .68rem; line-height: 1.65; color: var(--kv-login-muted);
     }
-    .kv-login-back:hover { border-color: var(--kv-login-accent); color: var(--kv-login-accent); }
-    @keyframes kv-login-sheet-in {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .kv-login-foot strong { color: var(--kv-login-amber-hi); font-weight: 700; }
+    @keyframes kv-login-sheet-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes kv-login-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
     @keyframes kv-login-spin { to { transform: rotate(360deg); } }
-    @media (max-width: 640px) {
-      .kv-login-shell { min-height: auto; margin-top: 12px; padding: 12px 10px 28px; border-radius: 14px; }
-      .kv-login-sheet { width: 100%; }
-      .kv-login-sheet-body { padding: 18px 14px 16px; }
-      .kv-login-title { font-size: 1.2rem; }
+    .kv-login-brand-copy > *, .kv-login-auth > * { animation: kv-login-rise .5s cubic-bezier(.2,.7,.2,1) both; }
+    .kv-login-brand-copy > :nth-child(2) { animation-delay: .06s; }
+    .kv-login-brand-copy > :nth-child(3) { animation-delay: .12s; }
+    .kv-login-auth > :nth-child(2) { animation-delay: .14s; }
+    .kv-login-auth > :nth-child(3) { animation-delay: .2s; }
+    @media (prefers-reduced-motion: reduce) {
+      .kv-login-sheet, .kv-login-brand-copy > *, .kv-login-auth > *, .kv-login-btn.is-pending .kv-login-btn-arrow { animation: none; }
+    }
+    @media (max-width: 760px) {
+      .kv-login-shell { min-height: auto; margin-top: 12px; padding: 22px 10px 28px; }
+      .kv-login-shell::after { font-size: 7rem; bottom: -18px; }
+      .kv-login-sheet { grid-template-columns: 1fr; }
+      .kv-login-sheet-head { padding: 12px 16px; }
+      .kv-login-sheet-body { grid-template-columns: 1fr; }
+      .kv-login-brand-copy, .kv-login-auth { padding: 26px 18px; }
+      .kv-login-auth { border-left: 0; border-top: 1px solid var(--kv-login-line); }
+      .kv-login-title { font-size: clamp(1.85rem, 9vw, 2.4rem); }
     }
 
     /* Hero Featured */
@@ -4861,18 +4897,18 @@ mobileMenu +
           '<section class="kv-login-shell" aria-label="Halaman masuk ' + escapeHtml(siteName()) + '">' +
             '<div class="kv-login-sheet">' +
               '<div class="kv-login-sheet-head">' + brandMedia +
-                '<span class="kv-login-kicker">Akses Pembaca</span>' +
               '</div>' +
               '<div class="kv-login-sheet-body">' +
                 '<div class="kv-login-brand-copy">' +
-                  '<span class="kv-login-overline">NexaManga / Masuk</span>' +
+                  '<span class="kv-login-overline">Vol. 01 / Akun</span>' +
                   '<h1 class="kv-login-title">Selamat datang di <em>' + escapeHtml(siteName()) + '</em></h1>' +
-                  '<p class="kv-login-sub">Masuk untuk menyimpan bookmark, melanjutkan chapter terakhir, dan ikut berdiskusi. Tanpa kata sandi tambahan.</p>' +
+                  '<p class="kv-login-sub">Satu akun untuk bookmark, chapter terakhir, dan diskusi. Tanpa kata sandi tambahan.</p>' +
                 '</div>' +
-                '<h2 class="kv-login-section-title">Masuk ke akunmu</h2>' +
-                '<div class="kv-login-providers">' + renderOAuthButtons() + '</div>' +
-                '<p class="kv-login-foot"><strong>Tanpa kata sandi.</strong> Kredensial dikelola sepenuhnya oleh Google atau Discord; NexaManga hanya menyimpan identitas akun kamu.</p>' +
-                '<a class="kv-login-back" href="/">&#8592; Kembali ke beranda</a>' +
+                '<div class="kv-login-auth">' +
+                  '<h2 class="kv-login-section-title">Masuk ke akunmu</h2>' +
+                  '<div class="kv-login-providers">' + renderOAuthButtons() + '</div>' +
+                  '<p class="kv-login-foot"><strong>Tanpa kata sandi.</strong> Kredensial dikelola sepenuhnya oleh Google atau Discord; NexaManga hanya menyimpan identitas akun kamu.</p>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</section>' +
