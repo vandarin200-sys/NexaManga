@@ -151,29 +151,61 @@
       --kv-login-muted: #a89c8b;
       --kv-login-amber: #e4a947;
       --kv-login-amber-hi: #f4c877;
+      --kv-login-glow: rgba(228,169,71,.16);
+      --kv-login-grid: rgba(243,237,226,.025);
+      --kv-login-scan: rgba(255,255,255,.018);
+      --kv-login-watermark: rgba(243,237,226,.035);
+      --kv-login-head-wash: rgba(255,255,255,.02);
+      --kv-login-icon-wash: rgba(255,255,255,.03);
+      --kv-login-auth-wash: rgba(0,0,0,.12);
+      --kv-login-amber-wash: rgba(12,11,10,.08);
+      --kv-login-amber-line: rgba(12,11,10,.22);
+      --kv-login-on-amber: rgba(12,11,10,.72);
+      --kv-login-logo-filter: brightness(0) invert(1);
       position: relative;
       display: flex; align-items: center; justify-content: center;
       min-height: 560px; margin-top: 16px; padding: 40px 16px;
       background:
-        radial-gradient(circle at 78% 16%, rgba(228,169,71,.16), transparent 34%),
-        repeating-linear-gradient(90deg, transparent 0 39px, rgba(243,237,226,.025) 39px 40px),
+        radial-gradient(circle at 78% 16%, var(--kv-login-glow), transparent 34%),
+        repeating-linear-gradient(90deg, transparent 0 39px, var(--kv-login-grid) 39px 40px),
         var(--kv-login-bg);
       border: 1px solid var(--kv-login-line);
       border-radius: 2px;
       overflow: hidden;
       isolation: isolate;
     }
+    html.light .kv-login-shell {
+      --kv-login-bg: #f3ece0;
+      --kv-login-panel: #fbf7ef;
+      --kv-login-panel-2: #efe6d7;
+      --kv-login-line: #d8c9b3;
+      --kv-login-ink: #262019;
+      --kv-login-muted: #7a6d5c;
+      --kv-login-amber: #a45c12;
+      --kv-login-amber-hi: #7a3f08;
+      --kv-login-glow: rgba(164,92,18,.12);
+      --kv-login-grid: rgba(38,32,25,.045);
+      --kv-login-scan: rgba(38,32,25,.025);
+      --kv-login-watermark: rgba(38,32,25,.05);
+      --kv-login-head-wash: rgba(38,32,25,.02);
+      --kv-login-icon-wash: rgba(38,32,25,.03);
+      --kv-login-auth-wash: rgba(38,32,25,.03);
+      --kv-login-amber-wash: rgba(243,236,224,.18);
+      --kv-login-amber-line: rgba(243,236,224,.4);
+      --kv-login-on-amber: rgba(243,236,224,.82);
+      --kv-login-logo-filter: brightness(0);
+    }
     .kv-login-shell::before {
       content: "";
       position: absolute; inset: 0; z-index: -1;
-      background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.018) 3px 4px);
+      background: repeating-linear-gradient(0deg, transparent 0 3px, var(--kv-login-scan) 3px 4px);
       pointer-events: none;
     }
     .kv-login-shell::after {
       content: "NEXA";
       position: absolute; right: -4px; bottom: -28px; z-index: -1;
       font-family: 'Cinzel', Georgia, serif; font-size: clamp(7rem, 18vw, 15rem);
-      line-height: .8; letter-spacing: .12em; color: rgba(243,237,226,.035);
+      line-height: .8; letter-spacing: .12em; color: var(--kv-login-watermark);
       pointer-events: none; user-select: none;
     }
     .kv-login-sheet {
@@ -188,7 +220,7 @@
       grid-column: 1 / -1;
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
       padding: 14px 24px; border-bottom: 1px solid var(--kv-login-line);
-      background: rgba(255,255,255,.02);
+      background: var(--kv-login-head-wash);
     }
     .kv-login-sheet-head::after {
       content: "VOL. 01 / AKUN";
@@ -198,7 +230,7 @@
     .kv-login-brand-logo { height: 38px; display: flex; align-items: center; }
     .kv-login-brand-logo img {
       height: 100%; width: auto; max-width: 150px; object-fit: contain; display: block;
-      filter: brightness(0) invert(1); opacity: .92;
+      filter: var(--kv-login-logo-filter); opacity: .92;
     }
     .kv-login-brand-mark {
       width: 38px; height: 38px;
@@ -232,7 +264,7 @@
     .kv-login-auth {
       display: grid; align-content: center; gap: 14px;
       padding: 34px 28px; border-left: 1px solid var(--kv-login-line);
-      background: rgba(0,0,0,.12);
+      background: var(--kv-login-auth-wash);
     }
     .kv-login-section-title {
       display: flex; align-items: center; gap: 12px; margin: 0;
@@ -256,7 +288,7 @@
     .kv-login-btn-icon {
       flex: 0 0 auto; width: 30px; height: 30px;
       display: inline-flex; align-items: center; justify-content: center;
-      border: 1px solid var(--kv-login-line); background: rgba(255,255,255,.03);
+      border: 1px solid var(--kv-login-line); background: var(--kv-login-icon-wash);
     }
     .kv-login-btn-icon svg { width: 18px; height: 18px; display: block; }
     .kv-login-btn-text { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; line-height: 1.25; }
@@ -270,13 +302,13 @@
       color: var(--kv-login-amber); transition: transform .18s ease, color .18s ease;
     }
     .kv-login-btn:hover .kv-login-btn-arrow { transform: translateX(4px); color: var(--kv-login-bg); }
-    .kv-login-btn:hover .kv-login-btn-text small { color: rgba(12,11,10,.72); }
+    .kv-login-btn:hover .kv-login-btn-text small { color: var(--kv-login-on-amber); }
     .kv-login-btn-google {
       background: var(--kv-login-amber); border-color: var(--kv-login-amber); color: var(--kv-login-bg);
     }
-    .kv-login-btn-google .kv-login-btn-icon { background: rgba(12,11,10,.08); border-color: rgba(12,11,10,.22); }
+    .kv-login-btn-google .kv-login-btn-icon { background: var(--kv-login-amber-wash); border-color: var(--kv-login-amber-line); }
     .kv-login-btn-google .kv-login-btn-text small,
-    .kv-login-btn-google .kv-login-btn-arrow { color: rgba(12,11,10,.72); }
+    .kv-login-btn-google .kv-login-btn-arrow { color: var(--kv-login-on-amber); }
     .kv-login-btn-google:hover { background: var(--kv-login-amber-hi); border-color: var(--kv-login-amber-hi); color: var(--kv-login-bg); }
     .kv-login-btn-google:hover .kv-login-btn-arrow { color: var(--kv-login-bg); }
     .kv-login-btn.is-pending .kv-login-btn-arrow { animation: kv-login-spin .8s linear infinite; }
