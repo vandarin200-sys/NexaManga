@@ -2205,6 +2205,14 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-user-role-option-check { width: 14px; flex: 0 0 auto; color: var(--ad-amber); font-size: .8rem; text-align: center; }
       @keyframes kvUserRoleIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
       @media (prefers-reduced-motion: reduce) { .kv-admin-shell.kv-admin-top .kv-user-role-panel { animation: none; } }
+      .kv-admin-shell.kv-admin-top .kv-brand-mode-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+      .kv-admin-shell.kv-admin-top .kv-brand-mode-field > span { font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 500; letter-spacing: .13em; color: var(--ad-dim); text-transform: uppercase; }
+      .kv-admin-shell.kv-admin-top .kv-brand-mode-menu { position: relative; min-width: 0; }
+      .kv-admin-shell.kv-admin-top .kv-brand-mode-native { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; opacity: 0; pointer-events: none; }
+      .kv-admin-shell.kv-admin-top .kv-brand-mode-menu .kv-user-role-panel { top: calc(100% + 6px); bottom: auto; }
+      .kv-admin-shell.kv-admin-top .kv-brand-mode-dot.logo-name { background: var(--ad-teal); box-shadow: 0 0 0 3px var(--ad-teal-soft); }
+      .kv-admin-shell.kv-admin-top .kv-brand-mode-dot.logo-only { background: var(--ad-amber); box-shadow: 0 0 0 3px var(--ad-amber-soft); }
+      .kv-admin-shell.kv-admin-top .kv-brand-mode-dot.name-only { background: var(--ad-muted); box-shadow: 0 0 0 3px var(--ad-raised); }
       .kv-admin-shell.kv-admin-top input[type='checkbox'] { accent-color: var(--ad-amber); width: 15px; height: 15px; }
       .kv-admin-shell.kv-admin-top .kv-badge-ok,
       .kv-admin-shell.kv-admin-top .kv-role-badge.admin { border-color: var(--ad-teal); color: var(--ad-teal); background: var(--ad-teal-soft); }
@@ -5632,6 +5640,79 @@ mobileMenu +
       });
     }
 
+    function brandModeOptions() {
+      return [
+        { value: 'logo-name', mark: 'LN', label: 'Logo + Nama', desc: 'Logo dan nama situs tampil berdampingan.' },
+        { value: 'logo-only', mark: 'L', label: 'Hanya Logo', desc: 'Tampilkan logo saja bila URL logo tersedia.' },
+        { value: 'name-only', mark: 'N', label: 'Hanya Nama', desc: 'Tampilkan nama situs tanpa logo.' }
+      ];
+    }
+
+    function brandModeOption(value) {
+      var options = brandModeOptions();
+      return options.filter(function (opt) { return opt.value === value; })[0] || options[0];
+    }
+
+    function brandModeMenuHtml(value) {
+      var current = brandModeOption(value);
+      var options = brandModeOptions();
+      var optionHtml = options.map(function (opt) {
+        var active = opt.value === current.value;
+        return '<button type="button" class="kv-user-role-option' + (active ? ' is-active' : '') + '" role="option" aria-selected="' + (active ? 'true' : 'false') + '" data-action="admin-set-brand-mode" data-value="' + opt.value + '">' +
+          '<span class="kv-user-role-option-mark" aria-hidden="true">' + opt.mark + '</span>' +
+          '<span class="kv-user-role-option-body"><strong>' + opt.label + '</strong><small>' + opt.desc + '</small></span>' +
+          '<span class="kv-user-role-option-check" aria-hidden="true">' + (active ? '✓' : '') + '</span>' +
+        '</button>';
+      }).join('');
+      var nativeHtml = options.map(function (opt) {
+        return '<option value="' + opt.value + '"' + (opt.value === current.value ? ' selected' : '') + '>' + opt.label + '</option>';
+      }).join('');
+      return '<div class="kv-brand-mode-menu" id="kv-brand-mode-menu">' +
+        '<button type="button" class="kv-user-role-btn" id="kv-brand-mode-btn" data-action="admin-toggle-brand-menu" aria-haspopup="listbox" aria-expanded="false" aria-label="Ubah tampilan brand">' +
+          '<span class="kv-user-role-btn-dot kv-brand-mode-dot ' + current.value + '" aria-hidden="true"></span>' +
+          '<span class="kv-user-role-btn-label" id="kv-brand-mode-label">' + current.label + '</span>' +
+          '<span class="kv-user-role-caret" aria-hidden="true">▾</span>' +
+        '</button>' +
+        '<div class="kv-user-role-panel" id="kv-brand-mode-panel" role="listbox" aria-label="Tampilan brand" hidden>' +
+          '<div class="kv-user-role-panel-head"><span>Tampilan brand</span><span id="kv-brand-mode-value">' + current.value + '</span></div>' +
+          optionHtml +
+        '</div>' +
+        '<select class="kv-select kv-brand-mode-native" name="brandMode" aria-label="Tampilan Brand">' + nativeHtml + '</select>' +
+      '</div>';
+    }
+
+    function setBrandModePanel(open) {
+      var btn = document.getElementById('kv-brand-mode-btn');
+      var panel = document.getElementById('kv-brand-mode-panel');
+      if (!btn || !panel) return;
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    function applyBrandModeChoice(value) {
+      var opt = brandModeOption(value);
+      var menu = document.getElementById('kv-brand-mode-menu');
+      var select = menu ? menu.querySelector('select[name="brandMode"]') : null;
+      var label = document.getElementById('kv-brand-mode-label');
+      var current = document.getElementById('kv-brand-mode-value');
+      var dot = menu ? menu.querySelector('.kv-brand-mode-dot') : null;
+      var panel = document.getElementById('kv-brand-mode-panel');
+      if (select) select.value = opt.value;
+      if (label) label.textContent = opt.label;
+      if (current) current.textContent = opt.value;
+      if (dot) dot.className = 'kv-user-role-btn-dot kv-brand-mode-dot ' + opt.value;
+      if (panel) {
+        Array.prototype.forEach.call(panel.querySelectorAll('[data-action="admin-set-brand-mode"]'), function (btn) {
+          var active = btn.getAttribute('data-value') === opt.value;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
+          var check = btn.querySelector('.kv-user-role-option-check');
+          if (check) check.textContent = active ? '✓' : '';
+        });
+      }
+      setBrandModePanel(false);
+    }
+
     function renderAdminSettings() {
        var brandModeValue = escapeHtml(siteSetting('brandMode', 'logo-name'));
        var siteNameColorValue = escapeHtml(siteSetting('siteNameColor', ''));
@@ -5650,11 +5731,7 @@ mobileMenu +
             '<label style="grid-column:1/-1;">URL Favicon<input class="kv-input" id="kv-setting-faviconUrl" name="faviconUrl" type="url" value="' + faviconValue + '" placeholder="https://contoh.com/favicon.png"/></label>' +
             '<p class="kv-admin-sub" style="grid-column:1/-1;margin:-8px 0 0;">Ukuran ideal favicon: PNG 64×64 px persegi dengan latar transparan (SVG juga didukung). Untuk ikon iOS, siapkan 180×180 px.</p>' +
             '<label style="grid-column:1/-1;">Email Kontak<input class="kv-input" name="contactEmail" type="email" value="' + contactValue + '" placeholder="redaksi@contoh.com"/></label>' +
-            '<label>Tampilan Brand<select class="kv-select" name="brandMode">' +
-              '<option value="logo-name"' + (brandModeValue === 'logo-name' ? ' selected' : '') + '>Logo + Nama</option>' +
-              '<option value="logo-only"' + (brandModeValue === 'logo-only' ? ' selected' : '') + '>Hanya Logo</option>' +
-              '<option value="name-only"' + (brandModeValue === 'name-only' ? ' selected' : '') + '>Hanya Nama</option>' +
-            '</select></label>' +
+            '<div class="kv-brand-mode-field">' + brandModeMenuHtml(brandModeValue) + '</div>' +
             '<label>Warna Nama Situs<input class="kv-input" name="siteNameColor" type="color" value="' + (siteNameColorValue || '#6366f1') + '" style="height:38px;padding:2px 6px;"/></label>' +
             '<div class="kv-site-logo-preview">' + (logoValue ? '<img src="' + logoValue + '" alt="Preview logo"/>' : '<span>Belum ada logo</span>') + '</div>' +
             '<div class="kv-site-favicon-preview">' + (faviconValue ? '<img src="' + faviconValue + '" alt="Preview favicon"/>' : '<span>Belum ada favicon</span>') + '</div>' +
@@ -6726,6 +6803,8 @@ mobileMenu +
         state.adminRoleMenuOpen = null;
         if (!e.target.closest || !e.target.closest('[data-action]')) { render(); return; }
       }
+      var insideBrandMenu = e.target && e.target.closest ? e.target.closest('.kv-brand-mode-menu') : null;
+      if (!insideBrandMenu) setBrandModePanel(false);
       var trigger = e.target.closest && e.target.closest('.kv-dropdown-btn');
       if (trigger) {
         var container = trigger.closest('.kv-dropdown');
@@ -6862,14 +6941,19 @@ mobileMenu +
          state.adminRoleMenuOpen = state.adminRoleMenuOpen === roleMenuId ? null : roleMenuId;
          render();
        }
-       else if (act === 'admin-set-user-role') {
-         var roleUserId = el.getAttribute('data-id');
-         var roleNext = el.getAttribute('data-role');
-         state.adminRoleMenuOpen = null;
-         render();
-         if (roleNext === 'member' || roleNext === 'admin') changeUserRoleAdmin(roleUserId, roleNext);
-       }
-       else if (act === 'admin-comment-filter') { state.commentFilter = el.getAttribute('data-filter'); render(); }
+        else if (act === 'admin-set-user-role') {
+          var roleUserId = el.getAttribute('data-id');
+          var roleNext = el.getAttribute('data-role');
+          state.adminRoleMenuOpen = null;
+          render();
+          if (roleNext === 'member' || roleNext === 'admin') changeUserRoleAdmin(roleUserId, roleNext);
+        }
+        else if (act === 'admin-toggle-brand-menu') {
+          var brandPanel = document.getElementById('kv-brand-mode-panel');
+          setBrandModePanel(brandPanel ? brandPanel.hidden : false);
+        }
+        else if (act === 'admin-set-brand-mode') { applyBrandModeChoice(el.getAttribute('data-value')); }
+        else if (act === 'admin-comment-filter') { state.commentFilter = el.getAttribute('data-filter'); render(); }
        else if (act === 'admin-open-leaderboard') { state.adminTab = 'leaderboard'; state.adminDrawerOpen = false; render(); }
        else if (act === 'md-progress-close') { if (state.mdProgress) { state.mdProgress.dismissed = true; render(); } }
        else if (act === 'md-progress-open') { if (state.mdProgress) { state.mdProgress.dismissed = false; render(); } }
@@ -6999,6 +7083,10 @@ mobileMenu +
 
     // Aksesibilitas: elemen interaktif custom (kartu/baris) dapat diaktifkan via Enter/Spasi
     document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        var brandPanel = document.getElementById('kv-brand-mode-panel');
+        if (brandPanel && !brandPanel.hidden) { setBrandModePanel(false); return; }
+      }
       if (e.key === 'Escape' && state.openCatalogDropdown) {
         state.openCatalogDropdown = null;
         render();
