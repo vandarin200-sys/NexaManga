@@ -4951,7 +4951,7 @@ mobileMenu +
           ? '<div class="kv-traffic-banner kv-traffic-banner-error"><span class="kv-traffic-badge">GAGAL MEMUAT</span><span>' + escapeHtml(state.analyticsError) + '</span></div>'
           : '';
         var emptyHtml = hasData ? ''
-          : '<div class="kv-traffic-banner"><span class="kv-traffic-badge">BELUM ADA DATA</span><span>Belum ada traffic tercatat pada rentang ini. Kunjungan akan muncul setelah pelacakan aktif.</span><button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="kv-traffic-test">Catat uji</button></div>';
+          : '<div class="kv-traffic-banner"><span class="kv-traffic-badge">BELUM ADA DATA</span><span>Belum ada traffic tercatat pada rentang ini. Kunjungan akan muncul setelah pelacakan aktif.</span></div>';
         return '<div class="kv-card" style="margin-bottom:16px;">' +
           '<h3 class="kv-section-title" style="margin:0 0 8px;">Analitik Traffic</h3>' +
           '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Halaman ini menampilkan rincian traffic situs. Tanggal otomatis dari awal bulan ini sampai hari ini. Ubah rentang tanggal lalu tekan Refresh.</p>' +
@@ -4963,7 +4963,6 @@ mobileMenu +
               '<div class="kv-traffic-field"><label>DARI</label><input type="date" id="kv-traffic-from" value="' + fromStr + '"/></div>' +
               '<div class="kv-traffic-field"><label>SAMPAI</label><input type="date" id="kv-traffic-to" value="' + toStr + '"/></div>' +
               '<button type="button" class="kv-btn kv-btn-primary" data-action="kv-traffic-refresh">&#8635; Refresh</button>' +
-              '<button type="button" class="kv-btn kv-btn-ghost" data-action="kv-traffic-test">Catat uji</button>' +
             '</div>' +
             '<div class="kv-traffic-cards">' +
               '<article class="kv-traffic-card"><div class="kv-traffic-label">TOTAL PAGEVIEWS</div><div class="kv-traffic-value" id="kv-traffic-pageviews">' + (t.pageviews || 0).toLocaleString('id-ID') + '</div><div class="kv-traffic-note" id="kv-traffic-period">Period: ' + fromStr + ' to ' + toStr + '</div></article>' +
@@ -6900,13 +6899,6 @@ mobileMenu +
          state.analyticsUserChanged = true;
           state.analyticsData = undefined;
           loadAdminAnalytics(state.analyticsFrom, state.analyticsTo);
-        }
-        else if (act === 'kv-traffic-test') {
-          trackPageview();
-          setTimeout(function () {
-            state.analyticsData = undefined;
-            loadAdminAnalytics(state.analyticsFrom, state.analyticsTo);
-          }, 800);
         }
 
       else if (act === 'admin-delete-user') { deleteUserAdmin(el.getAttribute('data-id')); }
