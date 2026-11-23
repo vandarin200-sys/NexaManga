@@ -85,6 +85,7 @@
 
     .kv-mono { font-family: var(--kv-font-mono); font-variant-numeric: tabular-nums; }
     .kv-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .kv-runtime-notice { max-width: 1200px; margin: 12px auto -8px; padding: 10px 14px; border: 1px solid var(--kv-border); border-left: 4px solid var(--kv-accent); border-radius: 12px; background: var(--kv-surface); color: var(--kv-text-muted); font-size: .8rem; }
     .kv-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       padding: 9px 18px; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
@@ -1976,7 +1977,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-kpi .delta {
         font-family: 'JetBrains Mono', monospace; font-size: .6rem; color: var(--ad-muted);
       }
-      .kv-admin-shell.kv-admin-top .kv-kpi .delta::before { content: '↳ '; color: var(--ad-teal); }
+      .kv-admin-shell.kv-admin-top .kv-kpi .delta::before { content: '\21B3  '; color: var(--ad-teal); }
       .kv-admin-shell.kv-admin-top .kv-card,
       .kv-admin-shell.kv-admin-top .kv-chart-card,
       .kv-admin-shell.kv-admin-top .kv-stat-box,
@@ -2583,19 +2584,19 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        - Tabel nexamanga_snapshot dibuat otomatis pada request pertama.
        - Gunakan satu sesi admin untuk mencegah perubahan serentak saling menimpa.
        - Upload JPEG/PNG/WebP maksimal 3 MiB per berkas (batas request Vercel).
-       CATATAN JUJUR:
-        - Tanpa API_BASE_URL (diisi = PUBLIC_API_URL), situs jalan mode lokal (localStorage).
-       - Panduan deploy Vercel ada di README.md.
-       - Notifikasi chapter baru butuh backend (mis. polling feed / bot
-          broadcast ke channel) - tidak mungkin dari Blogger saja.
-       - Akun lintas perangkat butuh backend; mode lokal menyimpan di browser.
-       - Jangan unggah manga berhak cipta tanpa izin pemilik.
+        CATATAN JUJUR:
+        - Backend wajib; API_BASE_URL harus diisi dan tidak boleh kosong.
+        - Panduan deploy Vercel ada di README.md.
+        - Notifikasi chapter baru butuh backend (mis. polling feed / bot
+           broadcast ke channel) - tidak mungkin dari Blogger saja.
+        - Akun lintas perangkat butuh backend; cache hanya untuk pembacaan offline.
+        - Jangan unggah manga berhak cipta tanpa izin pemilik.
        ========================================================================= */
      var CONFIG = {
       SITE_NAME: 'NexaManga',                 /* UBAH: nama website Anda */
-      /* Cara tercepat: edit langsung nilai API_BASE_URL di bawah ini (Tema > Edit HTML).
-         Harus identik dengan PUBLIC_API_URL di .env / Vercel Environment Variables.
-         Kosongkan hanya jika ingin mode lokal tanpa backend. */
+       /* Cara tercepat: edit langsung nilai API_BASE_URL di bawah ini (Tema > Edit HTML).
+          Harus identik dengan PUBLIC_API_URL di .env / Vercel Environment Variables.
+          Katalog dan penulisan data tidak berfungsi tanpa backend. */
       API_BASE_URL: 'https://nexamanga-nexamanga.vercel.app',
       DEFAULT_THEME: 'light', /* 'light' atau 'dark' */
       ITEMS_PER_PAGE: 8,
@@ -2603,12 +2604,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     };
 
     /* =========================================================================
-       DATA CONTOH LEGAL (FALLBACK JIKA API_BASE_URL BELUM DIHUBUNGKAN)
-       ========================================================================= */
-     var SAMPLE_DATA = { manga: [], chapters: [], comments: [] };
-
-    /* =========================================================================
-       STATE & PERSISTENSI LOKAL
+       STATE & PENGATURAN LOKAL NON-KATALOG
        ========================================================================= */
     var state = {
       route: 'home',
@@ -2618,10 +2614,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        imageCompressionQuality: (function () { if (localStorage.getItem('kv_img_compress_ver') !== '3') { localStorage.setItem('kv_img_compress_ver', '3'); localStorage.setItem('kv_img_compress_quality', '0.95'); localStorage.setItem('kv_img_compress_maxdim', '4000'); if (localStorage.getItem('kv_img_compress_enabled') === null) localStorage.setItem('kv_img_compress_enabled', '1'); return 0.95; } return parseFloat(localStorage.getItem('kv_img_compress_quality') || '0.95') || 0.95; })(),
        imageCompressionMaxDim: (function () { if (localStorage.getItem('kv_img_compress_ver') !== '3') return 4000; return parseInt(localStorage.getItem('kv_img_compress_maxdim') || '4000', 10) || 4000; })(),
 
-      /* Data dimuat dari: backend API -> data lokal admin -> data contoh */
-       data: JSON.parse(localStorage.getItem('kv_local_data') || 'null') || { manga: [], chapters: [], comments: [] },
-      loading: false,
-      error: null,
+        /* Data dimuat dari: backend API -> snapshot cache */
+        data: readCachedCatalog(),
+       loading: false,
+       error: null,
+       sessionNotice: '',
+       catalogNotice: '',
       search: '',
       filterGenres: [],
       filterStatus: 'Semua',
@@ -2698,10 +2696,57 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         viewedChapters: {}
       };
 
-    /* Persistensi lokal: perubahan admin disimpan ke localStorage agar
-       tidak hilang saat reload (mode demo tanpa backend). */
-    function persistData() {
-      try { localStorage.setItem('kv_local_data', JSON.stringify(state.data)); } catch (e) { /* kuota penuh */ }
+    function readCachedCatalog() {
+      try {
+        var value = JSON.parse(localStorage.getItem('kv_catalog_snapshot') || 'null');
+        if (value && Array.isArray(value.manga) && Array.isArray(value.chapters) && Array.isArray(value.comments)) return value;
+      } catch (e) {}
+      return { manga: [], chapters: [], comments: [] };
+    }
+
+    function decodeSessionClaims(token) {
+      if (!token || typeof token !== 'string') return null;
+      var parts = token.split('.');
+      if (parts.length !== 2) return null;
+      try {
+        var encoded = parts[0].replace(/-/g, '+').replace(/_/g, '/');
+        while (encoded.length % 4) encoded += '=';
+        return JSON.parse(decodeURIComponent(escape(window.atob(encoded))));
+      } catch (e) { return null; }
+    }
+
+    function restoreSessionFromCache(claims) {
+      if (!claims || !claims.sub) return null;
+      try {
+        var cached = JSON.parse(localStorage.getItem('kv_session_cache_v1') || 'null');
+        if (cached && cached.id === claims.sub && cached.user && cached.user.id === claims.sub) return cached.user;
+      } catch (e) {}
+      if (claims.user && claims.user.id === claims.sub) return claims.user;
+      return null;
+    }
+
+    function saveSessionCache(user) {
+      if (!user || !user.id) return;
+      try { localStorage.setItem('kv_session_cache_v1', JSON.stringify({ id: user.id, user: user, savedAt: Date.now() })); } catch (e) {}
+    }
+
+    function clearSession() {
+      state.user = null;
+      state.adminToken = '';
+      state.usersCache = undefined;
+      localStorage.removeItem('kv_session_token');
+      localStorage.removeItem('kv_session_cache_v1');
+    }
+
+    function clearProfileOverrides() {
+      try {
+        var doomed = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var key = localStorage.key(i);
+          if (key && key.indexOf('kv_profile_override_v2_') === 0) doomed.push(key);
+        }
+        doomed.forEach(function (key) { localStorage.removeItem(key); });
+      } catch (e) {}
     }
 
     function uid(prefix) {
@@ -2718,10 +2763,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 
      function siteSetting(key, fallback) {
        var settings = (state.data && state.data.settings) ? state.data.settings : {};
-       var local = {};
-       try { local = JSON.parse(localStorage.getItem('kv_site_settings') || '{}') || {}; } catch (e) { local = {}; }
        if (settings && settings[key]) return settings[key];
-       if (local && local[key]) return local[key];
        return fallback;
      }
 
@@ -2808,113 +2850,51 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        return normalizeReactionSummary(all[chapterId]);
      }
 
-     function applyReactionLocal(collection, targetId, reaction) {
-       var keys = ['fire', 'shock', 'cry', 'laugh', 'angry'];
-       if (keys.indexOf(reaction) === -1) return null;
-       if (!state.data[collection] || typeof state.data[collection] !== 'object' || Array.isArray(state.data[collection])) {
-         state.data[collection] = {};
-       }
-       var summary = normalizeReactionSummary(state.data[collection][targetId]);
-       if (summary.userVote === reaction) {
-         summary.counts[reaction] = Math.max(0, summary.counts[reaction] - 1);
-         summary.userVote = null;
-       } else {
-         if (summary.userVote) summary.counts[summary.userVote] = Math.max(0, summary.counts[summary.userVote] - 1);
-         summary.counts[reaction] += 1;
-         summary.userVote = reaction;
-       }
-       state.data[collection][targetId] = summary;
-       persistData();
-       render();
-       return summary;
-     }
+      function applyReactionResult(collection, targetId, result) {
+        if (!result || !result.counts) return;
+        if (!state.data[collection] || typeof state.data[collection] !== 'object' || Array.isArray(state.data[collection])) {
+          state.data[collection] = {};
+        }
+        state.data[collection][targetId] = { counts: result.counts, userVote: result.userVote || null };
+        render();
+      }
 
-     function chapterReactionLocal(chapterId, reaction) {
-       if (!applyReactionLocal('reactions', chapterId, reaction)) return;
-       if (CONFIG.API_BASE_URL) {
-         fetch(CONFIG.API_BASE_URL + '/api/chapter/reaction', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ chapterId: chapterId, reaction: reaction })
-         }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
-           if (res && res.counts && state.data.reactions) {
-             state.data.reactions[chapterId] = { counts: res.counts, userVote: res.userVote || null };
-             persistData();
-             render();
-           }
-         }).catch(function () {});
-       }
-     }
+      function chapterReactionLocal(chapterId, reaction) {
+        if (!CONFIG.API_BASE_URL) { toast('Backend tidak terhubung.', 'error'); return; }
+        apiPublicWrite('/api/chapter/reaction', { chapterId: chapterId, reaction: reaction })
+          .then(function (res) { applyReactionResult('reactions', chapterId, res); })
+          .catch(function (err) { toast('Gagal menyimpan reaksi: ' + (err && err.message ? err.message : err), 'error'); });
+      }
 
-     function mangaReactionSummary(mangaId) {
-       var all = (state.data && state.data.mangaReactions) || {};
-       return normalizeReactionSummary(all[mangaId]);
-     }
+      function mangaReactionSummary(mangaId) {
+        var all = (state.data && state.data.mangaReactions) || {};
+        return normalizeReactionSummary(all[mangaId]);
+      }
 
-     function mangaReactionLocal(mangaId, reaction) {
-       if (!applyReactionLocal('mangaReactions', mangaId, reaction)) return;
-       if (CONFIG.API_BASE_URL) {
-         fetch(CONFIG.API_BASE_URL + '/api/manga/reaction', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ mangaId: mangaId, reaction: reaction })
-         }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
-           if (res && res.counts && state.data.mangaReactions) {
-             state.data.mangaReactions[mangaId] = { counts: res.counts, userVote: res.userVote || null };
-             persistData();
-             render();
-           }
-         }).catch(function () {});
-       }
-     }
+      function mangaReactionLocal(mangaId, reaction) {
+        if (!CONFIG.API_BASE_URL) { toast('Backend tidak terhubung.', 'error'); return; }
+        apiPublicWrite('/api/manga/reaction', { mangaId: mangaId, reaction: reaction })
+          .then(function (res) { applyReactionResult('mangaReactions', mangaId, res); })
+          .catch(function (err) { toast('Gagal menyimpan reaksi: ' + (err && err.message ? err.message : err), 'error'); });
+      }
 
-     function adminPinComment(id) {
-       var comment = state.data.comments.filter(function (x) { return x.id === id; })[0];
-       if (!comment) return;
-       comment.pinned = !comment.pinned;
-       persistData();
-       render();
-       if (CONFIG.API_BASE_URL) {
-         fetch(CONFIG.API_BASE_URL + '/api/admin/pin-comment', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
-           body: JSON.stringify({ id: id })
-         }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
-           if (res && typeof res.pinned === 'boolean' && comment) comment.pinned = res.pinned;
-           render();
-         }).catch(function () {
-           comment.pinned = !comment.pinned;
-           render();
-           toast('Gagal mengubah pin komentar.', 'warn');
-         });
-       }
-     }
+      function adminPinComment(id) {
+        if (!state.data.comments.some(function (x) { return x.id === id; })) return;
+        apiSync('/api/admin/pin-comment', { id: id }, 'Status pin komentar diperbarui.');
+      }
 
-     function upvoteCommentLocal(id) {
-       var c = state.data.comments.filter(function (x) { return x.id === id; })[0];
-       if (!c) return;
-       var count = typeof c.upvoteCount === 'number' ? c.upvoteCount : (Array.isArray(c.upvotes) ? c.upvotes.length : 0);
-       var voted = typeof c.userUpvoted === 'boolean' ? c.userUpvoted : false;
-       c.upvoteCount = Math.max(0, count + (voted ? -1 : 1));
-       c.userUpvoted = !voted;
-       delete c.upvotes;
-       persistData();
-       render();
-       if (CONFIG.API_BASE_URL) {
-         fetch(CONFIG.API_BASE_URL + '/api/comment/upvote', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ id: id })
-         }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
-           if (res && res.comment && typeof res.comment.upvoteCount === 'number') {
-             c.upvoteCount = res.comment.upvoteCount;
-             c.userUpvoted = !!res.comment.userUpvoted;
-             persistData();
-             render();
-           }
-         }).catch(function () {});
-       }
-     }
+      function upvoteCommentLocal(id) {
+        if (!CONFIG.API_BASE_URL) { toast('Backend tidak terhubung.', 'error'); return; }
+        apiPublicWrite('/api/comment/upvote', { id: id }).then(function (res) {
+          if (!res.comment || typeof res.comment.upvoteCount !== 'number') return;
+          var c = state.data.comments.filter(function (x) { return x.id === id; })[0];
+          if (!c) return;
+          c.upvoteCount = res.comment.upvoteCount;
+          c.userUpvoted = !!res.comment.userUpvoted;
+          delete c.upvotes;
+          render();
+        }).catch(function (err) { toast('Gagal menyimpan upvote: ' + (err && err.message ? err.message : err), 'error'); });
+      }
 
     function chapterById(id) {
       return state.data.chapters.filter(function (c) { return c.id === id; })[0] || null;
@@ -2951,21 +2931,65 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       render();
     }
 
-    /* Sinkronisasi ke Vercel (hanya jika API_BASE_URL aktif) */
+    /* Semua penulisan katalog wajib melalui backend; tidak ada mode lokal. */
     var apiSyncQueue = Promise.resolve();
-    function apiSync(path, payload) {
-      if (!CONFIG.API_BASE_URL) return;
+    function parseApiResponse(res) {
+      return res.json().catch(function () { return {}; }).then(function (json) {
+        if (!res.ok) throw new Error(json.error || ('HTTP ' + res.status));
+        return json;
+      });
+    }
+    function apiPublicWrite(path, payload) {
+      if (!CONFIG.API_BASE_URL) {
+        toast('Backend tidak terhubung.', 'error');
+        return Promise.reject(new Error('Backend tidak terhubung.'));
+      }
+      var headers = { 'Content-Type': 'application/json' };
+      if (state.adminToken) headers.Authorization = 'Bearer ' + state.adminToken;
+      return fetch(CONFIG.API_BASE_URL + path, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload || {})
+      }).then(parseApiResponse);
+    }
+    function apiSync(path, payload, successMessage) {
+      if (!CONFIG.API_BASE_URL || !state.adminToken) {
+        toast('Backend tidak terhubung.', 'error');
+        state.data = readCachedCatalog();
+        render();
+        return Promise.resolve(false);
+      }
       apiSyncQueue = apiSyncQueue.then(function () {
         return fetch(CONFIG.API_BASE_URL + path, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
           body: JSON.stringify(payload)
         }).then(function (res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
+          if (res.status === 401) {
+            clearSession();
+            toast('Sesi admin berakhir. Silakan login ulang.', 'error');
+            throw new Error('Sesi admin berakhir');
+          }
+          return parseApiResponse(res);
         });
+      }).then(function () {
+        if (successMessage) toast(successMessage, 'ok');
+        return syncFromApi();
+      }).then(function () {
+        return true;
       }).catch(function (err) {
-        toast('Tersimpan lokal, tetapi gagal sinkron ke server (' + path + '): ' + err.message, 'warn');
+        if (err && err.message === 'Sesi admin berakhir') {
+          state.data = readCachedCatalog();
+          render();
+        } else {
+          toast('Gagal menyimpan ke server (' + path + '): ' + (err && err.message ? err.message : err), 'error');
+          state.data = readCachedCatalog();
+          render();
+          syncFromApi();
+        }
+        return false;
       });
+      return apiSyncQueue;
     }
 
     /* Notifikasi toast (tidak ikut terhapus saat render ulang: diluar #kv-app) */
@@ -2979,8 +3003,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         wrap.setAttribute('aria-live', 'polite');
         document.body.appendChild(wrap);
       }
+      var kind = type === 'error' ? 'err' : type === 'success' ? 'ok' : (type || '');
       var t = document.createElement('div');
-      t.className = 'kv-toast' + (type ? ' kv-toast-' + type : '');
+      t.className = 'kv-toast' + (kind ? ' kv-toast-' + kind : '');
       t.textContent = msg;
       wrap.appendChild(t);
       setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
@@ -3127,12 +3152,18 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 
 
     function syncFromApi() {
-      if (!CONFIG.API_BASE_URL) return;
+      if (!CONFIG.API_BASE_URL) {
+        state.loading = false;
+        state.error = 'Backend tidak dikonfigurasi. Atur API_BASE_URL terlebih dahulu.';
+        state.catalogNotice = '';
+        render();
+        return Promise.resolve();
+      }
       state.loading = true;
       render();
       var headers = {};
       if (state.adminToken) headers.Authorization = 'Bearer ' + state.adminToken;
-      fetch(CONFIG.API_BASE_URL + '/api/catalog', { headers: headers })
+      return fetch(CONFIG.API_BASE_URL + '/api/catalog', { headers: headers })
         .then(function (r) {
           if (r.status === 409) throw new Error('Database belum diinisialisasi. Login sebagai admin (Google/Discord) sekali untuk memulai.');
           if (!r.ok) throw new Error('Gagal memuat archive dari server proxy (HTTP ' + r.status + ').');
@@ -3142,23 +3173,75 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           state.data = json;
           state.loading = false;
           state.error = null;
+          state.catalogNotice = '';
+          try { localStorage.setItem('kv_catalog_snapshot', JSON.stringify(json)); } catch (e) {}
           render();
         })
         .catch(function (err) {
+          var hasCache = false;
+          try { hasCache = !!localStorage.getItem('kv_catalog_snapshot'); } catch (e) {}
           state.loading = false;
-          state.error = err.message;
+          if (hasCache && state.data && Array.isArray(state.data.manga)) {
+            state.error = null;
+            state.catalogNotice = 'Menampilkan arsip dari cache terakhir; data akan diperbarui saat server tersedia.';
+          } else {
+            state.error = err.message;
+          }
           render();
         });
     }
 
+    function refreshSession() {
+      if (!state.adminToken || !CONFIG.API_BASE_URL) return;
+      var token = state.adminToken;
+      fetch(CONFIG.API_BASE_URL + '/api/auth/me', {
+        headers: { Authorization: 'Bearer ' + token }
+      }).then(function (response) {
+        if (state.adminToken !== token) return;
+        if (response.status === 401 || response.status === 403) {
+          clearSession();
+          state.sessionNotice = '';
+          render();
+          syncFromApi();
+          return;
+        }
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json().then(function (result) {
+          if (state.adminToken !== token) return;
+          state.user = result.user || null;
+          if (state.user && result.role) state.user.role = result.role;
+          if (!state.user) {
+            clearSession();
+            state.sessionNotice = '';
+            render();
+            syncFromApi();
+            return;
+          }
+          saveSessionCache(state.user);
+          state.sessionNotice = '';
+          render();
+        });
+      }).catch(function () {
+        if (state.adminToken !== token) return;
+        state.sessionNotice = 'Profil akun ditampilkan dari cache karena sesi tidak dapat diverifikasi saat ini.';
+        render();
+      });
+    }
+
     function initializeAuth() {
       purgeLegacyProfileOverrides();
+      try {
+        localStorage.removeItem('kv_local_data');
+        localStorage.removeItem('kv_site_settings');
+      } catch (e) {}
       sessionStorage.removeItem('kv_admin_token');
        var callbackToken = new URLSearchParams(window.location.search).get('auth_token');
        if (callbackToken) {
          state.adminToken = callbackToken;
          localStorage.setItem('kv_session_token', callbackToken);
          localStorage.removeItem('kv_local_data');
+         localStorage.removeItem('kv_catalog_snapshot');
+         state.data = { manga: [], chapters: [], comments: [] };
          window.history.replaceState(null, '', window.location.pathname + window.location.hash);
        }
        if (!state.adminToken || !CONFIG.API_BASE_URL) {
@@ -3167,23 +3250,19 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
          syncFromApi();
          return;
        }
-       render();
-       fetch(CONFIG.API_BASE_URL + '/api/auth/me', {
-         headers: { Authorization: 'Bearer ' + state.adminToken }
-       }).then(function (response) {
-         if (!response.ok) throw new Error('Sesi tidak valid.');
-         return response.json();
-       }).then(function (result) {
-         state.user = result.user || null;
-         if (state.user && result.role) state.user.role = result.role;
-       }).catch(function () {
-         state.adminToken = '';
-         state.user = null;
-         localStorage.removeItem('kv_session_token');
-       }).then(function () {
+       var claims = decodeSessionClaims(state.adminToken);
+       var expired = claims && typeof claims.exp === 'number' && claims.exp <= Math.floor(Date.now() / 1000);
+       if (!claims || !claims.sub || expired) {
+         clearSession();
          render();
          syncFromApi();
-       });
+         return;
+       }
+       state.user = restoreSessionFromCache(claims);
+       if (state.user) saveSessionCache(state.user);
+       render();
+       syncFromApi();
+       refreshSession();
     }
 
     function collectGenres() {
@@ -3941,21 +4020,13 @@ mobileMenu +
        if (!state.viewedChapters) state.viewedChapters = {};
        if (!state.viewedChapters[chapter.id]) {
          state.viewedChapters[chapter.id] = true;
-         var viewedManga = state.data.manga.filter(function (m) { return m.id === manga.id; })[0];
-         if (viewedManga) {
-           viewedManga.views = (viewedManga.views || 0) + 1;
-           persistData();
-           if (CONFIG.API_BASE_URL) {
-             fetch(CONFIG.API_BASE_URL + '/api/manga/view', {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ id: viewedManga.id })
-             }).then(function (r) { return r.ok ? r.json() : null; }).then(function (res) {
-               if (res && typeof res.views === 'number' && viewedManga) viewedManga.views = res.views;
-               render();
-             }).catch(function () {});
-           }
-         }
+          if (CONFIG.API_BASE_URL) {
+            apiPublicWrite('/api/manga/view', { id: manga.id }).then(function (res) {
+              var viewedManga = state.data.manga.filter(function (m) { return m.id === manga.id; })[0];
+              if (viewedManga && typeof res.views === 'number') viewedManga.views = res.views;
+              render();
+            }).catch(function () {});
+          }
        }
 
       var pageTotal = chapter.pages.length;
@@ -4491,7 +4562,7 @@ mobileMenu +
                 adminBrandIcon +
                 adminBrandText +
               '</div>' +
-              '<div class="kv-admin-chip' + (CONFIG.API_BASE_URL ? '' : ' off') + '"><span class="dot"></span><span>' + (CONFIG.API_BASE_URL ? 'Backend terhubung' : 'Mode lokal') + '</span></div>' +
+              '<div class="kv-admin-chip' + (CONFIG.API_BASE_URL ? '' : ' off') + '"><span class="dot"></span><span>' + (CONFIG.API_BASE_URL ? 'Backend terhubung' : 'Backend tidak terhubung') + '</span></div>' +
             '</div>' +
             '<div class="kv-admin-side-group">' +
               '<div class="kv-admin-side-label">Core Modules</div>' +
@@ -4709,7 +4780,7 @@ mobileMenu +
         return '<div class="kv-card" style="margin-bottom:16px;">' +
           '<h3 class="kv-section-title" style="margin:0 0 8px;">Analitik Traffic</h3>' +
           '<p style="color:var(--kv-text-muted);font-size:0.85rem;margin:0 0 12px;">Halaman ini menampilkan rincian traffic situs. Tanggal otomatis dari awal bulan ini sampai hari ini. Ubah rentang tanggal lalu tekan Refresh.</p>' +
-          (CONFIG.API_BASE_URL ? '' : '<p style="color:var(--kv-warning);font-size:0.85rem;">Backend tidak terhubung (mode lokal): data traffic tidak dapat dicatat.</p>') +
+          (CONFIG.API_BASE_URL ? '' : '<p style="color:var(--kv-warning);font-size:0.85rem;">Koneksi backend tidak aktif. Data analitik tidak dapat dimuat.</p>') +
           '</div>' +
           errorHtml + emptyHtml +
           '<section class="kv-traffic">' +
@@ -4822,16 +4893,19 @@ mobileMenu +
               if (coverPage && coverPage.bloggerUrl) coverUploaded = coverPage.bloggerUrl;
             } catch (e) { /* keep original url */ }
           }
-          var manga = state.data.manga.filter(function (x) { return x.title === title; })[0];
-          if (!manga) {
-            manga = { id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author, synopsis: desc, coverBloggerUrl: coverUploaded, genres: tags, type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: '', featured: false, recommended: false, views: 0, updatedAt: today() };
-            state.data.manga.push(manga);
-          } else {
+          var existingManga = state.data.manga.filter(function (x) { return x.title.toLowerCase() === title.toLowerCase(); })[0];
+          var manga = existingManga ? Object.assign({}, existingManga) : { id: uid('mng'), slug: slugify(title), title: title, altTitle: '', author: author, synopsis: desc, coverBloggerUrl: coverUploaded, genres: tags, type: mdType(attrs.originalLanguage), status: mdStatus(attrs.status), rating: mdRating || '', featured: false, recommended: false, views: 0, updatedAt: today() };
+          if (existingManga) {
             manga.coverBloggerUrl = manga.coverBloggerUrl || coverUploaded;
+            manga.author = manga.author || author;
+            manga.synopsis = manga.synopsis || desc;
+            manga.genres = (manga.genres && manga.genres.length) ? manga.genres : tags;
+            if (mdRating) manga.rating = mdRating;
             manga.updatedAt = today();
           }
-          persistData();
-          apiSync('/api/admin/save-manga', manga);
+          var mangaSaved = await apiSync('/api/admin/save-manga', manga);
+          if (!mangaSaved) throw new Error('Gagal menyimpan manga ke server.');
+          manga = state.data.manga.filter(function (x) { return x.slug === slugify(title); })[0] || manga;
 
           state.mdProgress.current = 'Mengambil daftar chapter...';
           render();
@@ -4891,15 +4965,13 @@ mobileMenu +
 
             } catch (e) { /* skip chapter images */ }
             var obj = { id: uid('ch'), mangaId: manga.id, number: num, title: attrsCh.title || '', publishedAt: (attrsCh.publishAt || '').slice(0, 10) || today(), pages: pages };
-            state.data.chapters.push(obj);
-            persistData();
-            apiSync('/api/admin/save-chapter', obj);
+            var chapterSaved = await apiSync('/api/admin/save-chapter', obj);
+            if (!chapterSaved) throw new Error('Gagal menyimpan chapter ' + num + ' ke server.');
             state.mdProgress.done = i + 1;
             render();
           }
           manga.updatedAt = today();
-          persistData();
-          apiSync('/api/admin/save-manga', manga);
+          await apiSync('/api/admin/save-manga', manga);
           state.mdImporting = false;
           state.mdProgress.active = false;
           toast('Scrape selesai: ' + manga.title, 'ok');
@@ -5297,50 +5369,41 @@ mobileMenu +
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
         body: JSON.stringify({ id: userId })
-      }).then(function (r) { if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Gagal menghapus pengguna.'); }); return r.json(); })
+      }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) { clearSession(); throw new Error('Sesi admin berakhir. Silakan login ulang.'); } if (!r.ok) throw new Error(j.error || 'Gagal menghapus pengguna.'); return j; }); })
         .then(function () { toast('Pengguna dihapus.', 'success'); state.usersCache = undefined; loadAdminUsers(); })
         .catch(function (e) { toast(e.message, 'error'); });
     }
 
     function persistSiteSettings(values) {
-      var current = {};
-      try { current = Object.assign({}, JSON.parse(localStorage.getItem('kv_site_settings') || '{}'), (state.data && state.data.settings) ? state.data.settings : {}); } catch (e) { current = {}; }
+      if (!CONFIG.API_BASE_URL || !state.adminToken) {
+        toast('Backend tidak terhubung.', 'error');
+        return Promise.resolve(false);
+      }
+      var current = (state.data && state.data.settings) || {};
       values = Object.assign({}, current, values);
-      var isBackend = CONFIG.API_BASE_URL && state.adminToken;
-      var done = function () { toast('Pengaturan logo & nama disimpan.', 'ok'); render(); };
-      if (isBackend) {
-        return fetch(CONFIG.API_BASE_URL + '/api/admin/settings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
-          body: JSON.stringify(values)
-        }).then(function (r) {
-          return r.json().then(function (j) {
-            if (!r.ok) throw new Error((j && j.error) || ('HTTP ' + r.status));
-            return j.settings;
-          });
-        }).then(function (saved) {
-          state.data.settings = saved;
-          try { localStorage.setItem('kv_site_settings', JSON.stringify(saved)); } catch (e) {}
-          done();
-        }).catch(function (err) {
-          console.warn('Gagal menyimpan ke server, fallback ke browser:', err);
-          try {
-            localStorage.setItem('kv_site_settings', JSON.stringify(values));
-            state.data.settings = values;
-            toast('Gagal ke server, tersimpan di browser ini.', 'warn');
-            render();
-          } catch (e) {
-            toast('Gagal menyimpan pengaturan: ' + err.message, 'error');
+      return fetch(CONFIG.API_BASE_URL + '/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
+        body: JSON.stringify(values)
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          if (r.status === 401) {
+            clearSession();
+            throw new Error('Sesi admin berakhir. Silakan login ulang.');
           }
+          if (!r.ok) throw new Error((j && j.error) || ('HTTP ' + r.status));
+          return j.settings || values;
         });
-      }
-      try {
-        localStorage.setItem('kv_site_settings', JSON.stringify(values));
-        state.data.settings = values;
-        done();
-      } catch (e) {
-        toast('Gagal menyimpan pengaturan di browser.', 'warn');
-      }
+      }).then(function (saved) {
+        state.data.settings = saved;
+        toast('Pengaturan disimpan.', 'ok');
+        render();
+        return true;
+      }).catch(function (err) {
+        toast('Gagal menyimpan pengaturan: ' + (err && err.message ? err.message : err), 'error');
+        render();
+        return false;
+      });
     }
 
     function resetSiteSettings() {
@@ -5467,16 +5530,11 @@ mobileMenu +
         views: existing ? existing.views : 0,
         updatedAt: today()
       };
-      if (existing) {
-        state.data.manga = state.data.manga.map(function (m) { return m.id === obj.id ? obj : m; });
-      } else {
-        state.data.manga.push(obj);
-      }
-      persistData();
-      apiSync('/api/admin/save-manga', obj);
-      toast(existing ? 'Perubahan manga disimpan.' : 'Manga baru dipublikasikan.', 'ok');
-      state.adminForm = null;
-      render();
+      apiSync('/api/admin/save-manga', obj, existing ? 'Perubahan manga disimpan.' : 'Manga baru dipublikasikan.').then(function (ok) {
+        if (!ok) return;
+        state.adminForm = null;
+        render();
+      });
     }
 
     function saveChapterForm(form) {
@@ -5497,20 +5555,13 @@ mobileMenu +
 
       var existing = chapterById(fd.get('id') || '');
       var obj = { id: existing ? existing.id : uid('ch'), mangaId: mangaId, number: number, title: title, publishedAt: publishedAt, pages: pages };
-      if (existing) {
-        state.data.chapters = state.data.chapters.map(function (c) { return c.id === obj.id ? obj : c; });
-      } else {
-        state.data.chapters.push(obj);
-      }
-      var m = mangaById(mangaId);
-      if (m) m.updatedAt = today();
-      persistData();
-      apiSync('/api/admin/save-chapter', obj);
-      toast(existing ? 'Perubahan chapter disimpan.' : 'Chapter dipublikasikan.', 'ok');
-      state.adminChapterForm = null;
-      state.adminChapterMangaId = mangaId;
-      state.adminExpandedManga = mangaId;
-      render();
+      apiSync('/api/admin/save-chapter', obj, existing ? 'Perubahan chapter disimpan.' : 'Chapter dipublikasikan.').then(function (ok) {
+        if (!ok) return;
+        state.adminChapterForm = null;
+        state.adminChapterMangaId = mangaId;
+        state.adminExpandedManga = mangaId;
+        render();
+      });
     }
 
     function moveChapter(mid, chId, dir) {
@@ -5519,13 +5570,12 @@ mobileMenu +
       chs.forEach(function (c, idx) { if (c.id === chId) i = idx; });
       var j = dir === 'up' ? i - 1 : i + 1;
       if (i === -1 || j < 0 || j >= chs.length) return;
-      var tmp = chs[i].number;
-      chs[i].number = chs[j].number;
-      chs[j].number = tmp;
-      persistData();
-      apiSync('/api/admin/save-chapter', chs[i]);
-      apiSync('/api/admin/save-chapter', chs[j]);
-      render();
+      var first = Object.assign({}, chs[i], { number: chs[j].number });
+      var second = Object.assign({}, chs[j], { number: chs[i].number });
+      apiSync('/api/admin/save-chapter', first).then(function (ok) {
+        if (!ok) return;
+        return apiSync('/api/admin/save-chapter', second, 'Urutan chapter diperbarui.');
+      });
     }
 
     function movePage(idx, dir) {
@@ -5553,13 +5603,10 @@ mobileMenu +
     }
 
     function setCommentStatus(id, status) {
-      var c = state.data.comments.filter(function (x) { return x.id === id; })[0];
-      if (!c) return;
-      c.status = status;
-      persistData();
-      apiSync('/api/admin/comment-status', { id: id, status: status });
-      toast(status === 'approved' ? 'Komentar disetujui & tampil publik.' : 'Komentar ditolak.', 'ok');
-      render();
+      if (!state.data.comments.some(function (x) { return x.id === id; })) { toast('Komentar tidak ditemukan.', 'warn'); return; }
+      if (status !== 'approved' && status !== 'rejected' && status !== 'pending') return;
+      var message = status === 'approved' ? 'Komentar disetujui & tampil publik.' : status === 'rejected' ? 'Komentar ditolak.' : 'Status komentar diperbarui.';
+      apiSync('/api/admin/comment-status', { id: id, status: status }, message);
     }
 
     function performConfirmedDelete() {
@@ -5568,26 +5615,14 @@ mobileMenu +
       if (!d) { render(); return; }
       if (d.type === 'manga') {
         state.adminExpandedManga = null;
-        state.data.manga = state.data.manga.filter(function (m) { return m.id !== d.id; });
-        state.data.chapters = state.data.chapters.filter(function (c) { return c.mangaId !== d.id; });
-        state.data.comments = state.data.comments.filter(function (c) { return c.mangaId !== d.id; });
-        toast('Manga beserta chapter & komentarnya dihapus.', 'ok');
-        apiSync('/api/admin/delete-manga', { id: d.id });
-        persistData();
+        apiSync('/api/admin/delete-manga', { id: d.id }, 'Manga beserta chapter & komentarnya dihapus.');
+        return;
       } else if (d.type === 'chapter') {
-        state.data.chapters = state.data.chapters.filter(function (c) { return c.id !== d.id; });
-        toast('Chapter dihapus.', 'ok');
-        apiSync('/api/admin/delete-chapter', { id: d.id });
-        persistData();
+        apiSync('/api/admin/delete-chapter', { id: d.id }, 'Chapter dihapus.');
+        return;
       } else if (d.type === 'comment') {
-        state.data.comments = state.data.comments.filter(function (c) { return c.id !== d.id; });
-        toast('Komentar dihapus.', 'ok');
-        apiSync('/api/admin/delete-comment', { id: d.id });
-        persistData();
-      } else if (d.type === 'reset') {
-        localStorage.removeItem('kv_local_data');
-         state.data = { manga: [], chapters: [], comments: [] };
-        toast('Data lokal dikembalikan ke data contoh.', 'ok');
+        apiSync('/api/admin/delete-comment', { id: d.id }, 'Komentar dihapus.');
+        return;
       }
       render();
     }
@@ -5721,7 +5756,8 @@ mobileMenu +
         }
         render();
         if (!CONFIG.API_BASE_URL) {
-          page.status = 'siap (mode lokal - proxy belum diatur)';
+          page.status = 'gagal: backend belum dikonfigurasi';
+          toast('Backend belum dikonfigurasi untuk upload halaman.', 'warn');
           render();
           resolve();
           return;
@@ -5894,7 +5930,8 @@ mobileMenu +
         '</div>';
       }
       if (state.route === 'admin' && state.pendingDelete) bodyHtml += renderConfirmModal();
-      app.innerHTML = renderHeader() + bodyHtml + renderFooter();
+      var runtimeNotice = state.sessionNotice || state.catalogNotice;
+      app.innerHTML = renderHeader() + (runtimeNotice ? '<div class="kv-runtime-notice" role="status">' + escapeHtml(runtimeNotice) + '</div>' : '') + bodyHtml + renderFooter();
       bindEvents();
     }
 
@@ -6210,35 +6247,23 @@ mobileMenu +
             var parentId = cForm.getAttribute('data-parent-id') || null;
             var authorName = state.user ? state.user.name : 'Pengunjung';
             var authorAvatar = state.user ? (state.user.avatar || null) : null;
-            var userId = state.user ? state.user.id : null;
-            var content = replaceImageTokens(String(fd.get('content') || ''));
-            state.data.comments.unshift({
-              id: 'c-' + Date.now(),
-              mangaId: mangaId,
-              parentId: parentId,
-              chapterId: chapterId,
-              userId: userId,
-              authorName: authorName,
-              authorAvatar: authorAvatar,
-              content: content,
-              createdAt: new Date().toISOString().slice(0, 10),
-              status: 'pending',
-              upvoteCount: 0,
-              userUpvoted: false
-            });
-            persistData();
-            state.commentNotice = 'Komentar Anda berhasil dikirim dan menunggu moderasi. Terima kasih!';
-            state.replyingTo = null;
-            if (CONFIG.API_BASE_URL) {
-              var headers = { 'Content-Type': 'application/json' };
-              if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
-              fetch(CONFIG.API_BASE_URL + '/api/comment', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ mangaId: mangaId, chapterId: chapterId, parentId: parentId, replyTo: null, authorName: authorName, authorAvatar: authorAvatar, content: content })
-              }).catch(function () { toast('Komentar tersimpan lokal, gagal terkirim ke server.', 'warn'); });
-           }
-           render();
+             var content = replaceImageTokens(String(fd.get('content') || ''));
+             apiPublicWrite('/api/comment', {
+               mangaId: mangaId,
+               chapterId: chapterId,
+               parentId: parentId,
+               replyTo: null,
+               authorName: authorName,
+               authorAvatar: authorAvatar,
+               content: content
+             }).then(function () {
+               state.commentNotice = 'Komentar Anda berhasil dikirim dan menunggu moderasi. Terima kasih!';
+               state.replyingTo = null;
+               render();
+               syncFromApi();
+             }).catch(function (err) {
+               toast('Gagal mengirim komentar: ' + (err && err.message ? err.message : err), 'error');
+             });
           };
        }
 
@@ -6251,39 +6276,26 @@ mobileMenu +
            var parentId = rf.getAttribute('data-parent-id');
             var authorName = state.user ? state.user.name : 'Pengunjung';
             var authorAvatar = state.user ? (state.user.avatar || null) : null;
-            var userId = state.user ? state.user.id : null;
-            var replyTo = rf.getAttribute('data-reply-to') || null;
-            var content = replaceImageTokens(String(fd.get('content') || ''));
-            state.data.comments.unshift({
-              id: 'c-' + Date.now(),
-              mangaId: mangaId,
-              parentId: parentId,
-              chapterId: chapterId,
-              replyTo: replyTo,
-              userId: userId,
-              authorName: authorName,
-              authorAvatar: authorAvatar,
-              content: content,
-              createdAt: new Date().toISOString().slice(0, 10),
-              status: 'pending',
-              upvoteCount: 0,
-              userUpvoted: false
-            });
-            persistData();
-            state.commentNotice = 'Balasan Anda berhasil dikirim dan menunggu moderasi.';
-            state.replyingTo = null;
-            if (CONFIG.API_BASE_URL) {
-              var headers = { 'Content-Type': 'application/json' };
-              if (state.adminToken) headers['Authorization'] = 'Bearer ' + state.adminToken;
-              fetch(CONFIG.API_BASE_URL + '/api/comment', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ mangaId: mangaId, chapterId: chapterId, parentId: parentId, replyTo: replyTo, authorName: authorName, authorAvatar: authorAvatar, content: content })
-              }).catch(function () { toast('Balasan tersimpan lokal, gagal terkirim ke server.', 'warn'); });
-           }
-           render();
-         };
-       });
+             var replyTo = rf.getAttribute('data-reply-to') || null;
+             var content = replaceImageTokens(String(fd.get('content') || ''));
+             apiPublicWrite('/api/comment', {
+               mangaId: mangaId,
+               chapterId: chapterId,
+               parentId: parentId,
+               replyTo: replyTo,
+               authorName: authorName,
+               authorAvatar: authorAvatar,
+               content: content
+             }).then(function () {
+               state.commentNotice = 'Balasan Anda berhasil dikirim dan menunggu moderasi.';
+               state.replyingTo = null;
+               render();
+               syncFromApi();
+             }).catch(function (err) {
+               toast('Gagal mengirim balasan: ' + (err && err.message ? err.message : err), 'error');
+             });
+          };
+        });
 
        var imgFile = document.getElementById('kv-comment-image-file');
        if (imgFile) {
@@ -6546,13 +6558,14 @@ mobileMenu +
       }
       else if (act === 'toggle-edit-profile') { state.editingProfile = !state.editingProfile; render(); }
       else if (act === 'logout-user' || act === 'logout-admin') {
-        state.user = null;
-        state.adminToken = '';
-        state.usersCache = undefined;
+        clearSession();
+        clearProfileOverrides();
         state.data = { manga: [], chapters: [], comments: [] };
-        localStorage.removeItem('kv_session_token');
+        state.sessionNotice = '';
+        state.catalogNotice = '';
         localStorage.removeItem('kv_local_data');
-        localStorage.removeItem('kv_profile_override');
+        localStorage.removeItem('kv_site_settings');
+        localStorage.removeItem('kv_catalog_snapshot');
         render();
         syncFromApi();
       }
@@ -6737,6 +6750,20 @@ mobileMenu +
       if (e.key === 'kv_theme') {
         var t = e.newValue === 'dark' ? 'dark' : 'light';
         if (state.theme !== t) { state.theme = t; applyTheme(); render(); }
+      }
+    });
+    window.addEventListener('online', function () {
+      state.catalogNotice = '';
+      state.sessionNotice = '';
+      refreshSession();
+      syncFromApi();
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && navigator.onLine) {
+        state.catalogNotice = '';
+        state.sessionNotice = '';
+        refreshSession();
+        syncFromApi();
       }
     });
      applyTheme();
