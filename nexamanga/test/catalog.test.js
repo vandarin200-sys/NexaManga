@@ -10,7 +10,8 @@ const {
   pinComment,
   registerOAuthUser,
   saveChapter,
-  saveManga
+  saveManga,
+  saveSettings
 } = require('../lib/catalog');
 
 function catalog() {
@@ -142,4 +143,15 @@ test('chapter comments are scoped to their chapter and replies inherit it', () =
   assert.equal(reply.chapterId, 'ch1');
   assert.throws(() => addComment(data, { mangaId: 'm1', chapterId: 'ch2', parentId: comment.id, authorName: 'X', content: 'Balasan beda chapter.' }), ValidationError);
   assert.throws(() => addComment(data, { mangaId: 'm1', chapterId: 'tidak-ada', authorName: 'X', content: 'Chapter hantu.' }), ValidationError);
+});
+
+test('saveSettings accepts and validates favicon URL', () => {
+  const data = catalog();
+  const settings = saveSettings(data, { faviconUrl: ' https://cdn.example.com/favicon.png ' });
+  assert.equal(settings.faviconUrl, 'https://cdn.example.com/favicon.png');
+  assert.throws(
+    () => saveSettings(data, { faviconUrl: 'javascript:alert(1)' }),
+    ValidationError
+  );
+  assert.equal(data.settings.faviconUrl, 'https://cdn.example.com/favicon.png');
 });

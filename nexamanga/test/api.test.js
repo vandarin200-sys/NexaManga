@@ -712,3 +712,75 @@ test('admin can set a comment back to pending', async () => {
     db.restore();
   }
 });
+
+test('mangadex rating route returns bayesian score for admin', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-admin', role: 'admin' }]
+    }
+  });
+  const dbFetch = global.fetch;
+  global.fetch = async (input, init = {}) => {
+    const url = String(input);
+    if (url === 'https://api.mangadex.org/statistics/manga/m1') {
+      return Response.json({ statistics: { m1: { rating: { bayesian: 8.746, average: 9.1, users: 20 } } } });
+    }
+    return dbFetch(input, init);
+  };
+  try {
+    const res = await call('GET', '/api/mangadex/rating?id=m1', { Authorization: `Bearer ${adminToken()}` });
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.json.rating, 8.75);
+  } finally {
+    db.restore();
+  }
+});
+
+test('mangadex rating route rejects non-admin sessions', async () => {
+  setEnv();
+  const member = createSessionToken({
+    id: 'usr-member',
+    role: 'member',
+    name: 'Member',
+    email: null,
+    provider: 'google'
+  });
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-member', role: 'member' }]
+    }
+  });
+  try {
+    const res = await call('GET', '/api/mangadex/rating?id=m1', { Authorization: `Bearer ${member}` });
+    assert.equal(res.statusCode, 401);
+    assert.match(res.json.error, /Sesi admin/);
+  } finally {
+    db.restore();
+  }
+});
+
+test('mangadex rating route rejects missing id', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-admin', role: 'admin' }]
+    }
+  });
+  try {
+    const res = await call('GET', '/api/mangadex/rating', { Authorization: `Bearer ${adminToken()}` });
+    assert.equal(res.statusCode, 400);
+    assert.match(res.json.error, /ID manga tidak valid/);
+  } finally {
+    db.restore();
+  }
+});

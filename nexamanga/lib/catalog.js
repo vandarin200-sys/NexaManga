@@ -257,7 +257,7 @@ function saveSettings(catalog, input) {
     throw new ValidationError('Data pengaturan tidak valid.');
   }
   const settings = Object.assign({}, catalog.settings || {});
-  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'contactEmail', 'brandMode', 'siteNameColor', 'aboutContent', 'contactContent', 'privacyContent', 'termsContent', 'storageProvider'];
+  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'faviconUrl', 'contactEmail', 'brandMode', 'siteNameColor', 'aboutContent', 'contactContent', 'privacyContent', 'termsContent', 'storageProvider'];
   for (const field of stringFields) {
     const value = input[field];
     if (typeof value !== 'string') continue;
@@ -266,6 +266,8 @@ function saveSettings(catalog, input) {
     if (field === 'siteTagline' && trimmed.length > 250) throw new ValidationError('Tagline maksimal 250 karakter.');
     if (field === 'logoUrl' && trimmed.length > 2048) throw new ValidationError('URL logo terlalu panjang.');
     if (field === 'logoUrl' && trimmed && !/^https?:\/\//i.test(trimmed)) throw new ValidationError('URL logo harus menggunakan HTTP atau HTTPS.');
+    if (field === 'faviconUrl' && trimmed.length > 2048) throw new ValidationError('URL favicon terlalu panjang.');
+    if (field === 'faviconUrl' && trimmed && !/^https?:\/\//i.test(trimmed)) throw new ValidationError('URL favicon harus menggunakan HTTP atau HTTPS.');
     if (field === 'contactEmail' && trimmed.length > 254) throw new ValidationError('Email kontak terlalu panjang.');
     if (['aboutContent', 'contactContent', 'privacyContent', 'termsContent'].includes(field) && trimmed.length > 20000) {
       throw new ValidationError('Konten halaman terlalu panjang (maks 20.000 karakter).');

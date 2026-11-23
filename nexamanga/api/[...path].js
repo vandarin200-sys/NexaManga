@@ -509,6 +509,22 @@ async function handler(req, res) {
       return sendJson(res, 200, data);
     }
 
+    if (route === 'mangadex/rating' && req.method === 'GET') {
+      await requireAdmin(req);
+      const url = new URL(req.url, 'http://localhost');
+      const id = url.searchParams.get('id');
+      if (!id) throw new HttpError(400, 'ID manga tidak valid.');
+      const r = await fetch('https://api.mangadex.org/statistics/manga/' + encodeURIComponent(id), {
+        headers: { 'Accept': 'application/json', 'User-Agent': 'NexaManga/1.0' }
+      });
+      const data = await r.json();
+      if (!r.ok) throw new HttpError(r.status, (data && data.errors && data.errors[0] && data.errors[0].detail) || 'Gagal mengambil rating.');
+      const stat = data && data.statistics && data.statistics[id];
+      const raw = stat && stat.rating ? (stat.rating.bayesian || stat.rating.average || 0) : 0;
+      const rating = Number(raw);
+      return sendJson(res, 200, { rating: Number.isFinite(rating) ? Math.round(rating * 100) / 100 : 0 });
+    }
+
     if (route === 'mangadex/chapters' && req.method === 'GET') {
       await requireAdmin(req);
       const url = new URL(req.url, 'http://localhost');
