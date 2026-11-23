@@ -1718,8 +1718,21 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        .kv-traffic-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
        .kv-traffic-grid { stroke: var(--kv-border); stroke-width: 1; opacity: .65; }
        .kv-traffic-axis { fill: var(--kv-text-muted); font-size: 10px; }
-       .kv-traffic-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-       @media (max-width: 800px) { .kv-traffic-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .kv-traffic-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .kv-traffic-point-dot { pointer-events: none; }
+        .kv-traffic-hit { fill: transparent; cursor: pointer; outline: none; }
+        .kv-traffic-hit.is-selected { fill: rgba(242,169,59,.12); stroke: var(--ad-amber); stroke-width: 1; }
+        .kv-traffic-hit:focus-visible { stroke: var(--ad-teal); stroke-width: 2; }
+        .kv-traffic-tooltip { position: fixed; z-index: 120; width: 250px; max-width: calc(100vw - 20px); box-sizing: border-box; padding: 12px 13px; border: 1px solid rgba(255,255,255,.16); border-radius: 4px; background: #0D1116; color: #EAF1F4; box-shadow: 0 18px 40px -26px rgba(0,0,0,.9); opacity: 0; transform: translateY(4px); transition: opacity .14s ease, transform .14s ease; }
+        .kv-traffic-tooltip[hidden] { display: none; }
+        .kv-traffic-tooltip.is-visible { opacity: 1; transform: none; }
+        .kv-traffic-tip-head { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .78rem; font-weight: 600; letter-spacing: -.01em; }
+        .kv-traffic-tip-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 8px; font-size: .68rem; color: #92A5B2; }
+        .kv-traffic-tip-row span { display: flex; align-items: center; gap: 7px; }
+        .kv-traffic-tip-row i { width: 7px; height: 7px; border-radius: 2px; flex: 0 0 auto; }
+        .kv-traffic-tip-row strong { font-family: 'JetBrains Mono', monospace; font-size: .72rem; font-weight: 600; color: #EAF1F4; }
+        .kv-traffic-tip-foot { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.12); font-family: 'JetBrains Mono', monospace; font-size: .56rem; line-height: 1.5; color: #92A5B2; }
+        @media (max-width: 800px) { .kv-traffic-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
        @media (max-width: 460px) { .kv-traffic-cards { grid-template-columns: 1fr 1fr; } .kv-traffic-value { font-size: 24px; } }
        .kv-admin-chapter-card { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
        .kv-admin-chapter-card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -2674,7 +2687,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       adminRefocusSearch: false,
        adminExpandedManga: null,
        uploadProgress: null,
-        analyticsData: undefined,
+         analyticsData: undefined,
+         trafficTooltipRows: [],
+
 
        mdUrl: '',
        mdLang: 'en',
@@ -2684,11 +2699,13 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        mdError: '',
        mdImporting: false,
        mdProgress: null,
-       analyticsFrom: '',
-       analyticsTo: '',
-       analyticsDefaultMonth: '',
-       analyticsUserChanged: false,
-       analyticsError: '',
+        analyticsFrom: '',
+        analyticsTo: '',
+        analyticsDefaultKey: '',
+        analyticsUserChanged: false,
+        analyticsError: '',
+        analyticsRequestId: 0,
+
 
        commentFilter: 'Semua',
        commentSort: 'newest',
@@ -2769,6 +2786,102 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 
     function today() {
       return new Date().toISOString().slice(0, 10);
+    }
+    function localIsoDate(date) {
+      var d = date instanceof Date ? date : new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function analyticsDefaultRange() {
+      var now = new Date();
+      return {
+        from: now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01',
+        to: localIsoDate(now)
+      };
+    }
+    function syncAnalyticsDefaultRange() {
+      var def = analyticsDefaultRange();
+      var key = def.from + '|' + def.to;
+      if (state.analyticsDefaultKey !== key) {
+        state.analyticsDefaultKey = key;
+        state.analyticsFrom = def.from;
+        state.analyticsTo = def.to;
+        state.analyticsUserChanged = false;
+        state.analyticsData = undefined;
+      } else if (!state.analyticsUserChanged) {
+        if (!state.analyticsFrom) state.analyticsFrom = def.from;
+        if (!state.analyticsTo) state.analyticsTo = def.to;
+      }
+      return def;
+    }
+    function refreshAnalyticsPeriodIfNeeded() {
+      var before = state.analyticsDefaultKey;
+      syncAnalyticsDefaultRange();
+      if (state.analyticsDefaultKey !== before && state.adminTab === 'analytics') render();
+    }
+    function dateFromKey(key) {
+      var m = String(key || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return null;
+      var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+      return isNaN(d.getTime()) ? null : d;
+    }
+    function parseDateKey(value) {
+      var raw = String(value || '').trim();
+      var m = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return m[0];
+      var d = new Date(raw);
+      return isNaN(d.getTime()) ? '' : localIsoDate(d);
+    }
+    function fullDateLabel(key) {
+      var d = dateFromKey(key);
+      if (!d) return String(key || '-');
+      try {
+        return new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+      } catch (e) {
+        return localIsoDate(d);
+      }
+    }
+    function shortDateLabel(key) {
+      var d = dateFromKey(key);
+      if (!d) return String(key || '-');
+      return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+    function buildDailySeries(rows, from, to) {
+      var start = dateFromKey(from);
+      var end = dateFromKey(to);
+      if (!start || !end || start > end) return [];
+      var map = {};
+      (rows || []).forEach(function (r) {
+        var key = parseDateKey(r.date || r.day || '');
+        if (!key) return;
+        map[key] = {
+          date: key,
+          pageviews: Number(r.pageviews) || 0,
+          visitors: Number(r.visitors) || 0,
+          visits: Number(r.visits) || 0
+        };
+      });
+      var out = [];
+      var cur = new Date(start.getTime());
+      var guard = 0;
+      while (cur <= end && guard < 3660) {
+        var key = localIsoDate(cur);
+        var row = map[key] || {};
+        out.push({
+          date: key,
+          pageviews: row.pageviews || 0,
+          visitors: row.visitors || 0,
+          visits: row.visits || 0
+        });
+        cur.setDate(cur.getDate() + 1);
+        guard++;
+      }
+      return out;
+    }
+    function changeLabel(prev, curr) {
+      if (prev === null || prev === undefined) return '-';
+      if (prev === 0) return curr === 0 ? '0%' : '-';
+      var pct = Math.round(((curr - prev) / prev) * 100);
+      return (pct > 0 ? '+' : '') + pct + '%';
     }
 
      function siteSetting(key, fallback) {
@@ -4705,9 +4818,52 @@ mobileMenu +
         '</div>';
       }
 
+      function hideTrafficTooltip() {
+        var tip = document.getElementById('kv-traffic-tooltip');
+        if (tip) {
+          tip.classList.remove('is-visible');
+          tip.hidden = true;
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('[data-traffic-point]'), function (p) { p.classList.remove('is-selected'); });
+      }
+      function showTrafficTooltip(el) {
+        var tip = document.getElementById('kv-traffic-tooltip');
+        if (!tip || !el) return;
+        var index = Number(el.getAttribute('data-traffic-index'));
+        var row = (state.trafficTooltipRows || [])[index];
+        if (!row) return;
+        var prev = index > 0 ? (state.trafficTooltipRows || [])[index - 1] : null;
+        tip.innerHTML =
+          '<div class="kv-traffic-tip-head">' + escapeHtml(fullDateLabel(row.date)) + '</div>' +
+          '<div class="kv-traffic-tip-row"><span><i style="background:var(--ad-amber);"></i>Pageviews</span><strong>' + row.pageviews.toLocaleString('id-ID') + '</strong></div>' +
+          '<div class="kv-traffic-tip-row"><span><i style="background:var(--ad-teal);"></i>Pengunjung unik</span><strong>' + row.visitors.toLocaleString('id-ID') + '</strong></div>' +
+          '<div class="kv-traffic-tip-row"><span><i style="background:rgba(234,241,244,.35);"></i>Kunjungan</span><strong>' + row.visits.toLocaleString('id-ID') + '</strong></div>' +
+          '<div class="kv-traffic-tip-foot">vs hari sebelumnya · Pageviews ' + escapeHtml(changeLabel(prev ? prev.pageviews : null, row.pageviews)) +
+          ' · Unik ' + escapeHtml(changeLabel(prev ? prev.visitors : null, row.visitors)) + '</div>';
+        tip.hidden = false;
+        tip.classList.remove('is-visible');
+        var rect = el.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top + rect.height / 2;
+        var tw = tip.offsetWidth;
+        var th = tip.offsetHeight;
+        var margin = 10;
+        var left = cx + 14;
+        if (left + tw > window.innerWidth - margin) left = cx - tw - 14;
+        if (left < margin) left = margin;
+        var top = cy - th - 14;
+        if (top < margin) top = cy + 16;
+        if (top + th > window.innerHeight - margin) top = Math.max(margin, window.innerHeight - th - margin);
+        tip.style.left = left + 'px';
+        tip.style.top = top + 'px';
+        Array.prototype.forEach.call(document.querySelectorAll('[data-traffic-point]'), function (p) { p.classList.toggle('is-selected', p === el); });
+        requestAnimationFrame(function () { tip.classList.add('is-visible'); });
+      }
       function renderTrafficChart(rows) {
-        var list = (rows || []).slice(-30);
+        hideTrafficTooltip();
+        var list = rows || [];
         if (!list.length) return '';
+        state.trafficTooltipRows = list;
         var w = 720, h = 230, left = 46, right = 18, top = 18, bottom = 34;
         var max = list.reduce(function (a, r) { return Math.max(a, r.pageviews || 0, r.visitors || 0); }, 1) || 1;
         var usableW = w - left - right, usableH = h - top - bottom;
@@ -4730,24 +4886,32 @@ mobileMenu +
         var labels = list.map(function (r, i) {
           if (i % labelEvery !== 0 && i !== list.length - 1) return '';
           var p = point(r, i, 'pageviews');
-          return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(String(r.day)) + '</text>';
+          return '<text class="kv-traffic-axis" x="' + p.x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle">' + escapeHtml(shortDateLabel(r.date)) + '</text>';
         }).join('');
-        var dots = list.map(function (r, i) {
-          var p = point(r, i, 'pageviews');
-          return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" style="fill:var(--ad-amber)"><title>' + escapeHtml(r.day) + ': ' + (r.pageviews || 0).toLocaleString('id-ID') + ' pageviews</title></circle>';
-        }).join('');
-        var rangeText = String(list[0].day) + ' — ' + String(list[list.length - 1].day);
+        var dots = '';
+        var hits = '';
+        list.forEach(function (r, i) {
+          var pv = point(r, i, 'pageviews');
+          var uv = point(r, i, 'visitors');
+          var label = fullDateLabel(r.date) + ' · Pageviews ' + r.pageviews.toLocaleString('id-ID') + ', pengunjung unik ' + r.visitors.toLocaleString('id-ID');
+          dots += '<circle class="kv-traffic-point-dot" cx="' + pv.x.toFixed(1) + '" cy="' + pv.y.toFixed(1) + '" r="3.4" style="fill:var(--ad-amber);"/>' +
+            '<circle class="kv-traffic-point-dot" cx="' + uv.x.toFixed(1) + '" cy="' + uv.y.toFixed(1) + '" r="3.4" style="fill:var(--ad-teal);"/>';
+          hits += '<circle class="kv-traffic-hit" data-action="kv-traffic-point" data-traffic-point data-traffic-index="' + i + '" tabindex="0" role="button" aria-label="' + escapeHtml(label) + '" cx="' + pv.x.toFixed(1) + '" cy="' + pv.y.toFixed(1) + '" r="18"/>' +
+            '<circle class="kv-traffic-hit" data-action="kv-traffic-point" data-traffic-point data-traffic-index="' + i + '" tabindex="-1" aria-hidden="true" cx="' + uv.x.toFixed(1) + '" cy="' + uv.y.toFixed(1) + '" r="18"/>';
+        });
+        var rangeText = shortDateLabel(list[0].date) + ' — ' + shortDateLabel(list[list.length - 1].date);
         return '<div class="kv-traffic-chart">' +
           '<h3 class="kv-chart-title" style="margin:0;">Tren Traffic Harian</h3>' +
-          '<p class="kv-chart-sub" style="margin:0 0 12px;">' + escapeHtml(rangeText) + ' · pageviews dan pengunjung unik per hari</p>' +
+          '<p class="kv-chart-sub" style="margin:0 0 12px;">' + escapeHtml(rangeText) + ' · pageviews dan pengunjung unik per hari · hari tanpa aktivitas = 0</p>' +
           '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Grafik traffic harian" style="width:100%;height:auto;overflow:visible;">' +
             grid + labels +
             '<polyline class="kv-traffic-line" points="' + line('pageviews') + '" style="stroke:var(--ad-amber);"/>' +
             '<polyline class="kv-traffic-line" points="' + line('visitors') + '" style="stroke:var(--ad-teal);"/>' +
-            dots +
+            dots + hits +
           '</svg>' +
           '<div class="kv-traffic-legend"><span><i class="kv-traffic-dot" style="background:var(--ad-amber);"></i>Pageviews</span><span><i class="kv-traffic-dot" style="background:var(--ad-teal);"></i>Pengunjung unik</span></div>' +
-        '</div>';
+        '</div>' +
+        '<div id="kv-traffic-tooltip" class="kv-traffic-tooltip" role="status" aria-live="polite" hidden></div>';
       }
       function renderTrafficHistory(rows) {
         var list = (rows || []).slice(-7).reverse();
@@ -4755,35 +4919,22 @@ mobileMenu +
         var max = list.reduce(function (a, r) { return Math.max(a, r.pageviews || 0); }, 1) || 1;
         var rowsHtml = list.map(function (r) {
           var pct = Math.round(((r.pageviews || 0) / max) * 100);
-          return '<tr><td class="kv-traffic-date kv-mono" title="' + escapeHtml(r.day) + '">' + escapeHtml(r.day) + '</td>' +
+          var dayLabel = shortDateLabel(r.date);
+          return '<tr><td class="kv-traffic-date kv-mono" title="' + escapeHtml(fullDateLabel(r.date)) + '">' + escapeHtml(dayLabel) + '</td>' +
             '<td>' + (r.pageviews || 0).toLocaleString('id-ID') + '<div class="kv-traffic-mini"><i style="width:' + pct + '%;"></i></div></td>' +
             '<td>' + (r.visitors || 0).toLocaleString('id-ID') + '</td>' +
             '<td>' + (r.visits || 0).toLocaleString('id-ID') + '</td></tr>';
         }).join('');
-        var rangeText = String(list[list.length - 1].day) + ' — ' + String(list[0].day);
+        var rangeText = shortDateLabel(list[list.length - 1].date) + ' — ' + shortDateLabel(list[0].date);
         return '<div class="kv-card kv-traffic-history" style="margin-top:16px;">' +
           '<h3 class="kv-section-title" style="margin:0 0 12px;">aktivitas 7 hari terakhir · ' + escapeHtml(rangeText) + '</h3>' +
           '<div class="kv-table-wrap"><table class="kv-table"><thead><tr><th>TANGGAL</th><th>PAGEVIEWS</th><th>PENGUNJUNG</th><th>KUNJUNGAN</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' +
         '</div>';
       }
       function renderAdminAnalytics() {
-        var now = new Date();
-        var curMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-        var defaultFrom = curMonth + '-01';
-        var defaultTo = now.toISOString().slice(0, 10);
-        if (state.analyticsDefaultMonth !== curMonth) {
-          state.analyticsDefaultMonth = curMonth;
-          state.analyticsUserChanged = false;
-          state.analyticsFrom = defaultFrom;
-          state.analyticsTo = defaultTo;
-          state.analyticsData = undefined;
-        }
-        if (!state.analyticsUserChanged) {
-          if (!state.analyticsFrom) state.analyticsFrom = defaultFrom;
-          if (!state.analyticsTo) state.analyticsTo = defaultTo;
-        }
-        var fromStr = state.analyticsFrom || defaultFrom;
-        var toStr = state.analyticsTo || defaultTo;
+        var defaults = syncAnalyticsDefaultRange();
+        var fromStr = state.analyticsFrom || defaults.from;
+        var toStr = state.analyticsTo || defaults.to;
         state.analyticsFrom = fromStr;
         state.analyticsTo = toStr;
         if (state.analyticsData === undefined) {
@@ -4795,7 +4946,7 @@ mobileMenu +
         var rawTotals = raw.totals || {};
         var hasData = ((raw.daily && raw.daily.length) || 0) > 0 && (rawTotals.pageviews || 0) > 0;
         var t = raw.totals || { pageviews: 0, visitors: 0, visits: 0, average: 0 };
-        var daily = raw.daily || [];
+        var daily = buildDailySeries(raw.daily, raw.from || fromStr, raw.to || toStr);
         var errorHtml = (state.analyticsData === null && state.analyticsError)
           ? '<div class="kv-traffic-banner kv-traffic-banner-error"><span class="kv-traffic-badge">GAGAL MEMUAT</span><span>' + escapeHtml(state.analyticsError) + '</span></div>'
           : '';
@@ -5302,13 +5453,15 @@ mobileMenu +
 
      function loadAdminAnalytics(from, to) {
        if (!CONFIG.API_BASE_URL || !state.adminToken) return;
-       var f = from || (state.analyticsFrom || '');
-       var t = to || (state.analyticsTo || '');
-       if (!f || !t) return;
-       fetch(CONFIG.API_BASE_URL + '/api/analytics?from=' + encodeURIComponent(f) + '&to=' + encodeURIComponent(t), { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
-         .then(function (r) { if (!r.ok) throw new Error('Gagal memuat analitik (HTTP ' + r.status + ').'); return r.json(); })
-         .then(function (res) { state.analyticsData = res; state.analyticsError = ''; render(); })
-         .catch(function (e) { state.analyticsData = null; state.analyticsError = (e && e.message) ? e.message : 'Gagal memuat analitik.'; render(); });
+        var f = from || (state.analyticsFrom || '');
+        var t = to || (state.analyticsTo || '');
+        if (!f || !t) return;
+        state.analyticsRequestId = (state.analyticsRequestId || 0) + 1;
+        var requestId = state.analyticsRequestId;
+        fetch(CONFIG.API_BASE_URL + '/api/analytics?from=' + encodeURIComponent(f) + '&to=' + encodeURIComponent(t), { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
+          .then(function (r) { if (!r.ok) throw new Error('Gagal memuat analitik (HTTP ' + r.status + ').'); return r.json(); })
+          .then(function (res) { if (requestId !== state.analyticsRequestId) return; state.analyticsData = res; state.analyticsError = ''; render(); })
+          .catch(function (e) { if (requestId !== state.analyticsRequestId) return; state.analyticsData = null; state.analyticsError = (e && e.message) ? e.message : 'Gagal memuat analitik.'; render(); });
      }
 
      function loadAdminUsers() {
@@ -5982,9 +6135,10 @@ mobileMenu +
        ========================================================================= */
      function render() {
 
-      var app = document.getElementById('kv-app');
-      if (!app) return;
-      applyFavicon();
+       var app = document.getElementById('kv-app');
+       if (!app) return;
+       hideTrafficTooltip();
+       applyFavicon();
        if (document.body) {
           document.body.classList.toggle('kv-home-route', state.route === 'home' || state.route === 'catalog' || state.route === 'account' || state.route === 'notification' || state.route === 'info');
           document.body.classList.toggle('kv-detail-route', state.route === 'detail');
@@ -6574,6 +6728,8 @@ mobileMenu +
         state.adminRoleMenuOpen = null;
         if (!e.target.closest || !e.target.closest('[data-action]')) { render(); return; }
       }
+      var trafficPoint = e.target && e.target.closest ? e.target.closest('[data-traffic-point]') : null;
+      if (!trafficPoint && !e.target.closest('.kv-traffic-tooltip')) hideTrafficTooltip();
       var insideBrandMenu = e.target && e.target.closest ? e.target.closest('.kv-brand-mode-menu') : null;
       if (!insideBrandMenu) setBrandModePanel(false);
       var trigger = e.target.closest && e.target.closest('.kv-dropdown-btn');
@@ -6586,8 +6742,9 @@ mobileMenu +
       }
       var el = e.target.closest('[data-action]');
       if (!el) return;
-      var act = el.getAttribute('data-action');
-      if (act === 'toggle-theme') { state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme(); render(); }
+       var act = el.getAttribute('data-action');
+       if (act === 'kv-traffic-point') { showTrafficTooltip(el); return; }
+       if (act === 'toggle-theme') { state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme(); render(); }
       else if (act === 'oauth-login') {
         if (!CONFIG.API_BASE_URL) { toast('Backend Vercel belum dikonfigurasi.', 'warn'); return; }
         var provider = el.getAttribute('data-provider');
@@ -6843,6 +7000,8 @@ mobileMenu +
       if (e.key === 'Escape') {
         var brandPanel = document.getElementById('kv-brand-mode-panel');
         if (brandPanel && !brandPanel.hidden) { setBrandModePanel(false); return; }
+        var trafficTip = document.getElementById('kv-traffic-tooltip');
+        if (trafficTip && !trafficTip.hidden) { hideTrafficTooltip(); return; }
       }
       if (e.key === 'Escape' && state.openCatalogDropdown) {
         state.openCatalogDropdown = null;
@@ -6910,7 +7069,22 @@ mobileMenu +
         refreshSession();
         syncFromApi();
       }
+      if (!document.hidden) refreshAnalyticsPeriodIfNeeded();
     });
+    document.addEventListener('pointerover', function (e) {
+      if (e.pointerType === 'touch' || !e.target.closest) return;
+      var p = e.target.closest('[data-traffic-point]');
+      if (p) showTrafficTooltip(p);
+    });
+    document.addEventListener('touchstart', function (e) {
+      var p = e.target && e.target.closest ? e.target.closest('[data-traffic-point]') : null;
+      if (p) showTrafficTooltip(p);
+    }, { passive: true });
+    document.addEventListener('focusin', function (e) {
+      var p = e.target && e.target.closest ? e.target.closest('[data-traffic-point]') : null;
+      if (p) showTrafficTooltip(p);
+    });
+    setInterval(refreshAnalyticsPeriodIfNeeded, 60000);
      applyTheme();
      parseRoute();
      initializeAuth();
