@@ -2,6 +2,7 @@
 
 const DEFAULT_TITLE = 'Katalog Manga';
 const DEFAULT_DESCRIPTION = 'Katalog manga berbahasa Indonesia.';
+const DEFAULT_THEME_COLOR = '#F7F1E6';
 
 function clean(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
@@ -10,6 +11,15 @@ function clean(value) {
 function clip(value, max) {
   const text = clean(value);
   return text.length > max ? text.slice(0, max - 1).trim() + '\u2026' : text;
+}
+
+function normalizeColor(value) {
+  const color = clean(value);
+  if (/^#[0-9a-f]{3}$/i.test(color)) {
+    return '#' + color.slice(1).split('').map((char) => char + char).join('').toUpperCase();
+  }
+  if (/^#[0-9a-f]{6}(?:[0-9a-f]{2})?$/i.test(color)) return color.toUpperCase();
+  return '';
 }
 
 function absoluteUrl(value, base) {
@@ -32,6 +42,8 @@ function buildEmbed(catalog, routePath, origin) {
   let title = name || DEFAULT_TITLE;
   let description = descriptionBase;
   let image = absoluteUrl(settings.logoUrl, origin);
+  const favicon = absoluteUrl(settings.faviconUrl, origin) || absoluteUrl(settings.logoUrl, origin);
+  const themeColor = normalizeColor(settings.siteNameColor);
   let type = 'website';
 
   if (parts[0] === 'manga' && parts[1]) {
@@ -51,9 +63,11 @@ function buildEmbed(catalog, routePath, origin) {
     title: title || DEFAULT_TITLE,
     description: description || DEFAULT_DESCRIPTION,
     image,
+    favicon,
+    themeColor,
     type,
     url: canonical,
-    siteName: name,
+    siteName: name || DEFAULT_TITLE,
     twitterCard: image ? 'summary_large_image' : 'summary'
   };
 }
@@ -80,6 +94,10 @@ function removeCanonical(html) {
   return html.replace(/<link\s+[^>]*rel\s*=\s*["']canonical["'][^>]*>/gi, '');
 }
 
+function removeIconLinks(html) {
+  return html.replace(/<link\s+[^>]*rel\s*=\s*["'](?:shortcut icon|icon|apple-touch-icon)["'][^>]*>/gi, '');
+}
+
 function metaTag(attr, key, value) {
   if (!value) return '';
   return '<meta ' + attr + '="' + key + '" content="' + escapeAttr(value) + '">';
@@ -98,10 +116,12 @@ function injectEmbed(html, embed) {
     ['name', 'twitter:card'],
     ['name', 'twitter:title'],
     ['name', 'twitter:description'],
-    ['name', 'twitter:image']
+    ['name', 'twitter:image'],
+    ['name', 'theme-color']
   ];
   keys.forEach(function (entry) { output = removeMeta(output, entry[0], entry[1]); });
   output = removeCanonical(output);
+  output = removeIconLinks(output);
   output = output.replace(/<title[^>]*>[\s\S]*?<\/title\s*>/i, function () {
     return '<title>' + escapeAttr(embed.title) + '</title>';
   });
@@ -118,7 +138,10 @@ function injectEmbed(html, embed) {
     metaTag('name', 'twitter:title', embed.title),
     metaTag('name', 'twitter:description', embed.description),
     metaTag('name', 'twitter:image', embed.image),
-    (embed.url ? '<link rel="canonical" href="' + escapeAttr(embed.url) + '">' : '')
+    (embed.url ? '<link rel="canonical" href="' + escapeAttr(embed.url) + '">' : ''),
+    metaTag('name', 'theme-color', embed.themeColor || DEFAULT_THEME_COLOR),
+    (embed.favicon ? '<link rel="icon" href="' + escapeAttr(embed.favicon) + '">' : ''),
+    (embed.favicon ? '<link rel="shortcut icon" href="' + escapeAttr(embed.favicon) + '">' : '')
   ].filter(Boolean).join('\n  ');
 
   if (/<head[^>]*>/i.test(output)) {
