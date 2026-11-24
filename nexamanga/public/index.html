@@ -3386,12 +3386,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       var catalog = (state.data && state.data.manga) || [];
       if (state.route === 'detail' || state.route === 'reader') {
         var manga = catalog.filter(function (m) { return m.slug === state.params.slug; })[0];
-        if (manga) {
-          title = (state.route === 'reader' ? 'Baca ' : '') + manga.title + (name ? ' — ' + name : '');
-          description = clipMetaText(manga.synopsis || ('Baca ' + manga.title + ' di katalog manga berbahasa Indonesia.'), 160);
-          image = absoluteMetaUrl(manga.coverBloggerUrl) || image;
-          type = 'article';
-        }
+        if (!manga) return;
+        title = (state.route === 'reader' ? 'Baca ' : '') + manga.title + (name ? ' — ' + name : '');
+        description = clipMetaText(manga.synopsis || ('Baca ' + manga.title + ' di katalog manga berbahasa Indonesia.'), 160);
+        image = absoluteMetaUrl(manga.coverBloggerUrl) || image;
+        type = 'article';
       } else if (state.route === 'catalog') {
         title = 'Archive / Daftar' + (name ? ' — ' + name : '');
       } else if (state.route === 'info' && state.params.page) {
