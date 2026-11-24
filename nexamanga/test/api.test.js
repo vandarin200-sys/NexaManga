@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const handler = require('../api/[...path].js');
-const { createSessionToken } = require('../lib/auth');
+const { TOKEN_LIFETIME_SECONDS, createSessionToken, verifySessionToken } = require('../lib/auth');
 
 function responseHarness() {
   return {
@@ -361,6 +361,7 @@ test('CORS allows configured blog origin even with quoted env value', async () =
   const res = await call('GET', '/api/health', { Origin: 'https://nexa.example' });
   assert.equal(res.statusCode, 200);
   assert.equal(res.headers['access-control-allow-origin'], 'https://nexa.example');
+  assert.equal(res.headers['access-control-expose-headers'], 'X-NexaManga-Auth');
 });
 
 test('auth/me rejects missing session', async () => {
@@ -383,9 +384,41 @@ test('auth/me returns profile for valid session', async () => {
   try {
     const res = await call('GET', '/api/auth/me', { Authorization: `Bearer ${adminToken()}` });
     assert.equal(res.statusCode, 200);
+    assert.equal(res.headers['x-nexamanga-auth'], '1');
     assert.equal(res.json.role, 'admin');
     assert.equal(res.json.user.id, 'usr-admin');
     assert.equal(res.json.user.name, 'Admin');
+  } finally {
+    db.restore();
+  }
+});
+
+test('auth/me refreshes a session that is close to expiry', async () => {
+  setEnv();
+  const now = Math.floor(Date.now() / 1000);
+  const expiringToken = createSessionToken({
+    id: 'usr-admin',
+    role: 'admin',
+    name: 'Admin',
+    email: null,
+    provider: 'google'
+  }, now - TOKEN_LIFETIME_SECONDS + 60);
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [{ id: 'usr-admin', role: 'admin', name: 'Admin', provider: 'google' }]
+    }
+  });
+  try {
+    const res = await call('GET', '/api/auth/me', { Authorization: `Bearer ${expiringToken}` });
+    assert.equal(res.statusCode, 200);
+    assert.ok(res.json.token);
+    const claims = verifySessionToken(res.json.token);
+    assert.equal(claims.sub, 'usr-admin');
+    assert.equal(claims.role, 'admin');
+    assert.ok(claims.exp > now + TOKEN_LIFETIME_SECONDS - 120);
   } finally {
     db.restore();
   }

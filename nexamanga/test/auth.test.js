@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
+  TOKEN_LIFETIME_SECONDS,
   createAdminToken,
   createOAuthState,
   createSessionToken,
@@ -11,11 +12,12 @@ const {
   verifySessionToken
 } = require('../lib/auth');
 
-test('admin token is signed and expires after eight hours', () => {
+test('admin token is signed and expires after the configured lifetime', () => {
   process.env.TOKEN_SECRET = 'test-secret-with-more-than-32-characters';
   const token = createAdminToken(1000);
   assert.equal(verifyAdminToken(token, 1001), true);
-  assert.equal(verifyAdminToken(token, 1000 + 8 * 60 * 60), false);
+  assert.equal(verifyAdminToken(token, 1000 + TOKEN_LIFETIME_SECONDS - 1), true);
+  assert.equal(verifyAdminToken(token, 1000 + TOKEN_LIFETIME_SECONDS), false);
   assert.equal(verifyAdminToken(`${token}x`, 1001), false);
 });
 

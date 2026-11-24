@@ -98,14 +98,14 @@ Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/h
 - Akun pertama yang berhasil menyelesaikan OAuth menjadi `admin`.
 - Pendaftaran akun berikutnya menjadi `member`.
 - Role ditetapkan backend dan disimpan di database Neon; nilai role dari browser tidak dipercaya.
-- Pada setiap request penting, backend membaca akun langsung dari Neon: perubahan role (promosikan/turunkan) dan penghapusan akun berlaku **langsung**, tanpa menunggu token 8 jam habis. Identitas komentar juga selalu dipaksa dari sesi server.
+- Pada setiap request penting, backend membaca akun langsung dari Neon: perubahan role (promosikan/turunkan) dan penghapusan akun berlaku **langsung**, tanpa menunggu token habis. Identitas komentar juga selalu dipaksa dari sesi server.
 - Hanya `admin` yang dapat mengakses endpoint pengelolaan manga, chapter, komentar, dan media.
 
 ## Endpoint
 
 - `GET /api/auth/google/start`, `GET /api/auth/discord/start` — mulai login OAuth. Parameter `return_to` harus ada pada `ALLOWED_ORIGINS`.
 - `GET /api/auth/{google|discord}/callback` — callback OAuth.
-- `GET /api/auth/me` — mengembalikan profil dan role sesi aktif.
+- `GET /api/auth/me` — mengembalikan profil dan role sesi aktif, serta memperbarui token saat sesi mendekati habis.
 - `POST /api/admin/storage/init` — inisialisasi sekali, memerlukan sesi admin; biasanya tidak diperlukan karena pendaftaran pertama menginisialisasi otomatis.
 - `GET /api/catalog` — katalog publik; hanya komentar disetujui (dan komentar pending milik pengirimnya) yang dikirim ke pengunjung. Sesi admin menerima semua komentar untuk moderasi. Reaksi dikirim sebagai jumlah suara dan status suara pengirim, bukan daftar identitas pemilih.
 - `POST /api/chapter/reaction`, `POST /api/manga/reaction` — reaksi (`fire`, `shock`, `cry`, `laugh`, `angry`); toggle. Identitas pemilih ditentukan backend dari sesi atau sidik jari anonim; `voterId` dari klien diabaikan.
@@ -120,7 +120,7 @@ Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/h
 - `GET /api/analytics?from=&to=` — analitik traffic (admin).
 - `GET /api/mangadex/manga`, `/chapters`, `/athome`, `/image` — proxy MangaDex (admin).
 
-Seluruh endpoint admin memerlukan `Authorization: Bearer <token>` dengan role `admin`; sesi berlaku 8 jam. Backend tidak menyediakan login password. Endpoint tulis publik dibatasi 15 komentar atau 120 reaksi/pageview per menit per pengunjung (`429` jika terlalu sering); pembatasan ini best-effort karena instance serverless tidak berbagi memori. Perubahan katalog di Neon memakai optimistic concurrency control: jika dua request menulis bersamaan, yang kalah mendapat `409` dan bisa mengulang. Instance serverless masih menangani satu request per invocation, jadi sesi admin tunggal tetap disarankan saat pengubahan massal.
+Seluruh endpoint admin memerlukan `Authorization: Bearer <token>` dengan role `admin`; sesi berlaku 7 hari dan diperbarui otomatis saat halaman dibuka kembali mendekati akhir masa berlaku. Backend tidak menyediakan login password. Endpoint tulis publik dibatasi 15 komentar atau 120 reaksi/pageview per menit per pengunjung (`429` jika terlalu sering); pembatasan ini best-effort karena instance serverless tidak berbagi memori. Perubahan katalog di Neon memakai optimistic concurrency control: jika dua request menulis bersamaan, yang kalah mendapat `409` dan bisa mengulang. Instance serverless masih menangani satu request per invocation, jadi sesi admin tunggal tetap disarankan saat pengubahan massal.
 
 ## Pemeriksaan lokal
 

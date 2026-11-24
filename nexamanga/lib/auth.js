@@ -2,7 +2,8 @@
 
 const crypto = require('node:crypto');
 
-const TOKEN_LIFETIME_SECONDS = 8 * 60 * 60;
+const TOKEN_LIFETIME_SECONDS = 7 * 24 * 60 * 60;
+const SESSION_REFRESH_WINDOW_SECONDS = 24 * 60 * 60;
 const OAUTH_STATE_LIFETIME_SECONDS = 10 * 60;
 const OAUTH_PROVIDERS = Object.freeze(['discord', 'google']);
 
@@ -118,6 +119,8 @@ function verifyAdminToken(token, now = Math.floor(Date.now() / 1000)) {
 
 module.exports = {
   OAUTH_PROVIDERS,
+  SESSION_REFRESH_WINDOW_SECONDS,
+  TOKEN_LIFETIME_SECONDS,
   createAdminToken,
   createOAuthState,
   createSessionToken,

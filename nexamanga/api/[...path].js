@@ -2,6 +2,7 @@
 
 const crypto = require('node:crypto');
 const {
+  SESSION_REFRESH_WINDOW_SECONDS,
   createOAuthState,
   createSessionToken,
   verifyOAuthState,
@@ -132,6 +133,7 @@ function sendJson(res, status, value) {
   res.statusCode = status;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-NexaManga-Auth', '1');
   res.end(JSON.stringify(value));
 }
 
@@ -165,6 +167,7 @@ function setCors(req, res) {
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  res.setHeader('Access-Control-Expose-Headers', 'X-NexaManga-Auth');
   res.setHeader('Access-Control-Max-Age', '86400');
 }
 
@@ -484,7 +487,13 @@ async function handler(req, res) {
           ? 'Akun tidak ditemukan atau sudah dihapus. Silakan masuk kembali.'
           : 'Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.');
       }
-      return sendJson(res, 200, { user: claims.user, role: claims.role });
+      const now = Math.floor(Date.now() / 1000);
+      const refreshedToken = claims.exp - now <= SESSION_REFRESH_WINDOW_SECONDS
+        ? createSessionToken({ ...claims.user, id: claims.sub, role: claims.role }, now)
+        : null;
+      const payload = { user: claims.user, role: claims.role };
+      if (refreshedToken) payload.token = refreshedToken;
+      return sendJson(res, 200, payload);
     }
 
     if (route === 'admin/settings' && req.method === 'POST') {

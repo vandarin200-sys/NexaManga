@@ -2738,6 +2738,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       } catch (e) { return null; }
     }
 
+    function isSessionUnauthorized(response) {
+      return !!response && response.status === 401 &&
+        !!response.headers && typeof response.headers.get === 'function' &&
+        response.headers.get('x-nexamanga-auth') === '1';
+    }
+
     function restoreSessionFromCache(claims) {
       if (!claims || !claims.sub) return null;
       try {
@@ -3161,11 +3167,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
           body: JSON.stringify(payload)
         }).then(function (res) {
-          if (res.status === 401) {
+          if (isSessionUnauthorized(res)) {
             clearSession();
             toast('Sesi admin berakhir. Silakan login ulang.', 'error');
             throw new Error('Sesi admin berakhir');
           }
+          if (res.status === 401) throw new Error('Autentikasi tidak dapat diverifikasi.');
           return parseApiResponse(res);
         });
       }).then(function () {
@@ -3488,16 +3495,25 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         headers: { Authorization: 'Bearer ' + token }
       }).then(function (response) {
         if (state.adminToken !== token) return;
-        if (response.status === 401 || response.status === 403) {
+        if (isSessionUnauthorized(response)) {
           clearSession();
           state.sessionNotice = '';
           if (!quietly || JSON.stringify(state.user || null) !== beforeUser || hadNotice) render();
           syncFromApi(quietly);
           return;
         }
+        if (response.status === 401 || response.status === 403) {
+          state.sessionNotice = 'Profil akun ditampilkan dari cache karena sesi tidak dapat diverifikasi saat ini.';
+          if (!quietly || hadNotice) render();
+          return;
+        }
         if (!response.ok) throw new Error('HTTP ' + response.status);
         return response.json().then(function (result) {
           if (state.adminToken !== token) return;
+          if (result.token && result.token !== token) {
+            state.adminToken = result.token;
+            try { localStorage.setItem('kv_session_token', result.token); } catch (e) {}
+          }
           state.user = result.user || null;
           if (state.user && result.role) state.user.role = result.role;
           if (!state.user) {
@@ -3540,9 +3556,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
          syncFromApi();
          return;
        }
-       var claims = decodeSessionClaims(state.adminToken);
-       var expired = claims && typeof claims.exp === 'number' && claims.exp <= Math.floor(Date.now() / 1000);
-       if (!claims || !claims.sub || expired) {
+        var claims = decodeSessionClaims(state.adminToken);
+        if (!claims || !claims.sub) {
          clearSession();
          render();
          syncFromApi();
@@ -5611,7 +5626,14 @@ mobileMenu +
         state.analyticsRequestId = (state.analyticsRequestId || 0) + 1;
         var requestId = state.analyticsRequestId;
         fetch(CONFIG.API_BASE_URL + '/api/analytics?from=' + encodeURIComponent(f) + '&to=' + encodeURIComponent(t), { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
-          .then(function (r) { if (!r.ok) throw new Error('Gagal memuat analitik (HTTP ' + r.status + ').'); return r.json(); })
+          .then(function (r) {
+            if (isSessionUnauthorized(r)) {
+              clearSession();
+              throw new Error('Sesi admin berakhir. Silakan login ulang.');
+            }
+            if (!r.ok) throw new Error('Gagal memuat analitik (HTTP ' + r.status + ').');
+            return r.json();
+          })
           .then(function (res) { if (requestId !== state.analyticsRequestId) return; state.analyticsData = res; state.analyticsError = ''; render(); })
           .catch(function (e) { if (requestId !== state.analyticsRequestId) return; state.analyticsData = null; state.analyticsError = (e && e.message) ? e.message : 'Gagal memuat analitik.'; render(); });
      }
@@ -5620,7 +5642,14 @@ mobileMenu +
 
       if (!CONFIG.API_BASE_URL || !state.adminToken) return;
       fetch(CONFIG.API_BASE_URL + '/api/admin/users', { headers: { 'Authorization': 'Bearer ' + state.adminToken } })
-        .then(function (r) { if (!r.ok) throw new Error('Gagal memuat pengguna.'); return r.json(); })
+        .then(function (r) {
+          if (isSessionUnauthorized(r)) {
+            clearSession();
+            throw new Error('Sesi admin berakhir. Silakan login ulang.');
+          }
+          if (!r.ok) throw new Error('Gagal memuat pengguna.');
+          return r.json();
+        })
         .then(function (res) { state.usersCache = res.users || []; render(); })
         .catch(function () { state.usersCache = []; });
     }
@@ -5690,8 +5719,13 @@ mobileMenu +
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
         body: JSON.stringify({ id: userId, role: role })
       }).then(function (r) {
-        return r.json().then(function (j) { return { ok: r.ok, status: r.status, body: j }; });
+        return r.json().then(function (j) { return { ok: r.ok, status: r.status, sessionError: isSessionUnauthorized(r), body: j }; });
       }).then(function (res) {
+        if (res.sessionError) {
+          clearSession();
+          alert('Sesi admin berakhir. Silakan login ulang.');
+          return;
+        }
         if (res.ok) {
           if (state.usersCache) {
             state.usersCache = state.usersCache.map(function (u) { if (u.id === userId) { u.role = role; } return u; });
@@ -5711,7 +5745,7 @@ mobileMenu +
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.adminToken },
         body: JSON.stringify({ id: userId })
-      }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 401) { clearSession(); throw new Error('Sesi admin berakhir. Silakan login ulang.'); } if (!r.ok) throw new Error(j.error || 'Gagal menghapus pengguna.'); return j; }); })
+      }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (isSessionUnauthorized(r)) { clearSession(); throw new Error('Sesi admin berakhir. Silakan login ulang.'); } if (r.status === 401) throw new Error('Gagal menghapus pengguna (HTTP 401).'); if (!r.ok) throw new Error(j.error || 'Gagal menghapus pengguna.'); return j; }); })
         .then(function () { toast('Pengguna dihapus.', 'success'); state.usersCache = undefined; loadAdminUsers(); })
         .catch(function (e) { toast(e.message, 'error'); });
     }
@@ -5729,10 +5763,11 @@ mobileMenu +
         body: JSON.stringify(values)
       }).then(function (r) {
         return r.json().catch(function () { return {}; }).then(function (j) {
-          if (r.status === 401) {
+          if (isSessionUnauthorized(r)) {
             clearSession();
             throw new Error('Sesi admin berakhir. Silakan login ulang.');
           }
+          if (r.status === 401) throw new Error('HTTP 401');
           if (!r.ok) throw new Error((j && j.error) || ('HTTP ' + r.status));
           return j.settings || values;
         });
@@ -6635,11 +6670,11 @@ mobileMenu +
             body: JSON.stringify({ fileName: file.name, mimeType: file.type, dataBase64: reader.result })
           }).then(function (r) {
             return r.json().catch(function () { return {}; }).then(function (res) {
-              if (r.status === 401) {
-                state.adminToken = ''; state.user = null;
-                localStorage.removeItem('kv_admin_token'); localStorage.removeItem('kv_session');
+              if (isSessionUnauthorized(r)) {
+                clearSession();
                 throw new Error('Sesi admin berakhir. Silakan login ulang.');
               }
+              if (r.status === 401) throw new Error('HTTP 401');
               if (!r.ok) throw new Error(res.error || ('HTTP ' + r.status));
               return res;
             });
@@ -7201,6 +7236,20 @@ mobileMenu +
 
 
     window.addEventListener('storage', function (e) {
+      if (e.key === 'kv_session_token') {
+        var nextToken = e.newValue;
+        if (nextToken && nextToken !== state.adminToken) {
+          state.adminToken = nextToken;
+          state.user = restoreSessionFromCache(decodeSessionClaims(nextToken));
+          refreshSession(true);
+          render();
+        } else if (!nextToken && state.adminToken) {
+          clearSession();
+          render();
+          syncFromApi(true);
+        }
+        return;
+      }
       if (e.key === 'kv_theme') {
         var t = e.newValue === 'dark' ? 'dark' : 'light';
         if (state.theme !== t) { state.theme = t; applyTheme(); render(); }
