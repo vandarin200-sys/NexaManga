@@ -2221,6 +2221,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-brand-mode-dot.logo-name { background: var(--ad-teal); box-shadow: 0 0 0 3px var(--ad-teal-soft); }
       .kv-admin-shell.kv-admin-top .kv-brand-mode-dot.logo-only { background: var(--ad-amber); box-shadow: 0 0 0 3px var(--ad-amber-soft); }
       .kv-admin-shell.kv-admin-top .kv-brand-mode-dot.name-only { background: var(--ad-muted); box-shadow: 0 0 0 3px var(--ad-raised); }
+      .kv-admin-shell.kv-admin-top .kv-md-lang-menu { position: relative; flex: 0 0 auto; min-width: 190px; }
+      .kv-admin-shell.kv-admin-top .kv-md-lang-menu .kv-user-role-panel { top: calc(100% + 6px); bottom: auto; max-height: 260px; overflow: auto; }
+      .kv-admin-shell.kv-admin-top .kv-md-lang-menu .kv-user-role-btn-dot.all { background: var(--ad-teal); box-shadow: 0 0 0 3px var(--ad-teal-soft); }
+      .kv-admin-shell.kv-admin-top .kv-md-lang-native { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; opacity: 0; pointer-events: none; }
       .kv-admin-shell.kv-admin-top input[type='checkbox'] { accent-color: var(--ad-amber); width: 15px; height: 15px; }
       .kv-admin-shell.kv-admin-top .kv-badge-ok,
       .kv-admin-shell.kv-admin-top .kv-role-badge.admin { border-color: var(--ad-teal); color: var(--ad-teal); background: var(--ad-teal-soft); }
@@ -2821,6 +2825,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 
        mdUrl: '',
        mdLang: 'en',
+       mdLangMenuOpen: false,
        mdQuery: '',
        mdResults: [],
        mdLoading: false,
@@ -5511,6 +5516,81 @@ mobileMenu +
           render();
         }
       }
+      var MD_LANG_OPTIONS = [
+        ['en', 'Inggris', 'EN', 'English'],
+        ['id', 'Indonesia', 'ID', 'Bahasa Indonesia'],
+        ['ja', 'Jepang', 'JA', 'Japanese'],
+        ['ko', 'Korea', 'KO', 'Korean'],
+        ['zh', 'China', 'ZH', 'Chinese'],
+        ['zh-hk', 'China (HK)', 'HK', 'Chinese (Traditional)'],
+        ['es', 'Spanyol', 'ES', 'Spanish'],
+        ['fr', 'Prancis', 'FR', 'French'],
+        ['de', 'Jerman', 'DE', 'German'],
+        ['pt-br', 'Portugis (BR)', 'BR', 'Portuguese'],
+        ['ru', 'Rusia', 'RU', 'Russian'],
+        ['all', 'Semua', 'ALL', 'Semua bahasa']
+      ];
+      function mdLangOption(value) {
+        return MD_LANG_OPTIONS.filter(function (o) { return o[0] === value; })[0] || MD_LANG_OPTIONS[0];
+      }
+      function renderMdLangMenu() {
+        var current = mdLangOption(state.mdLang);
+        var open = state.mdLangMenuOpen;
+        var nativeHtml = MD_LANG_OPTIONS.map(function (o) {
+          return '<option value="' + o[0] + '"' + (o[0] === current[0] ? ' selected' : '') + '>' + o[1] + '</option>';
+        }).join('');
+        var optionHtml = MD_LANG_OPTIONS.map(function (o) {
+          var active = o[0] === current[0];
+          return '<button type="button" class="kv-user-role-option' + (active ? ' is-active' : '') + '" role="option" aria-selected="' + (active ? 'true' : 'false') + '" data-action="md-set-lang" data-value="' + o[0] + '">' +
+            '<span class="kv-user-role-option-mark" aria-hidden="true">' + o[2] + '</span>' +
+            '<span class="kv-user-role-option-body"><strong>' + o[1] + '</strong><small>' + o[3] + '</small></span>' +
+            '<span class="kv-user-role-option-check" aria-hidden="true">' + (active ? '✓' : '') + '</span>' +
+          '</button>';
+        }).join('');
+        return '<div class="kv-user-role-menu kv-md-lang-menu" id="kv-md-lang-menu">' +
+          '<button type="button" class="kv-user-role-btn" id="kv-md-lang-btn" data-action="md-toggle-lang" aria-haspopup="listbox" aria-expanded="' + (open ? 'true' : 'false') + '" aria-label="Bahasa chapter">' +
+            '<span class="kv-user-role-btn-dot' + (current[0] === 'all' ? ' all' : '') + '" aria-hidden="true"></span>' +
+            '<span class="kv-user-role-btn-label" id="kv-md-lang-label">' + current[1] + '</span>' +
+            '<span class="kv-user-role-caret" aria-hidden="true">▾</span>' +
+          '</button>' +
+          '<div class="kv-user-role-panel" id="kv-md-lang-panel" role="listbox" aria-label="Bahasa chapter"' + (open ? '' : ' hidden') + '>' +
+            '<div class="kv-user-role-panel-head"><span>Bahasa chapter</span><span id="kv-md-lang-value">' + current[0] + '</span></div>' +
+            optionHtml +
+          '</div>' +
+          '<select id="kv-md-lang" class="kv-select kv-md-lang-native" aria-label="Bahasa chapter" tabindex="-1">' + nativeHtml + '</select>' +
+        '</div>';
+      }
+      function setMdLangMenu(open) {
+        var btn = document.getElementById('kv-md-lang-btn');
+        var panel = document.getElementById('kv-md-lang-panel');
+        state.mdLangMenuOpen = open;
+        if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (panel) panel.hidden = !open;
+      }
+      function applyMdLangChoice(value) {
+        var opt = mdLangOption(value);
+        var menu = document.getElementById('kv-md-lang-menu');
+        var select = document.getElementById('kv-md-lang');
+        var label = document.getElementById('kv-md-lang-label');
+        var current = document.getElementById('kv-md-lang-value');
+        var dot = menu ? menu.querySelector('.kv-user-role-btn-dot') : null;
+        var panel = document.getElementById('kv-md-lang-panel');
+        state.mdLang = opt[0];
+        if (select) select.value = opt[0];
+        if (label) label.textContent = opt[1];
+        if (current) current.textContent = opt[0];
+        if (dot) dot.className = 'kv-user-role-btn-dot' + (opt[0] === 'all' ? ' all' : '');
+        if (panel) {
+          Array.prototype.forEach.call(panel.querySelectorAll('[data-action="md-set-lang"]'), function (btn) {
+            var active = btn.getAttribute('data-value') === opt[0];
+            btn.classList.toggle('is-active', active);
+            btn.setAttribute('aria-selected', active ? 'true' : 'false');
+            var check = btn.querySelector('.kv-user-role-option-check');
+            if (check) check.textContent = active ? '✓' : '';
+          });
+        }
+        setMdLangMenu(false);
+      }
       function renderAdminMangaDex() {
         var prog = state.mdProgress;
         var progHtml = '';
@@ -5528,9 +5608,7 @@ mobileMenu +
           '</div>' +
           '<div class="kv-md-form">' +
             '<input id="kv-md-url" class="kv-input" type="text" placeholder="https://mangadex.org/title/..." value="' + escapeHtml(state.mdUrl || '') + '" aria-label="URL manga MangaDex"/>' +
-            '<select id="kv-md-lang" class="kv-select" aria-label="Bahasa chapter">' +
-              [['en','Inggris'],['id','Indonesia'],['ja','Jepang'],['ko','Korea'],['zh','China'],['zh-hk','China (HK)'],['es','Spanyol'],['fr','Prancis'],['de','Jerman'],['pt-br','Portugis (BR)'],['ru','Rusia'],['all','Semua']].map(function (o) { return '<option value="' + o[0] + '"' + (state.mdLang === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
-            '</select>' +
+            renderMdLangMenu() +
             '<button type="button" class="kv-btn kv-btn-primary" data-action="md-scrape" ' + (state.mdImporting ? 'disabled' : '') + '>Mulai Impor</button>' +
           '</div>' +
           '<ul class="kv-md-tips">' +
@@ -7093,8 +7171,8 @@ mobileMenu +
        if (aSearch) aSearch.oninput = function (e) { state.adminSearch = e.target.value; state.adminRefocusSearch = true; render(); };
        var mdUrl = document.getElementById('kv-md-url');
        if (mdUrl) mdUrl.oninput = function (e) { state.mdUrl = e.target.value; };
-       var mdLang = document.getElementById('kv-md-lang');
-       if (mdLang) mdLang.onchange = function (e) { state.mdLang = e.target.value; };
+        var mdLang = document.getElementById('kv-md-lang');
+        if (mdLang) mdLang.onchange = function (e) { applyMdLangChoice(e.target.value); };
 
       if (aSearch && state.adminRefocusSearch) {
         state.adminRefocusSearch = false;
@@ -7182,6 +7260,8 @@ mobileMenu +
         state.adminRoleMenuOpen = null;
         if (!e.target.closest || !e.target.closest('[data-action]')) { render(); return; }
       }
+      var insideLangMenu = e.target && e.target.closest ? e.target.closest('.kv-md-lang-menu') : null;
+      if (!insideLangMenu && state.mdLangMenuOpen) setMdLangMenu(false);
       var trafficPoint = e.target && e.target.closest ? e.target.closest('[data-traffic-point]') : null;
       if (!trafficPoint && !e.target.closest('.kv-traffic-tooltip')) hideTrafficTooltip();
       var insideBrandMenu = e.target && e.target.closest ? e.target.closest('.kv-brand-mode-menu') : null;
@@ -7317,7 +7397,7 @@ mobileMenu +
         syncFromApi();
       }
       /* --- Aksi panel admin --- */
-       else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; state.adminChapterFullId = null; state.adminDrawerOpen = false; state.adminRoleMenuOpen = null; if (state.adminTab === 'pengguna') state.usersCache = undefined; render(); }
+       else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); state.adminForm = null; state.adminChapterForm = null; state.adminChapterFullId = null; state.adminDrawerOpen = false; state.adminRoleMenuOpen = null; state.mdLangMenuOpen = false; if (state.adminTab === 'pengguna') state.usersCache = undefined; render(); }
        else if (act === 'admin-toggle-role-menu') {
          var roleMenuId = el.getAttribute('data-id');
          state.adminRoleMenuOpen = state.adminRoleMenuOpen === roleMenuId ? null : roleMenuId;
@@ -7337,7 +7417,9 @@ mobileMenu +
         else if (act === 'admin-set-brand-mode') { applyBrandModeChoice(el.getAttribute('data-value')); }
         else if (act === 'admin-comment-filter') { state.commentFilter = el.getAttribute('data-filter'); render(); }
        else if (act === 'admin-open-leaderboard') { state.adminTab = 'leaderboard'; state.adminDrawerOpen = false; render(); }
-       else if (act === 'md-progress-close') { if (state.mdProgress) { state.mdProgress.dismissed = true; render(); } }
+        else if (act === 'md-toggle-lang') { setMdLangMenu(!state.mdLangMenuOpen); }
+        else if (act === 'md-set-lang') { applyMdLangChoice(el.getAttribute('data-value')); }
+        else if (act === 'md-progress-close') { if (state.mdProgress) { state.mdProgress.dismissed = true; render(); } }
        else if (act === 'md-progress-open') { if (state.mdProgress) { state.mdProgress.dismissed = false; render(); } }
        else if (act === 'md-scrape') {
          var urlInput = document.getElementById('kv-md-url');
@@ -7461,6 +7543,7 @@ mobileMenu +
       if (e.key === 'Escape') {
         var brandPanel = document.getElementById('kv-brand-mode-panel');
         if (brandPanel && !brandPanel.hidden) { setBrandModePanel(false); return; }
+        if (state.mdLangMenuOpen) { setMdLangMenu(false); var mdLangBtnEsc = document.getElementById('kv-md-lang-btn'); if (mdLangBtnEsc) mdLangBtnEsc.focus(); return; }
         var trafficTip = document.getElementById('kv-traffic-tooltip');
         if (trafficTip && !trafficTip.hidden) { hideTrafficTooltip(); return; }
       }
