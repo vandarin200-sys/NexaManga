@@ -1343,15 +1343,33 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-reader-chapter-row:hover { background:var(--kv-surface-2); }
       body.kv-reader-route .kv-reader-chapter-row.is-active { background:var(--kv-surface); }
       body.kv-reader-route .kv-reader-chapter-num { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--kv-accent); font-weight:700; min-width:48px; }
-      body.kv-reader-route .kv-reader-chapter-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-       @media (max-width:640px) {
-         body.kv-reader-route .kv-reader-side { right:8px; top:30%; gap:10px; }
-         body.kv-reader-route .kv-round-btn { width:52px; height:52px; }
-         body.kv-reader-route .kv-reader-bottom-controls { gap:8px; bottom:max(12px, env(safe-area-inset-bottom)); }
-         body.kv-reader-route .kv-reader-sheet { bottom:12px; }
-       }
+       body.kv-reader-route .kv-reader-chapter-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+       body.kv-reader-route .kv-reader-bottom-nav { display:none; }
+       body.kv-reader-route .kv-reader-bottom-item { min-width:0; height:50px; padding:2px 0; border:0; border-radius:12px; background:transparent; color:var(--kv-text-muted); cursor:pointer; text-decoration:none; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; transition:color .15s ease, background .15s ease; }
+       body.kv-reader-route .kv-reader-bottom-item svg { width:18px; height:18px; }
+       body.kv-reader-route .kv-reader-bottom-label { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:9.5px; font-weight:700; line-height:1.1; }
+       body.kv-reader-route .kv-reader-bottom-next { color:var(--kv-accent); }
+       body.kv-reader-route .kv-reader-bottom-item.active { color:var(--kv-accent); background:var(--kv-surface-2); }
+       body.kv-reader-route .kv-reader-bottom-item.is-disabled, body.kv-reader-route .kv-reader-bottom-item:disabled { opacity:.35; cursor:not-allowed; pointer-events:none; }
+       body.kv-reader-route .kv-reader-bottom-bar { position:absolute; left:50%; bottom:1px; width:14px; height:2px; border-radius:2px; background:var(--kv-accent); transform:translateX(-50%); }
+        @media (max-width:640px) {
 
-      body.kv-reader-route .kv-reader-notice { color:var(--kv-text-muted); text-align:center; font-size:12px; margin-top:20px; }
+          body.kv-reader-route .kv-reader-side { right:8px; top:30%; gap:10px; }
+          body.kv-reader-route .kv-round-btn { width:52px; height:52px; }
+          body.kv-reader-route .kv-reader-bottom-controls { display:none; }
+          body.kv-reader-route .kv-reader-bottom-nav {
+            display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:2px;
+            position:fixed; left:50%; bottom:calc(10px + env(safe-area-inset-bottom, 0px)); z-index:75;
+            width:calc(100vw - 16px); max-width:520px; padding:6px;
+            transform:translateX(-50%); border:1px solid var(--kv-border); border-radius:22px;
+            background:var(--kv-surface); box-shadow:0 12px 32px -22px rgba(0,0,0,.6); align-items:center;
+          }
+          body.kv-reader-route .kv-reader-sheet { bottom:calc(96px + env(safe-area-inset-bottom, 0px)); }
+        }
+
+
+       body.kv-reader-route .kv-reader-notice { color:var(--kv-text-muted); text-align:center; font-size:12px; margin-top:20px; }
+
       body.kv-reader-route .kv-detail-card { background:var(--kv-surface); border:1px solid var(--kv-border); border-radius:16px; padding:18px; margin:18px 0 0; }
       body.kv-reader-route .kv-detail-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
       body.kv-reader-route .kv-detail-card-title { display:flex; align-items:center; gap:8px; font-size:1.0rem; font-weight:800; color:var(--kv-text); }
@@ -1386,7 +1404,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-detail-comment-children { margin-left:8px; }
       body.kv-reader-route .kv-detail-empty { color:var(--kv-text-muted); font-size:.85rem; text-align:center; padding:18px 0 6px; }
       @media (max-width:640px) {
-        body.kv-reader-route .kv-reader-page { padding:10px 0 32px; }
+        body.kv-reader-route .kv-reader-page { padding:10px 0 calc(112px + env(safe-area-inset-bottom, 0px)); }
         body.kv-reader-route .kv-reader-placeholder { min-height:420px; }
       }
       html:not(.dark) body.kv-home-route .kv-catalog-page { padding-top: 10px; padding-bottom: 48px; }
@@ -4479,6 +4497,19 @@ mobileMenu +
         '</div>' +
       '</div>';
 
+      var readerBottomNav = '<nav class="kv-reader-bottom-nav" aria-label="Menu pembaca cepat">' +
+        (prevCh
+          ? '<a class="kv-reader-bottom-item" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '<span class="kv-reader-bottom-label">Sebelum</span></a>'
+          : '<button type="button" class="kv-reader-bottom-item is-disabled" disabled aria-label="Tidak ada chapter sebelumnya">' + prevIcon + '<span class="kv-reader-bottom-label">Sebelum</span></button>') +
+        (nextCh
+          ? '<a class="kv-reader-bottom-item kv-reader-bottom-next" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" aria-label="Chapter berikutnya">' + nextIcon + '<span class="kv-reader-bottom-label">Berikut</span></a>'
+          : '<button type="button" class="kv-reader-bottom-item is-disabled" disabled aria-label="Tidak ada chapter berikutnya">' + nextIcon + '<span class="kv-reader-bottom-label">Berikut</span></button>') +
+        '<button type="button" class="kv-reader-bottom-item' + (state.readerSettingsOpen ? ' active' : '') + '" data-action="toggle-reader-settings" aria-label="Pengaturan pembaca" aria-pressed="' + (state.readerSettingsOpen ? 'true' : 'false') + '">' + gearIcon + '<span class="kv-reader-bottom-label">Atur</span>' + (state.readerSettingsOpen ? '<span class="kv-reader-bottom-bar" aria-hidden="true"></span>' : '') + '</button>' +
+        '<button type="button" class="kv-reader-bottom-item' + (isPlaying ? ' active' : '') + '" data-action="toggle-auto-scroll" aria-label="' + (isPlaying ? 'Hentikan' : 'Mulai') + ' gulir otomatis" aria-pressed="' + (isPlaying ? 'true' : 'false') + '">' + (isPlaying ? pauseIcon : playIcon) + '<span class="kv-reader-bottom-label">Auto</span>' + (isPlaying ? '<span class="kv-reader-bottom-bar" aria-hidden="true"></span>' : '') + '</button>' +
+        '<button type="button" class="kv-reader-bottom-item' + (state.readerMenuOpen ? ' active' : '') + '" data-action="toggle-reader-menu" aria-label="Daftar chapter" aria-pressed="' + (state.readerMenuOpen ? 'true' : 'false') + '">' + menuIcon + '<span class="kv-reader-bottom-label">Daftar</span>' + (state.readerMenuOpen ? '<span class="kv-reader-bottom-bar" aria-hidden="true"></span>' : '') + '</button>' +
+        '<a class="kv-reader-bottom-item" href="#/" aria-label="Kembali ke Beranda">' + homeIcon + '<span class="kv-reader-bottom-label">Beranda</span></a>' +
+      '</nav>';
+
       var overlay = '<div class="kv-reader-overlay" id="kv-reader-overlay" role="group" aria-label="Kontrol pembaca">' +
         '<div class="kv-reader-side">' +
           '<button type="button" class="kv-round-btn" data-action="scroll-reader-up" aria-label="Gulir ke atas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15L12 8L19 15"/></svg></button>' +
@@ -4511,6 +4542,7 @@ mobileMenu +
           renderCommentSection(manga, chapter.id) +
           notice +
         '</main>' +
+        readerBottomNav +
       '</div>';
     }
 
