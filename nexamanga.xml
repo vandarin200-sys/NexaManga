@@ -4963,8 +4963,8 @@ mobileMenu +
         '</button>';
       };
       var bottomExpanded = !!state.adminBottomExpanded;
-      var bottomHtml = ['dashboard', 'mangadex', 'manga', 'komentar', 'pengaturan'].map(bottomItem).join('');
-      var bottomExtraHtml = ['analytics', 'leaderboard', 'pengguna'].map(bottomItem).join('');
+      var bottomHtml = ['dashboard', 'mangadex', 'manga', 'analytics', 'pengaturan'].map(bottomItem).join('');
+      var bottomExtraHtml = ['komentar', 'leaderboard', 'pengguna'].map(bottomItem).join('');
       var bottomToggle = '<button type="button" class="kv-admin-bottom-expand' + (bottomExpanded ? ' expanded' : '') + '" data-action="toggle-admin-bottom" aria-label="' + (bottomExpanded ? 'Tutup menu tambahan' : 'Buka menu tambahan') + '" aria-expanded="' + (bottomExpanded ? 'true' : 'false') + '">' +
         '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>' +
         '<span>Lainnya</span>' +
