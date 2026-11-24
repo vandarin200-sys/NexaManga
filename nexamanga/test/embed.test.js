@@ -39,7 +39,7 @@ test('buildEmbed uses manga title synopsis and cover for detail routes', () => {
   assert.equal(embed.description, 'Sinopsis manga yang menarik.');
   assert.equal(embed.type, 'article');
   assert.equal(embed.image, 'https://img.example/cover.jpg');
-  assert.equal(embed.favicon, 'https://cdn.example.com/favicon.png');
+  assert.equal(embed.favicon, 'https://demo.example/favicon.ico');
   assert.equal(embed.themeColor, '#FF0000');
   assert.equal(embed.siteName, 'Toko Manga');
   assert.equal(embed.twitterCard, 'summary_large_image');
@@ -71,7 +71,7 @@ test('injectEmbed replaces duplicate metadata and adds canonical link', () => {
   assert.equal(output.includes('<meta property="og:title" content="Judul Manga — Toko Manga">'), true);
   assert.equal(output.includes('<meta property="og:site_name" content="Toko Manga">'), true);
   assert.equal(output.includes('<link rel="canonical" href="https://demo.example/manga/judul-manga">'), true);
-  assert.equal(output.includes('<link rel="icon" href="https://cdn.example.com/favicon.png">'), true);
+  assert.equal(output.includes('<link rel="icon" href="https://demo.example/favicon.ico">'), true);
   assert.equal(output.match(/name="theme-color"/g).length, 1);
   assert.equal(output.includes('<meta name="theme-color" content="#FF0000">'), true);
   assert.equal(output.includes('<meta name="twitter:card" content="summary_large_image">'), true);

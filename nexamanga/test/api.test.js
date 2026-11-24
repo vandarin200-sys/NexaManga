@@ -834,6 +834,35 @@ test('favicon endpoint serves the exact admin media favicon', async () => {
   }
 });
 
+test('favicon endpoint serves a webp admin favicon with webp content type', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [],
+      settings: { faviconUrl: '/api/media/BQACAgUAAyEGAAMBCc8aeQACAsZrBS1S-tfVJORInsSYWcJsVc_SUAACFiQAAr6gKFS2pEVErajX7T0E' }
+    }
+  });
+  const fetchFromDb = global.fetch;
+  const webp = Buffer.concat([Buffer.from('RIFF'), Buffer.from([0x1a, 0, 0, 0]), Buffer.from('WEBP'), Buffer.alloc(16)]);
+  global.fetch = async (input, init) => {
+    const url = String(input);
+    if (url.includes('/getFile')) return Response.json({ ok: true, result: { file_path: 'photos/admin-favicon.webp', file_size: webp.length } });
+    if (url.includes('/file/bot')) return new Response(webp, { status: 200, headers: { 'content-length': String(webp.length) } });
+    return fetchFromDb(input, init);
+  };
+  try {
+    const res = await call('GET', '/api/favicon.ico');
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.headers['content-type'], 'image/webp');
+    assert.equal(Buffer.compare(Buffer.from(res.body), webp), 0);
+  } finally {
+    db.restore();
+  }
+});
+
 test('favicon endpoint returns no content when admin favicon is empty', async () => {
   setEnv();
   const db = mockDatabase({

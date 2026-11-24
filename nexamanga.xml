@@ -932,7 +932,7 @@
       .kv-site-favicon-preview { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 8px 10px; border: 1px dashed var(--kva-border); border-radius: 10px; background: var(--kva-surface-2); color: var(--kva-text-3); font-size: .8rem; }
       .kv-site-favicon-preview img { width: 48px; height: 48px; object-fit: contain; display: block; border-radius: 8px; }
       .kv-admin-shell.kv-admin-top .kv-color-studio {
-        grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .92fr); gap: 12px;
+        grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px;
         padding: 14px; border: 1px solid var(--ad-line); border-radius: 3px;
         background: linear-gradient(90deg, var(--ad-amber-soft), transparent 42%), var(--ad-panel);
         box-shadow: inset 3px 0 0 var(--ad-amber); animation: kvColorStudioIn .18s ease both;
@@ -960,16 +960,6 @@
       .kv-admin-shell.kv-admin-top .kv-color-chip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--chip-color, var(--ad-amber)); }
       .kv-admin-shell.kv-admin-top .kv-color-action { padding: 5px 10px; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised); color: var(--ad-muted); font-family: 'JetBrains Mono', monospace; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
       .kv-admin-shell.kv-admin-top .kv-color-action:hover { border-color: var(--ad-amber); color: var(--ad-amber); }
-      .kv-admin-shell.kv-admin-top .kv-color-preview { min-width: 0; display: grid; align-content: start; gap: 8px; padding: 12px; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-panel); }
-      .kv-admin-shell.kv-admin-top .kv-color-preview-head { display: flex; justify-content: space-between; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: .56rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ad-dim); }
-      .kv-admin-shell.kv-admin-top .kv-color-preview-embed { min-height: 118px; padding: 10px 12px; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised); box-shadow: inset 3px 0 0 var(--embed-color, var(--ad-amber)); }
-      .kv-admin-shell.kv-admin-top .kv-color-provider { display: flex; align-items: center; gap: 7px; font-size: .68rem; color: var(--ad-muted); }
-      .kv-admin-shell.kv-admin-top .kv-color-provider-icon { width: 18px; height: 18px; flex: 0 0 18px; display: grid; place-items: center; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--embed-color, var(--ad-amber)); color: var(--embed-ink, #FFFFFF); font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 700; overflow: hidden; }
-      .kv-admin-shell.kv-admin-top .kv-color-provider-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
-      .kv-admin-shell.kv-admin-top .kv-color-provider-name { color: var(--embed-color, var(--ad-amber)); font-weight: 600; }
-      .kv-admin-shell.kv-admin-top .kv-color-preview-title { margin-top: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: .86rem; font-weight: 600; color: var(--ad-text); }
-      .kv-admin-shell.kv-admin-top .kv-color-preview-desc { margin-top: 3px; font-size: .68rem; line-height: 1.5; color: var(--ad-muted); }
-      .kv-admin-shell.kv-admin-top .kv-color-preview-foot { display: flex; justify-content: space-between; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: .56rem; color: var(--ad-dim); }
       .kv-admin-shell.kv-admin-top .kv-color-note { grid-column: 1 / -1; font-size: .66rem; line-height: 1.55; color: var(--ad-muted); }
       .kv-admin-shell.kv-admin-top .kv-color-native:focus-visible,
       .kv-admin-shell.kv-admin-top .kv-color-hex:focus-visible,
@@ -3002,14 +2992,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         var effective = hex || '#6366F1';
         var ink = colorInk(effective);
         var presets = ['#F2A93B', '#FF5B4A', '#48D7B6', '#E85D9E', '#4F7CAC', '#2F80ED', '#8A560C', '#121820'];
-        var siteName = String(siteSetting('siteName', CONFIG.SITE_NAME) || '').trim();
-        var tagline = String(siteSetting('siteTagline', CONFIG.SITE_TAGLINE) || '').trim();
-        var favicon = siteFavicon();
-        var initial = (siteName || CONFIG.SITE_NAME || 'N').slice(0, 1).toUpperCase();
-        return '<div class="kv-color-studio" data-color-studio style="--chip-color:' + effective + ';--embed-color:' + effective + ';--embed-ink:' + ink + '">' +
+        return '<div class="kv-color-studio" data-color-studio style="--chip-color:' + effective + '">' +
           '<div class="kv-color-studio-head">' +
             '<div><div class="kv-color-studio-kicker">Color Studio / Identitas</div><div class="kv-color-studio-title">Warna Nama Situs</div></div>' +
-            '<div class="kv-color-studio-hint">Pilih dari preset, sampler, atau ketik hex. Pratinjau di samping memperbarui secara langsung.</div>' +
+            '<div class="kv-color-studio-hint">Pilih dari preset, sampler, atau ketik hex kode warna.</div>' +
           '</div>' +
           '<div class="kv-color-studio-controls">' +
             '<label class="kv-color-field-label">Warna Pilihan' +
@@ -3029,45 +3015,15 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
               '<button type="button" class="kv-color-action" data-action="admin-color-reset">Kosongkan</button>' +
             '</div>' +
           '</div>' +
-          '<div class="kv-color-preview">' +
-            '<div class="kv-color-preview-head"><span>Pratinjau Embed</span><span>Live</span></div>' +
-            '<div class="kv-color-preview-embed">' +
-              '<div class="kv-color-provider"><span class="kv-color-provider-icon" data-color-icon>' + (favicon ? '<img src="' + escapeHtml(favicon) + '" alt=""/>' : '<span data-color-initial>' + escapeHtml(initial) + '</span>') + '</span><span class="kv-color-provider-name" data-color-name>' + escapeHtml(siteName || 'Nama Situs') + '</span></div>' +
-              '<div class="kv-color-preview-title" data-color-title>' + escapeHtml('Judul Manga — ' + (siteName || 'Nama Situs')) + '</div>' +
-              '<div class="kv-color-preview-desc" data-color-desc>' + escapeHtml(tagline || 'Deskripsi singkat akan tampil di sini.') + '</div>' +
-              '<div class="kv-color-preview-foot"><span>theme-color</span><span data-color-foot>' + escapeHtml(hex ? hex.toUpperCase() : 'DEFAULT') + '</span></div>' +
-            '</div>' +
-          '</div>' +
-          '<p class="kv-color-note">Warna ini dipakai untuk nama situs, garis aksen pratinjau, dan <code>theme-color</code> embed Discord. Kosongkan untuk memakai warna bawaan tema.</p>' +
+          '<p class="kv-color-note">Warna ini dipakai untuk nama situs dan <code>theme-color</code> embed Discord. Kosongkan untuk memakai warna bawaan tema.</p>' +
         '</div>';
       }
       function bindColorStudio(form, studio) {
         var native = form.querySelector('input[name="siteNameColor"]');
         var hex = studio.querySelector('.kv-color-hex');
         var code = studio.querySelector('[data-color-code]');
-        var foot = studio.querySelector('[data-color-foot]');
         var contrast = studio.querySelector('[data-color-contrast]');
         var presets = Array.prototype.slice.call(studio.querySelectorAll('.kv-color-preset'));
-        var previewName = studio.querySelector('[data-color-name]');
-        var previewTitle = studio.querySelector('[data-color-title]');
-        var previewDesc = studio.querySelector('[data-color-desc]');
-        var previewIcon = studio.querySelector('[data-color-icon]');
-        var nameInput = form.querySelector('input[name="siteName"]');
-        var taglineInput = form.querySelector('input[name="siteTagline"]');
-        var faviconInput = form.querySelector('input[name="faviconUrl"]');
-        function updateText() {
-          var siteName = nameInput ? nameInput.value.trim() : '';
-          var tagline = taglineInput ? taglineInput.value.trim() : '';
-          var favicon = faviconInput ? faviconInput.value.trim() : '';
-          if (previewName) previewName.textContent = siteName || 'Nama Situs';
-          if (previewTitle) previewTitle.textContent = siteName ? siteName + ' — ' + siteName : 'Judul Manga — Nama Situs';
-          if (previewDesc) previewDesc.textContent = tagline || 'Deskripsi singkat akan tampil di sini.';
-          if (previewIcon) {
-            previewIcon.innerHTML = favicon ? '<img src="' + escapeHtml(favicon) + '" alt=""/>' : '<span data-color-initial></span>';
-            var initial = studio.querySelector('[data-color-initial]');
-            if (initial) initial.textContent = (siteName || 'N').slice(0, 1).toUpperCase();
-          }
-        }
         function applyColor(value, preserveInput) {
           var normalized = normalizeHexColor(value);
           var raw = String(value || '').trim();
@@ -3080,15 +3036,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           var effective = normalized || '#6366F1';
           var ink = colorInk(effective);
           studio.style.setProperty('--chip-color', effective);
-          studio.style.setProperty('--embed-color', effective);
-          studio.style.setProperty('--embed-ink', ink);
           if (code) code.textContent = normalized ? normalized.toUpperCase() : 'DEFAULT';
-          if (foot) foot.textContent = normalized ? normalized.toUpperCase() : 'DEFAULT';
           if (contrast) contrast.textContent = normalized ? 'Kontras ' + colorContrast(effective, ink) : 'Mengikuti tema';
           presets.forEach(function (button) {
             button.classList.toggle('is-active', button.getAttribute('data-color') === normalized);
           });
-          updateText();
         }
         if (native) native.addEventListener('input', function () { applyColor(native.value, false); });
         if (hex) {
@@ -3100,9 +3052,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         });
         var reset = studio.querySelector('[data-action="admin-color-reset"]');
         if (reset) reset.addEventListener('click', function () { applyColor('', false); });
-        [nameInput, taglineInput, faviconInput].forEach(function (input) {
-          if (input) input.addEventListener('input', updateText);
-        });
         applyColor(hex ? hex.value : native ? native.value : '', false);
       }
 
@@ -3563,16 +3512,22 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
      }
 
 
-    function syncFromApi() {
+    function syncFromApi(silent) {
+      var quietly = !!silent;
+      var hadNotice = !!state.catalogNotice;
       if (!CONFIG.API_BASE_URL) {
         state.loading = false;
-        state.error = 'Backend tidak dikonfigurasi. Atur API_BASE_URL terlebih dahulu.';
-        state.catalogNotice = '';
-        render();
+        if (!quietly) {
+          state.error = 'Backend tidak dikonfigurasi. Atur API_BASE_URL terlebih dahulu.';
+          state.catalogNotice = '';
+          render();
+        }
         return Promise.resolve();
       }
-      state.loading = true;
-      render();
+      if (!quietly) {
+        state.loading = true;
+        render();
+      }
       var headers = {};
       if (state.adminToken) headers.Authorization = 'Bearer ' + state.adminToken;
       return fetch(CONFIG.API_BASE_URL + '/api/catalog', { headers: headers })
@@ -3582,17 +3537,22 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           return r.json();
         })
         .then(function (json) {
+          var changed = JSON.stringify(state.data) !== JSON.stringify(json);
           state.data = json;
           state.loading = false;
           state.error = null;
           state.catalogNotice = '';
           try { localStorage.setItem('kv_catalog_snapshot', JSON.stringify(json)); } catch (e) {}
-          render();
+          if (!quietly || changed || hadNotice) render();
         })
         .catch(function (err) {
           var hasCache = false;
           try { hasCache = !!localStorage.getItem('kv_catalog_snapshot'); } catch (e) {}
           state.loading = false;
+          if (quietly) {
+            state.error = hasCache && state.data && Array.isArray(state.data.manga) ? null : err.message;
+            return;
+          }
           if (hasCache && state.data && Array.isArray(state.data.manga)) {
             state.error = null;
             state.catalogNotice = 'Menampilkan arsip dari cache terakhir; data akan diperbarui saat server tersedia.';
@@ -3603,9 +3563,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         });
     }
 
-    function refreshSession() {
+    function refreshSession(silent) {
       if (!state.adminToken || !CONFIG.API_BASE_URL) return;
+      var quietly = !!silent;
       var token = state.adminToken;
+      var beforeUser = JSON.stringify(state.user || null);
+      var hadNotice = !!state.sessionNotice;
       fetch(CONFIG.API_BASE_URL + '/api/auth/me', {
         headers: { Authorization: 'Bearer ' + token }
       }).then(function (response) {
@@ -3613,8 +3576,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         if (response.status === 401 || response.status === 403) {
           clearSession();
           state.sessionNotice = '';
-          render();
-          syncFromApi();
+          if (!quietly || JSON.stringify(state.user || null) !== beforeUser || hadNotice) render();
+          syncFromApi(quietly);
           return;
         }
         if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -3625,18 +3588,18 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           if (!state.user) {
             clearSession();
             state.sessionNotice = '';
-            render();
-            syncFromApi();
+            if (!quietly || JSON.stringify(state.user || null) !== beforeUser || hadNotice) render();
+            syncFromApi(quietly);
             return;
           }
           saveSessionCache(state.user);
           state.sessionNotice = '';
-          render();
+          if (!quietly || JSON.stringify(state.user || null) !== beforeUser || hadNotice) render();
         });
       }).catch(function () {
         if (state.adminToken !== token) return;
         state.sessionNotice = 'Profil akun ditampilkan dari cache karena sesi tidak dapat diverifikasi saat ini.';
-        render();
+        if (!quietly || hadNotice) render();
       });
     }
 
@@ -6476,7 +6439,9 @@ mobileMenu +
       }
       if (state.route === 'admin' && state.pendingDelete) bodyHtml += renderConfirmModal();
       var runtimeNotice = state.sessionNotice || state.catalogNotice;
+      var renderScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
       app.innerHTML = renderHeader() + (runtimeNotice ? '<div class="kv-runtime-notice" role="status">' + escapeHtml(runtimeNotice) + '</div>' : '') + bodyHtml + renderFooter();
+      window.scrollTo(0, renderScrollY);
       bindEvents();
     }
 
@@ -7330,17 +7295,13 @@ mobileMenu +
       }
     });
     window.addEventListener('online', function () {
-      state.catalogNotice = '';
-      state.sessionNotice = '';
-      refreshSession();
-      syncFromApi();
+      refreshSession(true);
+      syncFromApi(true);
     });
     document.addEventListener('visibilitychange', function () {
       if (!document.hidden && navigator.onLine) {
-        state.catalogNotice = '';
-        state.sessionNotice = '';
-        refreshSession();
-        syncFromApi();
+        refreshSession(true);
+        syncFromApi(true);
       }
       if (!document.hidden) refreshAnalyticsPeriodIfNeeded();
     });

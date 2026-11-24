@@ -72,7 +72,7 @@ test('page handler serves Discord-ready metadata for manga routes', async () => 
     assert.equal(res.body.includes('<meta property="og:title" content="Judul Manga — Toko Manga">'), true);
     assert.equal(res.body.includes('<meta property="og:description" content="Sinopsis untuk pratinjau Discord.">'), true);
     assert.equal(res.body.includes('<meta property="og:site_name" content="Toko Manga">'), true);
-    assert.equal(res.body.includes('<link rel="icon" href="https://cdn.example.com/favicon.png">'), true);
+    assert.equal(res.body.includes('<link rel="icon" href="https://demo.example/favicon.ico">'), true);
     assert.equal(res.body.includes('<meta name="theme-color" content="#FF0000">'), true);
     assert.equal(res.body.includes('<meta name="twitter:card" content="summary">'), true);
     assert.equal(res.body.includes('<link rel="canonical" href="https://demo.example/manga/judul-manga">'), true);
