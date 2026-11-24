@@ -1016,8 +1016,8 @@
         .kv-admin-shell .kv-manga-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       }
       .kv-admin-shell { overflow-x: hidden; }
-      .kv-admin-hamburger { display: none; width: 38px; height: 38px; align-items: center; justify-content: center; border: 1px solid var(--kva-border); border-radius: 8px; background: var(--kva-surface-3); color: var(--kva-text); cursor: pointer; }
-      .kv-admin-hamburger .material-symbols-outlined { font-size: 20px; }
+      .kv-admin-mobile-profile { display: contents; }
+      .kv-admin-mobile-brand { display: none; }
       .kv-admin-overlay { display: none; }
       @media (max-width: 1024px) {
         .kv-admin-top { display: block; }
@@ -1028,7 +1028,8 @@
         }
         .kv-admin-drawer-open .kv-admin-sidebar { transform: translateX(0); }
         .kv-admin-content { width: 100%; }
-        .kv-admin-hamburger { display: inline-flex; }
+        .kv-admin-mobile-profile { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .kv-admin-mobile-brand { display: flex; align-items: center; gap: 6px; min-width: 0; }
         .kv-admin-overlay { display: block; position: fixed; inset: 0; z-index: 70; background: var(--kva-overlay); }
       }
       @media (max-width: 760px) {
@@ -1947,8 +1948,41 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-admin-crumb-current {
         color: var(--ad-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
       }
-      .kv-admin-shell.kv-admin-top .kv-admin-hamburger {
-        border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised); color: var(--ad-amber);
+      .kv-admin-shell.kv-admin-top .kv-admin-bottom-nav { display: none; }
+      @media (max-width: 1024px) {
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-nav {
+          display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px;
+          position: fixed; left: 50%; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 75;
+          width: calc(100vw - 16px); max-width: 520px; padding: 8px 6px;
+          transform: translateX(-50%); border: 1px solid var(--ad-line); border-radius: 24px;
+          background: var(--ad-panel); box-shadow: var(--ad-shadow); align-items: stretch;
+        }
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-item {
+          min-width: 0; height: 46px; padding: 2px 0; border: 0; border-radius: 12px;
+          background: transparent; color: var(--ad-muted); cursor: pointer; position: relative;
+          display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+          transition: color .16s ease, background-color .16s ease;
+        }
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-item:hover { color: var(--ad-text); background: var(--ad-raised); }
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-item.active { color: var(--ad-amber); background: var(--ad-amber-soft); }
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-icon { display: inline-flex; color: inherit; }
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-icon svg { width: 18px; height: 18px; }
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9.5px; font-weight: 600; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-bar { position: absolute; left: 50%; bottom: 1px; width: 14px; height: 2px; border-radius: 2px; background: var(--ad-amber); transform: translateX(-50%); }
+        .kv-admin-shell.kv-admin-top .kv-admin-bottom-badge { position: absolute; top: 2px; right: calc(50% - 18px); min-width: 15px; height: 15px; padding: 0 4px; border-radius: 999px; display: grid; place-items: center; background: var(--ad-red); color: #140B0C; font-family: 'JetBrains Mono', monospace; font-size: .55rem; font-weight: 700; }
+        .kv-admin-shell.kv-admin-top .kv-admin-content { padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)); }
+        .kv-admin-shell.kv-admin-top .kv-admin-mobile-brand .kv-admin-logo-icon {
+          min-width: 28px; height: 28px; padding: 0 6px; border-radius: 2px;
+        }
+        .kv-admin-shell.kv-admin-top .kv-admin-mobile-brand .kv-admin-logo-icon svg { width: 16px; height: 16px; }
+        .kv-admin-shell.kv-admin-top .kv-admin-mobile-brand .kv-admin-logo-icon img { max-width: 24px; }
+        .kv-admin-shell.kv-admin-top .kv-admin-mobile-brand .kv-admin-logo {
+          max-width: 104px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+          font-size: .58rem; line-height: 1.15;
+        }
+        .kv-admin-shell.kv-admin-top .kv-admin-mobile-brand .kv-admin-logo span:last-child {
+          font-size: .5rem; letter-spacing: .12em;
+        }
       }
       .kv-admin-shell.kv-admin-top .kv-admin-avatar {
         width: 32px; height: 32px; border-radius: 2px;
@@ -2262,7 +2296,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         }
         .kv-admin-shell.kv-admin-top.kv-admin-drawer-open .kv-admin-sidebar { transform: translateX(0); }
         .kv-admin-shell.kv-admin-top .kv-admin-content { width: 100%; }
-        .kv-admin-shell.kv-admin-top .kv-admin-hamburger { display: inline-flex; }
         .kv-admin-shell.kv-admin-top .kv-admin-overlay {
           display: block; position: fixed; inset: 0; z-index: 70; background: rgba(4, 8, 11, .68);
         }
@@ -4880,6 +4913,16 @@ mobileMenu +
           (n.badge ? '<span class="kv-admin-nav-badge">' + n.badge + '</span>' : '') +
         '</button>';
       }).join('');
+      var bottomHtml = ['dashboard', 'analytics', 'mangadex', 'manga', 'komentar', 'leaderboard', 'pengguna', 'pengaturan'].map(function (key) {
+        var item = navMain.filter(function (n) { return n.key === key; })[0];
+        var active = tab === key;
+        return '<button type="button" class="kv-admin-bottom-item' + (active ? ' active' : '') + '" data-action="admin-tab" data-tab="' + key + '" aria-label="' + escapeHtml(item.label) + '" aria-pressed="' + (active ? 'true' : 'false') + '">' +
+          '<span class="kv-admin-bottom-icon">' + kvIcon(item.icon) + '</span>' +
+          '<span class="kv-admin-bottom-label">' + escapeHtml(item.label) + '</span>' +
+          (item.badge ? '<span class="kv-admin-bottom-badge">' + item.badge + '</span>' : '') +
+          (active ? '<span class="kv-admin-bottom-bar" aria-hidden="true"></span>' : '') +
+        '</button>';
+      }).join('');
       var adminBrandMode = brandMode();
       var adminBrandIcon = adminBrandMode !== 'name-only'
         ? (siteLogo()
@@ -4887,8 +4930,10 @@ mobileMenu +
           : '<span class="kv-admin-logo-icon">' + kvIcon('book') + '</span>')
         : '';
       var adminBrandText = adminBrandMode !== 'logo-only'
-        ? '<a class="kv-admin-logo" href="#/">' + (siteName() ? '<span' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</span> ' : '') + '<span>Console</span></a>'
+        ? '<a class="kv-admin-logo" href="/">' + (siteName() ? '<span' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</span> ' : '') + '<span>Console</span></a>'
         : '';
+      var adminMobileBrand = '<span class="kv-admin-mobile-brand">' + adminBrandIcon + adminBrandText + '</span>';
+
 
        var quickHtml = [
          { label: 'Tambah Manga', icon: 'plus', act: 'admin-new-manga' },
@@ -4921,8 +4966,9 @@ mobileMenu +
           '</aside>' +
           '<div class="kv-admin-content">' +
             '<header class="kv-admin-topbar kv-admin-topbar-new">' +
-              '<button type="button" class="kv-admin-hamburger" data-action="toggle-admin-drawer" aria-label="Buka menu admin" aria-expanded="' + (state.adminDrawerOpen ? 'true' : 'false') + '"><span class="material-symbols-outlined">menu</span></button>' +
-              '<a class="kv-admin-avatar" href="#/akun" aria-label="Akun saya"><img src="https://cdn.discordapp.com/avatars/850982978120318976/c721f141d392cf1506fc96090f608b96.png" alt=""></a>' +
+              '<span class="kv-admin-mobile-profile">' + adminMobileBrand +
+                '<a class="kv-admin-avatar" href="#/akun" aria-label="Akun saya"><img src="https://cdn.discordapp.com/avatars/850982978120318976/c721f141d392cf1506fc96090f608b96.png" alt=""></a>' +
+              '</span>' +
               '<div class="kv-admin-crumb"><span class="kv-admin-crumb-current">' + escapeHtml(t[0]) + '</span></div>' +
               '<div class="kv-admin-top-actions">' +
                 '<button type="button" class="kv-btn kv-btn-ghost" data-action="logout-admin"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg> Keluar</button>' +
@@ -4934,11 +4980,12 @@ mobileMenu +
                 '<div class="kv-admin-top-actions">' + topActions + '</div>' +
               '</div>' +
                body +
-             '</main>' +
+              '</main>' +
 
-          '</div>' +
+          '<nav class="kv-admin-bottom-nav" aria-label="Menu admin cepat">' + bottomHtml + '</nav>' +
           (state.adminDrawerOpen ? '<div class="kv-admin-overlay" data-action="close-admin-drawer" aria-hidden="true"></div>' : '') +
         '</div>';
+
     }
 
     function renderAdminDashboard() {
