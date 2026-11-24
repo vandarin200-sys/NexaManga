@@ -84,6 +84,48 @@
 
     a { color: inherit; text-decoration: none; }
     button, input, select, textarea { font-family: inherit; }
+
+    .kv-public-bottom-nav { display: none; }
+    @media (max-width: 1024px) {
+      body.kv-public-route { padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)); }
+      body.kv-public-route.kv-public-bottom-open { padding-bottom: calc(158px + env(safe-area-inset-bottom, 0px)); }
+      body.kv-public-route .kv-public-bottom-nav {
+        display: flex; flex-direction: column; gap: 6px;
+        position: fixed; left: 50%; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 75;
+        width: calc(100vw - 16px); max-width: 520px; padding: 12px 10px 8px;
+        transform: translateX(-50%); border: 1px solid var(--kv-border); border-radius: 24px;
+        background: var(--kv-surface); box-shadow: 0 18px 40px -24px rgba(0, 0, 0, .5);
+      }
+      body.kv-public-route .kv-public-bottom-primary {
+        display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px;
+      }
+      body.kv-public-route .kv-public-bottom-extra {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; justify-items: center;
+        width: 100%; padding-top: 6px; border-top: 1px solid var(--kv-border);
+      }
+      body.kv-public-route .kv-public-bottom-expand {
+        position: absolute; left: 50%; top: 0; z-index: 2;
+        display: flex; align-items: center; gap: 4px; height: 24px; padding: 0 10px;
+        transform: translate(-50%, -50%); border: 1px solid var(--kv-border); border-radius: 999px;
+        background: var(--kv-surface); color: var(--kv-accent); cursor: pointer;
+        font-family: var(--kv-font-mono); font-size: .55rem; font-weight: 700;
+        letter-spacing: .08em; text-transform: uppercase;
+      }
+      body.kv-public-route .kv-public-bottom-expand svg { transition: transform .18s ease; }
+      body.kv-public-route .kv-public-bottom-expand.expanded svg { transform: rotate(180deg); }
+      body.kv-public-route .kv-public-bottom-item {
+        min-width: 0; height: 46px; padding: 2px 0; border: 0; border-radius: 12px;
+        background: transparent; color: var(--kv-text-muted); cursor: pointer; position: relative;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+        text-decoration: none; transition: color .16s ease, background-color .16s ease;
+      }
+      body.kv-public-route .kv-public-bottom-item:hover { color: var(--kv-text); background: var(--kv-surface-2); }
+      body.kv-public-route .kv-public-bottom-item.active { color: var(--kv-accent); background: var(--kv-surface-2); }
+      body.kv-public-route .kv-public-bottom-icon { display: inline-flex; color: inherit; }
+      body.kv-public-route .kv-public-bottom-icon svg { width: 18px; height: 18px; }
+      body.kv-public-route .kv-public-bottom-label { font-family: var(--kv-font-sans); font-size: 9.5px; font-weight: 600; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+      body.kv-public-route .kv-public-bottom-bar { position: absolute; left: 50%; bottom: 1px; width: 14px; height: 2px; border-radius: 2px; background: var(--kv-accent); transform: translateX(-50%); }
+    }
     button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
       outline: 2px solid var(--kv-accent);
       outline-offset: 2px;
@@ -2756,6 +2798,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       history: JSON.parse(localStorage.getItem('kv_history') || '[]'),
       adminToken: localStorage.getItem('kv_session_token') || '',
       mobileMenuOpen: false,
+      publicBottomExpanded: false,
       refocusSearch: false,
       /* --- State panel admin & moderasi --- */
       adminTab: 'dashboard',
@@ -3688,10 +3731,48 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       '</a>';
     }
 
-    /* =========================================================================
-       RENDER HEADER & FOOTER
-       ========================================================================= */
-     function renderHeader() {
+     /* =========================================================================
+        RENDER HEADER & FOOTER
+        ========================================================================= */
+      function renderPublicBottomNav() {
+        if (state.route === 'admin' || state.route === 'reader') return '';
+        var expanded = !!state.publicBottomExpanded;
+        var href = function (path) { return path === '/' ? '#/' : '#/' + path.replace(/^\//, ''); };
+        var item = function (n) {
+          var active = n.keys ? n.keys.indexOf(state.route) !== -1 : state.route === n.key;
+          if (n.page) active = active && state.params.page === n.page;
+          var cls = 'kv-public-bottom-item' + (active ? ' active' : '');
+          var inner = '<span class="kv-public-bottom-icon">' + kvIcon(n.icon) + '</span>' +
+            '<span class="kv-public-bottom-label">' + escapeHtml(n.label) + '</span>' +
+            (active ? '<span class="kv-public-bottom-bar" aria-hidden="true"></span>' : '');
+          if (n.action) return '<button type="button" class="' + cls + '" data-action="' + n.action + '" aria-label="' + escapeHtml(n.label) + '">' + inner + '</button>';
+          return '<a class="' + cls + '" href="' + href(n.path) + '" aria-label="' + escapeHtml(n.label) + '"' + (active ? ' aria-current="page"' : '') + '>' + inner + '</a>';
+        };
+        var primary = [
+          { path: '/', label: 'Beranda', icon: 'grid', key: 'home' },
+          { path: '/archive', label: 'Archive', icon: 'book', keys: ['catalog', 'detail'] },
+          { label: 'Pustaka', icon: 'layers', action: 'public-bookmarks' },
+          { path: '/notifikasi', label: 'Notifikasi', icon: 'eye', key: 'notification' },
+          { path: '/akun', label: 'Akun', icon: 'users', key: 'account' }
+        ];
+        var extra = [
+          { path: '/tentang', label: 'Tentang', icon: 'globe', key: 'info', page: 'tentang' },
+          { path: '/kontak', label: 'Kontak', icon: 'chat', key: 'info', page: 'kontak' },
+          { path: '/admin', label: 'Admin', icon: 'gear', key: 'admin' }
+        ];
+        var toggle = '<button type="button" class="kv-public-bottom-expand' + (expanded ? ' expanded' : '') + '" data-action="toggle-public-bottom" aria-label="' + (expanded ? 'Tutup menu tambahan' : 'Buka menu tambahan') + '" aria-expanded="' + (expanded ? 'true' : 'false') + '">' +
+          '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>' +
+          '<span>Lainnya</span>' +
+        '</button>';
+        return '<nav class="kv-public-bottom-nav' + (expanded ? ' expanded' : '') + '" aria-label="Menu cepat situs">' +
+          toggle +
+          '<div class="kv-public-bottom-primary">' + primary.map(item).join('') + '</div>' +
+          (expanded ? '<div class="kv-public-bottom-extra">' + extra.map(item).join('') + '</div>' : '') +
+        '</nav>';
+      }
+
+      function renderHeader() {
+
        if (state.route === 'admin' || state.route === 'reader') return '';
         var navItems = [
           { path: '/', label: 'Beranda', key: 'home' },
@@ -6536,8 +6617,11 @@ mobileMenu +
           document.body.classList.toggle('kv-detail-route', state.route === 'detail');
            document.body.classList.toggle('kv-account-route', state.route === 'account');
            document.body.classList.toggle('kv-notification-route', state.route === 'notification');
-           document.body.classList.toggle('kv-reader-route', state.route === 'reader');
-       }
+          document.body.classList.toggle('kv-reader-route', state.route === 'reader');
+          document.body.classList.toggle('kv-public-route', state.route !== 'reader' && state.route !== 'admin');
+          document.body.classList.toggle('kv-public-bottom-open', state.publicBottomExpanded && state.route !== 'reader' && state.route !== 'admin');
+        }
+
 
       var bodyHtml = '';
       if (state.loading) {
@@ -6591,7 +6675,7 @@ mobileMenu +
       if (state.route === 'admin' && state.pendingDelete) bodyHtml += renderConfirmModal();
       var runtimeNotice = state.sessionNotice || state.catalogNotice;
       var renderScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-      app.innerHTML = renderHeader() + (runtimeNotice ? '<div class="kv-runtime-notice" role="status">' + escapeHtml(runtimeNotice) + '</div>' : '') + bodyHtml + renderFooter();
+      app.innerHTML = renderHeader() + (runtimeNotice ? '<div class="kv-runtime-notice" role="status">' + escapeHtml(runtimeNotice) + '</div>' : '') + bodyHtml + renderFooter() + renderPublicBottomNav();
       window.scrollTo(0, renderScrollY);
       bindEvents();
     }
@@ -7239,6 +7323,16 @@ mobileMenu +
       else if (act === 'admin-settings-reset') { resetSiteSettings(); }
        else if (act === 'toggle-admin-drawer') { state.adminDrawerOpen = !state.adminDrawerOpen; render(); }
        else if (act === 'toggle-admin-bottom') { state.adminBottomExpanded = !state.adminBottomExpanded; render(); }
+       else if (act === 'toggle-public-bottom') { state.publicBottomExpanded = !state.publicBottomExpanded; render(); }
+       else if (act === 'public-bookmarks') {
+         navigate('/akun');
+         window.setTimeout(function () {
+           var titles = document.querySelectorAll('.kv-acct-sheet-title');
+           for (var i = 0; i < titles.length; i++) {
+             if (titles[i].textContent.trim() === 'Bookmark') { titles[i].scrollIntoView({ behavior: 'smooth', block: 'start' }); break; }
+           }
+         }, 120);
+       }
 
       else if (act === 'close-admin-drawer') { state.adminDrawerOpen = false; render(); }
       else if (act === 'share-manga') {
