@@ -2616,14 +2616,15 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         - Jangan unggah manga berhak cipta tanpa izin pemilik.
        ========================================================================= */
      var CONFIG = {
-      SITE_NAME: 'NexaManga',                 /* UBAH: nama website Anda */
-       /* Cara tercepat: edit langsung nilai API_BASE_URL di bawah ini (Tema > Edit HTML).
+       SITE_NAME: '',                 /* Diisi dari Pengaturan Admin */
+       SITE_TAGLINE: '',
+        /* Cara tercepat: edit langsung nilai API_BASE_URL di bawah ini (Tema > Edit HTML).
           Harus identik dengan PUBLIC_API_URL di .env / Vercel Environment Variables.
           Katalog dan penulisan data tidak berfungsi tanpa backend. */
       API_BASE_URL: 'https://nexamanga-nexamanga.vercel.app',
       DEFAULT_THEME: 'light', /* 'light' atau 'dark' */
       ITEMS_PER_PAGE: 8,
-      CONTACT_EMAIL: 'redaksi@nexamanga.example' /* UBAH: email redaksi */
+       CONTACT_EMAIL: '' /* Diisi dari Pengaturan Admin */
     };
 
     /* =========================================================================
@@ -2890,8 +2891,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        return fallback;
      }
 
-     function siteName() { return siteSetting('siteName', CONFIG.SITE_NAME); }
-     function siteTagline() { return siteSetting('siteTagline', CONFIG.SITE_TAGLINE); }
+      function siteName() { return String(siteSetting('siteName', CONFIG.SITE_NAME) || '').trim(); }
+      function siteTagline() { return String(siteSetting('siteTagline', CONFIG.SITE_TAGLINE) || '').trim(); }
+      function siteLabel() { return siteName() || 'Situs'; }
       function siteLogo() { return siteSetting('logoUrl', ''); }
       function siteFavicon() { return siteSetting('faviconUrl', ''); }
       function applyFavicon() {
@@ -2911,7 +2913,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         var type = /\.svg(?:\?|$)/i.test(url) ? 'image/svg+xml' : /\.png(?:\?|$)/i.test(url) ? 'image/png' : /\.ico(?:\?|$)/i.test(url) ? 'image/x-icon' : '';
         if (type) link.setAttribute('type', type); else link.removeAttribute('type');
       }
-      function siteContact() { return siteSetting('contactEmail', CONFIG.CONTACT_EMAIL); }
+       function siteContact() { return String(siteSetting('contactEmail', CONFIG.CONTACT_EMAIL) || '').trim(); }
      function brandMode() { return siteSetting('brandMode', 'logo-name'); }
      function siteNameColor() { return siteSetting('siteNameColor', ''); }
      function siteNameStyle() { var c = siteNameColor(); return c ? ' style="color:' + escapeHtml(c) + '"' : ''; }
@@ -3486,14 +3488,16 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         if (showLogo && siteLogo()) {
           logoHtml = '<img src="' + escapeHtml(siteLogo()) + '" alt="Logo" class="max-h-10 w-auto max-w-[160px] rounded-xl object-contain"/>';
         }
-        var nameHtml = showName
-          ? '<div class="flex flex-col">' +
-              '<div class="flex items-center gap-1.5 leading-none">' +
-                '<span class="font-black text-2xl tracking-tighter text-[#2A2118] dark:text-white">' + escapeHtml(siteName()).toUpperCase() + '</span>' +
-              '</div>' +
-              '<span class="text-[11px] font-medium text-[#574535] tracking-wide mt-1 dark:text-neutral-400">' + escapeHtml(siteTagline()) + '</span>' +
-            '</div>'
-          : '';
+         var nameLabel = siteName();
+         var taglineLabel = siteTagline();
+         var nameHtml = showName && (nameLabel || taglineLabel)
+           ? '<div class="flex flex-col">' +
+               (nameLabel ? '<div class="flex items-center gap-1.5 leading-none">' +
+                 '<span class="font-black text-2xl tracking-tighter text-[#2A2118] dark:text-white">' + escapeHtml(nameLabel).toUpperCase() + '</span>' +
+               '</div>' : '') +
+               (taglineLabel ? '<span class="text-[11px] font-medium text-[#574535] tracking-wide mt-1 dark:text-neutral-400">' + escapeHtml(taglineLabel) + '</span>' : '') +
+             '</div>'
+           : '';
         var brandHtml = (logoHtml || nameHtml)
           ? '<a href="#/" class="flex items-center gap-3 group focus:outline-none flex-shrink-0">' + logoHtml + nameHtml + '</a>'
           : '';
@@ -3524,9 +3528,14 @@ mobileMenu +
 
     function renderFooter() {
       if (state.route === 'reader' || state.route === 'admin') return '';
+      var footerLabel = siteName();
+      var footerTagline = siteTagline();
+      var footerBrand = (footerLabel || footerTagline)
+        ? '<div>' + (footerLabel ? '<strong' + siteNameStyle() + '>' + escapeHtml(footerLabel) + '</strong>' + (footerTagline ? ' &middot; ' : '') : '') + escapeHtml(footerTagline) + '</div>'
+        : '';
       return '<footer class="kv-footer">' +
         '<div class="kv-container kv-footer-inner">' +
-          '<div><strong' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</strong> &middot; ' + escapeHtml(siteTagline()) + '</div>' +
+          footerBrand +
           '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">' +
             '<a href="#/tentang">Tentang</a>' +
             '<a href="#/kontak">Kontak</a>' +
@@ -3574,7 +3583,7 @@ mobileMenu +
             '<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><span class="kv-home-card-tag">' + escapeHtml(m.type || 'Manga') + '</span><span style="font-size:.72rem;font-weight:700;color:#8A560C;">&#9733; ' + escapeHtml(rating) + '</span></div>' +
             '<h4 class="kv-home-rank-title">' + escapeHtml(m.title) + '</h4>' +
             '<p class="kv-home-rank-meta">' + (latest ? 'Chapter ' + escapeHtml(latest.number) + ' &middot; ' : '') + escapeHtml((m.views || 0).toLocaleString('id-ID')) + ' Views</p>' +
-            '<div class="kv-home-rank-stat">Trending di ' + escapeHtml(siteName()) + '</div>' +
+            '<div class="kv-home-rank-stat">Trending di ' + escapeHtml(siteLabel()) + '</div>' +
           '</div>' +
         '</a>';
       }
@@ -4366,7 +4375,7 @@ mobileMenu +
       if (!state.user) {
         return '<main class="kv-notif-page">' +
           '<div class="kv-notif-topline" aria-hidden="true"></div>' +
-          '<section class="kv-notif-guest-wrap" aria-label="Halaman notifikasi ' + escapeHtml(siteName()) + '">' +
+          '<section class="kv-notif-guest-wrap" aria-label="Halaman notifikasi ' + escapeHtml(siteLabel()) + '">' +
             '<div class="kv-notif-guest-sheet">' +
               '<div class="kv-notif-guest-brand"><span class="kv-notif-guest-mark">NOTIFIKASI</span></div>' +
               '<div class="kv-notif-guest-body">' +
@@ -4385,7 +4394,7 @@ mobileMenu +
       var hero = '<section class="kv-notif-hero">' +
         '<div class="kv-notif-hero-inner">' +
           '<div>' +
-            '<span class="kv-notif-eyebrow">Kotak masuk · ' + escapeHtml(siteName()) + '</span>' +
+            '<span class="kv-notif-eyebrow">Kotak masuk · ' + escapeHtml(siteLabel()) + '</span>' +
             '<h1 class="kv-notif-title">Balasan komentar</h1>' +
             '<p class="kv-notif-sub">Setiap balasan langsung pada komentarmu dikumpulkan di sini. Buka untuk melompat ke percakapan aslinya.</p>' +
           '</div>' +
@@ -4399,7 +4408,7 @@ mobileMenu +
         ? '<div class="kv-notif-list">' + items.map(function (item, index) {
             var cover = item.mangaCover
               ? '<img class="kv-notif-cover" src="' + escapeHtml(item.mangaCover) + '" alt="" loading="lazy" referrerpolicy="no-referrer"/>'
-              : '<span class="kv-notif-cover kv-notif-cover-fallback" aria-hidden="true">NM</span>';
+              : '<span class="kv-notif-cover kv-notif-cover-fallback" aria-hidden="true">' + kvIcon('book') + '</span>';
             return '<article class="kv-notif-card' + (item.unread ? ' is-unread' : '') + '" style="--i:' + index + '">' +
               '<div class="kv-notif-rail"><span class="kv-notif-num">' + ('0' + (index + 1)).slice(-2) + '</span><span class="kv-notif-dot" aria-hidden="true"></span></div>' +
               '<div class="kv-notif-body">' +
@@ -4414,7 +4423,7 @@ mobileMenu +
               '</div>' +
             '</article>';
           }).join('') + '</div>'
-        : '<div class="kv-notif-empty"><div class="kv-notif-empty-mark" aria-hidden="true">NM</div><div class="kv-notif-empty-title">Belum ada balasan</div><p class="kv-notif-empty-text">Balasan pada komentarmu akan muncul di sini setelah tersedia.</p></div>';
+        : '<div class="kv-notif-empty"><div class="kv-notif-empty-mark" aria-hidden="true">' + kvIcon('book') + '</div><div class="kv-notif-empty-title">Belum ada balasan</div><p class="kv-notif-empty-text">Balasan pada komentarmu akan muncul di sini setelah tersedia.</p></div>';
       return '<main class="kv-notif-page">' +
         '<div class="kv-notif-topline" aria-hidden="true"></div>' +
         hero +
@@ -4440,19 +4449,19 @@ mobileMenu +
       if (!state.user) {
         var guestLogo = siteLogo();
         var brandMedia = guestLogo
-          ? '<div class="kv-acct-guest-logo"><img src="' + escapeHtml(guestLogo) + '" alt="Logo ' + escapeHtml(siteName()) + '"/></div>'
-          : '<div class="kv-acct-guest-mark" aria-hidden="true">NM</div>';
+          ? '<div class="kv-acct-guest-logo"><img src="' + escapeHtml(guestLogo) + '" alt="Logo ' + escapeHtml(siteLabel()) + '"/></div>'
+          : '<div class="kv-acct-guest-mark" aria-hidden="true">' + kvIcon('book') + '</div>';
         return '<main class="kv-acct-page kv-acct-page-guest">' +
           '<div class="kv-acct-topline" aria-hidden="true"></div>' +
-          '<section class="kv-acct-guest-wrap" aria-label="Halaman masuk ' + escapeHtml(siteName()) + '">' +
+          '<section class="kv-acct-guest-wrap" aria-label="Halaman masuk ' + escapeHtml(siteLabel()) + '">' +
             '<div class="kv-acct-guest-sheet">' +
               '<div class="kv-acct-guest-brand">' + brandMedia + '</div>' +
               '<div class="kv-acct-guest-body">' +
-                '<span class="kv-acct-eyebrow">Akses akun · ' + escapeHtml(siteName()) + '</span>' +
+                '<span class="kv-acct-eyebrow">Akses akun · ' + escapeHtml(siteLabel()) + '</span>' +
                 '<h1 class="kv-acct-guest-title">Masuk ke perpustakaanmu</h1>' +
                 '<p class="kv-acct-guest-sub">Sinkronkan bookmark, riwayat baca, dan preferensi pembaca.</p>' +
                 '<div class="kv-acct-guest-providers">' + renderOAuthButtons() + '</div>' +
-                '<p class="kv-acct-guest-note"><strong>Tanpa kata sandi.</strong> Identitas dikelola oleh Google atau Discord; ' + escapeHtml(siteName()) + ' hanya menyimpan profil lokal kamu.</p>' +
+                '<p class="kv-acct-guest-note"><strong>Tanpa kata sandi.</strong> Identitas dikelola oleh Google atau Discord; ' + escapeHtml(siteLabel()) + ' hanya menyimpan profil lokal kamu.</p>' +
               '</div>' +
             '</div>' +
           '</section>' +
@@ -4571,7 +4580,7 @@ mobileMenu +
               '<div class="kv-acct-sheet-head"><div><span class="kv-acct-sheet-kicker">Navigasi</span><h2 class="kv-acct-sheet-title">Pintasan</h2></div></div>' +
               '<div class="kv-acct-sheet-body kv-acct-links">' +
                 '<a class="kv-acct-link" href="#/archive"><span>Archive</span><span aria-hidden="true">&rarr;</span></a>' +
-                '<a class="kv-acct-link" href="#/tentang"><span>Tentang NexaManga</span><span aria-hidden="true">&rarr;</span></a>' +
+                '<a class="kv-acct-link" href="#/tentang"><span>Tentang katalog</span><span aria-hidden="true">&rarr;</span></a>' +
                 '<a class="kv-acct-link" href="#/ketentuan"><span>Ketentuan Layanan</span><span aria-hidden="true">&rarr;</span></a>' +
               '</div>' +
             '</section>' +
@@ -4682,7 +4691,7 @@ mobileMenu +
           : '<span class="kv-admin-logo-icon">' + kvIcon('book') + '</span>')
         : '';
       var adminBrandText = adminBrandMode !== 'logo-only'
-        ? '<a class="kv-admin-logo" href="#/"><span' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</span> <span>Console</span></a>'
+        ? '<a class="kv-admin-logo" href="#/">' + (siteName() ? '<span' + siteNameStyle() + '>' + escapeHtml(siteName()) + '</span> ' : '') + '<span>Console</span></a>'
         : '';
 
        var quickHtml = [
@@ -5686,10 +5695,10 @@ mobileMenu +
           '<form id="kv-site-settings-form" class="kv-form-grid" novalidate>' +
             '<label>Nama Situs<input class="kv-input" name="siteName" value="' + siteNameValue + '" required/></label>' +
             '<label>Tagline<input class="kv-input" name="siteTagline" value="' + siteTaglineValue + '"/></label>' +
-            '<label style="grid-column:1/-1;">URL Logo<input class="kv-input" id="kv-setting-logoUrl" name="logoUrl" type="url" value="' + logoValue + '" placeholder="https://contoh.com/logo.png"/></label>' +
-            '<label style="grid-column:1/-1;">URL Favicon<input class="kv-input" id="kv-setting-faviconUrl" name="faviconUrl" type="url" value="' + faviconValue + '" placeholder="https://contoh.com/favicon.png"/></label>' +
+            '<label style="grid-column:1/-1;">URL Logo<input class="kv-input" id="kv-setting-logoUrl" name="logoUrl" type="url" value="' + logoValue + '" placeholder=""/></label>' +
+            '<label style="grid-column:1/-1;">URL Favicon<input class="kv-input" id="kv-setting-faviconUrl" name="faviconUrl" type="url" value="' + faviconValue + '" placeholder=""/></label>' +
             '<p class="kv-admin-sub" style="grid-column:1/-1;margin:-8px 0 0;">Ukuran ideal favicon: PNG 64×64 px persegi dengan latar transparan (SVG juga didukung). Untuk ikon iOS, siapkan 180×180 px.</p>' +
-            '<label style="grid-column:1/-1;">Email Kontak<input class="kv-input" name="contactEmail" type="email" value="' + contactValue + '" placeholder="redaksi@contoh.com"/></label>' +
+            '<label style="grid-column:1/-1;">Email Kontak<input class="kv-input" name="contactEmail" type="email" value="' + contactValue + '" placeholder=""/></label>' +
             '<div class="kv-brand-mode-field">' + brandModeMenuHtml(brandModeValue) + '</div>' +
             '<label>Warna Nama Situs<input class="kv-input" name="siteNameColor" type="color" value="' + (siteNameColorValue || '#6366f1') + '" style="height:38px;padding:2px 6px;"/></label>' +
             '<div class="kv-site-logo-preview">' + (logoValue ? '<img src="' + logoValue + '" alt="Preview logo"/>' : '<span>Belum ada logo</span>') + '</div>' +
@@ -6101,12 +6110,12 @@ mobileMenu +
 
     function renderInfo() {
       var p = state.params.page;
-      var about = siteSetting('aboutContent', siteName() + ' dibangun dengan antarmuka Blogger yang ringan, archive dan media tersimpan di Telegram melalui backend Vercel.');
-      var contact = siteSetting('contactContent', 'Hubungi kami melalui: ' + siteContact());
+      var about = siteSetting('aboutContent', siteLabel() + ' dibangun dengan antarmuka Blogger yang ringan, archive dan media tersimpan di Telegram melalui backend Vercel.');
+      var contact = siteSetting('contactContent', siteContact() ? 'Hubungi kami melalui: ' + siteContact() : 'Belum ada kontak yang diatur.');
       var privacy = siteSetting('privacyContent', 'Kami menghargai privasi kamu. Data akun digunakan sesuai kebutuhan layanan membaca, komentar, dan sinkronisasi preferensi. Kami tidak menjual data pribadi ke pihak ketiga.');
-      var terms = siteSetting('termsContent', 'Gunakan NexaManga dengan bijak. Dilarang menyebarkan konten bajakan, spam, atau komentar yang melanggar hukum. Hak cipta manga tetap milik pemilik haknya.');
+      var terms = siteSetting('termsContent', 'Gunakan katalog ini dengan bijak. Dilarang menyebarkan konten bajakan, spam, atau komentar yang melanggar hukum. Hak cipta manga tetap milik pemilik haknya.');
       var pages = {
-        tentang: { title: 'Tentang ' + siteName(), content: about },
+        tentang: { title: 'Tentang ' + siteLabel(), content: about },
         kontak: { title: 'Kontak Redaksi', content: contact },
         privasi: { title: 'Kebijakan Privasi', content: privacy },
         ketentuan: { title: 'Ketentuan Penggunaan', content: terms }
@@ -7522,6 +7531,44 @@ mobileMenu +
         opacity: 1;
       }
     }
+  .kv-noscript {
+    --ns-page: #F7F1E6;
+    --ns-page-2: #EFE4D2;
+    --ns-card: #FFFCF6;
+    --ns-ink: #2A2118;
+    --ns-muted: #574535;
+    --ns-line: #BFA986;
+    --ns-accent: #7A4A1F;
+    --ns-chip: #F7F1E6;
+    --ns-shadow: #E4D3B8;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    padding: 24px;
+    background: radial-gradient(circle at 12% 18%, rgba(122,74,31,.09), transparent 36%), linear-gradient(180deg, var(--ns-page) 0%, var(--ns-page-2) 100%);
+    color: var(--ns-ink);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+  .kv-noscript-card { position: relative; width: min(620px, 100%); box-sizing: border-box; padding: 32px 32px 26px 42px; overflow: hidden; border: 1px solid var(--ns-line); background: var(--ns-card); box-shadow: 14px 14px 0 -2px var(--ns-shadow), 0 18px 50px -30px rgba(42,33,24,.55); }
+  .kv-noscript-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 8px; background: repeating-linear-gradient(180deg, var(--ns-accent) 0 14px, var(--ns-line) 14px 18px); }
+  .kv-noscript-kicker { font-family: 'JetBrains Mono', monospace; font-size: .62rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--ns-accent); }
+  .kv-noscript-title { margin: 12px 0 10px; font-family: 'Cinzel', Georgia, serif; font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.05; letter-spacing: -.02em; }
+  .kv-noscript-copy { max-width: 48ch; margin: 0; font-size: .92rem; line-height: 1.7; color: var(--ns-muted); }
+  .kv-noscript-steps { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; font-family: 'JetBrains Mono', monospace; font-size: .66rem; }
+  .kv-noscript-steps li { padding: 7px 10px; border: 1px solid var(--ns-line); background: var(--ns-chip); }
+  .kv-noscript-steps b { margin-right: 7px; color: var(--ns-accent); }
+  .kv-noscript-foot { margin-top: 22px; padding-top: 12px; border-top: 1px dashed var(--ns-line); font-family: 'JetBrains Mono', monospace; font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ns-muted); }
+  html.dark .kv-noscript { --ns-page: #121215; --ns-page-2: #17171B; --ns-card: #1A1A1E; --ns-ink: #EAF1F4; --ns-muted: #A0A7B8; --ns-line: #2B304C; --ns-accent: #D89A5B; --ns-chip: #20243A; --ns-shadow: #22263C; }
+  @media (prefers-color-scheme: dark) {
+    .kv-noscript { --ns-page: #121215; --ns-page-2: #17171B; --ns-card: #1A1A1E; --ns-ink: #EAF1F4; --ns-muted: #A0A7B8; --ns-line: #2B304C; --ns-accent: #D89A5B; --ns-chip: #20243A; --ns-shadow: #22263C; }
+  }
+  @media (max-width: 520px) {
+    .kv-noscript { padding: 14px; }
+    .kv-noscript-card { padding: 26px 22px 22px 32px; box-shadow: 8px 8px 0 -2px var(--ns-shadow), 0 18px 50px -30px rgba(42,33,24,.55); }
+    .kv-noscript-card::before { width: 6px; }
+    .kv-noscript-steps { font-size: .6rem; }
+  }
   </style>
   <!-- LINT.ThenChange(//depot/google3/java/com/google/blogger/b2/layouts/widgets/v2-style.css) -->
 </b:includable>
@@ -7530,8 +7577,17 @@ mobileMenu +
   </div>
 
   <noscript>
-    <div style='padding:32px;text-align:center;font-family:system-ui,sans-serif;'>
-      <strong>NexaManga</strong> memerlukan JavaScript untuk menampilkan archive, detail manga, dan reader. Aktifkan JavaScript di browser Anda.
+    <div class='kv-noscript'>
+      <div class='kv-noscript-card'>
+        <div class='kv-noscript-kicker'>Katalog tidak dapat dimuat</div>
+        <h1 class='kv-noscript-title'>Perpustakaan masih tertutup.</h1>
+        <p class='kv-noscript-copy'>Katalog, detail manga, dan reader memerlukan JavaScript. Aktifkan JavaScript di browser Anda, lalu muat ulang halaman ini.</p>
+        <ul class='kv-noscript-steps'>
+          <li><b>01</b>Aktifkan JavaScript</li>
+          <li><b>02</b>Muat ulang halaman</li>
+        </ul>
+        <div class='kv-noscript-foot'>Katalog manga &middot; Mode tanpa skrip</div>
+      </div>
     </div>
   </noscript>
 
