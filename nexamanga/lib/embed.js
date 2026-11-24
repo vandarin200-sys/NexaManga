@@ -42,7 +42,7 @@ function buildEmbed(catalog, routePath, origin) {
   let title = name || DEFAULT_TITLE;
   let description = descriptionBase;
   let image = absoluteUrl(settings.logoUrl, origin);
-  const favicon = absoluteUrl(settings.faviconUrl, origin) || absoluteUrl(settings.logoUrl, origin);
+  const favicon = absoluteUrl(settings.faviconUrl, origin);
   const themeColor = normalizeColor(settings.siteNameColor);
   let type = 'website';
 

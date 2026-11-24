@@ -784,3 +784,65 @@ test('mangadex rating route rejects missing id', async () => {
     db.restore();
   }
 });
+
+test('favicon endpoint redirects to the exact admin favicon URL', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [],
+      settings: { faviconUrl: 'https://cdn.example.com/admin-favicon.png' }
+    }
+  });
+  try {
+    const res = await call('GET', '/api/favicon.ico');
+    assert.equal(res.statusCode, 302);
+    assert.equal(res.headers.location, 'https://cdn.example.com/admin-favicon.png');
+  } finally {
+    db.restore();
+  }
+});
+
+test('favicon endpoint serves the exact admin media favicon', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: {
+      manga: [],
+      chapters: [],
+      comments: [],
+      users: [],
+      settings: { faviconUrl: '/api/media/BQACAgUAAyEGAAMBCc8aeQACAsJrBG_n7On1fAETrW6atj7hTYk5AgACiCQAAr6gIFSizwavLsXY3T0E' }
+    }
+  });
+  const fetchFromDb = global.fetch;
+  const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  global.fetch = async (input, init) => {
+    const url = String(input);
+    if (url.includes('/getFile')) return Response.json({ ok: true, result: { file_path: 'photos/admin-favicon.png', file_size: png.length } });
+    if (url.includes('/file/bot')) return new Response(png, { status: 200, headers: { 'content-length': String(png.length) } });
+    return fetchFromDb(input, init);
+  };
+  try {
+    const res = await call('GET', '/api/favicon.ico');
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.headers['content-type'], 'image/png');
+    assert.equal(Buffer.compare(Buffer.from(res.body), png), 0);
+  } finally {
+    db.restore();
+  }
+});
+
+test('favicon endpoint returns no content when admin favicon is empty', async () => {
+  setEnv();
+  const db = mockDatabase({
+    catalog: { manga: [], chapters: [], comments: [], users: [], settings: {} }
+  });
+  try {
+    const res = await call('GET', '/api/favicon.ico');
+    assert.equal(res.statusCode, 204);
+  } finally {
+    db.restore();
+  }
+});

@@ -91,3 +91,7 @@ test('page handler rejects non-GET methods', async () => {
 test('root route bypasses static index.html for server-rendered metadata', () => {
   assert.equal(vercel.routes.some((route) => route.src === '^/$' && route.dest === '/api/page?route=/'), true);
 });
+
+test('favicon.ico is rewritten to the dynamic admin favicon endpoint', () => {
+  assert.equal(vercel.rewrites.some((rewrite) => rewrite.source === '/favicon.ico' && rewrite.destination === '/api/favicon.ico'), true);
+});

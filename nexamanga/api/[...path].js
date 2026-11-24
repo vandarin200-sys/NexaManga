@@ -393,6 +393,24 @@ function validatePathId(value) {
   return id;
 }
 
+function mediaContentType(filePath, bytes) {
+  const extension = String(filePath || '').split('.').pop().toLowerCase();
+  let contentType = ({ jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif' })[extension];
+  if (!contentType && Buffer.isBuffer(bytes)) {
+    if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) contentType = 'image/jpeg';
+    else if (bytes.length >= 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) contentType = 'image/png';
+    else if (bytes.length >= 12 && bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP') contentType = 'image/webp';
+    else if (bytes.length >= 6 && (bytes.toString('ascii', 0, 6) === 'GIF87a' || bytes.toString('ascii', 0, 6) === 'GIF89a')) contentType = 'image/gif';
+  }
+  return contentType || '';
+}
+
+function mediaFileId(value) {
+  if (typeof value !== 'string') return '';
+  const match = value.match(/(?:^|\/)api\/media\/([A-Za-z0-9_=-]{10,512})/);
+  return match ? match[1] : '';
+}
+
 const LANDING_HTML = '<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>NexaManga Vercel Backend</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:40px 20px;background:#0f172a;color:#e2e8f0}.card{max-width:640px;margin:0 auto;background:#1e293b;border-radius:12px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,.3)}h1{margin:0 0 8px;font-size:1.6rem}p{line-height:1.6;color:#cbd5e1}a{color:#38bdf8}code{background:#0f172a;padding:2px 6px;border-radius:4px}.status{display:inline-block;margin-top:16px;padding:8px 12px;background:#16a34a;color:#fff;border-radius:6px;text-decoration:none}</style></head><body><div class="card"><h1>NexaManga Vercel Backend</h1><p>Backend serverless untuk tema Blogger NexaManga. API tersedia di <code>/api/*</code>.</p><p>Periksa status layanan:</p><a class="status" href="/api/health">Cek Health</a></div></body></html>';
 
 async function handler(req, res) {
@@ -824,14 +842,7 @@ async function handler(req, res) {
     if (route.startsWith('media/') && req.method === 'GET') {
       const fileId = validatePathId(route.slice('media/'.length));
       const { bytes, filePath } = await getMedia(fileId);
-      const extension = String(filePath || '').split('.').pop().toLowerCase();
-      let contentType = ({ jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif' })[extension];
-      if (!contentType && Buffer.isBuffer(bytes)) {
-        if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) contentType = 'image/jpeg';
-        else if (bytes.length >= 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) contentType = 'image/png';
-        else if (bytes.length >= 12 && bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP') contentType = 'image/webp';
-        else if (bytes.length >= 6 && (bytes.toString('ascii', 0, 6) === 'GIF87a' || bytes.toString('ascii', 0, 6) === 'GIF89a')) contentType = 'image/gif';
-      }
+      const contentType = mediaContentType(filePath, bytes);
       if (!contentType) throw new HttpError(415, 'Format media tidak didukung.');
       res.statusCode = 200;
       res.setHeader('Content-Type', contentType);
@@ -840,9 +851,39 @@ async function handler(req, res) {
       return res.end(bytes);
     }
 
-    if (route === 'favicon.ico' && req.method === 'GET') {
+    if (route === 'favicon.ico' && (req.method === 'GET' || req.method === 'HEAD')) {
+      let settings = {};
+      try {
+        const catalog = await readCatalog();
+        settings = catalog && catalog.settings ? catalog.settings : {};
+      } catch (error) {
+        settings = {};
+      }
+      const value = typeof settings.faviconUrl === 'string' ? settings.faviconUrl.trim() : '';
+      if (!value) {
+        res.statusCode = 204;
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        return res.end();
+      }
+      const fileId = mediaFileId(value);
+      if (fileId) {
+        const media = await getMedia(fileId);
+        const contentType = mediaContentType(media.filePath, media.bytes);
+        if (!contentType) throw new HttpError(415, 'Format favicon tidak didukung.');
+        res.statusCode = 200;
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Length', media.bytes.length);
+        res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+        return res.end(req.method === 'HEAD' ? undefined : media.bytes);
+      }
+      if (/^https?:\/\//i.test(value)) {
+        res.statusCode = 302;
+        res.setHeader('Location', value);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        return res.end();
+      }
       res.statusCode = 204;
-      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
       return res.end();
     }
 
