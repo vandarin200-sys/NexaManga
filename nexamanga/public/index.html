@@ -74,32 +74,17 @@
 
     .kv-public-bottom-nav { display: none; }
     @media (max-width: 1024px) {
-      body.kv-public-route { padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)); }
-      body.kv-public-route.kv-public-bottom-open { padding-bottom: calc(158px + env(safe-area-inset-bottom, 0px)); }
+      body.kv-public-route { padding-bottom: calc(122px + env(safe-area-inset-bottom, 0px)); }
       body.kv-public-route .kv-public-bottom-nav {
         display: flex; flex-direction: column; gap: 6px;
         position: fixed; left: 50%; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 75;
-        width: calc(100vw - 16px); max-width: 520px; padding: 12px 10px 8px;
+        width: calc(100vw - 16px); max-width: 520px; padding: 10px 10px 8px;
         transform: translateX(-50%); border: 1px solid var(--kv-border); border-radius: 24px;
         background: var(--kv-surface); box-shadow: 0 18px 40px -24px rgba(0, 0, 0, .5);
       }
       body.kv-public-route .kv-public-bottom-primary {
-        display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px;
-      }
-      body.kv-public-route .kv-public-bottom-extra {
         display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; justify-items: center;
-        width: 100%; padding-top: 6px; border-top: 1px solid var(--kv-border);
       }
-      body.kv-public-route .kv-public-bottom-expand {
-        position: absolute; left: 50%; top: 0; z-index: 2;
-        display: flex; align-items: center; gap: 4px; height: 24px; padding: 0 10px;
-        transform: translate(-50%, -50%); border: 1px solid var(--kv-border); border-radius: 999px;
-        background: var(--kv-surface); color: var(--kv-accent); cursor: pointer;
-        font-family: var(--kv-font-mono); font-size: .55rem; font-weight: 700;
-        letter-spacing: .08em; text-transform: uppercase;
-      }
-      body.kv-public-route .kv-public-bottom-expand svg { transition: transform .18s ease; }
-      body.kv-public-route .kv-public-bottom-expand.expanded svg { transform: rotate(180deg); }
       body.kv-public-route .kv-public-bottom-item {
         min-width: 0; height: 46px; padding: 2px 0; border: 0; border-radius: 12px;
         background: transparent; color: var(--kv-text-muted); cursor: pointer; position: relative;
@@ -2926,8 +2911,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       bookmarks: JSON.parse(localStorage.getItem('kv_bookmarks') || '[]'),
       history: JSON.parse(localStorage.getItem('kv_history') || '[]'),
       adminToken: localStorage.getItem('kv_session_token') || '',
-      mobileMenuOpen: false,
-      publicBottomExpanded: false,
       refocusSearch: false,
       /* --- State panel admin & moderasi --- */
       adminTab: 'dashboard',
@@ -3695,7 +3678,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        if (current !== routePath) {
          window.history.pushState(null, '', routePath);
        }
-        state.mobileMenuOpen = false;
+
         state.filterDrawerOpen = false;
         state.commentNotice = null;
        parseRoute();
@@ -3876,39 +3859,21 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         ========================================================================= */
       function renderPublicBottomNav() {
         if (state.route === 'admin' || state.route === 'reader') return '';
-        var expanded = !!state.publicBottomExpanded;
         var href = function (path) { return path; };
         var item = function (n) {
           var active = n.keys ? n.keys.indexOf(state.route) !== -1 : state.route === n.key;
-          if (n.page) active = active && state.params.page === n.page;
-          var cls = 'kv-public-bottom-item' + (active ? ' active' : '');
-          var inner = '<span class="kv-public-bottom-icon">' + kvIcon(n.icon) + '</span>' +
+          return '<a class="kv-public-bottom-item' + (active ? ' active' : '') + '" href="' + href(n.path) + '" aria-label="' + escapeHtml(n.label) + '"' + (active ? ' aria-current="page"' : '') + '>' +
+            '<span class="kv-public-bottom-icon">' + kvIcon(n.icon) + '</span>' +
             '<span class="kv-public-bottom-label">' + escapeHtml(n.label) + '</span>' +
-            (active ? '<span class="kv-public-bottom-bar" aria-hidden="true"></span>' : '');
-          if (n.action) return '<button type="button" class="' + cls + '" data-action="' + n.action + '" aria-label="' + escapeHtml(n.label) + '">' + inner + '</button>';
-          return '<a class="' + cls + '" href="' + href(n.path) + '" aria-label="' + escapeHtml(n.label) + '"' + (active ? ' aria-current="page"' : '') + '>' + inner + '</a>';
+            (active ? '<span class="kv-public-bottom-bar" aria-hidden="true"></span>' : '') +
+          '</a>';
         };
         var primary = [
           { path: '/', label: 'Beranda', icon: 'grid', key: 'home' },
           { path: '/archive', label: 'Archive', icon: 'book', keys: ['catalog', 'detail'] },
-          { label: 'Pustaka', icon: 'layers', action: 'public-bookmarks' },
-          { path: '/notifikasi', label: 'Notifikasi', icon: 'eye', key: 'notification' },
           { path: '/akun', label: 'Akun', icon: 'users', key: 'account' }
         ];
-        var extra = [
-          { path: '/tentang', label: 'Tentang', icon: 'globe', key: 'info', page: 'tentang' },
-          { path: '/kontak', label: 'Kontak', icon: 'chat', key: 'info', page: 'kontak' },
-          { path: '/admin', label: 'Admin', icon: 'gear', key: 'admin' }
-        ];
-        var toggle = '<button type="button" class="kv-public-bottom-expand' + (expanded ? ' expanded' : '') + '" data-action="toggle-public-bottom" aria-label="' + (expanded ? 'Tutup menu tambahan' : 'Buka menu tambahan') + '" aria-expanded="' + (expanded ? 'true' : 'false') + '">' +
-          '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>' +
-          '<span>Lainnya</span>' +
-        '</button>';
-        return '<nav class="kv-public-bottom-nav' + (expanded ? ' expanded' : '') + '" aria-label="Menu cepat situs">' +
-          toggle +
-          '<div class="kv-public-bottom-primary">' + primary.map(item).join('') + '</div>' +
-          (expanded ? '<div class="kv-public-bottom-extra">' + extra.map(item).join('') + '</div>' : '') +
-        '</nav>';
+        return '<nav class="kv-public-bottom-nav" aria-label="Menu cepat situs"><div class="kv-public-bottom-primary">' + primary.map(item).join('') + '</div></nav>';
       }
 
       function renderHeader() {
@@ -3928,8 +3893,16 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         var themeLabel = state.theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap';
        var themeIcon = state.theme === 'dark'
          ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>'
-         : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
-       var genreChips = ['Semua Koleksi'].concat(collectGenres().slice(0, 9));
+          : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+        var unreadBellCount = state.user ? getUnreadNotificationCount() : 0;
+        var bellHtml = state.user
+          ? '<a href="/notifikasi" class="md:hidden relative w-9 h-9 rounded-full bg-[#F2E8D8] hover:bg-[#E9DAC2] flex items-center justify-center text-[#7A4A1F] transition-colors border border-[#BFA986] dark:bg-[#20243A] dark:text-neutral-300 dark:border-[#2B304C]" aria-label="Notifikasi">' +
+              '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>' +
+              (unreadBellCount ? '<span class="kv-nav-badge absolute -top-1 -right-1" style="margin:0;">' + unreadBellCount + '</span>' : '') +
+            '</a>'
+          : '';
+        var genreChips = ['Semua Koleksi'].concat(collectGenres().slice(0, 9));
+
        var genreHtml = genreChips.map(function (g, i) {
          var active = i === 0 && state.filterGenres.length === 0;
          var cls = active
@@ -3949,9 +3922,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
              (currentDisplayAvatar(state.user.avatar) ? '<img src="' + escapeHtml(currentDisplayAvatar(state.user.avatar)) + '" alt="" class="w-8 h-8 rounded-full object-cover border border-[#BFA986] dark:border-[#2B304C]"/>' : '<div class="w-8 h-8 rounded-full bg-[#7A4A1F] text-white flex items-center justify-center font-bold text-sm">' + escapeHtml(String(currentDisplayName(state.user.name)).charAt(0).toUpperCase()) + '</div>') +
            '</a>'
           : '<a href="/akun" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm bg-gradient-to-r from-[#7A4A1F] to-[#5F3817] hover:from-[#5F3817] hover:to-[#3F2D1C] text-white shadow-sm hover:shadow transition-all duration-200"><svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span>Masuk</span></a>';
-       var mobileMenu = state.mobileMenuOpen
-          ? '<div class="md:hidden mx-4 mb-3 mt-1 flex flex-col gap-1 p-2 rounded-2xl bg-[#FFFCF6] border border-[#BFA986] shadow-lg dark:bg-[#1A1A1E] dark:border-[#2B304C]">' + navItems.map(function(item){ var active=state.route===item.key; return '<a href="'+item.path+'" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors '+(active?'bg-[#7A4A1F] text-white':'text-[#7A4A1F] hover:bg-[#F2E8D8] dark:text-neutral-300 dark:hover:bg-[#20243A]')+'"'+(active?' aria-current="page"':'')+'>'+escapeHtml(item.label)+'</a>'; }).join('') + '</div>'
-         : '';
+
        var brandModeVal = brandMode();
        var showLogo = brandModeVal !== 'name-only';
        var showName = brandModeVal !== 'logo-only';
@@ -3980,9 +3951,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
              '</nav>' +
              '<div class="flex items-center gap-3 flex-shrink-0">' +
 
-               '<button type="button" class="w-9 h-9 rounded-full bg-[#F2E8D8] hover:bg-[#E9DAC2] flex items-center justify-center text-[#7A4A1F] transition-colors border border-[#BFA986] dark:bg-[#20243A] dark:text-neutral-300 dark:border-[#2B304C]" data-action="toggle-theme" title="' + themeLabel + '">' + themeIcon + '</button>' +
-               userHtml +
-               '<button class="md:hidden p-2 text-[#7A4A1F] rounded-lg hover:bg-[#F2E8D8] dark:text-neutral-300" data-action="toggle-mobile-menu"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>' +
+                '<button type="button" class="w-9 h-9 rounded-full bg-[#F2E8D8] hover:bg-[#E9DAC2] flex items-center justify-center text-[#7A4A1F] transition-colors border border-[#BFA986] dark:bg-[#20243A] dark:text-neutral-300 dark:border-[#2B304C]" data-action="toggle-theme" title="' + themeLabel + '">' + themeIcon + '</button>' +
+                bellHtml +
+                userHtml +
+
              '</div>' +
            '</div>' +
          '<div class="px-4 sm:px-6 lg:px-8 pb-3 pt-2 bg-[#F7F1E6] dark:bg-[#121215] border-b border-[#BFA986] dark:border-[#2B304C]">' +
@@ -3992,9 +3964,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
                '<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#705B45]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>' +
              '</div>' +
            '</div>' +
-         '</div>' +
-mobileMenu +
-       '</header>';
+          '</div>' +
+        '</header>';
+
      }
 
     function renderFooter() {
@@ -6874,7 +6846,6 @@ mobileMenu +
           document.body.classList.toggle('kv-notification-route', state.route === 'notification');
           document.body.classList.toggle('kv-reader-route', state.route === 'reader');
           document.body.classList.toggle('kv-public-route', state.route !== 'reader' && state.route !== 'admin');
-          document.body.classList.toggle('kv-public-bottom-open', state.publicBottomExpanded && state.route !== 'reader' && state.route !== 'admin');
         }
 
 
@@ -7500,7 +7471,7 @@ mobileMenu +
         var returnOrigin = window.location.origin;
         window.location.assign(CONFIG.API_BASE_URL + '/api/auth/' + provider + '/start?return_to=' + encodeURIComponent(returnOrigin));
       }
-      else if (act === 'toggle-mobile-menu') { state.mobileMenuOpen = !state.mobileMenuOpen; render(); }
+
       else if (act === 'reply-comment') { var rid = el.getAttribute('data-id'); state.replyingTo = state.replyingTo === rid ? null : rid; render(); }
       else if (act === 'upvote-comment') { upvoteCommentLocal(el.getAttribute('data-id')); }
       else if (act === 'toggle-replies') {
@@ -7585,16 +7556,6 @@ mobileMenu +
       else if (act === 'admin-settings-reset') { resetSiteSettings(); }
        else if (act === 'toggle-admin-drawer') { state.adminDrawerOpen = !state.adminDrawerOpen; render(); }
        else if (act === 'toggle-admin-bottom') { state.adminBottomExpanded = !state.adminBottomExpanded; render(); }
-       else if (act === 'toggle-public-bottom') { state.publicBottomExpanded = !state.publicBottomExpanded; render(); }
-       else if (act === 'public-bookmarks') {
-         navigate('/akun');
-         window.setTimeout(function () {
-           var titles = document.querySelectorAll('.kv-acct-sheet-title');
-           for (var i = 0; i < titles.length; i++) {
-             if (titles[i].textContent.trim() === 'Bookmark') { titles[i].scrollIntoView({ behavior: 'smooth', block: 'start' }); break; }
-           }
-         }, 120);
-       }
 
       else if (act === 'close-admin-drawer') { state.adminDrawerOpen = false; render(); }
       else if (act === 'share-manga') {
@@ -7798,7 +7759,6 @@ else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); st
       }
       state.readerMenuOpen = false;
       state.readerSettingsOpen = false;
-      state.mobileMenuOpen = false;
       state.commentNotice = null;
       parseRoute();
       render();
