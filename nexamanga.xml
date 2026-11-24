@@ -1348,7 +1348,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-reader-overlay-settled { height:76px; overflow:visible; }
       body.kv-reader-route .kv-reader-overlay-settled .kv-reader-bottom-controls { bottom:0; }
       body.kv-reader-route .kv-reader-overlay-hidden .kv-reader-bottom-nav { transform:translate(-50%, 130%); opacity:0; pointer-events:none; }
-      body.kv-reader-route .kv-reader-controls-toggle { position:fixed; right:14px; top:14px; z-index:82; display:inline-flex; align-items:center; gap:7px; padding:8px 12px; border:1px solid var(--kv-border); border-radius:999px; background:var(--kv-surface); color:var(--kv-text); box-shadow:0 8px 22px -12px rgba(0,0,0,.32); pointer-events:auto; cursor:pointer; font-weight:700; font-size:12px; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+      body.kv-reader-route .kv-reader-controls-toggle { position:fixed; right:14px; top:14px; z-index:82; width:36px; height:36px; padding:0; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--kv-border); border-radius:999px; background:var(--kv-surface); color:var(--kv-text); box-shadow:0 8px 22px -12px rgba(0,0,0,.32); pointer-events:auto; cursor:pointer; transition:background .15s ease, color .15s ease, border-color .15s ease; }
       body.kv-reader-route .kv-reader-controls-toggle svg { width:16px; height:16px; }
       body.kv-reader-route .kv-reader-controls-toggle.is-hidden-controls { background:var(--kv-accent); color:#F7F1E6; border-color:var(--kv-accent); }
         body.kv-reader-route .kv-round-btn { width:clamp(48px,6vw,56px); height:clamp(48px,6vw,56px); border:1px solid var(--kv-border); border-radius:14px; background:var(--kv-surface); color:var(--kv-text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; box-shadow:0 8px 22px -12px rgba(0,0,0,.25); transition:transform .15s ease, border-color .15s ease, color .15s ease, background .15s ease; -webkit-tap-highlight-color:transparent; }
@@ -2682,23 +2682,19 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       html {
         transition: background-color .24s ease, color .24s ease;
       }
-      body, header, nav, aside, .kv-card, .kv-btn, .kv-input, .kv-theme-menu, .kv-theme-choice {
+      body, header, nav, aside, .kv-card, .kv-btn, .kv-input, .kv-theme-menu-inline, .kv-theme-choice {
         transition: background-color .24s ease, border-color .24s ease, color .24s ease, box-shadow .24s ease;
       }
-      .kv-theme-control { position: relative; display: inline-flex; align-items: center; }
-      .kv-theme-trigger { width:36px; height:36px; padding:0; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--kv-border); border-radius:999px; background:var(--kv-surface-2); color:var(--kv-accent); cursor:pointer; }
-      .kv-theme-trigger svg { width:16px; height:16px; display:block; }
-      .kv-admin-topbar .kv-theme-trigger { background:var(--ad-raised); border-color:var(--ad-line); color:var(--ad-teal); }
-      .kv-theme-menu, .kv-theme-menu-inline {
-        display: flex; align-items: center; gap: 4px;
+      .kv-theme-menu-inline {
+        display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
         padding: 6px; border-radius: 14px;
         border: 1px solid var(--kv-border); background: var(--kv-surface);
         box-shadow: 0 16px 38px -26px rgba(0,0,0,.55);
       }
-      .kv-theme-menu {
-        position: absolute; right: 0; top: calc(100% + 8px); z-index: 90; width: max-content;
-      }
-      .kv-theme-menu-inline { flex-wrap: wrap; }
+      .kv-theme-menu-inline.is-compact { gap: 2px; padding: 4px; border-radius: 10px; }
+      .kv-theme-menu-inline.is-compact .kv-theme-choice { width: 24px; height: 24px; border-radius: 7px; }
+      .kv-theme-menu-inline.is-compact .kv-theme-choice svg { width: 12px; height: 12px; }
+      .kv-theme-menu-inline.is-compact .kv-theme-choice::after { display: none; }
       .kv-theme-choice {
         position: relative; width: 30px; height: 30px; padding: 0;
         display: inline-flex; align-items: center; justify-content: center;
@@ -2721,7 +2717,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       }
       .kv-theme-choice:hover::after, .kv-theme-choice:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
       .kv-reader-sheet .kv-theme-menu-inline { padding: 4px; background: var(--kv-surface-2); border-color: var(--kv-border); }
-      .kv-admin-topbar .kv-theme-menu { background: var(--ad-panel); border-color: var(--ad-line); }
+      .kv-admin-topbar .kv-theme-menu-inline { background: var(--ad-panel); border-color: var(--ad-line); }
       .kv-admin-topbar .kv-theme-choice { color: var(--ad-muted); }
       .kv-admin-topbar .kv-theme-choice[data-current="true"] { color: var(--ad-teal); background: var(--ad-raised); border-color: var(--ad-line); }
       html[data-theme="anilist"] {
@@ -2827,7 +2823,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       html[data-theme="anilist"] [class*="from-[#"], html[data-theme="catppuccin"] [class*="from-[#"], html[data-theme="mecha"] [class*="from-[#"] { background-image: linear-gradient(90deg, var(--primary), var(--ring)) !important; }
       html[data-theme="anilist"] [class*="text-white"], html[data-theme="catppuccin"] [class*="text-white"], html[data-theme="mecha"] [class*="text-white"] { color: var(--primary-foreground) !important; }
       @media (max-width: 640px) {
-        body.kv-public-route .kv-theme-menu { left: 0; right: auto; }
         .kv-theme-choice { width: 32px; height: 32px; }
       }
 ]]></b:skin>
@@ -2919,7 +2914,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       route: 'home',
       params: {},
        theme: (function () { var v = localStorage.getItem('kv_theme') || CONFIG.DEFAULT_THEME; return CONFIG.THEME_IDS.indexOf(v) !== -1 ? v : CONFIG.DEFAULT_THEME; })(),
-      themeMenuOpen: false,
        imageCompressionEnabled: localStorage.getItem('kv_img_compress_enabled') !== '0',
        imageCompressionQuality: (function () { if (localStorage.getItem('kv_img_compress_ver') !== '3') { localStorage.setItem('kv_img_compress_ver', '3'); localStorage.setItem('kv_img_compress_quality', '0.95'); localStorage.setItem('kv_img_compress_maxdim', '4000'); if (localStorage.getItem('kv_img_compress_enabled') === null) localStorage.setItem('kv_img_compress_enabled', '1'); return 0.95; } return parseFloat(localStorage.getItem('kv_img_compress_quality') || '0.95') || 0.95; })(),
        imageCompressionMaxDim: (function () { if (localStorage.getItem('kv_img_compress_ver') !== '3') return 4000; return parseInt(localStorage.getItem('kv_img_compress_maxdim') || '4000', 10) || 4000; })(),
@@ -3567,11 +3561,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       }).join('');
     }
 
-    function renderThemeControl() {
-      return '<div class="kv-theme-control">' +
-        '<button type="button" class="kv-theme-trigger" data-action="toggle-theme-menu" aria-expanded="' + (state.themeMenuOpen ? 'true' : 'false') + '" aria-label="Pilih tema" title="Pilih tema">' + themeIconSvg(isDarkTheme() ? 'dark' : 'light') + '</button>' +
-        (state.themeMenuOpen ? '<div class="kv-theme-menu" role="group" aria-label="Pilih tema">' + renderThemeChoices(false) + '</div>' : '') +
-      '</div>';
+    function renderThemeMenuInline(compact) {
+      return '<div class="kv-theme-menu-inline' + (compact ? ' is-compact' : '') + '" role="group" aria-label="Pilih tema">' + renderThemeChoices(true) + '</div>';
     }
 
     function resolvedTheme() {
@@ -4039,7 +4030,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
              '</nav>' +
              '<div class="flex items-center gap-3 flex-shrink-0">' +
 
-                renderThemeControl() +
+                renderThemeMenuInline(true) +
                 bellHtml +
                 userHtml +
 
@@ -4756,7 +4747,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         '<div class="kv-reader-sheet-head"><span>Pengaturan Pembaca</span><button type="button" class="kv-reader-sheet-close" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div>' +
          '<div class="kv-reader-sheet-body">' +
             '<div class="kv-reader-sheet-row"><span class="kv-reader-sheet-label">Tema</span>' +
-              '<div class="kv-theme-menu-inline" role="group" aria-label="Pilih tema">' + renderThemeChoices(true) + '</div>' +
+              renderThemeMenuInline(false) +
             '</div>' +
 
            '<div class="kv-reader-sheet-row"><label class="kv-reader-sheet-label" for="kv-reader-speed">Kecepatan gulir (px/tick)</label>' +
@@ -4799,7 +4790,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       '</nav>';
 
       var overlay = '<div class="kv-reader-overlay' + (state.readerControlsHidden ? ' kv-reader-overlay-hidden' : '') + '" id="kv-reader-overlay" role="group" aria-label="Kontrol pembaca">' +
-        '<button type="button" class="kv-reader-controls-toggle' + (state.readerControlsHidden ? ' is-hidden-controls' : '') + '" data-action="toggle-reader-controls" aria-label="' + (state.readerControlsHidden ? 'Buka kontrol pembaca' : 'Tutup kontrol pembaca') + '" aria-pressed="' + (state.readerControlsHidden ? 'true' : 'false') + '">' + (state.readerControlsHidden ? eyeOffIcon : eyeIcon) + '<span class="kv-reader-controls-toggle-label">' + (state.readerControlsHidden ? 'Buka kontrol' : 'Tutup kontrol') + '</span></button>' +
+        '<button type="button" class="kv-reader-controls-toggle' + (state.readerControlsHidden ? ' is-hidden-controls' : '') + '" data-action="toggle-reader-controls" aria-label="' + (state.readerControlsHidden ? 'Tampilkan tombol pembaca' : 'Sembunyikan tombol pembaca') + '" aria-pressed="' + (state.readerControlsHidden ? 'true' : 'false') + '">' + (state.readerControlsHidden ? eyeOffIcon : eyeIcon) + '</button>' +
         '<div class="kv-reader-side">' +
           '<button type="button" class="kv-round-btn" data-action="scroll-reader-up" aria-label="Gulir ke atas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15L12 8L19 15"/></svg></button>' +
           '<button type="button" class="kv-round-btn" data-action="scroll-reader-down" aria-label="Gulir ke bawah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9L12 16L19 9"/></svg></button>' +
@@ -5299,7 +5290,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
               '</span>' +
               '<div class="kv-admin-crumb"><span class="kv-admin-crumb-current">' + escapeHtml(t[0]) + '</span></div>' +
               '<div class="kv-admin-top-actions">' +
-                renderThemeControl() +
+                renderThemeMenuInline(true) +
                 '<button type="button" class="kv-btn kv-btn-ghost" data-action="logout-admin"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg> Keluar</button>' +
               '</div>' +
             '</header>' +
@@ -6945,13 +6936,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       var btn = document.querySelector('.kv-reader-controls-toggle');
       if (!btn) return;
       var hidden = state.readerControlsHidden;
-      btn.setAttribute('aria-label', hidden ? 'Buka kontrol pembaca' : 'Tutup kontrol pembaca');
+      btn.setAttribute('aria-label', hidden ? 'Tampilkan tombol pembaca' : 'Sembunyikan tombol pembaca');
       btn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
       btn.classList.toggle('is-hidden-controls', hidden);
-      btn.innerHTML = (hidden
+      btn.innerHTML = hidden
         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.3A10.7 10.7 0 0 1 12 6.2c6.1 0 9.6 5.8 9.6 5.8a15.3 15.3 0 0 1-3.2 3.7M6.3 8.4A15.1 15.1 0 0 0 2.4 12s3.5 5.8 9.6 5.8a10.4 10.4 0 0 0 3.5-.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>'
-        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.4 12s3.5-5.8 9.6-5.8 9.6 5.8 9.6 5.8-3.5 5.8-9.6 5.8S2.4 12 2.4 12z"/><circle cx="12" cy="12" r="2.7"/></svg>') +
-        '<span class="kv-reader-controls-toggle-label">' + (hidden ? 'Buka kontrol' : 'Tutup kontrol') + '</span>';
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.4 12s3.5-5.8 9.6-5.8 9.6 5.8 9.6 5.8-3.5 5.8-9.6 5.8S2.4 12 2.4 12z"/><circle cx="12" cy="12" r="2.7"/></svg>';
     }
 
     function toggleOverlayVisibility() {
@@ -7429,11 +7419,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       if (!trafficPoint && !e.target.closest('.kv-traffic-tooltip')) hideTrafficTooltip();
       var insideBrandMenu = e.target && e.target.closest ? e.target.closest('.kv-brand-mode-menu') : null;
       if (!insideBrandMenu) setBrandModePanel(false);
-      var insideThemeMenu = e.target && e.target.closest ? e.target.closest('.kv-theme-control') : null;
-      if (!insideThemeMenu && state.themeMenuOpen) {
-        state.themeMenuOpen = false;
-        if (!e.target.closest || !e.target.closest('[data-action]')) { render(); return; }
-      }
       var trigger = e.target.closest && e.target.closest('.kv-dropdown-btn');
       if (trigger) {
         var container = trigger.closest('.kv-dropdown');
@@ -7446,9 +7431,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       if (!el) return;
        var act = el.getAttribute('data-action');
        if (act === 'kv-traffic-point') { showTrafficTooltip(el); return; }
-       if (act === 'toggle-theme') { state.theme = isDarkTheme() ? 'light' : 'dark'; state.themeMenuOpen = false; applyTheme(); render(); }
-      else if (act === 'toggle-theme-menu') { state.themeMenuOpen = !state.themeMenuOpen; render(); }
-      else if (act === 'set-theme') { var nextTheme = el.getAttribute('data-value'); if (CONFIG.THEME_IDS.indexOf(nextTheme) !== -1) { state.theme = nextTheme; state.themeMenuOpen = false; applyTheme(); render(); } }
+       if (act === 'toggle-theme') { state.theme = isDarkTheme() ? 'light' : 'dark'; applyTheme(); render(); }
+      else if (act === 'set-theme') { var nextTheme = el.getAttribute('data-value'); if (CONFIG.THEME_IDS.indexOf(nextTheme) !== -1) { state.theme = nextTheme; applyTheme(); render(); } }
       else if (act === 'oauth-login') {
         if (!CONFIG.API_BASE_URL) { toast('Backend Vercel belum dikonfigurasi.', 'warn'); return; }
         var provider = el.getAttribute('data-provider');
@@ -7735,7 +7719,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       state.readerMenuOpen = false;
       state.readerSettingsOpen = false;
       state.readerControlsHidden = false;
-      state.themeMenuOpen = false;
       state.commentNotice = null;
       parseRoute();
       render();
@@ -7772,7 +7755,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       if (e.key === 'kv_theme') {
         var t = e.newValue;
         if (CONFIG.THEME_IDS.indexOf(t) === -1) t = CONFIG.DEFAULT_THEME;
-        if (state.theme !== t) { state.theme = t; state.themeMenuOpen = false; applyTheme(false); render(); }
+        if (state.theme !== t) { state.theme = t;  applyTheme(false); render(); }
       }
     });
     var themeMedia = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
