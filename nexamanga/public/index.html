@@ -85,6 +85,8 @@
       body.kv-public-route .kv-public-bottom-primary {
         display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; justify-items: center;
       }
+      body.kv-public-route .kv-public-bottom-primary.count-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      body.kv-public-route .kv-public-bottom-primary.count-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
       body.kv-public-route .kv-public-bottom-item {
         min-width: 0; height: 46px; padding: 2px 0; border: 0; border-radius: 12px;
         background: transparent; color: var(--kv-text-muted); cursor: pointer; position: relative;
@@ -94,7 +96,9 @@
       body.kv-public-route .kv-public-bottom-item:hover { color: var(--kv-text); background: var(--kv-surface-2); }
       body.kv-public-route .kv-public-bottom-item.active { color: var(--kv-accent); background: var(--kv-surface-2); }
       body.kv-public-route .kv-public-bottom-icon { display: inline-flex; color: inherit; }
+      body.kv-public-route .kv-public-bottom-icon { position: relative; }
       body.kv-public-route .kv-public-bottom-icon svg { width: 18px; height: 18px; }
+      body.kv-public-route .kv-public-bottom-badge { position:absolute; top:-4px; right:-8px; min-width:14px; height:14px; padding:0 3px; border-radius:999px; background:var(--kv-accent); color:#fff; font-size:8px; font-weight:800; line-height:14px; text-align:center; }
       body.kv-public-route .kv-public-bottom-label { font-family: var(--kv-font-sans); font-size: 9.5px; font-weight: 600; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
       body.kv-public-route .kv-public-bottom-bar { position: absolute; left: 50%; bottom: 1px; width: 14px; height: 2px; border-radius: 2px; background: var(--kv-accent); transform: translateX(-50%); }
     }
@@ -1341,6 +1345,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-reader-overlay-hidden .kv-reader-bottom-controls { transform:translate(-50%, 130%); opacity:0; pointer-events:none; }
       body.kv-reader-route .kv-reader-overlay-settled { height:76px; overflow:visible; }
       body.kv-reader-route .kv-reader-overlay-settled .kv-reader-bottom-controls { bottom:0; }
+      body.kv-reader-route .kv-reader-overlay-hidden .kv-reader-bottom-nav { transform:translate(-50%, 130%); opacity:0; pointer-events:none; }
+      body.kv-reader-route .kv-reader-controls-toggle { position:fixed; right:14px; top:14px; z-index:82; display:inline-flex; align-items:center; gap:7px; padding:8px 12px; border:1px solid var(--kv-border); border-radius:999px; background:var(--kv-surface); color:var(--kv-text); box-shadow:0 8px 22px -12px rgba(0,0,0,.32); pointer-events:auto; cursor:pointer; font-weight:700; font-size:12px; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+      body.kv-reader-route .kv-reader-controls-toggle svg { width:16px; height:16px; }
+      body.kv-reader-route .kv-reader-controls-toggle.is-hidden-controls { background:var(--kv-accent); color:#F7F1E6; border-color:var(--kv-accent); }
         body.kv-reader-route .kv-round-btn { width:clamp(48px,6vw,56px); height:clamp(48px,6vw,56px); border:1px solid var(--kv-border); border-radius:14px; background:var(--kv-surface); color:var(--kv-text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; box-shadow:0 8px 22px -12px rgba(0,0,0,.25); transition:transform .15s ease, border-color .15s ease, color .15s ease, background .15s ease; -webkit-tap-highlight-color:transparent; }
         body.kv-reader-route .kv-round-btn-next { background:var(--kv-accent); color:#F7F1E6; border-color:var(--kv-accent); }
         body.kv-reader-route .kv-round-btn-next:hover { background:var(--kv-accent-hover); border-color:var(--kv-accent-hover); transform:translateY(-2px) scale(1.04); }
@@ -2899,6 +2907,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       readerDir: 'ltr', // 'ltr' | 'rtl'
       currentPageIdx: 0,
        readerMenuOpen: false,
+      readerControlsHidden: false,
        readerChapterSearch: '',
        readerChapterSearchRefocus: false,
 
@@ -3491,7 +3500,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         zap: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
         chev: '<path d="m6 9 6 6 6-6"/>',
         search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/>',
-        share: '<path d="M12 16V4"/><path d="m8 8 4-4 4 4"/><path d="M4 13v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/>'
+        share: '<path d="M12 16V4"/><path d="m8 8 4-4 4 4"/><path d="M4 13v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/>',
+        bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+        shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
       };
       return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (p[name] || '') + '</svg>';
     }
@@ -3863,7 +3874,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         var item = function (n) {
           var active = n.keys ? n.keys.indexOf(state.route) !== -1 : state.route === n.key;
           return '<a class="kv-public-bottom-item' + (active ? ' active' : '') + '" href="' + href(n.path) + '" aria-label="' + escapeHtml(n.label) + '"' + (active ? ' aria-current="page"' : '') + '>' +
-            '<span class="kv-public-bottom-icon">' + kvIcon(n.icon) + '</span>' +
+            '<span class="kv-public-bottom-icon">' + kvIcon(n.icon) + (n.badge ? '<span class="kv-public-bottom-badge">' + (n.badge > 9 ? '9+' : n.badge) + '</span>' : '') + '</span>' +
             '<span class="kv-public-bottom-label">' + escapeHtml(n.label) + '</span>' +
             (active ? '<span class="kv-public-bottom-bar" aria-hidden="true"></span>' : '') +
           '</a>';
@@ -3873,7 +3884,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           { path: '/archive', label: 'Archive', icon: 'book', keys: ['catalog', 'detail'] },
           { path: '/akun', label: 'Akun', icon: 'users', key: 'account' }
         ];
-        return '<nav class="kv-public-bottom-nav" aria-label="Menu cepat situs"><div class="kv-public-bottom-primary">' + primary.map(item).join('') + '</div></nav>';
+        if (state.user) primary.push({ path: '/notifikasi', label: 'Notifikasi', icon: 'bell', key: 'notification', badge: getUnreadNotificationCount() });
+        if (state.user && state.user.role === 'admin') primary.push({ path: '/admin', label: 'Admin', icon: 'shield', key: 'admin' });
+        return '<nav class="kv-public-bottom-nav" aria-label="Menu cepat situs"><div class="kv-public-bottom-primary count-' + primary.length + '">' + primary.map(item).join('') + '</div></nav>';
       }
 
       function renderHeader() {
@@ -4657,6 +4670,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        var prevIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>';
        var nextIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
       var menuIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+      var eyeIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.4 12s3.5-5.8 9.6-5.8 9.6 5.8 9.6 5.8-3.5 5.8-9.6 5.8S2.4 12 2.4 12z"/><circle cx="12" cy="12" r="2.7"/></svg>';
+      var eyeOffIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.3A10.7 10.7 0 0 1 12 6.2c6.1 0 9.6 5.8 9.6 5.8a15.3 15.3 0 0 1-3.2 3.7M6.3 8.4A15.1 15.1 0 0 0 2.4 12s3.5 5.8 9.6 5.8a10.4 10.4 0 0 0 3.5-.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
       var homeIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11L12 3L21 11"/><path d="M5 10V21H19V10"/></svg>';
       var playIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
       var pauseIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
@@ -4710,9 +4725,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
          '<a class="kv-reader-bottom-item" href="/" aria-label="Kembali ke Beranda">' + homeIcon + '<span class="kv-reader-bottom-label">Beranda</span></a>' +
        '</nav>';
 
-       var overlay = '<div class="kv-reader-overlay" id="kv-reader-overlay" role="group" aria-label="Kontrol pembaca">' +
+        var overlay = '<div class="kv-reader-overlay' + (state.readerControlsHidden ? ' kv-reader-overlay-hidden' : '') + '" id="kv-reader-overlay" role="group" aria-label="Kontrol pembaca">' +
 
-        '<div class="kv-reader-side">' +
+         '<button type="button" class="kv-reader-controls-toggle' + (state.readerControlsHidden ? ' is-hidden-controls' : '') + '" data-action="toggle-reader-controls" aria-label="' + (state.readerControlsHidden ? 'Buka kontrol pembaca' : 'Tutup kontrol pembaca') + '" aria-pressed="' + (state.readerControlsHidden ? 'true' : 'false') + '">' + (state.readerControlsHidden ? eyeOffIcon : eyeIcon) + '<span class="kv-reader-controls-toggle-label">' + (state.readerControlsHidden ? 'Buka kontrol' : 'Tutup kontrol') + '</span></button>' +
+         '<div class="kv-reader-side">' +
+
           '<button type="button" class="kv-round-btn" data-action="scroll-reader-up" aria-label="Gulir ke atas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15L12 8L19 15"/></svg></button>' +
           '<button type="button" class="kv-round-btn" data-action="scroll-reader-down" aria-label="Gulir ke bawah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9L12 16L19 9"/></svg></button>' +
         '</div>' +
@@ -6966,11 +6983,27 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       syncDots();
     }
 
+    function updateControlsToggle() {
+      var btn = document.querySelector('.kv-reader-controls-toggle');
+      if (!btn) return;
+      var hidden = state.readerControlsHidden;
+      btn.setAttribute('aria-label', hidden ? 'Buka kontrol pembaca' : 'Tutup kontrol pembaca');
+      btn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
+      btn.classList.toggle('is-hidden-controls', hidden);
+      var label = btn.querySelector('.kv-reader-controls-toggle-label');
+      if (label) label.textContent = hidden ? 'Buka kontrol' : 'Tutup kontrol';
+      btn.innerHTML = (hidden
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.3A10.7 10.7 0 0 1 12 6.2c6.1 0 9.6 5.8 9.6 5.8a15.3 15.3 0 0 1-3.2 3.7M6.3 8.4A15.1 15.1 0 0 0 2.4 12s3.5 5.8 9.6 5.8a10.4 10.4 0 0 0 3.5-.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.4 12s3.5-5.8 9.6-5.8 9.6 5.8 9.6 5.8-3.5 5.8-9.6 5.8S2.4 12 2.4 12z"/><circle cx="12" cy="12" r="2.7"/></svg>') +
+        '<span class="kv-reader-controls-toggle-label">' + (hidden ? 'Buka kontrol' : 'Tutup kontrol') + '</span>';
+    }
+
     function toggleOverlayVisibility() {
       var overlay = document.getElementById('kv-reader-overlay');
       if (!overlay) return;
-      if (overlay.classList.contains('kv-reader-overlay-settled')) return;
-      overlay.classList.toggle('kv-reader-overlay-hidden');
+      state.readerControlsHidden = !state.readerControlsHidden;
+      overlay.classList.toggle('kv-reader-overlay-hidden', state.readerControlsHidden);
+      updateControlsToggle();
     }
 
     function updateOverlayDockState() {
@@ -6979,7 +7012,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       if (!overlay || !frame) return;
       var settled = frame.getBoundingClientRect().bottom <= window.innerHeight;
       overlay.classList.toggle('kv-reader-overlay-settled', settled);
-      if (settled) overlay.classList.remove('kv-reader-overlay-hidden');
+      updateControlsToggle();
     }
 
     function bindEvents() {
@@ -7529,7 +7562,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           setBannerDotsActive(dotIndex);
         }
       }
-      else if (act === 'toggle-reader-menu') { state.readerMenuOpen = !state.readerMenuOpen; state.readerSettingsOpen = false; render(); }
+        else if (act === 'toggle-reader-menu') { state.readerMenuOpen = !state.readerMenuOpen; state.readerSettingsOpen = false; render(); }
+        else if (act === 'toggle-reader-controls') { toggleOverlayVisibility(); }
+
       else if (act === 'close-reader-panels') { state.readerMenuOpen = false; state.readerSettingsOpen = false; render(); }
       else if (act === 'toggle-fullscreen') {
         if (document.fullscreenElement) { document.exitFullscreen().catch(function () {}); }
@@ -7759,6 +7794,7 @@ else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); st
       }
       state.readerMenuOpen = false;
       state.readerSettingsOpen = false;
+      state.readerControlsHidden = false;
       state.commentNotice = null;
       parseRoute();
       render();
