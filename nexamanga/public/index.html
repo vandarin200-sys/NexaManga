@@ -1514,6 +1514,21 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         html.dark body.kv-home-route .kv-home-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
         html.dark body.kv-home-route .kv-home-section-title { font-size: 1.2rem; }
       }
+      @media (min-width: 1101px) {
+        body.kv-home-route .kv-home-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; align-items: start; }
+        body.kv-home-route .kv-home-side-pane { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; padding: 20px; border: 1px solid var(--kv-border); border-radius: 20px; background: var(--kv-surface); box-shadow: 0 24px 60px -36px rgba(0,0,0,.28); scrollbar-width: thin; scrollbar-color: var(--kv-border) transparent; }
+        body.kv-home-route .kv-home-side-pane::-webkit-scrollbar { width: 6px; }
+        body.kv-home-route .kv-home-side-pane::-webkit-scrollbar-thumb { background: var(--kv-border); border-radius: 999px; }
+        body.kv-home-route .kv-home-layout .kv-home-side-pane .kv-home-section { margin-top: 0; }
+        body.kv-home-route .kv-home-layout .kv-home-side-pane .kv-home-section + .kv-home-section { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--kv-border); }
+        body.kv-home-route .kv-home-layout .kv-home-side-pane .kv-home-popular,
+        body.kv-home-route .kv-home-layout .kv-home-side-pane .kv-home-curated { grid-template-columns: 1fr; }
+        body.kv-home-route .kv-home-layout .kv-home-side-pane .kv-home-rank { padding: 10px; }
+        body.kv-home-route .kv-home-layout .kv-home-side-pane .kv-home-rank-cover { width: 60px; }
+        body.kv-home-route .kv-home-layout .kv-home-side-pane .kv-home-curated-card { padding: 12px; }
+        body.kv-home-route .kv-home-layout .kv-home-side-pane .kv-home-curated-cover { width: 84px; }
+        body.kv-home-route .kv-home-layout .kv-home-main-pane .kv-home-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      }
       html.dark body.kv-detail-route {
         --kv-bg: #171a27;
         --kv-surface: #171a27;
@@ -1711,8 +1726,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        .kv-md-card { display: flex; flex-direction: column; gap: 14px; }
        .kv-md-head { display: flex; align-items: center; gap: 12px; }
        .kv-md-head-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--kv-surface-2); display: flex; align-items: center; justify-content: center; color: var(--kv-accent); }
-       .kv-md-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-       .kv-md-form .kv-input { flex: 1; min-width: 240px; }
+        .kv-md-form { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; }
+        .kv-md-form .kv-input { min-width: 0; width: 100%; }
+
        .kv-md-tips { margin: 0; padding-left: 18px; color: var(--kv-text-muted); font-size: .8rem; display: grid; gap: 4px; }
        .kv-md-progress { margin-top: 12px; }
        .kv-md-progress-head { display: flex; justify-content: space-between; font-size: .8rem; color: var(--kv-text-muted); margin-bottom: 6px; }
@@ -2213,6 +2229,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-user-role-option-check { width: 14px; flex: 0 0 auto; color: var(--ad-amber); font-size: .8rem; text-align: center; }
       @keyframes kvUserRoleIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
       @media (prefers-reduced-motion: reduce) { .kv-admin-shell.kv-admin-top .kv-user-role-panel { animation: none; } }
+      @keyframes kvMdLangIn { from { opacity: 0; transform: translate(-50%, 4px); } to { opacity: 1; transform: translate(-50%, 0); } }
       .kv-admin-shell.kv-admin-top .kv-brand-mode-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
       .kv-admin-shell.kv-admin-top .kv-brand-mode-field > span { font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 500; letter-spacing: .13em; color: var(--ad-dim); text-transform: uppercase; }
       .kv-admin-shell.kv-admin-top .kv-brand-mode-menu { position: relative; min-width: 0; }
@@ -2223,7 +2240,16 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-brand-mode-dot.name-only { background: var(--ad-muted); box-shadow: 0 0 0 3px var(--ad-raised); }
       .kv-admin-shell.kv-admin-top .kv-md-card { overflow: visible; }
       .kv-admin-shell.kv-admin-top .kv-md-lang-menu { position: relative; flex: 0 0 auto; min-width: 190px; }
-      .kv-admin-shell.kv-admin-top .kv-md-lang-menu .kv-user-role-panel { top: calc(100% + 6px); bottom: auto; }
+      .kv-admin-shell.kv-admin-top .kv-md-lang-menu .kv-user-role-panel { left: 50%; right: auto; top: calc(100% + 6px); bottom: auto; width: min(300px, calc(100vw - 32px)); transform: translateX(-50%); animation: kvMdLangIn .12s ease; }
+      @media (prefers-reduced-motion: reduce) { .kv-admin-shell.kv-admin-top .kv-md-lang-menu .kv-user-role-panel { animation: none; } }
+      @media (max-width: 640px) {
+        .kv-admin-shell.kv-admin-top .kv-md-form { gap: 6px; }
+        .kv-admin-shell.kv-admin-top .kv-md-lang-menu { min-width: 0; }
+        .kv-admin-shell.kv-admin-top .kv-md-lang-menu .kv-user-role-btn { min-height: 0; padding: 7px; gap: 5px; }
+        .kv-admin-shell.kv-admin-top .kv-md-lang-menu .kv-user-role-btn-label { max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .kv-admin-shell.kv-admin-top .kv-md-form > .kv-btn { min-height: 0; padding: 7px 8px; font-size: .58rem; letter-spacing: .04em; }
+        .kv-admin-shell.kv-admin-top .kv-md-form .kv-input { font-size: .68rem; padding-right: 8px; padding-left: 8px; }
+      }
       .kv-admin-shell.kv-admin-top .kv-md-lang-menu .kv-user-role-btn-dot.all { background: var(--ad-teal); box-shadow: 0 0 0 3px var(--ad-teal-soft); }
       .kv-admin-shell.kv-admin-top .kv-md-lang-native { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; opacity: 0; pointer-events: none; }
       .kv-admin-shell.kv-admin-top input[type='checkbox'] { accent-color: var(--ad-amber); width: 15px; height: 15px; }
@@ -3969,42 +3995,46 @@ mobileMenu +
         var active = index === bannerMiddleIndex;
         return '<button type="button" class="kv-home-banner-dot' + (active ? ' is-active' : '') + '" data-action="scroll-banner-dot" data-index="' + index + '" role="tab" aria-selected="' + (active ? 'true' : 'false') + '" aria-label="Banner ' + (index + 1) + ': ' + escapeHtml(m.title) + '"></button>';
       }).join('');
-      return '<main class="kv-container">' +
-        '<section class="kv-home-banner" aria-label="Manga Sorotan">' +
-          '<div class="kv-home-banner-track" id="kv-banner-track" tabindex="0" role="region" aria-label="Banner manga yang bisa digeser">' +
-            bannerCards +
+      return '<main class="kv-container kv-home-layout">' +
+        '<div class="kv-home-main-pane">' +
+          '<section class="kv-home-banner" aria-label="Manga Sorotan">' +
+            '<div class="kv-home-banner-track" id="kv-banner-track" tabindex="0" role="region" aria-label="Banner manga yang bisa digeser">' +
+              bannerCards +
+            '</div>' +
+            '<div class="kv-home-banner-dots" id="kv-banner-dots" role="tablist" aria-label="Pilih banner">' +
+              bannerDots +
+            '</div>' +
+          '</section>' +
+          '<div class="kv-home-genres" aria-label="Kategori populer">' +
+            genres.map(function (g, i) {
+              return '<button type="button" class="kv-home-genre' + (i === 0 ? ' active' : '') + '" data-action="quick-genre" data-genre="' + escapeHtml(g) + '">' + escapeHtml(g) + '</button>';
+            }).join('') +
           '</div>' +
-          '<div class="kv-home-banner-dots" id="kv-banner-dots" role="tablist" aria-label="Pilih banner">' +
-            bannerDots +
-          '</div>' +
-        '</section>' +
-        '<div class="kv-home-genres" aria-label="Kategori populer">' +
-          genres.map(function (g, i) {
-            return '<button type="button" class="kv-home-genre' + (i === 0 ? ' active' : '') + '" data-action="quick-genre" data-genre="' + escapeHtml(g) + '">' + escapeHtml(g) + '</button>';
-          }).join('') +
+          '<section class="kv-home-section" aria-labelledby="heading-updates">' +
+            '<div class="kv-home-section-head">' +
+              '<div><h2 class="kv-home-section-title" id="heading-updates">Update Terbaru</h2></div>' +
+              '<a class="kv-home-link" href="/archive">Lihat Semua &rarr;</a>' +
+            '</div>' +
+            '<div class="kv-home-grid">' + latestCards + '</div>' +
+            homePagination +
+          '</section>' +
         '</div>' +
-        '<section class="kv-home-section" aria-labelledby="heading-updates">' +
-          '<div class="kv-home-section-head">' +
-            '<div><h2 class="kv-home-section-title" id="heading-updates">Update Terbaru</h2></div>' +
-            '<a class="kv-home-link" href="/archive">Lihat Semua &rarr;</a>' +
-          '</div>' +
-          '<div class="kv-home-grid">' + latestCards + '</div>' +
-          homePagination +
-        '</section>' +
-        '<section class="kv-home-section" aria-labelledby="heading-popular">' +
-          '<div class="kv-home-section-head">' +
-            '<div><h2 class="kv-home-section-title" id="heading-popular">Komik Populer &amp; Trending</h2></div>' +
-            '<a class="kv-home-link" href="/archive">Lihat Semua &rarr;</a>' +
-          '</div>' +
-          '<div class="kv-home-popular">' + popular.map(rankingCard).join('') + '</div>' +
-        '</section>' +
-        '<section class="kv-home-section" aria-labelledby="heading-curated">' +
-          '<div class="kv-home-section-head">' +
-            '<div><h2 class="kv-home-section-title" id="heading-curated">Rekomendasi</h2></div>' +
-            '<a class="kv-home-link" href="/archive">Koleksi Lengkap &rarr;</a>' +
-          '</div>' +
-          '<div class="kv-home-curated">' + curated + '</div>' +
-        '</section>' +
+        '<aside class="kv-home-side-pane" aria-label="Sorotan komik">' +
+          '<section class="kv-home-section" aria-labelledby="heading-popular">' +
+            '<div class="kv-home-section-head">' +
+              '<div><h2 class="kv-home-section-title" id="heading-popular">Komik Populer &amp; Trending</h2></div>' +
+              '<a class="kv-home-link" href="/archive">Lihat Semua &rarr;</a>' +
+            '</div>' +
+            '<div class="kv-home-popular">' + popular.map(rankingCard).join('') + '</div>' +
+          '</section>' +
+          '<section class="kv-home-section" aria-labelledby="heading-curated">' +
+            '<div class="kv-home-section-head">' +
+              '<div><h2 class="kv-home-section-title" id="heading-curated">Rekomendasi</h2></div>' +
+              '<a class="kv-home-link" href="/archive">Koleksi Lengkap &rarr;</a>' +
+            '</div>' +
+            '<div class="kv-home-curated">' + curated + '</div>' +
+          '</section>' +
+        '</aside>' +
       '</main>';
     }
 
