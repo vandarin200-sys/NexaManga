@@ -929,6 +929,56 @@
       .kv-site-logo-preview img { max-width: 100%; max-height: 110px; object-fit: contain; display: block; }
       .kv-site-favicon-preview { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 8px 10px; border: 1px dashed var(--kva-border); border-radius: 10px; background: var(--kva-surface-2); color: var(--kva-text-3); font-size: .8rem; }
       .kv-site-favicon-preview img { width: 48px; height: 48px; object-fit: contain; display: block; border-radius: 8px; }
+      .kv-admin-shell.kv-admin-top .kv-color-studio {
+        grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .92fr); gap: 12px;
+        padding: 14px; border: 1px solid var(--ad-line); border-radius: 3px;
+        background: linear-gradient(90deg, var(--ad-amber-soft), transparent 42%), var(--ad-panel);
+        box-shadow: inset 3px 0 0 var(--ad-amber); animation: kvColorStudioIn .18s ease both;
+      }
+      @keyframes kvColorStudioIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+      .kv-admin-shell.kv-admin-top .kv-color-studio-head { grid-column: 1 / -1; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .kv-admin-shell.kv-admin-top .kv-color-studio-kicker { font-family: 'JetBrains Mono', monospace; font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ad-dim); }
+      .kv-admin-shell.kv-admin-top .kv-color-studio-title { margin-top: 3px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: .9rem; font-weight: 600; color: var(--ad-text); }
+      .kv-admin-shell.kv-admin-top .kv-color-studio-hint { max-width: 44ch; font-size: .68rem; line-height: 1.5; color: var(--ad-muted); text-align: right; }
+      .kv-admin-shell.kv-admin-top .kv-color-studio-controls { display: grid; align-content: start; gap: 11px; min-width: 0; }
+      .kv-admin-shell.kv-admin-top .kv-color-field-label { display: grid; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ad-dim); }
+      .kv-admin-shell.kv-admin-top .kv-color-row { display: flex; gap: 8px; align-items: stretch; min-width: 0; }
+      .kv-admin-shell.kv-admin-top .kv-color-native { width: 72px; min-width: 0; height: 44px; flex: 0 0 72px; padding: 3px; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised); cursor: pointer; }
+      .kv-admin-shell.kv-admin-top .kv-color-native::-webkit-color-swatch-wrapper { padding: 0; }
+      .kv-admin-shell.kv-admin-top .kv-color-native::-webkit-color-swatch { border: 0; border-radius: 1px; }
+      .kv-admin-shell.kv-admin-top .kv-color-native::-moz-color-swatch { border: 0; border-radius: 1px; }
+      .kv-admin-shell.kv-admin-top .kv-color-hex { flex: 1; min-width: 0; font-family: 'JetBrains Mono', monospace; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+      .kv-admin-shell.kv-admin-top .kv-color-hex.is-invalid { border-color: var(--ad-red); color: var(--ad-red); }
+      .kv-admin-shell.kv-admin-top .kv-color-presets { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; }
+      .kv-admin-shell.kv-admin-top .kv-color-preset { height: 28px; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--preset); cursor: pointer; transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease; }
+      .kv-admin-shell.kv-admin-top .kv-color-preset:hover { transform: translateY(-2px); border-color: var(--ad-text); }
+      .kv-admin-shell.kv-admin-top .kv-color-preset.is-active { box-shadow: 0 0 0 2px var(--ad-panel), 0 0 0 3px var(--ad-amber); }
+      .kv-admin-shell.kv-admin-top .kv-color-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+      .kv-admin-shell.kv-admin-top .kv-color-chip { display: inline-flex; align-items: center; gap: 7px; padding: 4px 9px; border: 1px solid var(--ad-line); border-radius: 999px; background: var(--ad-panel); font-family: 'JetBrains Mono', monospace; font-size: .58rem; color: var(--ad-muted); }
+      .kv-admin-shell.kv-admin-top .kv-color-chip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--chip-color, var(--ad-amber)); }
+      .kv-admin-shell.kv-admin-top .kv-color-action { padding: 5px 10px; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised); color: var(--ad-muted); font-family: 'JetBrains Mono', monospace; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+      .kv-admin-shell.kv-admin-top .kv-color-action:hover { border-color: var(--ad-amber); color: var(--ad-amber); }
+      .kv-admin-shell.kv-admin-top .kv-color-preview { min-width: 0; display: grid; align-content: start; gap: 8px; padding: 12px; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-panel); }
+      .kv-admin-shell.kv-admin-top .kv-color-preview-head { display: flex; justify-content: space-between; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: .56rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ad-dim); }
+      .kv-admin-shell.kv-admin-top .kv-color-preview-embed { min-height: 118px; padding: 10px 12px; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised); box-shadow: inset 3px 0 0 var(--embed-color, var(--ad-amber)); }
+      .kv-admin-shell.kv-admin-top .kv-color-provider { display: flex; align-items: center; gap: 7px; font-size: .68rem; color: var(--ad-muted); }
+      .kv-admin-shell.kv-admin-top .kv-color-provider-icon { width: 18px; height: 18px; flex: 0 0 18px; display: grid; place-items: center; border: 1px solid var(--ad-line); border-radius: 2px; background: var(--embed-color, var(--ad-amber)); color: var(--embed-ink, #FFFFFF); font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 700; overflow: hidden; }
+      .kv-admin-shell.kv-admin-top .kv-color-provider-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .kv-admin-shell.kv-admin-top .kv-color-provider-name { color: var(--embed-color, var(--ad-amber)); font-weight: 600; }
+      .kv-admin-shell.kv-admin-top .kv-color-preview-title { margin-top: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: .86rem; font-weight: 600; color: var(--ad-text); }
+      .kv-admin-shell.kv-admin-top .kv-color-preview-desc { margin-top: 3px; font-size: .68rem; line-height: 1.5; color: var(--ad-muted); }
+      .kv-admin-shell.kv-admin-top .kv-color-preview-foot { display: flex; justify-content: space-between; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: .56rem; color: var(--ad-dim); }
+      .kv-admin-shell.kv-admin-top .kv-color-note { grid-column: 1 / -1; font-size: .66rem; line-height: 1.55; color: var(--ad-muted); }
+      .kv-admin-shell.kv-admin-top .kv-color-native:focus-visible,
+      .kv-admin-shell.kv-admin-top .kv-color-hex:focus-visible,
+      .kv-admin-shell.kv-admin-top .kv-color-preset:focus-visible,
+      .kv-admin-shell.kv-admin-top .kv-color-action:focus-visible { outline: 2px solid var(--ad-amber); outline-offset: 2px; }
+      @media (max-width: 900px) {
+        .kv-admin-shell.kv-admin-top .kv-color-studio { grid-template-columns: 1fr; }
+        .kv-admin-shell.kv-admin-top .kv-color-presets { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .kv-admin-shell.kv-admin-top .kv-color-studio-hint { text-align: left; }
+      }
+      @media (prefers-reduced-motion: reduce) { .kv-admin-shell.kv-admin-top .kv-color-studio { animation: none; } }
       @media (max-width: 900px) {
         .kv-admin-chapter-row { flex-direction: column; align-items: stretch; gap: 8px; }
         .kv-admin-chapter-actions { justify-content: flex-end; }
@@ -3062,8 +3112,141 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       }
        function siteContact() { return String(siteSetting('contactEmail', CONFIG.CONTACT_EMAIL) || '').trim(); }
      function brandMode() { return siteSetting('brandMode', 'logo-name'); }
-     function siteNameColor() { return siteSetting('siteNameColor', ''); }
-     function siteNameStyle() { var c = siteNameColor(); return c ? ' style="color:' + escapeHtml(c) + '"' : ''; }
+      function siteNameColor() { return siteSetting('siteNameColor', ''); }
+      function siteNameStyle() { var c = siteNameColor(); return c ? ' style="color:' + escapeHtml(c) + '"' : ''; }
+      function normalizeHexColor(value) {
+        var color = String(value || '').trim().toLowerCase();
+        if (/^#[0-9a-f]{3}$/.test(color)) {
+          return '#' + color.slice(1).split('').map(function (char) { return char + char; }).join('');
+        }
+        return /^#[0-9a-f]{6}$/.test(color) ? color : '';
+      }
+      function colorLuminance(value) {
+        var hex = normalizeHexColor(value);
+        if (!hex) return 0.5;
+        var channels = [1, 3, 5].map(function (index) {
+          var channel = parseInt(hex.slice(index, index + 2), 16) / 255;
+          return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+        });
+        return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+      }
+      function colorInk(value) { return colorLuminance(value) > 0.42 ? '#121820' : '#FFFFFF'; }
+      function colorContrast(value, ink) {
+        var luminance = colorLuminance(value);
+        var inkLuminance = colorLuminance(ink || '#FFFFFF');
+        var lighter = Math.max(luminance, inkLuminance);
+        var darker = Math.min(luminance, inkLuminance);
+        return ((lighter + 0.05) / (darker + 0.05)).toFixed(1) + ':1';
+      }
+      function colorStudioHtml(value) {
+        var hex = normalizeHexColor(value);
+        var effective = hex || '#6366F1';
+        var ink = colorInk(effective);
+        var presets = ['#F2A93B', '#FF5B4A', '#48D7B6', '#E85D9E', '#4F7CAC', '#2F80ED', '#8A560C', '#121820'];
+        var siteName = String(siteSetting('siteName', CONFIG.SITE_NAME) || '').trim();
+        var tagline = String(siteSetting('siteTagline', CONFIG.SITE_TAGLINE) || '').trim();
+        var favicon = siteFavicon();
+        var initial = (siteName || CONFIG.SITE_NAME || 'N').slice(0, 1).toUpperCase();
+        return '<div class="kv-color-studio" data-color-studio style="--chip-color:' + effective + ';--embed-color:' + effective + ';--embed-ink:' + ink + '">' +
+          '<div class="kv-color-studio-head">' +
+            '<div><div class="kv-color-studio-kicker">Color Studio / Identitas</div><div class="kv-color-studio-title">Warna Nama Situs</div></div>' +
+            '<div class="kv-color-studio-hint">Pilih dari preset, sampler, atau ketik hex. Pratinjau di samping memperbarui secara langsung.</div>' +
+          '</div>' +
+          '<div class="kv-color-studio-controls">' +
+            '<label class="kv-color-field-label">Warna Pilihan' +
+              '<div class="kv-color-row">' +
+                '<input class="kv-input kv-color-native" name="siteNameColor" type="color" value="' + effective + '" aria-label="Pilih warna nama situs"/>' +
+                '<input class="kv-input kv-color-hex" type="text" value="' + (hex ? hex.toUpperCase() : '') + '" placeholder="#F2A93B" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Kode warna hex"/>' +
+              '</div>' +
+            '</label>' +
+            '<div class="kv-color-field-label">Preset Cepat' +
+              '<div class="kv-color-presets">' + presets.map(function (color) {
+                return '<button type="button" class="kv-color-preset' + (color === hex ? ' is-active' : '') + '" data-color="' + color + '" style="--preset:' + color + '" title="' + color + '" aria-label="Gunakan ' + color + '"></button>';
+              }).join('') + '</div>' +
+            '</div>' +
+            '<div class="kv-color-meta">' +
+              '<span class="kv-color-chip"><i class="kv-color-chip-dot"></i><span data-color-code>' + (hex ? hex.toUpperCase() : 'DEFAULT') + '</span></span>' +
+              '<span class="kv-color-chip" data-color-contrast>' + (hex ? 'Kontras ' + colorContrast(effective, ink) : 'Mengikuti tema') + '</span>' +
+              '<button type="button" class="kv-color-action" data-action="admin-color-reset">Kosongkan</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="kv-color-preview">' +
+            '<div class="kv-color-preview-head"><span>Pratinjau Embed</span><span>Live</span></div>' +
+            '<div class="kv-color-preview-embed">' +
+              '<div class="kv-color-provider"><span class="kv-color-provider-icon" data-color-icon>' + (favicon ? '<img src="' + escapeHtml(favicon) + '" alt=""/>' : '<span data-color-initial>' + escapeHtml(initial) + '</span>') + '</span><span class="kv-color-provider-name" data-color-name>' + escapeHtml(siteName || 'Nama Situs') + '</span></div>' +
+              '<div class="kv-color-preview-title" data-color-title>' + escapeHtml('Judul Manga — ' + (siteName || 'Nama Situs')) + '</div>' +
+              '<div class="kv-color-preview-desc" data-color-desc>' + escapeHtml(tagline || 'Deskripsi singkat akan tampil di sini.') + '</div>' +
+              '<div class="kv-color-preview-foot"><span>theme-color</span><span data-color-foot>' + escapeHtml(hex ? hex.toUpperCase() : 'DEFAULT') + '</span></div>' +
+            '</div>' +
+          '</div>' +
+          '<p class="kv-color-note">Warna ini dipakai untuk nama situs, garis aksen pratinjau, dan <code>theme-color</code> embed Discord. Kosongkan untuk memakai warna bawaan tema.</p>' +
+        '</div>';
+      }
+      function bindColorStudio(form, studio) {
+        var native = form.querySelector('input[name="siteNameColor"]');
+        var hex = studio.querySelector('.kv-color-hex');
+        var code = studio.querySelector('[data-color-code]');
+        var foot = studio.querySelector('[data-color-foot]');
+        var contrast = studio.querySelector('[data-color-contrast]');
+        var presets = Array.prototype.slice.call(studio.querySelectorAll('.kv-color-preset'));
+        var previewName = studio.querySelector('[data-color-name]');
+        var previewTitle = studio.querySelector('[data-color-title]');
+        var previewDesc = studio.querySelector('[data-color-desc]');
+        var previewIcon = studio.querySelector('[data-color-icon]');
+        var nameInput = form.querySelector('input[name="siteName"]');
+        var taglineInput = form.querySelector('input[name="siteTagline"]');
+        var faviconInput = form.querySelector('input[name="faviconUrl"]');
+        function updateText() {
+          var siteName = nameInput ? nameInput.value.trim() : '';
+          var tagline = taglineInput ? taglineInput.value.trim() : '';
+          var favicon = faviconInput ? faviconInput.value.trim() : '';
+          if (previewName) previewName.textContent = siteName || 'Nama Situs';
+          if (previewTitle) previewTitle.textContent = siteName ? siteName + ' — ' + siteName : 'Judul Manga — Nama Situs';
+          if (previewDesc) previewDesc.textContent = tagline || 'Deskripsi singkat akan tampil di sini.';
+          if (previewIcon) {
+            previewIcon.innerHTML = favicon ? '<img src="' + escapeHtml(favicon) + '" alt=""/>' : '<span data-color-initial></span>';
+            var initial = studio.querySelector('[data-color-initial]');
+            if (initial) initial.textContent = (siteName || 'N').slice(0, 1).toUpperCase();
+          }
+        }
+        function applyColor(value, preserveInput) {
+          var normalized = normalizeHexColor(value);
+          var raw = String(value || '').trim();
+          if (hex) {
+            if (normalized) hex.value = normalized.toUpperCase();
+            else if (!preserveInput) hex.value = '';
+            hex.classList.toggle('is-invalid', !!raw && !normalized);
+          }
+          if (native) native.value = normalized || '#6366F1';
+          var effective = normalized || '#6366F1';
+          var ink = colorInk(effective);
+          studio.style.setProperty('--chip-color', effective);
+          studio.style.setProperty('--embed-color', effective);
+          studio.style.setProperty('--embed-ink', ink);
+          if (code) code.textContent = normalized ? normalized.toUpperCase() : 'DEFAULT';
+          if (foot) foot.textContent = normalized ? normalized.toUpperCase() : 'DEFAULT';
+          if (contrast) contrast.textContent = normalized ? 'Kontras ' + colorContrast(effective, ink) : 'Mengikuti tema';
+          presets.forEach(function (button) {
+            button.classList.toggle('is-active', button.getAttribute('data-color') === normalized);
+          });
+          updateText();
+        }
+        if (native) native.addEventListener('input', function () { applyColor(native.value, false); });
+        if (hex) {
+          hex.addEventListener('input', function () { applyColor(hex.value, true); });
+          hex.addEventListener('blur', function () { applyColor(hex.value, false); });
+        }
+        presets.forEach(function (button) {
+          button.addEventListener('click', function () { applyColor(button.getAttribute('data-color'), false); });
+        });
+        var reset = studio.querySelector('[data-action="admin-color-reset"]');
+        if (reset) reset.addEventListener('click', function () { applyColor('', false); });
+        [nameInput, taglineInput, faviconInput].forEach(function (input) {
+          if (input) input.addEventListener('input', updateText);
+        });
+        applyColor(hex ? hex.value : native ? native.value : '', false);
+      }
+
       function mangaById(id) {
        return state.data.manga.filter(function (m) { return m.id === id; })[0] || null;
      }
@@ -6027,7 +6210,7 @@ mobileMenu +
             '<p class="kv-admin-sub" style="grid-column:1/-1;margin:-8px 0 0;">Ukuran ideal favicon: PNG 64×64 px persegi dengan latar transparan (SVG juga didukung). Untuk ikon iOS, siapkan 180×180 px.</p>' +
             '<label style="grid-column:1/-1;">Email Kontak<input class="kv-input" name="contactEmail" type="email" value="' + contactValue + '" placeholder=""/></label>' +
             '<div class="kv-brand-mode-field">' + brandModeMenuHtml(brandModeValue) + '</div>' +
-            '<label>Warna Nama Situs<input class="kv-input" name="siteNameColor" type="color" value="' + (siteNameColorValue || '#6366f1') + '" style="height:38px;padding:2px 6px;"/></label>' +
+            colorStudioHtml(siteNameColorValue) +
             '<div class="kv-site-logo-preview">' + (logoValue ? '<img src="' + logoValue + '" alt="Preview logo"/>' : '<span>Belum ada logo</span>') + '</div>' +
             '<div class="kv-site-favicon-preview">' + (faviconValue ? '<img src="' + faviconValue + '" alt="Preview favicon"/>' : '<span>Belum ada favicon</span>') + '</div>' +
             '<div style="display:flex;gap:10px;flex-wrap:wrap;grid-column:1/-1;">' +
@@ -6793,9 +6976,11 @@ mobileMenu +
             faviconUrl: String(fd.get('faviconUrl') || '').trim(),
             contactEmail: String(fd.get('contactEmail') || '').trim(),
             brandMode: String(fd.get('brandMode') || 'logo-name').trim(),
-            siteNameColor: String(fd.get('siteNameColor') || '').trim()
+            siteNameColor: normalizeHexColor(sForm.querySelector('.kv-color-hex') ? sForm.querySelector('.kv-color-hex').value : fd.get('siteNameColor'))
           });
         };
+        var colorStudio = sForm.querySelector('[data-color-studio]');
+        if (colorStudio) bindColorStudio(sForm, colorStudio);
       }
 
       var infoForm = document.getElementById('kv-info-settings-form');
