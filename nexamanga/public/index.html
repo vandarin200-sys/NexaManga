@@ -1942,7 +1942,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         border-color: var(--ad-amber); background: var(--ad-amber-soft); color: var(--ad-amber);
       }
       .kv-admin-shell.kv-admin-top .kv-admin-topbar-new {
-        position: sticky; top: 0; z-index: 40; gap: 16px; padding: 12px 28px;
+        position: sticky; top: 0; z-index: 40; align-items: center; gap: 16px; padding: 12px 28px;
         background: var(--ad-panel); border-bottom: 1px solid var(--ad-line);
       }
       .kv-admin-shell.kv-admin-top .kv-admin-topbar-new::after {
@@ -1954,19 +1954,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         font-family: 'JetBrains Mono', monospace; font-size: .62rem;
         letter-spacing: .14em; text-transform: uppercase; color: var(--ad-dim);
       }
-      .kv-admin-shell.kv-admin-top .kv-admin-crumb-mark { color: var(--ad-amber); font-weight: 600; white-space: nowrap; }
-      .kv-admin-shell.kv-admin-top .kv-admin-crumb-sep { color: var(--ad-line); }
       .kv-admin-shell.kv-admin-top .kv-admin-crumb-current {
         color: var(--ad-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      }
-      .kv-admin-shell.kv-admin-top .kv-admin-live {
-        display: inline-flex; align-items: center; gap: 7px;
-        font-family: 'JetBrains Mono', monospace; font-size: .6rem;
-        letter-spacing: .16em; color: var(--ad-teal);
-      }
-      .kv-admin-shell.kv-admin-top .kv-admin-live i {
-        width: 6px; height: 6px; display: block; border-radius: 50%; background: currentColor;
-        box-shadow: 0 0 0 3px var(--ad-teal-soft); animation: adx-pulse 2.2s ease-in-out infinite;
       }
       .kv-admin-shell.kv-admin-top .kv-admin-hamburger {
         border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised); color: var(--ad-amber);
@@ -1985,11 +1974,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-admin-pagehead::after {
         content: ''; position: absolute; left: 0; bottom: -1px; width: 82px; height: 2px; background: var(--ad-amber);
       }
-      .kv-admin-shell.kv-admin-top .kv-admin-eyebrow {
-        margin-bottom: 7px; font-family: 'JetBrains Mono', monospace; font-size: .61rem;
-        letter-spacing: .18em; text-transform: uppercase; color: var(--ad-dim);
-      }
-      .kv-admin-shell.kv-admin-top .kv-admin-eyebrow span { color: var(--ad-teal); }
       .kv-admin-shell.kv-admin-top .kv-admin-title {
         font-size: clamp(1.6rem, 2.5vw, 2.1rem); font-weight: 800; letter-spacing: -.045em; line-height: 1.15;
       }
@@ -2336,7 +2320,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         .kv-admin-shell.kv-admin-top .kv-admin-topbar-new { flex-direction: row; align-items: center; padding: 11px 16px; gap: 10px; flex-wrap: wrap; }
         .kv-admin-shell.kv-admin-top .kv-admin-crumb { order: 3; flex-basis: 100%; }
         .kv-admin-shell.kv-admin-top .kv-admin-topbar-new .kv-admin-top-actions { margin-left: auto; justify-content: flex-end; gap: 6px; flex-wrap: nowrap; white-space: nowrap; }
-        .kv-admin-shell.kv-admin-top .kv-admin-live { display: none; }
         .kv-admin-shell.kv-admin-top .kv-admin-main-full { padding: 22px 16px 52px; }
         .kv-admin-shell.kv-admin-top .kv-kpi-grid,
         .kv-admin-shell.kv-admin-top .kv-qa-grid,
@@ -5030,17 +5013,15 @@ mobileMenu +
           '<div class="kv-admin-content">' +
             '<header class="kv-admin-topbar kv-admin-topbar-new">' +
               '<button type="button" class="kv-admin-hamburger" data-action="toggle-admin-drawer" aria-label="Buka menu admin" aria-expanded="' + (state.adminDrawerOpen ? 'true' : 'false') + '"><span class="material-symbols-outlined">menu</span></button>' +
-              '<div class="kv-admin-crumb"><span class="kv-admin-crumb-mark">NEXA // OPS</span><span class="kv-admin-crumb-sep">/</span><span class="kv-admin-crumb-current">' + escapeHtml(t[0]) + '</span></div>' +
-
+              '<a class="kv-admin-avatar" href="/akun" aria-label="Akun saya"><img src="https://cdn.discordapp.com/avatars/850982978120318976/c721f141d392cf1506fc96090f608b96.png" alt=""></a>' +
+              '<div class="kv-admin-crumb"><span class="kv-admin-crumb-current">' + escapeHtml(t[0]) + '</span></div>' +
               '<div class="kv-admin-top-actions">' +
-                '<span class="kv-admin-live"><i></i>LIVE</span>' +
-                '<a class="kv-admin-avatar" href="/akun" aria-label="Akun saya"><img src="https://cdn.discordapp.com/avatars/850982978120318976/c721f141d392cf1506fc96090f608b96.png" alt=""></a>' +
                 '<button type="button" class="kv-btn kv-btn-ghost" data-action="logout-admin"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg> Keluar</button>' +
               '</div>' +
             '</header>' +
             '<main class="kv-admin-main kv-admin-main-full">' +
               '<div class="kv-admin-pagehead">' +
-                '<div><div class="kv-admin-eyebrow">Workspace <span>//</span> ' + escapeHtml(tab) + '</div><h1 class="kv-admin-title">' + t[0] + '</h1><p class="kv-admin-sub">' + t[1] + '</p></div>' +
+                '<div><h1 class="kv-admin-title">' + t[0] + '</h1><p class="kv-admin-sub">' + t[1] + '</p></div>' +
                 '<div class="kv-admin-top-actions">' + topActions + '</div>' +
               '</div>' +
                body +
