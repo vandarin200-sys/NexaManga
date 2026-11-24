@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const handler = require('../api/page.js');
+const vercel = require('../vercel.json');
 
 function responseHarness() {
   return {
@@ -63,6 +64,7 @@ test('page handler serves Discord-ready metadata for manga routes', async () => 
     }, res);
     assert.equal(res.statusCode, 200);
     assert.equal(res.headers['content-type'], 'text/html; charset=utf-8');
+    assert.equal(res.body.includes('<title>Judul Manga — Toko Manga</title>'), true);
     assert.equal(res.body.includes('<meta property="og:title" content="Judul Manga — Toko Manga">'), true);
     assert.equal(res.body.includes('<meta property="og:description" content="Sinopsis untuk pratinjau Discord.">'), true);
     assert.equal(res.body.includes('<meta name="twitter:card" content="summary">'), true);
@@ -77,4 +79,8 @@ test('page handler rejects non-GET methods', async () => {
   await handler({ method: 'POST', url: '/api/page', headers: {} }, res);
   assert.equal(res.statusCode, 405);
   assert.equal(res.headers.allow, 'GET, HEAD');
+});
+
+test('root route bypasses static index.html for server-rendered metadata', () => {
+  assert.equal(vercel.routes.some((route) => route.src === '^/$' && route.dest === '/api/page?route=/'), true);
 });

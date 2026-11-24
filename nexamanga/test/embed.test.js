@@ -46,10 +46,11 @@ test('buildEmbed clips long synopsis and falls back to site logo', () => {
 });
 
 test('injectEmbed replaces duplicate metadata and adds canonical link', () => {
-  const html = '<!DOCTYPE html><html><head><meta name="description" content="old"><meta property="og:title" content="old"><meta property="og:title" content="dup"></head><body>ok</body></html>';
+  const html = '<!DOCTYPE html><html><head><title>old</title><meta name="description" content="old"><meta property="og:title" content="old"><meta property="og:title" content="dup"></head><body>ok</body></html>';
   const embed = buildEmbed(catalog, '/manga/judul-manga', 'https://demo.example');
   const output = injectEmbed(html, embed);
   assert.equal(output.match(/og:title/g).length, 1);
+  assert.equal(output.includes('<title>Judul Manga — Toko Manga</title>'), true);
   assert.equal(output.includes('<meta property="og:title" content="Judul Manga — Toko Manga">'), true);
   assert.equal(output.includes('<link rel="canonical" href="https://demo.example/manga/judul-manga">'), true);
   assert.equal(output.includes('<meta name="twitter:card" content="summary_large_image">'), true);

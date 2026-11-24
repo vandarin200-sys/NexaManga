@@ -102,6 +102,9 @@ function injectEmbed(html, embed) {
   ];
   keys.forEach(function (entry) { output = removeMeta(output, entry[0], entry[1]); });
   output = removeCanonical(output);
+  output = output.replace(/<title[^>]*>[\s\S]*?<\/title\s*>/i, function () {
+    return '<title>' + escapeAttr(embed.title) + '</title>';
+  });
 
   const tags = [
     metaTag('name', 'description', embed.description),
@@ -118,8 +121,15 @@ function injectEmbed(html, embed) {
     (embed.url ? '<link rel="canonical" href="' + escapeAttr(embed.url) + '">' : '')
   ].filter(Boolean).join('\n  ');
 
+  if (/<head[^>]*>/i.test(output)) {
+    return output.replace(/<head[^>]*>/i, function (match) {
+      return match + '\n  ' + tags;
+    });
+  }
   if (/<\/head\s*>/i.test(output)) {
-    return output.replace(/<\/head\s*>/i, '  ' + tags + '\n</head>');
+    return output.replace(/<\/head\s*>/i, function () {
+      return '  ' + tags + '\n</head>';
+    });
   }
   return output;
 }
