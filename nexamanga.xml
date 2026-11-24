@@ -7780,7 +7780,7 @@ mobileMenu +
           <li><b>01</b>Aktifkan JavaScript</li>
           <li><b>02</b>Muat ulang halaman</li>
         </ul>
-        <div class='kv-noscript-foot'>Katalog manga &middot; Mode tanpa skrip</div>
+        <div class='kv-noscript-foot'>Katalog manga &#183; Mode tanpa skrip</div>
       </div>
     </div>
   </noscript>
