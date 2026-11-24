@@ -7,6 +7,12 @@
   <title><data:blog.pageTitle/></title>
   <meta expr:content='data:blog.metaDescription' name='description'/>
   <b:include data='blog' name='all-head-content'/>
+  <meta content='website' property='og:type'/>
+  <meta content='Katalog Manga' property='og:title'/>
+  <meta content='Katalog manga berbahasa Indonesia.' property='og:description'/>
+  <meta content='summary' name='twitter:card'/>
+  <meta content='Katalog Manga' name='twitter:title'/>
+  <meta content='Katalog manga berbahasa Indonesia.' name='twitter:description'/>
   <meta content='#F7F1E6' name='theme-color'/>
   <script>(function(){try{var t=localStorage.getItem(&#39;kv_theme&#39;)===&#39;dark&#39;?&#39;dark&#39;:&#39;light&#39;;var c=document.documentElement.classList;c.toggle(&#39;dark&#39;,t===&#39;dark&#39;);var m=document.querySelector(&#39;meta[name=&quot;theme-color&quot;]&#39;);if(m)m.setAttribute(&#39;content&#39;,t===&#39;dark&#39;?&#39;#0B0E17&#39;:&#39;#F7F1E6&#39;);}catch(e){}})();</script>
 
@@ -3189,6 +3195,87 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       if (metaTheme) metaTheme.setAttribute('content', state.theme === 'dark' ? '#0B0E17' : '#F7F1E6');
     }
 
+    function cleanMetaText(value) { return String(value || '').replace(/\s+/g, ' ').trim(); }
+    function clipMetaText(value, max) { var text = cleanMetaText(value); return text.length > max ? text.slice(0, max - 1).trim() + '\u2026' : text; }
+    function absoluteMetaUrl(value) {
+      if (!value) return '';
+      try {
+        var url = new URL(String(value), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch (e) { return ''; }
+    }
+    function setMetaNode(selector, attr, key, value) {
+      var nodes = Array.prototype.slice.call(document.querySelectorAll(selector));
+      var el = nodes[0];
+      if (!value) {
+        nodes.forEach(function (node) { if (node.parentNode) node.parentNode.removeChild(node); });
+        return;
+      }
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      for (var i = 1; i < nodes.length; i++) {
+        if (nodes[i].parentNode) nodes[i].parentNode.removeChild(nodes[i]);
+      }
+      if (el.getAttribute('content') !== value) el.setAttribute('content', value);
+    }
+    function setCanonicalNode(url) {
+      var nodes = Array.prototype.slice.call(document.querySelectorAll('link[rel="canonical"]'));
+      var el = nodes[0];
+      if (!el) {
+        el = document.createElement('link');
+        el.setAttribute('rel', 'canonical');
+        document.head.appendChild(el);
+      }
+      for (var i = 1; i < nodes.length; i++) {
+        if (nodes[i].parentNode) nodes[i].parentNode.removeChild(nodes[i]);
+      }
+      if (el.getAttribute('href') !== url) el.setAttribute('href', url);
+    }
+    function applyEmbed() {
+      var name = siteName();
+      var baseTitle = name || 'Katalog Manga';
+      var baseDescription = siteTagline() || 'Katalog manga berbahasa Indonesia.';
+      var title = baseTitle;
+      var description = baseDescription;
+      var image = absoluteMetaUrl(siteLogo());
+      var type = 'website';
+      var catalog = (state.data && state.data.manga) || [];
+      if (state.route === 'detail' || state.route === 'reader') {
+        var manga = catalog.filter(function (m) { return m.slug === state.params.slug; })[0];
+        if (manga) {
+          title = (state.route === 'reader' ? 'Baca ' : '') + manga.title + (name ? ' — ' + name : '');
+          description = clipMetaText(manga.synopsis || ('Baca ' + manga.title + ' di katalog manga berbahasa Indonesia.'), 160);
+          image = absoluteMetaUrl(manga.coverBloggerUrl) || image;
+          type = 'article';
+        }
+      } else if (state.route === 'catalog') {
+        title = 'Archive / Daftar' + (name ? ' — ' + name : '');
+      } else if (state.route === 'info' && state.params.page) {
+        title = state.params.page.charAt(0).toUpperCase() + state.params.page.slice(1) + (name ? ' — ' + name : '');
+      } else if (state.route === '404') {
+        title = 'Halaman tidak ditemukan' + (name ? ' — ' + name : '');
+      }
+      var shareUrl = absoluteMetaUrl(window.location.href);
+      var canonicalUrl = absoluteMetaUrl(window.location.href.split('#')[0]);
+      setMetaNode('meta[name="description"]', 'name', 'description', description);
+      setMetaNode('meta[property="og:type"]', 'property', 'og:type', type);
+      setMetaNode('meta[property="og:title"]', 'property', 'og:title', title);
+      setMetaNode('meta[property="og:description"]', 'property', 'og:description', description);
+      setMetaNode('meta[property="og:url"]', 'property', 'og:url', shareUrl);
+      setMetaNode('meta[property="og:image"]', 'property', 'og:image', image);
+      setMetaNode('meta[property="og:site_name"]', 'property', 'og:site_name', name);
+      setMetaNode('meta[name="twitter:card"]', 'name', 'twitter:card', image ? 'summary_large_image' : 'summary');
+      setMetaNode('meta[name="twitter:title"]', 'name', 'twitter:title', title);
+      setMetaNode('meta[name="twitter:description"]', 'name', 'twitter:description', description);
+      setMetaNode('meta[name="twitter:image"]', 'name', 'twitter:image', image);
+      setCanonicalNode(canonicalUrl);
+      document.title = title;
+    }
+
+
     function escapeHtml(str) {
       return String(str || '')
         .replace(/&/g, '&amp;')
@@ -6145,9 +6232,10 @@ mobileMenu +
 
        var app = document.getElementById('kv-app');
        if (!app) return;
-       hideTrafficTooltip();
-       applyFavicon();
-       if (document.body) {
+        hideTrafficTooltip();
+        applyFavicon();
+        applyEmbed();
+        if (document.body) {
           document.body.classList.toggle('kv-home-route', state.route === 'home' || state.route === 'catalog' || state.route === 'account' || state.route === 'notification' || state.route === 'info');
           document.body.classList.toggle('kv-detail-route', state.route === 'detail');
            document.body.classList.toggle('kv-account-route', state.route === 'account');
