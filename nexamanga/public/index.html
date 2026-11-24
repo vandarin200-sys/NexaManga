@@ -5977,12 +5977,12 @@ mobileMenu +
         var roleLabel = roleIsAdmin ? 'Administrator' : 'Pembaca';
         var roleOpen = state.adminRoleMenuOpen === u.id;
         var roleOptions = [
-          { value: 'member', mark: 'P', label: 'Pembaca', desc: 'Akses baca, bookmark, dan komentar.' },
-          { value: 'admin', mark: 'A', label: 'Administrator', desc: 'Kelola manga, komentar, dan pengguna.' }
+          { value: 'member', label: 'Pembaca', desc: 'Akses baca, bookmark, dan komentar.' },
+          { value: 'admin', label: 'Administrator', desc: 'Kelola manga, komentar, dan pengguna.' }
         ].map(function (opt) {
           var active = opt.value === roleValue;
           return '<button type="button" class="kv-user-role-option' + (active ? ' is-active' : '') + '" role="option" aria-selected="' + (active ? 'true' : 'false') + '" data-action="admin-set-user-role" data-id="' + roleId + '" data-role="' + opt.value + '">' +
-            '<span class="kv-user-role-option-mark" aria-hidden="true">' + opt.mark + '</span>' +
+            '<span class="kv-user-role-option-mark" aria-hidden="true">' + opt.label.charAt(0) + '</span>' +
             '<span class="kv-user-role-option-body"><strong>' + opt.label + '</strong><small>' + opt.desc + '</small></span>' +
             '<span class="kv-user-role-option-check" aria-hidden="true">' + (active ? '✓' : '') + '</span>' +
           '</button>';
