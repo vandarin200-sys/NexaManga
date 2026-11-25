@@ -3854,18 +3854,19 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     }
 
     function parseRoute() {
-      var hash = window.location.hash || '';
-      var legacyRoute = hash.indexOf('#/') === 0 ? hash.slice(1) : (hash.charAt(0) === '#' && hash.length > 1 ? '/' + hash.slice(1).replace(/^\/+/, '') : '');
-      var routePath = legacyRoute || window.location.pathname || '/';
-      if (!routePath || routePath === '/index.html') routePath = '/';
+      var legacyRoute = window.location.hash.indexOf('#/') === 0 ? window.location.hash.slice(1) : '';
+      var routePath = legacyRoute || window.location.pathname;
+      if (!routePath || routePath === '/' || routePath === '/index.html') routePath = '/';
       if (routePath.charAt(0) !== '/') routePath = '/' + routePath;
 
       var query = window.location.search.replace(/^\?/, '').split('&').filter(function (part) {
         var pair = part.split('=');
         return part && !(pair[0] === 'm' && pair[1] === '1');
       }).join('&');
-      var cleanUrl = routePath + (query ? '?' + query : '');
-      if (window.location.pathname + window.location.search !== cleanUrl || window.location.hash) {
+      var cleanUrl = legacyRoute
+        ? window.location.pathname + (query ? '?' + query : '') + '#' + routePath
+        : routePath + (query ? '?' + query : '');
+      if (window.location.pathname + window.location.search + window.location.hash !== cleanUrl) {
         window.history.replaceState(null, '', cleanUrl);
       }
 
@@ -3893,11 +3894,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       }
 
      function navigate(path) {
-       var routePath = String(path || '/').replace(/^#/, '').replace(/^\/+/, '/');
+       var routePath = String(path || '/').replace(/^#/, '');
        if (routePath.charAt(0) !== '/') routePath = '/' + routePath;
-       var current = window.location.pathname + window.location.search;
-       if (current !== routePath) {
-         window.history.pushState(null, '', routePath);
+       var routeHash = '#' + routePath;
+       if (window.location.hash !== routeHash) {
+         window.history.pushState(null, '', routeHash);
        }
 
         state.filterDrawerOpen = false;
@@ -4742,8 +4743,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
             '</div>' +
             '<div class="kv-detail-genres">' + (manga.genres || []).map(function (g) { return '<button type="button" class="kv-detail-genre kv-detail-genre-link" data-action="quick-genre" data-genre="' + escapeHtml(g) + '">' + escapeHtml(g) + '</button>'; }).join('') + '</div>' +
             '<div class="kv-detail-actions">' +
-              (latestChapter ? '<a class="kv-detail-primary" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(latestChapter.id) + '">Baca Chapter Terbaru (Ch. ' + latestChapter.number + ')</a>' : '') +
-              (firstCh && firstCh.id !== (latestChapter && latestChapter.id) ? '<a class="kv-detail-secondary" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(firstCh.id) + '">Chapter Pertama (Ch. ' + firstCh.number + ')</a>' : '') +
+              (latestChapter ? '<a class="kv-detail-primary" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(latestChapter.id) + '">Baca Chapter Terbaru (Ch. ' + latestChapter.number + ')</a>' : '') +
+              (firstCh && firstCh.id !== (latestChapter && latestChapter.id) ? '<a class="kv-detail-secondary" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(firstCh.id) + '">Chapter Pertama (Ch. ' + firstCh.number + ')</a>' : '') +
               '<button type="button" class="kv-detail-secondary" data-action="toggle-bookmark" data-id="' + escapeHtml(manga.id) + '">' + (isBookmarked ? 'Tersimpan di Favorit' : 'Simpan Favorit') + '</button>' +
               '<button type="button" class="kv-detail-icon-btn" data-action="share-manga" title="Bagikan tautan">' + kvIcon('share') + '</button>' +
             '</div>' +
@@ -4867,7 +4868,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        var chapterRows = filteredCh.map(function (c) {
          var active = c.id === chapter.id;
 
-        return '<a class="kv-reader-chapter-row' + (active ? ' is-active' : '') + '" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(c.id) + '">' +
+        return '<a class="kv-reader-chapter-row' + (active ? ' is-active' : '') + '" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(c.id) + '">' +
           '<span class="kv-reader-chapter-num">Ch. ' + escapeHtml(c.number) + '</span>' +
           '<span class="kv-reader-chapter-name">' + (c.title ? escapeHtml(c.title) : 'Chapter ' + escapeHtml(c.number)) + '</span>' +
         '</a>';
@@ -4905,7 +4906,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         '<div class="kv-reader-sheet-head"><span>' + escapeHtml(manga.title) + ' &middot; Ch. ' + escapeHtml(chapter.number) + '</span><button type="button" class="kv-reader-sheet-close" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div>' +
         '<div class="kv-reader-sheet-body">' +
            '<div class="kv-reader-sheet-actions">' +
-              '<a class="kv-reader-ctl" href="/manga/' + escapeHtml(manga.slug) + '">&#8592; ' + escapeHtml(manga.title) + '</a>' +
+              '<a class="kv-reader-ctl" href="#/manga/' + escapeHtml(manga.slug) + '">&#8592; ' + escapeHtml(manga.title) + '</a>' +
            '</div>' +
            '<div class="kv-reader-sheet-row">' +
              '<input id="kv-reader-chapter-search" class="kv-input" type="search" placeholder="Cari chapter..." value="' + escapeHtml(state.readerChapterSearch || '') + '" aria-label="Cari chapter"/>' +
@@ -4917,15 +4918,15 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 
        var readerBottomNav = '<nav class="kv-reader-bottom-nav" aria-label="Menu pembaca cepat">' +
          (prevCh
-           ? '<a class="kv-reader-bottom-item" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '<span class="kv-reader-bottom-label">Sebelum</span></a>'
+           ? '<a class="kv-reader-bottom-item" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '<span class="kv-reader-bottom-label">Sebelum</span></a>'
            : '<button type="button" class="kv-reader-bottom-item is-disabled" disabled aria-label="Tidak ada chapter sebelumnya">' + prevIcon + '<span class="kv-reader-bottom-label">Sebelum</span></button>') +
          (nextCh
-           ? '<a class="kv-reader-bottom-item kv-reader-bottom-next" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" aria-label="Chapter berikutnya">' + nextIcon + '<span class="kv-reader-bottom-label">Berikut</span></a>'
+           ? '<a class="kv-reader-bottom-item kv-reader-bottom-next" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" aria-label="Chapter berikutnya">' + nextIcon + '<span class="kv-reader-bottom-label">Berikut</span></a>'
            : '<button type="button" class="kv-reader-bottom-item is-disabled" disabled aria-label="Tidak ada chapter berikutnya">' + nextIcon + '<span class="kv-reader-bottom-label">Berikut</span></button>') +
          '<button type="button" class="kv-reader-bottom-item' + (state.readerSettingsOpen ? ' active' : '') + '" data-action="toggle-reader-settings" aria-label="Pengaturan pembaca" aria-pressed="' + (state.readerSettingsOpen ? 'true' : 'false') + '">' + gearIcon + '<span class="kv-reader-bottom-label">Atur</span>' + (state.readerSettingsOpen ? '<span class="kv-reader-bottom-bar" aria-hidden="true"></span>' : '') + '</button>' +
          '<button type="button" class="kv-reader-bottom-item' + (isPlaying ? ' active' : '') + '" data-action="toggle-auto-scroll" aria-label="' + (isPlaying ? 'Hentikan' : 'Mulai') + ' gulir otomatis" aria-pressed="' + (isPlaying ? 'true' : 'false') + '">' + (isPlaying ? pauseIcon : playIcon) + '<span class="kv-reader-bottom-label">Auto</span>' + (isPlaying ? '<span class="kv-reader-bottom-bar" aria-hidden="true"></span>' : '') + '</button>' +
          '<button type="button" class="kv-reader-bottom-item' + (state.readerMenuOpen ? ' active' : '') + '" data-action="toggle-reader-menu" aria-label="Daftar chapter" aria-pressed="' + (state.readerMenuOpen ? 'true' : 'false') + '">' + menuIcon + '<span class="kv-reader-bottom-label">Daftar</span>' + (state.readerMenuOpen ? '<span class="kv-reader-bottom-bar" aria-hidden="true"></span>' : '') + '</button>' +
-         '<a class="kv-reader-bottom-item" href="/" aria-label="Kembali ke Beranda">' + homeIcon + '<span class="kv-reader-bottom-label">Beranda</span></a>' +
+         '<a class="kv-reader-bottom-item" href="#/" aria-label="Kembali ke Beranda">' + homeIcon + '<span class="kv-reader-bottom-label">Beranda</span></a>' +
        '</nav>';
 
         var overlay = '<div class="kv-reader-overlay' + (state.readerControlsHidden ? ' kv-reader-overlay-hidden' : '') + '" id="kv-reader-overlay" role="group" aria-label="Kontrol pembaca">' +
@@ -4938,16 +4939,16 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         '</div>' +
         '<div class="kv-reader-bottom-controls">' +
            (prevCh
-             ? '<a class="kv-round-btn" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '</a>'
+             ? '<a class="kv-round-btn" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id) + '" aria-label="Chapter sebelumnya">' + prevIcon + '</a>'
              : '<button type="button" class="kv-round-btn is-disabled" disabled aria-label="Tidak ada chapter sebelumnya">' + prevIcon + '</button>') +
            (nextCh
-             ? '<a class="kv-round-btn kv-round-btn-next" href="/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" aria-label="Chapter berikutnya">' + nextIcon + '</a>'
+             ? '<a class="kv-round-btn kv-round-btn-next" href="#/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id) + '" aria-label="Chapter berikutnya">' + nextIcon + '</a>'
              : '<button type="button" class="kv-round-btn is-disabled" disabled aria-label="Tidak ada chapter berikutnya">' + nextIcon + '</button>') +
 
           '<button type="button" class="kv-round-btn" data-action="toggle-reader-settings" aria-label="Pengaturan pembaca" aria-expanded="' + (state.readerSettingsOpen ? 'true' : 'false') + '">' + gearIcon + '</button>' +
           '<button type="button" class="kv-round-btn kv-round-btn-play' + (isPlaying ? ' is-active' : '') + '" data-action="toggle-auto-scroll" aria-label="' + (isPlaying ? 'Hentikan' : 'Mulai') + ' gulir otomatis" aria-pressed="' + (isPlaying ? 'true' : 'false') + '">' + (isPlaying ? pauseIcon : playIcon) + '</button>' +
           '<button type="button" class="kv-round-btn" data-action="toggle-reader-menu" aria-label="Daftar chapter" aria-expanded="' + (state.readerMenuOpen ? 'true' : 'false') + '">' + menuIcon + '</button>' +
-          '<a class="kv-round-btn" href="/" aria-label="Kembali ke Beranda">' + homeIcon + '</a>' +
+          '<a class="kv-round-btn" href="#/" aria-label="Kembali ke Beranda">' + homeIcon + '</a>' +
         '</div>' +
       '</div>' +
       ((state.readerSettingsOpen || state.readerMenuOpen) ? '<div class="kv-reader-scrim" data-action="close-reader-panels" aria-hidden="true"></div>' : '') +
@@ -5183,7 +5184,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
                 '<h3 class="kv-acct-history-title">' + escapeHtml(m.title) + '</h3>' +
                 '<div class="kv-acct-history-sub">Terakhir dibaca ' + escapeHtml(h.lastReadAt || '') + '</div>' +
               '</div>' +
-              '<a class="kv-acct-history-go" href="/baca/' + escapeHtml(m.slug) + '/' + escapeHtml(h.chapterId) + '">Lanjutkan <span aria-hidden="true">&rarr;</span></a>' +
+              '<a class="kv-acct-history-go" href="#/baca/' + escapeHtml(m.slug) + '/' + escapeHtml(h.chapterId) + '">Lanjutkan <span aria-hidden="true">&rarr;</span></a>' +
             '</article>';
           }).join('')
         : '<p class="kv-acct-empty">Belum ada riwayat baca. Mulai membaca manga untuk melihatnya di sini.</p>';
