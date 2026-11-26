@@ -383,9 +383,43 @@ test('landing latest updates paginate all manga in groups of twelve and omit Mos
     assert.ok(source.includes('var latestPageItems = recentAll.slice((state.homePage - 1) * latestPageSize, state.homePage * latestPageSize);'), target + ' latest updates should slice by the selected page');
     assert.ok(source.includes('latestPageItems.map(landingCard).join(\'\')'), target + ' latest updates should render only the current page');
     assert.ok(source.includes('data-action="home-page" data-page="'), target + ' latest updates should expose page controls');
+    assert.ok(source.includes('function addLatestPageButton(page)'), target + ' should render numbered page buttons');
+    assert.ok(source.includes('aria-current="page"'), target + ' should mark the active page for assistive technology');
+    assert.ok(source.includes('latestPageButtons.join(\'\')'), target + ' should include page number buttons in the navigation');
+    assert.ok(!source.includes("Halaman ' + state.homePage + ' / ' + latestPageCount"), target + ' should replace the text-only page indicator');
     assert.ok(source.includes('state.homePage = 1; state.refocusLibrarySearch = true;'), target + ' searching should reset landing pagination');
     assert.ok(source.includes("state.homePage = 1; render(); } else { state.filterGenres"), target + ' changing the landing genre should reset pagination');
     assert.ok(!source.includes("sectionHead('Most Followed'"), target + ' should remove the Most Followed section');
+  }
+});
+
+test('chapter reader omits the floating Jump to Comments button', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('id="chapter-comments-section"'), target + ' should keep the chapter comments section');
+    assert.ok(!source.includes('Jump to Comments'), target + ' should not show the floating comments shortcut');
+    assert.ok(!source.includes('reader-jump-comments'), target + ' should remove the shortcut action handler');
+    assert.ok(!source.includes('.yz-reader-chip'), target + ' should remove styles used only by the shortcut');
+  }
+});
+
+test('chapter comment form has a responsive themed composer while detail comments keep their layout', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('if (isChapterComment)'), target + ' should scope the redesigned composer to chapter comments');
+    assert.ok(source.includes('class="kv-detail-comment-form mt-5 kv-chapter-comment-form"'), target + ' should use the chapter composer layout');
+    assert.ok(source.includes('aria-label="Isi komentar" placeholder="Tulis komentar..." required rows="4" class="kv-chapter-comment-input"'), target + ' should provide a larger accessible chapter input');
+    assert.ok(source.includes('kv-chapter-comment-actions'), target + ' should group chapter comment actions');
+    assert.ok(source.includes('@media (max-width: 480px)'), target + ' should adapt the composer actions on small screens');
+    assert.ok(source.includes('class="kv-detail-comment-form mt-5 space-y-3"'), target + ' should preserve the manga detail comment form');
   }
 });
 

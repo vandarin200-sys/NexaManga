@@ -1420,6 +1420,30 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-comment-name { font-size:.85rem; font-weight:700; color:var(--kv-text); }
       body.kv-reader-route .kv-comment-hint { font-size:.72rem; color:var(--kv-text-muted); }
       body.kv-reader-route .kv-comment-form-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      body.kv-reader-route .kv-chapter-comment-form { display:flex; flex-direction:column; gap:14px; margin-bottom:18px; padding:16px; border:1px solid var(--yz-border); border-radius:16px; background:var(--yz-surface-1); color:var(--yz-text); box-shadow:0 12px 28px -24px rgba(0,0,0,.75); }
+      body.kv-reader-route .kv-chapter-comment-head { display:flex; align-items:center; gap:12px; }
+      body.kv-reader-route .kv-chapter-comment-avatar { display:grid; flex:0 0 44px; place-items:center; width:44px; height:44px; border:2px solid var(--yz-accent); border-radius:50%; background:var(--yz-accent); color:var(--yz-bg); object-fit:cover; font-size:.85rem; font-weight:800; }
+      body.kv-reader-route .kv-chapter-comment-title { color:var(--yz-text); font-size:.85rem; font-weight:800; line-height:1.35; }
+      body.kv-reader-route .kv-chapter-comment-hint { margin-top:3px; color:var(--yz-text-tertiary); font-size:.7rem; line-height:1.45; }
+      body.kv-reader-route .kv-chapter-comment-input { display:block; width:100%; min-height:120px; resize:vertical; padding:12px 14px; border:1px solid var(--yz-border); border-radius:12px; outline:none; background:var(--yz-bg); color:var(--yz-text); font:inherit; font-size:.82rem; line-height:1.6; transition:border-color .15s ease, box-shadow .15s ease; }
+      body.kv-reader-route .kv-chapter-comment-input::placeholder { color:var(--yz-text-tertiary); }
+      body.kv-reader-route .kv-chapter-comment-input:focus { border-color:var(--yz-accent); box-shadow:0 0 0 3px var(--yz-accent-subtle); }
+      body.kv-reader-route .kv-chapter-comment-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+      body.kv-reader-route .kv-chapter-comment-help { color:var(--yz-text-tertiary); font-size:.68rem; line-height:1.5; }
+      body.kv-reader-route .kv-chapter-comment-actions { display:flex; align-items:center; gap:8px; }
+      body.kv-reader-route .kv-chapter-comment-image, body.kv-reader-route .kv-chapter-comment-submit { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:38px; padding:0 13px; border:1px solid var(--yz-border); border-radius:10px; font-size:.74rem; font-weight:700; transition:background-color .15s ease, border-color .15s ease, transform .15s ease; }
+      body.kv-reader-route .kv-chapter-comment-image { background:var(--yz-surface-1); color:var(--yz-text-secondary); }
+      body.kv-reader-route .kv-chapter-comment-image:hover { border-color:var(--yz-accent); color:var(--yz-text); }
+      body.kv-reader-route .kv-chapter-comment-submit { border-color:var(--yz-accent); background:var(--yz-accent); color:var(--yz-bg); }
+      body.kv-reader-route .kv-chapter-comment-submit:hover { background:var(--yz-accent-hover); border-color:var(--yz-accent-hover); }
+      body.kv-reader-route .kv-chapter-comment-image:active, body.kv-reader-route .kv-chapter-comment-submit:active { transform:scale(.98); }
+      @media (max-width: 480px) {
+        body.kv-reader-route .kv-chapter-comment-form { padding:13px; }
+        body.kv-reader-route .kv-chapter-comment-footer { align-items:stretch; }
+        body.kv-reader-route .kv-chapter-comment-help { flex-basis:100%; }
+        body.kv-reader-route .kv-chapter-comment-actions { width:100%; }
+        body.kv-reader-route .kv-chapter-comment-submit { flex:1; }
+      }
       body.kv-reader-route .kv-comment-action { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; background:var(--kv-surface-2); border:1px solid var(--kv-border); color:var(--kv-text-muted); font-size:.76rem; cursor:pointer; transition: border-color .15s ease, color .15s ease; }
       body.kv-reader-route .kv-comment-action.active { color:var(--kv-accent); border-color:var(--kv-accent); }
       body.kv-reader-route .kv-comment-action:hover { border-color:var(--kv-accent); color:var(--kv-text); }
@@ -1451,8 +1475,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .yz-reader-link { display:inline-flex; align-items:center; gap:6px; color:#d4d4d8; text-decoration:none; font-size:12px; font-weight:700; padding:7px 10px; border-radius:9px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); white-space:nowrap; }
       body.kv-reader-route .yz-reader-link:hover { background:rgba(255,255,255,.1); color:#fff; }
       body.kv-reader-route .yz-reader-title { min-width:0; max-width:min(34vw,460px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:800; color:#fff; }
-      body.kv-reader-route .yz-reader-chip { display:inline-flex; align-items:center; gap:6px; min-height:34px; padding:0 10px; border-radius:9px; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.04); color:#d4d4d8; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; }
-      body.kv-reader-route .yz-reader-chip:hover { background:rgba(255,255,255,.1); color:#fff; }
       body.kv-reader-route .yz-reader-icon-btn { width:34px; height:34px; display:grid; place-items:center; border-radius:9px; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.04); color:#d4d4d8; cursor:pointer; }
       body.kv-reader-route .yz-reader-icon-btn:hover { background:rgba(255,255,255,.1); color:#fff; }
       body.kv-reader-route .yz-reader-icon-btn:disabled { opacity:.35; cursor:not-allowed; }
@@ -3577,10 +3599,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-reader-route :is([class*="text-white"], [class*="text-zinc-100"], [class*="text-zinc-200"], [class*="text-zinc-300"], [class*="text-zinc-400"], [class*="text-zinc-500"]) { color: var(--yz-text-muted) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-header { background: rgba(255, 252, 246, .94) !important; border-bottom-color: var(--yz-border) !important; box-shadow: 0 10px 30px -20px rgba(82, 52, 22, .3) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-title { color: var(--yz-text) !important; }
-    html[data-resolved-theme="light"] body.kv-reader-route :is(.yz-reader-link, .yz-reader-icon-btn, .yz-reader-chip) { background: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; color: var(--yz-text-secondary) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route :is(.yz-reader-link, .yz-reader-icon-btn) { background: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; color: var(--yz-text-secondary) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-link:hover,
-    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-icon-btn:hover,
-    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-chip:hover { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-icon-btn:hover { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock { background: rgba(255, 252, 246, .94) !important; border-color: var(--yz-border) !important; box-shadow: 0 20px 50px -22px rgba(82, 52, 22, .25) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-item { color: var(--yz-text-muted) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-item:hover:not(:disabled) { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
@@ -5416,8 +5437,27 @@ function trackPageview() {
       var latestPageCount = Math.max(1, Math.ceil(recentAll.length / latestPageSize));
       state.homePage = Math.max(1, Math.min(Number(state.homePage) || 1, latestPageCount));
       var latestPageItems = recentAll.slice((state.homePage - 1) * latestPageSize, state.homePage * latestPageSize);
+      var latestPageButtons = [];
+      var latestPageStart = Math.max(1, state.homePage - 2);
+      var latestPageEnd = Math.min(latestPageCount, state.homePage + 2);
+      function addLatestPageButton(page) {
+        var active = page === state.homePage;
+        latestPageButtons.push('<button type="button" data-action="home-page" data-page="' + page + '" aria-label="Halaman ' + page + '"' + (active ? ' aria-current="page"' : '') + ' class="inline-flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg border px-3 text-sm font-semibold transition hover:brightness-110"' + (active ? ' style="background-color: var(--yz-accent); border-color: var(--yz-accent); color: var(--yz-bg);"' : ' style="background-color: var(--yz-surface-1); border-color: var(--yz-border); color: var(--yz-text-secondary);"') + '>' + page + '</button>');
+      }
+      function addLatestPageEllipsis() {
+        latestPageButtons.push('<span aria-hidden="true" class="px-1 text-xs" style="color: var(--yz-text-tertiary);">...</span>');
+      }
+      if (latestPageStart > 1) {
+        addLatestPageButton(1);
+        if (latestPageStart > 2) addLatestPageEllipsis();
+      }
+      for (var latestPageNumber = latestPageStart; latestPageNumber <= latestPageEnd; latestPageNumber += 1) addLatestPageButton(latestPageNumber);
+      if (latestPageEnd < latestPageCount) {
+        if (latestPageEnd < latestPageCount - 1) addLatestPageEllipsis();
+        addLatestPageButton(latestPageCount);
+      }
       var latestPagination = latestPageCount > 1
-        ? '<nav class="mt-5 flex items-center justify-center gap-3" aria-label="Pagination Latest Update"><button type="button" data-action="home-page" data-page="' + (state.homePage - 1) + '" class="rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-40"' + (state.homePage === 1 ? ' disabled' : '') + '>Sebelumnya</button><span class="text-xs text-zinc-500" aria-live="polite">Halaman ' + state.homePage + ' / ' + latestPageCount + '</span><button type="button" data-action="home-page" data-page="' + (state.homePage + 1) + '" class="rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-40"' + (state.homePage === latestPageCount ? ' disabled' : '') + '>Berikutnya</button></nav>'
+        ? '<nav class="mt-5 flex items-center justify-center gap-2" aria-label="Pagination Latest Update"><button type="button" data-action="home-page" data-page="' + (state.homePage - 1) + '" aria-label="Halaman sebelumnya" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40" style="background-color: var(--yz-surface-1); border-color: var(--yz-border); color: var(--yz-text-secondary);"' + (state.homePage === 1 ? ' disabled' : '') + '>' + icon('chevronLeft', 'h-4 w-4') + '</button>' + latestPageButtons.join('') + '<button type="button" data-action="home-page" data-page="' + (state.homePage + 1) + '" aria-label="Halaman berikutnya" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40" style="background-color: var(--yz-surface-1); border-color: var(--yz-border); color: var(--yz-text-secondary);"' + (state.homePage === latestPageCount ? ' disabled' : '') + '>' + icon('chevronRight', 'h-4 w-4') + '</button></nav>'
         : '';
       var heroColors = ['#c60101', '#fa0a0a', '#7b4be2', '#ef4444', '#24c292', '#e53e3e', '#d53f8c', '#3182ce', '#f59e0b', '#06b6d4'];
       function rgbOf(hex) {
@@ -5641,18 +5681,29 @@ function renderCommentSection(manga, chapterId) {
         var active = summary.userVote === item.key;
         return '<button type="button" class="kv-reaction-btn' + (active ? ' active' : '') + '" data-action="' + (aggregated ? 'manga-reaction' : 'chapter-reaction') + '" data-id="' + escapeHtml(aggregated ? manga.id : (chapterId || '')) + '" data-reaction="' + item.key + '" aria-pressed="' + (active ? 'true' : 'false') + '" title="' + item.label + '"><span class="kv-reaction-emoji" aria-hidden="true">' + item.emoji + '</span><span class="kv-reaction-meta"><strong>' + (summary.counts[item.key] || 0) + '</strong><small>' + item.label + '</small></span></button>';
       }).join('') + '</div></div>';
+      var isChapterComment = !!chapterId;
+      var formAvatarClass = isChapterComment ? 'kv-chapter-comment-avatar' : 'h-9 w-9 rounded-full';
       var formAvatar = myDisplayAvatar
-        ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="h-9 w-9 rounded-full object-cover" referrerpolicy="no-referrer"/>'
-        : '<span class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-xs font-black text-black">' + escapeHtml(myDisplayName.charAt(0).toUpperCase()) + '</span>';
-      var form = '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" data-chapter-id="' + escapeHtml(chapterId || '') + '" class="kv-detail-comment-form mt-5 space-y-3">' +
-        '<div class="flex items-center gap-3">' + formAvatar + '<div><div class="text-xs font-bold text-white">' + (state.user ? escapeHtml(myDisplayName) : 'Tulis komentar Anda') + '</div><div class="text-[10px] text-zinc-500">Profile kamu.</div></div></div>' +
-        (state.user ? '' : '<p class="text-[10px] text-zinc-500">Komentar anonim ditampilkan sebagai Pengunjung.</p>') +
-        '<textarea name="content" placeholder="Tulis komentar..." required rows="3" class="min-h-[90px] w-full resize-y rounded-xl border border-white/10 bg-black/60 px-3 py-2.5 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-[var(--yz-accent)]/60"></textarea>' +
-        '<div class="flex flex-wrap items-center justify-between gap-2"><span class="text-[10px] text-zinc-600">Gunakan **tebal**, *miring*, ||spoiler||</span>' +
-          '<div class="flex items-center gap-2"><button type="button" class="' + yzBtnClass(false) + ' h-8 px-3" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar">' + kvIcon('plus') + '</button><button type="submit" class="' + yzBtnClass(true) + ' h-8 px-4">Kirim Komentar</button></div>' +
-        '</div>' +
-      '</form>' +
-      '<input type="file" id="kv-comment-image-file" accept="image/jpeg,image/png,image/webp" style="display:none;"/>';
+        ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="' + formAvatarClass + ' object-cover" referrerpolicy="no-referrer"/>'
+        : '<span class="' + formAvatarClass + (isChapterComment ? '' : ' flex items-center justify-center bg-white text-xs font-black text-black') + '">' + escapeHtml(myDisplayName.charAt(0).toUpperCase()) + '</span>';
+      var form;
+      if (isChapterComment) {
+        form = '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" data-chapter-id="' + escapeHtml(chapterId) + '" class="kv-detail-comment-form mt-5 kv-chapter-comment-form">' +
+          '<div class="kv-chapter-comment-head">' + formAvatar + '<div class="min-w-0"><div class="kv-chapter-comment-title">' + (state.user ? escapeHtml(myDisplayName) : 'Tulis komentar Anda') + '</div><div class="kv-chapter-comment-hint">' + (state.user ? 'Komentar akan tampil dengan profil Anda.' : 'Komentar anonim akan tampil sebagai Pengunjung.') + '</div></div></div>' +
+          '<textarea name="content" aria-label="Isi komentar" placeholder="Tulis komentar..." required rows="4" class="kv-chapter-comment-input"></textarea>' +
+          '<div class="kv-chapter-comment-footer"><span class="kv-chapter-comment-help">Gunakan **tebal**, *miring*, ||spoiler||</span><div class="kv-chapter-comment-actions"><button type="button" class="kv-chapter-comment-image" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar">' + kvIcon('plus') + '<span>Gambar</span></button><button type="submit" class="kv-chapter-comment-submit">Kirim Komentar</button></div></div>' +
+        '</form>';
+      } else {
+        form = '<form id="kv-comment-form" data-manga-id="' + escapeHtml(manga.id) + '" data-chapter-id="' + escapeHtml(chapterId || '') + '" class="kv-detail-comment-form mt-5 space-y-3">' +
+          '<div class="flex items-center gap-3">' + formAvatar + '<div><div class="text-xs font-bold text-white">' + (state.user ? escapeHtml(myDisplayName) : 'Tulis komentar Anda') + '</div><div class="text-[10px] text-zinc-500">Profile kamu.</div></div></div>' +
+          (state.user ? '' : '<p class="text-[10px] text-zinc-500">Komentar anonim ditampilkan sebagai Pengunjung.</p>') +
+          '<textarea name="content" placeholder="Tulis komentar..." required rows="3" class="min-h-[90px] w-full resize-y rounded-xl border border-white/10 bg-black/60 px-3 py-2.5 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-[var(--yz-accent)]/60"></textarea>' +
+          '<div class="flex flex-wrap items-center justify-between gap-2"><span class="text-[10px] text-zinc-600">Gunakan **tebal**, *miring*, ||spoiler||</span>' +
+            '<div class="flex items-center gap-2"><button type="button" class="' + yzBtnClass(false) + ' h-8 px-3" data-action="comment-image" title="Unggah gambar" aria-label="Unggah gambar">' + kvIcon('plus') + '</button><button type="submit" class="' + yzBtnClass(true) + ' h-8 px-4">Kirim Komentar</button></div>' +
+          '</div>' +
+        '</form>';
+      }
+      form += '<input type="file" id="kv-comment-image-file" accept="image/jpeg,image/png,image/webp" style="display:none;"/>';
 
       var byParent = {};
       comments.forEach(function (c) { var key = c.parentId || ''; if (!byParent[key]) byParent[key] = []; byParent[key].push(c); });
@@ -5947,7 +5998,6 @@ function renderCommentSection(manga, chapterId) {
         '<nav class="kv-reader-bottom-nav" style="display:none" aria-hidden="true"></nav>' +
         '<main class="yz-reader-main" data-reader-stage><div class="mx-auto flex flex-col items-center">' + frame +
           '<div id="chapter-comments-section" class="yz-comment-card">' + renderCommentSection(manga, chapter.id) + '</div>' +
-          '<button type="button" class="yz-reader-chip fixed bottom-24 right-4 z-[70] sm:right-8" data-action="reader-jump-comments">Jump to Comments</button>' +
         '</div></main>' +
         footer + scrim + menuSheet +
       '</div>';
@@ -10003,7 +10053,6 @@ function setBannerDotsActive(index) {
       }
       else if (act === 'reader-set-dir') { state.readerDir = el.getAttribute('data-dir') === 'rtl' ? 'rtl' : 'ltr'; yzReaderSavePrefs(); render(); }
       else if (act === 'reader-set-bg') { state.readerBackground = el.getAttribute('data-bg') || '#000000'; yzReaderSavePrefs(); render(); }
-      else if (act === 'reader-jump-comments') { var commentTarget = document.getElementById('chapter-comments-section'); if (commentTarget && commentTarget.scrollIntoView) commentTarget.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }); }
       else if (act === 'toggle-reader-servers') { state.readerServersOpen = !state.readerServersOpen; state.readerSettingsOpen = false; state.readerMenuOpen = false; render(); }
       else if (act === 'reader-select-server') { state.readerServer = el.getAttribute('data-server') || 'yor'; state.readerServersOpen = false; state.readerSettingsOpen = false; state.readerMenuOpen = false; yzReaderSavePrefs(); render(); }
       else if (act === 'scroll-reader-up') { window.scrollBy({ top: -Math.round(window.innerHeight * 0.8), behavior: scrollBehavior() }); }
