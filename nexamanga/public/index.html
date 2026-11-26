@@ -3100,6 +3100,50 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     }
     .scrollbar-none { scrollbar-width: none; }
     .scrollbar-none::-webkit-scrollbar { display: none; }
+    .yz-desktop-rail {
+      background:
+        radial-gradient(140% 70% at -30% -10%, rgba(var(--color-accent-rgb, 145, 184, 177), 0.14), transparent 62%),
+        linear-gradient(180deg, rgba(20, 20, 23, 0.98), rgba(5, 5, 7, 0.99));
+      box-shadow: 8px 0 34px rgba(0, 0, 0, 0.6), inset -1px 0 0 rgba(var(--color-accent-rgb, 145, 184, 177), 0.18);
+    }
+    .yz-desktop-rail::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+      background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 5px);
+      mix-blend-mode: soft-light;
+    }
+    .yz-rail-inner { position: relative; z-index: 1; }
+    .yz-rail-caption {
+      font-family: var(--yz-font-serif); font-size: 10px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: rgba(240, 240, 245, 0.42);
+    }
+    .yz-rail-link {
+      position: relative; display: flex; align-items: center; height: 38px; border-radius: 12px;
+      font-family: var(--yz-font-sans); color: rgba(240, 240, 245, 0.62);
+      transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+    }
+    .yz-rail-link::before {
+      content: ""; position: absolute; left: 0; top: 50%; width: 2px; height: 0;
+      border-radius: 999px; background: var(--color-accent); transform: translateY(-50%);
+      transition: height 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .yz-rail-link:hover { color: #fff; background: rgba(255, 255, 255, 0.055); }
+    .yz-rail-link:active { transform: scale(0.97); }
+    .yz-rail-link.is-active {
+      color: var(--color-accent);
+      background: linear-gradient(90deg, rgba(var(--color-accent-rgb, 145, 184, 177), 0.2), rgba(var(--color-accent-rgb, 145, 184, 177), 0.045));
+      box-shadow: inset 0 0 0 1px rgba(var(--color-accent-rgb, 145, 184, 177), 0.18);
+    }
+    .yz-rail-link.is-active::before { height: 22px; }
+    .yz-rail-icon {
+      display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: 0 0 36px;
+      border-radius: 10px; color: inherit;
+    }
+    .yz-rail-link.is-active .yz-rail-icon {
+      background: rgba(var(--color-accent-rgb, 145, 184, 177), 0.16);
+      box-shadow: 0 0 0 1px rgba(var(--color-accent-rgb, 145, 184, 177), 0.24), 0 8px 18px rgba(0, 0, 0, 0.45);
+    }
+    .yz-rail-discord { color: #7983ff; }
+    .yz-rail-discord:hover { background: rgba(88, 101, 242, 0.16); color: #fff; }
     .liquid-glass { background: rgba(9, 9, 9, 0.72); backdrop-filter: blur(18px) saturate(140%); border: 1px solid rgba(255, 255, 255, 0.08); }
     .hero-spotlight-container.svelte-1gn77ge { overflow: hidden; isolation: isolate; contain: paint layout; }
     .hero-slide-wrapper.svelte-1gn77ge { contain: strict; }
@@ -3631,6 +3675,7 @@ function yzBtnClass(primary) {
         shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
         chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
         help: '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+        trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
         file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/>',
         calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
         users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
@@ -5019,7 +5064,7 @@ function trackPageview() {
         var moreActive = moreOpen || state.route === 'settings' || state.route === 'info';
         var moreSheet = moreOpen
           ? '<div class="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+96px)] right-2 z-[80] w-48 origin-bottom-right rounded-2xl border border-white/10 bg-[#0b0d11] p-1.5 shadow-[0_18px_60px_rgba(0,0,0,0.85)] transition-all duration-200 pointer-events-auto translate-y-0 scale-100 opacity-100 yz-more-pop md:hidden" data-yz-more-menu>' +
-              [['/tentang', 'About', 'help'], ['/settings', 'Settings', 'gear']].map(function (row) {
+              [['/tentang', 'About', 'help'], ['/leaderboard', 'Leaderboard', 'trophy'], ['/settings', 'Settings', 'gear']].map(function (row) {
                 return '<a href="' + publicHref(row[0]) + '" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-zinc-400 hover:bg-white/[0.06] hover:text-white">' + yzIco(row[2], 'h-[18px] w-[18px] shrink-0') + '<span>' + row[1] + '</span></a>';
               }).join('') +
               '<a href="' + escapeHtml(discordUrl() || 'https://discord.gg/VPNSMcG6jM') + '" target="_blank" rel="noopener noreferrer" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-[#5865F2] hover:bg-[#5865F2]/15 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-[18px] w-[18px] shrink-0 text-[#5865F2]" aria-hidden="true">' + svgs.discord + '</svg><span>Discord</span></a>' +
@@ -5067,18 +5112,22 @@ function trackPageview() {
             bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c-2-2-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path>',
             user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
             settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle>',
+            help: '<circle cx="12" cy="12" r="9"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path>',
             'panel-left-open': '<rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path><path d="m14 9 3 3-3 3"></path>',
             'panel-left-close': '<rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path><path d="m16 15-3-3 3-3"></path>'
           };
           return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-' + name + ' h-4 w-4 shrink-0 ' + (cls || '') + '">' + (p[name] || p.house) + '</svg>';
         }
         function sideLink(path, label, iconName, active, extraClass, iconClass) {
-          return '<div class="relative w-full"><a class="relative group flex items-center h-9 w-full rounded-xl transition-colors duration-150 active:scale-[0.97] ' + (active ? 'bg-white text-black shadow-md shadow-white/10 font-bold' : 'text-zinc-400 ' + (extraClass || 'hover:text-white hover:bg-white/[0.08]')) + '" href="' + publicHref(path) + '" aria-label="' + label + '"' + (active ? ' aria-current="page"' : '') + '><div class="w-9 h-9 shrink-0 flex items-center justify-center">' + sideIcon(iconName, iconClass || '') + '</div><span class="min-w-0 flex-1 truncate whitespace-nowrap text-xs font-semibold text-left pr-2 transition-opacity duration-150 ' + labelVis + '">' + label + '</span></a></div>';
+          return '<div class="relative w-full"><a class="yz-rail-link w-full gap-0.5 pr-2' + (active ? ' is-active' : '') + (extraClass ? ' ' + extraClass : '') + '" href="' + publicHref(path) + '" aria-label="' + label + '"' + (active ? ' aria-current="page"' : '') + '><span class="yz-rail-icon">' + sideIcon(iconName, iconClass || '') + '</span><span class="min-w-0 flex-1 truncate whitespace-nowrap text-left text-xs font-semibold tracking-[0.01em] transition-opacity duration-150 ' + labelVis + '">' + label + '</span></a></div>';
         }
         var navItems = [
           ['/', 'Home', 'house', state.route === 'home'],
           ['/catalog', 'Archive', 'compass', state.route === 'catalog' || state.route === 'detail'],
-          ['/leaderboard', 'Leaderboard', 'trophy', state.route === 'info' && state.params.page === 'leaderboard']
+          ['/leaderboard', 'Leaderboard', 'trophy', state.route === 'info' && state.params.page === 'leaderboard'],
+          ['/notifikasi', 'Notifikasi', 'bell', state.route === 'notification'],
+          ['/akun', 'Akun', 'user', state.route === 'account' || state.route === 'profile'],
+          ['/tentang', 'About', 'help', state.route === 'info' && state.params.page === 'tentang']
         ];
         var navHtml = navItems.map(function (n) { return sideLink(n[0], n[1], n[2], n[3]); }).join('');
         var brandLabel = escapeHtml(siteName() || 'NexaManga');
@@ -5086,10 +5135,10 @@ function trackPageview() {
         var mobileBrand = publicBrandHtml('h-9 w-auto max-w-[130px] rounded-xl object-contain', 'ml-1 whitespace-nowrap font-black uppercase tracking-[0.1em] text-white', 'Home');
         var mobileBrandClass = String(brandMode()) === 'name-only' ? 'flex min-w-0 items-center' : 'flex min-w-0 items-center';
         var discordSvg = '<svg class="h-4 w-4 shrink-0 fill-current text-[#5865F2] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.0777.0777 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"></path></svg>';
-        var discordLink = discordUrl() ? '<div class="relative w-full"><a class="relative group flex items-center h-9 w-full rounded-xl transition-colors duration-150 active:scale-[0.97] text-zinc-400 hover:text-white hover:bg-[#5865F2]/15" href="' + escapeHtml(discordUrl()) + '" target="_blank" rel="noopener noreferrer" aria-label="Discord Community"><div class="w-9 h-9 shrink-0 flex items-center justify-center">' + discordSvg + '</div><span class="min-w-0 flex-1 truncate whitespace-nowrap text-xs font-semibold text-left transition-opacity duration-150 ' + labelVis + '">Discord</span><span class="mr-2 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#5865F2]/20 text-[#5865F2] transition-opacity duration-150 ' + labelVis + '">Join</span></a></div>' : '';
+        var discordLink = '<div class="relative w-full"><a class="yz-rail-link yz-rail-discord w-full gap-0.5 pr-2" href="' + escapeHtml(discordUrl() || 'https://discord.gg/VPNSMcG6jM') + '" target="_blank" rel="noopener noreferrer" aria-label="Discord Community"><span class="yz-rail-icon">' + discordSvg + '</span><span class="min-w-0 flex-1 truncate whitespace-nowrap text-left text-xs font-semibold tracking-[0.01em] transition-opacity duration-150 ' + labelVis + '">Discord</span><span class="mr-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[#8b95ff] transition-opacity duration-150 ' + labelVis + '">Join</span></a></div>';
         var collapseClose = sideIcon('panel-left-close', 'transition-transform duration-200 ' + (expanded ? 'scale-100 opacity-100' : 'scale-75 opacity-0 absolute pointer-events-none'));
         var collapseOpen = sideIcon('panel-left-open', 'transition-transform duration-200 ' + (expanded ? 'scale-75 opacity-0 absolute pointer-events-none' : 'scale-100 opacity-100'));
-        var collapseBtn = '<div class="relative w-full"><button id="sidebar-expand-toggle" aria-label="' + (expanded ? 'Collapse' : 'Expand') + '" type="button" data-action="toggle-yz-sidebar" aria-expanded="' + (expanded ? 'true' : 'false') + '" class="relative flex items-center h-9 w-full rounded-xl transition-colors duration-150 active:scale-[0.97] cursor-pointer text-zinc-400 hover:text-white hover:bg-white/[0.08] group"><div class="w-9 h-9 shrink-0 flex items-center justify-center relative">' + collapseClose + collapseOpen + '</div><span class="min-w-0 flex-1 truncate whitespace-nowrap text-xs font-semibold text-left pr-2 transition-opacity duration-150 ' + labelVis + '">' + (expanded ? 'Collapse' : 'Expand') + '</span></button></div>';
+        var collapseBtn = '<div class="relative w-full"><button id="sidebar-expand-toggle" aria-label="' + (expanded ? 'Collapse' : 'Expand') + '" type="button" data-action="toggle-yz-sidebar" aria-expanded="' + (expanded ? 'true' : 'false') + '" class="yz-rail-link w-full gap-0.5 pr-2 cursor-pointer"><span class="yz-rail-icon relative">' + collapseClose + collapseOpen + '</span><span class="min-w-0 flex-1 truncate whitespace-nowrap text-left text-xs font-semibold tracking-[0.01em] transition-opacity duration-150 ' + labelVis + '">' + (expanded ? 'Collapse' : 'Expand') + '</span></button></div>';
         var themeBtn = '<button type="button" data-action="toggle-theme" aria-label="Ganti tema" class="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-zinc-300 transition hover:bg-white/15 hover:text-white">' + yzIco('gear', 'h-4 w-4') + '</button>';
         var unread = state.user && typeof getUnreadNotificationCount === 'function' ? getUnreadNotificationCount() : 0;
         var bell = state.user ? '<a href="' + publicHref('/notifikasi') + '" aria-label="Notifikasi" class="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-zinc-300 transition hover:bg-white/15 hover:text-white">' + yzIco('bell', 'h-4 w-4') + (unread ? '<span class="absolute -right-1 -top-1 min-w-[16px] rounded-full bg-[var(--color-accent)] px-1 text-center text-[9px] font-bold leading-4 text-black">' + (unread > 9 ? '9+' : unread) + '</span>' : '') + '</a>' : '';
@@ -5107,14 +5156,13 @@ function trackPageview() {
           searchButton + themeBtn + account +
         '</nav></header>';
         var searchPanel = searchOpen ? '<div data-search-container class="fixed left-0 right-0 top-16 z-[45] border-b border-[var(--color-border)] transition-all duration-300 ease-in-out max-h-96 overflow-visible opacity-100"><div class="relative bg-[var(--color-surface-0)]/95 px-4 py-2.5 backdrop-blur-2xl"><form class="relative" autocomplete="off" data-header-search-form><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-search absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input id="nav-search-mobile" data-yz-search data-header-search name="q" type="search" placeholder="Search manga..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="100" value="' + escapeHtml(state.search || '') + '" class="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] py-2.5 pl-10 pr-10 text-sm text-[var(--color-text-primary)] outline-none transition-colors placeholder:text-[var(--color-text-tertiary)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)]"/><button type="button" data-action="close-header-search" aria-label="Close search" class="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-white/5 hover:text-white">×</button></form><div class="mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-zinc-950/95 p-1 shadow-2xl" data-header-results>' + headerSearchResultsHtml() + '</div></div></div>' : '';
-        return '<aside class="hidden md:flex fixed left-0 top-0 bottom-0 z-40 flex-col bg-[#0b0c0f]/98 border-r border-white/[0.08] shadow-[4px_0_24px_rgba(0,0,0,0.5)] transition-[width] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] select-none will-change-[width] overflow-hidden ' + (expanded ? 'w-[220px]' : 'w-[60px]') + '" style="contain: layout paint;">' +
-          '<div class="flex flex-col w-full h-full py-3.5 px-3 overflow-y-auto overflow-x-hidden scrollbar-none">' +
-            '<div class="flex flex-col gap-1 w-full shrink-0">' +
-              navHtml +
-              '<div class="w-full h-px bg-white/[0.08] my-1 shrink-0"></div>' + sideLink('/notifikasi', 'Notifikasi', 'bell', state.route === 'notification') + sideLink('/akun', 'Akun', 'user', state.route === 'account' || state.route === 'profile') +
-            '</div>' +
-            '<div class="flex-1 min-h-2"></div>' +
-            '<div class="flex flex-col gap-1 w-full shrink-0">' + discordLink + sideLink('/settings', 'Settings', 'settings', state.route === 'settings') + '<div class="w-full h-px bg-white/[0.08] my-1.5 shrink-0"></div>' + collapseBtn + '</div>' +
+        return '<aside class="yz-desktop-rail hidden md:flex fixed left-0 top-0 bottom-0 z-40 flex-col transition-[width] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] select-none will-change-[width] overflow-hidden ' + (expanded ? 'w-[220px]' : 'w-[60px]') + '" style="contain: layout paint;">' +
+          '<div class="yz-rail-inner flex flex-col w-full h-full py-4 px-3 overflow-y-auto overflow-x-hidden scrollbar-none">' +
+            '<div class="yz-rail-caption px-2.5 pb-2 transition-opacity duration-150 ' + labelVis + '">Explore</div>' +
+            '<div class="flex flex-col gap-1 w-full shrink-0">' + navHtml + '</div>' +
+            '<div class="flex-1 min-h-3"></div>' +
+            '<div class="yz-rail-caption px-2.5 pb-2 transition-opacity duration-150 ' + labelVis + '">Connect</div>' +
+            '<div class="flex flex-col gap-1 w-full shrink-0">' + discordLink + sideLink('/settings', 'Settings', 'settings', state.route === 'settings') + collapseBtn + '</div>' +
           '</div>' +
         '</aside>' + desktopHeader + mobileHeader + searchPanel;
       }
