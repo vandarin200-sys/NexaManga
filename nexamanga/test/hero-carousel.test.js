@@ -439,7 +439,7 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
   ];
   for (const target of targets) {
     const source = fs.readFileSync(target, 'utf8');
-    assert.ok(source.includes('<h1 class="text-xl sm:text-2xl font-black tracking-tight text-white">Settings</h1>'), target + ' settings heading should not have border styling');
+    assert.ok(source.includes('<h1 class="text-xl sm:text-2xl font-black tracking-tight text-white bg-transparent">Settings</h1>'), target + ' settings heading should not have border styling');
     assert.ok(!source.includes('uppercase tracking-wider">Settings</h1>'), target + ' settings heading should not use boxed uppercase treatment');
     assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] [data-action="settings-tab"].bg-zinc-800'), target + ' light settings tab rule missing');
     assert.ok(source.includes('data-profile-avatar'), target + ' profile avatar hook missing');
