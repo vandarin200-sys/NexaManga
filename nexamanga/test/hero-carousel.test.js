@@ -416,3 +416,16 @@ test('light theme keeps account name and settings surfaces readable', () => {
     assert.ok(source.includes('[class~="bg-red-600"], [class~="bg-blue-500"]'), target + ' colored settings actions lose white text');
   }
 });
+
+test('anilist theme keeps hero, account name, and settings readable', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] { background: #0B1622'), target + ' anilist hero background missing');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-account-route [data-account-name]'), target + ' anilist account name rule missing');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-public-route [data-settings-root]'), target + ' anilist settings rule missing');
+  }
+});
