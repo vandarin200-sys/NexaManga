@@ -672,8 +672,14 @@ test('anilist theme styles the full homepage with readable palette colors', () =
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route .min-h-screen.bg-zinc-950 { background:var(--background)'), target + ' anilist home background missing');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route [class*="text-white"] { color:var(--foreground)'), target + ' homepage text should not inherit the dark primary foreground');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route #manga-library-catalog input'), target + ' library search should match the anilist palette');
-    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route main [data-manga-title] { padding:7px; border:1px solid var(--border)'), target + ' manga cards should use the anilist surfaces');
+    assert.ok(!source.includes('body.kv-home-route main [data-manga-title] { padding:7px; border:1px solid'), target + ' manga cards should not have a theme-specific box');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route main [data-manga-title] h3 { color:var(--foreground)'), target + ' manga titles should remain readable in Anilist mode');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] .yz-hero-art { opacity:.46'), target + ' hero artwork should remain visible in anilist mode');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-public-route,'), target + ' AniList palette should cover public routes');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-reader-route { --yz-bg:#0B1622;'), target + ' AniList palette should cover the reader route');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-public-route :is([class~="text-white"], [class~="text-zinc-100"]'), target + ' public page text should use the readable AniList foreground');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-reader-route :is(.yz-reader-header, .yz-reader-dock'), target + ' reader controls should use the AniList palette');
+    assert.ok(!source.includes('html[data-theme="anilist"] body.kv-admin-route'), target + ' AniList overrides should not target admin pages');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-account-route [data-account-name]'), target + ' anilist account name rule missing');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-public-route [data-settings-root]'), target + ' anilist settings rule missing');
   }
