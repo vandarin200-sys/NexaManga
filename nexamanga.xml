@@ -61,9 +61,11 @@
       --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
       --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
       --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-swipe: cubic-bezier(0.22, 1, 0.36, 1);
       --dur-fast: 160ms;
       --dur-base: 220ms;
       --dur-slow: 280ms;
+      --dur-swipe: 780ms;
     }
 
     html.dark {
@@ -1514,7 +1516,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .yz-hero-carousel .yz-hero-thumbs { transition:transform var(--dur-slow) var(--ease-out), opacity var(--dur-slow) var(--ease-out); }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging { transition:none !important; animation:none !important; cursor:grabbing; }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb { transition:none !important; }
-      .yz-hero-carousel .yz-hero-thumb-gradient { opacity:0; transition:opacity var(--dur-slow) var(--ease-out); }
+      .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb[data-center="true"] img { animation:none !important; }
+      .yz-hero-carousel .yz-hero-thumb-gradient { opacity:0; transition:opacity var(--dur-swipe) var(--ease-swipe); }
       .yz-hero-carousel .yz-hero-thumb[data-center="true"] .yz-hero-thumb-gradient { opacity:1; }
       .yz-hero-carousel .yz-hero-slide { animation:yzHeroReveal var(--dur-slow) var(--ease-out) both; }
       .yz-hero-carousel .yz-hero-slide .yz-hero-art { animation:yzHeroDrift 10s ease-in-out infinite alternate; }
@@ -1538,6 +1541,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         body.kv-reader-route .yz-reader-sheet2 { top:58px; }
       }
       @media (prefers-reduced-motion: reduce) {
+        :root { --dur-swipe: 180ms; }
         body.kv-reader-route .yz-page-shell, body.kv-reader-route .yz-reader-sheet2, body.kv-reader-route .yz-reader-live,
         body.kv-reader-route .yz-reader-header, body.kv-reader-route .yz-reader-footer, body.kv-reader-route .yz-reader-main,
         .yz-hero-carousel .yz-hero-slide, .yz-hero-carousel .yz-hero-slide .yz-hero-art,
@@ -3684,6 +3688,7 @@ function yzSettingRead(key, fallback) {
       yzSidebarExpanded: false,
       heroSlide: 0,
       heroCount: 0,
+      heroTrackPosition: 1,
       heroDragActive: false,
       heroDragOffset: 0,
       heroAnimDir: '',
@@ -5081,7 +5086,7 @@ function trackPageview() {
       state.heroCount = heroItems.length;
       state.heroSlide = heroIndex;
       state.yzHeroIndex = heroIndex;
-      var heroSlideHtml = heroItems.map(function (m, i) {
+      var heroSlideParts = heroItems.map(function (m, i) {
         var color = heroColors[i % heroColors.length];
         var rgb = rgbOf(color).join(', ');
         var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
@@ -5104,35 +5109,24 @@ function trackPageview() {
           (synopsis ? '<p class="mx-auto line-clamp-2 max-w-xl text-center text-xs leading-6 text-zinc-300/85 sm:line-clamp-3 sm:text-sm">' + escapeHtml(synopsis) + '</p>' : '') +
           '<div class="pointer-events-auto flex flex-nowrap items-center justify-center gap-2 pt-1 sm:gap-3 transform-gpu transition-all duration-300 delay-150 translate-y-0 opacity-100"><a class="group/btn relative inline-flex items-center gap-1.5 border px-3.5 py-2 font-semibold text-xs tracking-wide transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg shadow-lg" href="' + href + '" style="border-color: ' + rgbaOf(color, 0.4) + '; background-color: ' + rgbaOf(color, 0.094) + '; color: rgb(' + rgb + ');">' + icon('book', 'h-3 w-3 sm:h-3.5 sm:w-3.5') + '<span>Read Now</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</a>' +
           '<button type="button" data-action="hero-browse" class="group/btn inline-flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 hover:border-zinc-700 px-3 py-2 font-semibold text-xs tracking-wide text-zinc-300 hover:text-white transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg"><span class="sm:hidden">Browse</span><span class="hidden sm:inline">Browse Catalogue</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</button></div></div></div></div></div>';
-      }).join('');
-      var thumbStyles = {
-        '-5': 'translate3d(calc(-360%), 50px, 0px) rotate(-50deg) skewX(0deg) scale(0.35); z-index: 20; opacity: 0; visibility: hidden',
-        '-4': 'translate3d(calc(-298%), 40px, 0px) rotate(-40deg) skewX(0deg) scale(0.48); z-index: 22; opacity: 0; visibility: hidden',
-        '-3': 'translate3d(calc(-236%), 30px, 0px) rotate(-30deg) skewX(0deg) scale(0.61); z-index: 24; opacity: 0.55; visibility: visible',
-        '-2': 'translate3d(calc(-174%), 20px, 0px) rotate(-20deg) skewX(0deg) scale(0.74); z-index: 26; opacity: 1; visibility: visible',
-        '-1': 'translate3d(calc(-112%), 10px, 0px) rotate(-10deg) skewX(0deg) scale(0.87); z-index: 28; opacity: 1; visibility: visible',
-        '0': 'translate3d(calc(-50%), 0px, 0px) rotate(0deg) skewX(0deg) scale(1); z-index: 30; opacity: 1; visibility: visible',
-        '1': 'translate3d(calc(12%), 10px, 0px) rotate(10deg) skewX(0deg) scale(0.87); z-index: 28; opacity: 1; visibility: visible',
-        '2': 'translate3d(calc(74%), 20px, 0px) rotate(20deg) skewX(0deg) scale(0.74); z-index: 26; opacity: 1; visibility: visible',
-        '3': 'translate3d(calc(136%), 30px, 0px) rotate(30deg) skewX(0deg) scale(0.61); z-index: 24; opacity: 0.55; visibility: visible',
-        '4': 'translate3d(calc(198%), 40px, 0px) rotate(40deg) skewX(0deg) scale(0.48); z-index: 22; opacity: 0; visibility: hidden',
-        '5': 'translate3d(calc(260%), 50px, 0px) rotate(50deg) skewX(0deg) scale(0.35); z-index: 20; opacity: 0; visibility: hidden'
-      };
-      var thumbShades = { '-5': '0.72', '-4': '0.72', '-3': '0.72', '-2': '0.7', '-1': '0.35', '0': '0', '1': '0.35', '2': '0.7', '3': '0.72', '4': '0.72', '5': '0.72' };
+      });
+      var cloneHeroSlide = function (html) { return html ? html.replace('role="group"', 'role="group" aria-hidden="true" inert') : ''; };
+      var heroSlideHtml = heroSlideParts.length
+        ? cloneHeroSlide(heroSlideParts[heroSlideParts.length - 1]) + heroSlideParts.join('') + cloneHeroSlide(heroSlideParts[0])
+        : '';
+      state.heroTrackPosition = heroItems.length ? heroIndex + 1 : 0;
       var heroThumbs = heroItems.map(function (m, i) {
-        var offset = i - heroIndex;
-        if (offset > 5) offset -= heroItems.length;
-        if (offset < -5) offset += heroItems.length;
-        var key = String(offset >= -5 && offset <= 5 ? offset : (offset < 0 ? -5 : 5));
+        var offset = yzHeroWrappedOffset(i, heroIndex, heroItems.length);
+        var pose = yzHeroThumbPose(offset);
         var center = offset === 0;
         var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
-        return '<div role="button" tabindex="0" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + thumbStyles[key] + '; transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur-slow) var(--ease-out);">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + thumbShades[key] + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
+        return '<div role="button" tabindex="0" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
       }).join('');
       var heroDots = heroItems.map(function (m, i) {
         var active = i === heroIndex;
         return '<button type="button" data-action="hero-dot" data-index="' + i + '" data-color="' + heroColors[i % heroColors.length] + '" aria-label="Go to slide ' + (i + 1) + '" class="h-1 rounded-full transition-all duration-300 ' + (active ? 'w-6' : 'w-1.5 bg-zinc-700 hover:bg-zinc-500') + '" style="' + (active ? 'background-color: ' + heroColors[i % heroColors.length] + ';' : '') + '"></button>';
       }).join('');
-      var hero = heroItems.length ? '<div class="yz-hero-carousel group relative overflow-hidden select-none bg-zinc-950 text-white" data-hero-carousel="true" role="region" aria-roledescription="carousel" aria-label="Trending Manga Carousel"><div class="overflow-hidden"><div class="yz-hero-track flex ml-0" data-hero-track="true" style="transform: translate3d(-' + (heroIndex * 100) + '%, 0px, 0px); transition: transform var(--dur-slow) var(--ease-out); backface-visibility: hidden;">' + heroSlideHtml + '</div></div>' +
+      var hero = heroItems.length ? '<div class="yz-hero-carousel group relative overflow-hidden select-none bg-zinc-950 text-white" data-hero-carousel="true" role="region" aria-roledescription="carousel" aria-label="Trending Manga Carousel"><div class="overflow-hidden"><div class="yz-hero-track flex ml-0" data-hero-track="true" style="transform: translate3d(-' + (state.heroTrackPosition * 100) + '%, 0px, 0px); transition: transform var(--dur-swipe) var(--ease-swipe); backface-visibility: hidden;">' + heroSlideHtml + '</div></div>' +
         '<div class="pointer-events-none absolute inset-x-0 top-24 sm:top-28 lg:top-32 z-[7] flex justify-center"><div class="yz-hero-thumbs pointer-events-auto relative h-[160px] w-[108px] sm:h-[215px] sm:w-[145px] lg:h-[265px] lg:w-[178px] cursor-grab active:cursor-grabbing select-none" data-hero-thumbs="true" style="touch-action: pan-y;"><span aria-hidden="true" class="yz-hero-glow absolute left-1/2 -bottom-7 h-10 w-[420%] -translate-x-1/2 rounded-[50%] bg-black/65 blur-2xl pointer-events-none"></span>' + heroThumbs + '</div></div>' +
         '<button type="button" data-action="hero-prev" aria-label="Previous slide" class="hidden sm:grid absolute left-3 sm:left-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronLeft', 'h-4 w-4') + '</button>' +
         '<button type="button" data-action="hero-next" aria-label="Next slide" class="hidden sm:grid absolute right-3 sm:right-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronRight', 'h-4 w-4') + '</button>' +
@@ -8354,56 +8348,64 @@ function setBannerDotsActive(index) {
       syncDots();
     }
 
+    function yzHeroWrappedOffset(index, centerPosition, count) {
+      var offset = index - centerPosition;
+      if (count > 1) {
+        var half = Math.max(4, count / 2);
+        while (offset > half) offset -= count;
+        while (offset < -half) offset += count;
+      }
+      return offset;
+    }
+
     function yzHeroThumbPose(offset) {
       var distance = Math.abs(offset);
       var clamped = Math.max(-5, Math.min(5, offset));
+      var gentle = prefersReducedMotion();
       var scale = Math.max(0.35, 1 - 0.13 * distance).toFixed(2);
-      var opacity = distance >= 4 ? 0 : (distance === 3 ? 0.55 : 1);
-      var shade = distance === 0 ? '0' : (distance === 1 ? '0.35' : (distance === 2 ? '0.7' : '0.72'));
+      var opacity = 1;
+      if (distance > 2 && distance < 3) opacity = 1 - 0.45 * (distance - 2);
+      else if (distance >= 3 && distance < 4) opacity = 0.55 - 0.55 * (distance - 3);
+      else if (distance >= 4) opacity = 0;
+      opacity = Math.max(0, Math.min(1, opacity));
+      var shade = distance <= 2 ? 0.35 * distance : Math.min(0.72, 0.7 + 0.02 * (distance - 2));
+      var shift = 62 * clamped;
+      var tx = shift >= 0 ? 'calc(-50% + ' + shift.toFixed(2) + '%)' : 'calc(-50% - ' + Math.abs(shift).toFixed(2) + '%)';
+      var ty = gentle ? 0 : 10 * distance;
+      var rotation = gentle ? 0 : 10 * clamped;
       return {
-        transform: 'translate3d(calc(' + (-50 + 62 * clamped) + '%), ' + (10 * distance) + 'px, 0px) rotate(' + (10 * clamped) + 'deg) skewX(0deg) scale(' + scale + ')',
-        zIndex: 30 - 2 * Math.min(5, distance),
-        opacity: opacity,
-        visibility: distance >= 4 ? 'hidden' : 'visible',
-        shade: shade
+        transform: 'translate3d(' + tx + ', ' + ty.toFixed(2) + 'px, 0px) rotate(' + rotation.toFixed(2) + 'deg) skewX(0deg) scale(' + scale + ')',
+        zIndex: Math.round(30 - 2 * Math.min(5, distance) + (offset > 0 ? 0.5 : 0)),
+        opacity: Number(opacity.toFixed(2)),
+        visibility: opacity > 0.01 ? 'visible' : 'hidden',
+        shade: shade.toFixed(2)
       };
     }
 
-    function markHeroInteraction(ms) {
-      window.__yzHeroInteractionUntil = Date.now() + (ms || 1200);
-    }
-
-    function setHeroSlide(next, dir) {
-      var count = Math.max(1, state.heroCount || 0);
-      var current = Math.abs(state.heroSlide || 0) % count;
-      var target = ((Number(next) || 0) % count + count) % count;
-      if (target === current) return;
-      var direction = dir || (target > current ? 'next' : 'prev');
-      state.heroAnimDir = direction;
-      state.heroSlide = target;
-      state.yzHeroIndex = target;
-      var carousel = document.querySelector('[data-hero-carousel]');
-      var track = carousel ? carousel.querySelector('[data-hero-track]') : null;
-      if (!carousel || !track || state.route !== 'home') { render(); return; }
-      track.style.transition = 'transform var(--dur-slow) var(--ease-out)';
-      track.style.transform = 'translate3d(-' + (target * 100) + '%, 0px, 0px)';
-      var slides = carousel.querySelectorAll('[data-hero-track] > *');
-      for (var i = 0; i < slides.length; i++) slides[i].setAttribute('aria-hidden', i === target ? 'false' : 'true');
-      var thumbs = carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb');
-      for (var j = 0; j < thumbs.length; j++) {
-        var offset = j - target;
-        if (offset > 5) offset -= thumbs.length;
-        if (offset < -5) offset += thumbs.length;
+    function yzHeroApplyPoses(thumbs, centerPosition, animated) {
+      var count = thumbs.length;
+      if (!count) return;
+      var transition = animated
+        ? 'transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe)'
+        : 'none';
+      for (var i = 0; i < count; i++) {
+        var offset = yzHeroWrappedOffset(i, centerPosition, count);
         var pose = yzHeroThumbPose(offset);
-        var thumb = thumbs[j];
-        var center = offset === 0;
+        var thumb = thumbs[i];
+        thumb.style.transition = transition;
         thumb.style.transform = pose.transform;
         thumb.style.zIndex = String(pose.zIndex);
         thumb.style.opacity = String(pose.opacity);
         thumb.style.visibility = pose.visibility;
-        thumb.setAttribute('data-center', center ? 'true' : 'false');
         var shade = thumb.querySelector('span[class*="transition-opacity"]');
-        if (shade) shade.style.opacity = pose.shade;
+        if (shade) {
+          shade.style.transition = animated ? 'opacity var(--dur-swipe) var(--ease-swipe)' : 'none';
+          shade.style.opacity = pose.shade;
+        }
+        var gradient = thumb.querySelector('.yz-hero-thumb-gradient');
+        if (gradient) gradient.style.transition = animated ? 'opacity var(--dur-swipe) var(--ease-swipe)' : 'none';
+        var center = offset > -0.5 && offset <= 0.5;
+        thumb.setAttribute('data-center', center ? 'true' : 'false');
         var centerClass = 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10';
         var sideClass = 'hover:border-white/20';
         var cls = thumb.className;
@@ -8412,6 +8414,79 @@ function setBannerDotsActive(index) {
           : cls.replace(centerClass, '').replace(sideClass, '') + ' ' + sideClass;
         thumb.className = cls.replace(/\s+/g, ' ').trim();
       }
+    }
+
+    function markHeroInteraction(ms) {
+      window.__yzHeroInteractionUntil = Date.now() + (ms || 1200);
+    }
+
+    function bumpHeroTrackToken(track) {
+      var token = (Number(track.dataset.heroTrackToken || 0) || 0) + 1;
+      track.dataset.heroTrackToken = String(token);
+      return token;
+    }
+
+    function setHeroSlide(next, dir) {
+      var count = Math.max(1, state.heroCount || 0);
+      var current = Math.abs(state.heroSlide || 0) % count;
+      var target = ((Number(next) || 0) % count + count) % count;
+      if (target === current) return;
+      var direction = dir || (target === 0 && current === count - 1 ? 'next' : target === count - 1 && current === 0 ? 'prev' : target > current ? 'next' : 'prev');
+      state.heroAnimDir = direction;
+      state.heroSlide = target;
+      state.yzHeroIndex = target;
+      var carousel = document.querySelector('[data-hero-carousel]');
+      var track = carousel ? carousel.querySelector('[data-hero-track]') : null;
+      if (!carousel || !track || state.route !== 'home') { render(); return; }
+      var token = bumpHeroTrackToken(track);
+      var swipeTransition = 'transform var(--dur-swipe) var(--ease-swipe)';
+      var currentVirtual = Number(state.heroTrackPosition);
+      if (!isFinite(currentVirtual) || currentVirtual < 1 || currentVirtual > count) {
+        currentVirtual = current + 1;
+        state.heroTrackPosition = currentVirtual;
+        track.style.transition = 'none';
+        track.style.transform = 'translate3d(-' + (currentVirtual * 100) + '%, 0px, 0px)';
+        void track.offsetWidth;
+      }
+      var targetVirtual = target + 1;
+      if (direction === 'next' && current === count - 1 && target === 0) targetVirtual = count + 1;
+      else if (direction === 'prev' && current === 0 && target === count - 1) targetVirtual = 0;
+      track.style.transition = swipeTransition;
+      track.style.transform = 'translate3d(-' + (targetVirtual * 100) + '%, 0px, 0px)';
+      state.heroTrackPosition = targetVirtual;
+      var setSlideAria = function (virtual) {
+        var items = carousel.querySelectorAll('[data-hero-track] > *');
+        for (var j = 0; j < items.length; j++) {
+          var isClone = j === 0 || j === count + 1;
+          items[j].setAttribute('aria-hidden', !isClone && j === virtual ? 'false' : 'true');
+        }
+      };
+      var done = false;
+      var timer = null;
+      var onEnd = function (e) {
+        if (e.target === track && e.propertyName === 'transform') settle();
+      };
+      var settle = function () {
+        if (done) return;
+        done = true;
+        track.removeEventListener('transitionend', onEnd);
+        if (timer) clearTimeout(timer);
+        if (Number(track.dataset.heroTrackToken || 0) !== token) return;
+        if (targetVirtual === count + 1 || targetVirtual === 0) {
+          var settled = targetVirtual === count + 1 ? 1 : count;
+          track.style.transition = 'none';
+          track.style.transform = 'translate3d(-' + (settled * 100) + '%, 0px, 0px)';
+          state.heroTrackPosition = settled;
+          void track.offsetWidth;
+          track.style.transition = swipeTransition;
+          setSlideAria(settled);
+        }
+      };
+      track.addEventListener('transitionend', onEnd);
+      timer = setTimeout(settle, prefersReducedMotion() ? 300 : 900);
+      setSlideAria(targetVirtual);
+      var thumbs = carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb');
+      yzHeroApplyPoses(thumbs, target, true);
       var dots = carousel.querySelectorAll('[data-action="hero-dot"]');
       var previousActive = carousel.querySelector('[data-action="hero-dot"].w-6');
       if (previousActive) {
@@ -8434,7 +8509,9 @@ function setBannerDotsActive(index) {
       var thumbs = carousel ? carousel.querySelector('[data-hero-thumbs]') : null;
       if (!carousel || !thumbs || thumbs.dataset.dragBound === '1') return;
       thumbs.dataset.dragBound = '1';
-      var slideCount = Math.max(1, carousel.querySelectorAll('[data-hero-track] > *').length || 1);
+      var slideCount = Math.max(1, state.heroCount || Math.max(1, carousel.querySelectorAll('[data-hero-track] > *').length - 2));
+      var trackSlides = carousel.querySelectorAll('[data-hero-track] > *');
+      for (var s = 0; s < trackSlides.length; s++) trackSlides[s].setAttribute('aria-hidden', s === (state.heroTrackPosition || 1) ? 'false' : 'true');
       var active = false;
       var startX = 0;
       var lastX = 0;
@@ -8444,54 +8521,17 @@ function setBannerDotsActive(index) {
       var sampleTime = 0;
       var dragged = false;
       var pointerId = null;
-      var draggingCenter = null;
-      var draggingIncoming = null;
-      var draggingIncomingOffset = 0;
-      var limit = Math.max(60, carousel.clientWidth * 0.42);
+      var dragBase = 0;
+      var dragProgress = 0;
       var baseIndex = function () { return Math.abs(state.heroSlide || 0) % slideCount; };
-      var resetDragPose = function () {
-        if (draggingCenter) {
-          var centerPose = yzHeroThumbPose(0);
-          draggingCenter.style.transform = centerPose.transform;
-          draggingCenter.style.zIndex = String(centerPose.zIndex);
-        }
-        if (draggingIncoming) {
-          var incomingPose = yzHeroThumbPose(draggingIncomingOffset);
-          draggingIncoming.style.zIndex = String(incomingPose.zIndex);
-        }
-        draggingCenter = null;
-        draggingIncoming = null;
-        draggingIncomingOffset = 0;
-      };
-      var applyDrag = function (offset) {
-        var eased = Math.max(-limit, Math.min(limit, offset));
-        var allThumbs = carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb');
-        if (!allThumbs.length) return;
-        var centerThumb = carousel.querySelector('[data-hero-thumbs] > .yz-hero-thumb[data-center="true"]') || allThumbs[baseIndex() % allThumbs.length];
-        if (!centerThumb) return;
-        var base = Number(centerThumb.getAttribute('data-index'));
-        if (!isFinite(base) || base < 0 || base >= allThumbs.length) base = baseIndex() % allThumbs.length;
-        var incomingOffset = eased < 0 ? -1 : 1;
-        var incomingIndex = (base + incomingOffset + allThumbs.length) % allThumbs.length;
-        var incoming = incomingIndex === base ? null : allThumbs[incomingIndex];
-        if (draggingIncoming && draggingIncoming !== incoming) {
-          var previousPose = yzHeroThumbPose(draggingIncomingOffset);
-          draggingIncoming.style.zIndex = String(previousPose.zIndex);
-        }
-        draggingCenter = centerThumb;
-        draggingIncoming = incoming;
-        draggingIncomingOffset = incomingOffset;
-        var x = Math.round(eased);
-        var shift = x >= 0 ? 'calc(-50% + ' + x + 'px)' : 'calc(-50% - ' + Math.abs(x) + 'px)';
-        centerThumb.style.transform = 'translate3d(' + shift + ', 0px, 0px) rotate(0deg) skewX(0deg) scale(1)';
-        if (incoming) incoming.style.zIndex = '31';
-      };
+      var thumbNodes = function () { return carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb'); };
+      var snapTo = function (centerPosition, animated) { yzHeroApplyPoses(thumbNodes(), centerPosition, animated); };
       var finishDrag = function (e, cancelled) {
         if (!active || (e && e.pointerId !== undefined && e.pointerId !== pointerId)) return;
         active = false;
-        window.__yzHeroInteractionUntil = Date.now() + 280;
+        state.heroDragActive = false;
+        markHeroInteraction(1000);
         thumbs.classList.remove('is-dragging');
-        resetDragPose();
         if (pointerId !== null && thumbs.releasePointerCapture) {
           try { thumbs.releasePointerCapture(pointerId); } catch (err) {}
         }
@@ -8501,15 +8541,16 @@ function setBannerDotsActive(index) {
         var threshold = Math.max(48, Math.min(110, carousel.clientWidth * 0.14));
         var next = baseIndex();
         var dir = '';
-        if (delta <= -threshold || (delta <= -24 && velocity > 0.35)) { next = (next - 1 + slideCount) % slideCount; dir = 'prev'; }
-        else if (delta >= threshold || (delta >= 24 && velocity > 0.35)) { next = (next + 1) % slideCount; dir = 'next'; }
+        if (delta <= -threshold || (delta <= -24 && velocity > 0.35)) { next = (next + 1) % slideCount; dir = 'next'; }
+        else if (delta >= threshold || (delta >= 24 && velocity > 0.35)) { next = (next - 1 + slideCount) % slideCount; dir = 'prev'; }
         state.heroDragOffset = 0;
         state.heroDragged = dragged;
         if (dragged && !cancelled) {
           window.__yzHeroSuppressClickUntil = Date.now() + 280;
           window.__yzHeroSuppressClickTarget = carousel;
         }
-        if (dir && !cancelled) setHeroSlide(next, dir);
+        if (dir && !cancelled && slideCount > 1) setHeroSlide(next, dir);
+        else snapTo(baseIndex(), true);
       };
       thumbs.addEventListener('pointerdown', function (e) {
         if (active || (e.button !== undefined && e.button !== 0)) return;
@@ -8522,6 +8563,9 @@ function setBannerDotsActive(index) {
         sampleX = e.clientX;
         sampleTime = startTime;
         pointerId = e.pointerId;
+        state.heroDragActive = true;
+        dragBase = baseIndex();
+        dragProgress = 0;
         markHeroInteraction(1200);
         thumbs.classList.add('is-dragging');
         if (thumbs.setPointerCapture) {
@@ -8538,7 +8582,10 @@ function setBannerDotsActive(index) {
         }
         var delta = lastX - startX;
         if (Math.abs(delta) > 8) dragged = true;
-        applyDrag(delta);
+        var travel = Math.max(1, thumbs.getBoundingClientRect().width || 108);
+        dragProgress = Math.max(-1.25, Math.min(1.25, -delta / travel));
+        state.heroDragOffset = dragProgress;
+        snapTo(((dragBase + dragProgress) % slideCount + slideCount) % slideCount, false);
       });
       thumbs.addEventListener('pointerup', finishDrag);
       thumbs.addEventListener('pointercancel', function (e) { finishDrag(e, true); });
@@ -8549,6 +8596,9 @@ function setBannerDotsActive(index) {
           if (!window.__yzHeroSuppressClickUntil || Date.now() > window.__yzHeroSuppressClickUntil) return;
           var guardTarget = window.__yzHeroSuppressClickTarget;
           if (guardTarget && (!e.target.closest || !guardTarget.contains(e.target))) return;
+          var actionEl = e.target.closest ? e.target.closest('[data-action]') : null;
+          var actionName = actionEl ? actionEl.getAttribute('data-action') : '';
+          if (actionName === 'hero-prev' || actionName === 'hero-next' || actionName === 'hero-dot' || actionName === 'scroll-banner-dot') return;
           e.preventDefault();
           e.stopPropagation();
           window.__yzHeroSuppressClickUntil = 0;
@@ -9640,6 +9690,7 @@ function setBannerDotsActive(index) {
     setInterval(refreshAnalyticsPeriodIfNeeded, 60000);
             window.__yzHeroTimer = setInterval(function () {
         if (state.route !== 'home' || document.hidden || prefersReducedMotion() || state.heroCount < 2) return;
+        if (state.heroDragActive) return;
         if (window.__yzHeroInteractionUntil && Date.now() < window.__yzHeroInteractionUntil) return;
         var carousel = document.querySelector('[data-hero-carousel]');
         var active = document.activeElement;
