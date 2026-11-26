@@ -384,3 +384,18 @@ test('light theme is honored on every route instead of being forced dark', () =>
   });
   assert.strictEqual(lightCoverage[0], lightCoverage[1], 'frontends have different light override coverage');
 });
+
+test('light theme restyles the landing catalog while preserving the dark hero stage', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('body.kv-home-route #manga-library-catalog { background: var(--yz-surface-0)'), target + ' landing library stays dark');
+    assert.ok(source.includes('button[data-action="quick-genre"][data-landing="1"][data-active="true"]'), target + ' landing genre chips have no light active state');
+    assert.ok(source.includes('data-active="'), target + ' landing genre chips have no active state marker');
+    assert.ok(source.includes('body.kv-public-route [data-hero-carousel] { background: #0B0E17'), target + ' hero stage lost its dark presentation');
+    assert.ok(!source.includes('[class*="bg-black/"] { background-color: var(--yz-surface-0)'), target + ' still has a broad overlay-breaking background override');
+  }
+});

@@ -3155,6 +3155,15 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       --color-text-primary: var(--yz-text);
       --color-text-secondary: var(--yz-text-secondary);
       --color-text-tertiary: var(--yz-text-tertiary);
+      --kv-bg: var(--yz-bg);
+      --kv-surface: var(--yz-surface-0);
+      --kv-surface-2: var(--yz-surface-2);
+      --kv-surface-3: var(--yz-surface-3);
+      --kv-border: var(--yz-border);
+      --kv-text: var(--yz-text);
+      --kv-text-muted: var(--yz-text-secondary);
+      --kv-accent: var(--yz-accent);
+      --kv-accent-hover: var(--yz-accent-hover);
     }
     .scrollbar-none { scrollbar-width: none; }
     .scrollbar-none::-webkit-scrollbar { display: none; }
@@ -3648,7 +3657,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-public-route:not(.kv-home-route):not(.kv-detail-route):not(.kv-account-route):not(.kv-notification-route) main :is(.text-white, .text-zinc-100, .text-zinc-200) { color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-public-route:not(.kv-home-route):not(.kv-detail-route):not(.kv-account-route):not(.kv-notification-route) main :is(.text-zinc-300, .text-zinc-400) { color: var(--yz-text-secondary) !important; }
     html[data-resolved-theme="light"] body.kv-public-route:not(.kv-home-route):not(.kv-detail-route):not(.kv-account-route):not(.kv-notification-route) main :is(.text-zinc-500, .text-zinc-600) { color: var(--yz-text-tertiary) !important; }
-    html[data-resolved-theme="light"] body.kv-public-route:not(.kv-home-route):not(.kv-detail-route):not(.kv-account-route):not(.kv-notification-route) main :is([class*="bg-zinc-"], [class*="bg-black/"]) { background-color: var(--yz-surface-0) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route:not(.kv-home-route):not(.kv-detail-route):not(.kv-account-route):not(.kv-notification-route) main :is([class~="bg-zinc-900"], [class~="bg-zinc-950"], [class~="bg-zinc-950/60"], [class~="bg-zinc-950/80"], [class~="bg-zinc-900/40"], [class~="bg-zinc-900/50"], [class~="bg-zinc-900/80"], [class~="bg-zinc-900/90"], [class~="bg-black/40"], [class~="bg-black/60"]) { background-color: var(--yz-surface-0) !important; }
     html[data-resolved-theme="light"] body.kv-public-route:not(.kv-home-route):not(.kv-detail-route):not(.kv-account-route):not(.kv-notification-route) main :is([class*="border-white/"], [class*="border-zinc-"]) { border-color: var(--yz-border) !important; }
     html[data-resolved-theme="light"] body.kv-public-route:not(.kv-home-route):not(.kv-detail-route):not(.kv-account-route):not(.kv-notification-route) main :is(input, textarea, select)::placeholder { color: var(--yz-text-tertiary) !important; }
     html[data-resolved-theme="light"] #kv-app [class*="bg-[#0b0c0f]"],
@@ -3709,6 +3718,43 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-comment-action { color: var(--yz-text-muted) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-comment-action:hover { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-page-badge { background: rgba(255, 252, 246, .9) !important; border-color: var(--yz-border) !important; color: var(--yz-text) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is(.text-white, .text-zinc-100, .text-zinc-200, [class~="text-[#f0f0f5]"]) { color: var(--yz-text) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is(.text-zinc-300, .text-zinc-350, .text-zinc-400, .text-zinc-500, .text-zinc-600, .text-zinc-750) { color: var(--yz-text-muted) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [class~="placeholder:text-zinc-500"]::placeholder,
+    html[data-resolved-theme="light"] body.kv-public-route [class~="placeholder:text-zinc-600"]::placeholder { color: var(--yz-text-tertiary) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is([class~="bg-zinc-900/30"], [class~="bg-zinc-900/40"], [class~="bg-zinc-900/50"], [class~="bg-zinc-900/80"], [class~="bg-zinc-900/90"], [class~="bg-zinc-950/20"], [class~="bg-zinc-950/40"], [class~="bg-zinc-950/60"], [class~="bg-zinc-950/70"], [class~="bg-zinc-950/80"], [class~="bg-zinc-950"], [class~="bg-zinc-900"], [class~="bg-black/40"], [class~="bg-black/50"], [class~="bg-black/60"], [class~="bg-black/80"], [class~="bg-[#0a0a0a]"], [class~="bg-[#060709]"], [class~="bg-[#0a0c10]"], [class~="bg-[#0a0c10]/90"], [class~="bg-[#0d0f12]/90"], [class~="bg-[#13161c]"], [class~="bg-white/[0.02]"], [class~="bg-white/[0.025]"], [class~="bg-white/[0.04]"], [class~="bg-white/[0.05]"], [class~="bg-white/[0.06]"], [class~="bg-white/[0.07]"], [class~="bg-white/[0.08]"], [class~="bg-white/5"], [class~="bg-white/10"]) { background-color: var(--yz-surface-0) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [class~="bg-zinc-800"] { background-color: var(--yz-surface-2) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is([class~="border-white/[0.02]"], [class~="border-white/[0.04]"], [class~="border-white/[0.05]"], [class~="border-white/[0.06]"], [class~="border-white/[0.07]"], [class~="border-white/[0.08]"], [class~="border-white/[0.1]"], [class~="border-white/5"], [class~="border-white/10"], [class~="border-white/15"], [class~="border-white/20"], [class~="border-zinc-600/60"], [class~="border-zinc-700"], [class~="border-zinc-750"], [class~="border-zinc-800"], [class~="border-zinc-800/60"], [class~="border-zinc-800/80"], [class~="border-zinc-900"], [class~="border-zinc-900/80"], [class~="border-[#91b8b1]"]) { border-color: var(--yz-border) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is([class~="ring-white/5"], [class~="ring-white/10"], [class~="ring-[#0a0c10]"]) { --tw-ring-color: var(--yz-border) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [class~="shadow-white/10"] { --tw-shadow-color: rgba(122, 74, 31, .18) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is([class~="bg-white"][class~="text-black"]) { background-color: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: #FFFCF6 !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [class~="bg-zinc-500"] { background-color: var(--yz-accent) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is([class~="hover:bg-white/5"], [class~="hover:bg-white/10"], [class~="hover:bg-white/15"], [class~="hover:bg-zinc-800"], [class~="hover:bg-zinc-850"], [class~="hover:bg-zinc-900"], [class~="hover:bg-zinc-900/60"], [class~="hover:bg-zinc-900/70"], [class~="hover:bg-zinc-900/80"], [class~="focus:bg-zinc-900"]):hover { background-color: var(--yz-surface-2) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is([class~="hover:bg-zinc-200"]):hover { background-color: var(--yz-accent-hover) !important; color: #FFFCF6 !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is([class~="hover:text-white"], [class~="hover:text-zinc-200"], [class~="hover:text-zinc-300"]):hover { color: var(--yz-accent) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route .group:hover :is([class~="group-hover:text-white"], [class~="group-hover:text-zinc-200"], [class~="group-hover:text-zinc-300"]) { color: var(--yz-accent) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is(input, textarea, select) { background-color: var(--yz-surface-0) !important; color: var(--yz-text) !important; border-color: var(--yz-border) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route :is(input, textarea, select)::placeholder { color: var(--yz-text-tertiary) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route .prose-invert { --tw-prose-body: var(--yz-text); --tw-prose-headings: var(--yz-text); --tw-prose-bold: var(--yz-text); --tw-prose-links: var(--yz-accent); color: var(--yz-text) !important; }
+    html[data-resolved-theme="light"] body.kv-home-route #manga-library-catalog { background: var(--yz-surface-0) !important; border-color: var(--yz-border) !important; box-shadow: 0 18px 44px -30px rgba(82, 52, 22, .32) !important; }
+    html[data-resolved-theme="light"] body.kv-home-route button[data-action="quick-genre"][data-landing="1"] { background: var(--yz-surface-2) !important; border-color: var(--yz-border) !important; color: var(--yz-text-muted) !important; }
+    html[data-resolved-theme="light"] body.kv-home-route button[data-action="quick-genre"][data-landing="1"][data-active="true"] { background: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: #FFFCF6 !important; }
+    html[data-resolved-theme="light"] body.kv-home-route [data-manga-id] > div[class~="bg-zinc-900"] { background: var(--yz-surface-2) !important; color: var(--yz-text-muted) !important; }
+    html[data-resolved-theme="light"] body.kv-home-route [data-manga-id] [class~="bg-zinc-950/95"] { background: var(--yz-surface-0) !important; border-color: var(--yz-border) !important; color: var(--yz-text) !important; }
+    html[data-resolved-theme="light"] body.kv-home-route main [class~="bg-white/5"][class~="ring-white/10"] { background: var(--yz-surface-2) !important; border-color: var(--yz-border) !important; color: var(--yz-text-secondary) !important; box-shadow: none !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [class~="bg-black/85"] { color: #fff !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route :is(.text-white, .text-zinc-100, .text-zinc-200) { color: var(--yz-text) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route :is(.text-zinc-300, .text-zinc-400, .text-zinc-500, .text-zinc-600) { color: var(--yz-text-muted) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route :is(input, textarea, select) { background-color: var(--yz-surface-0) !important; color: var(--yz-text) !important; border-color: var(--yz-border) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] { background: #0B0E17 !important; color: #fff !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] :is(.text-white, .text-zinc-100, .text-zinc-200) { color: #fff !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] :is(.text-zinc-300, .text-zinc-400, .text-zinc-500) { color: rgba(255, 255, 255, .78) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] :is([class~="bg-zinc-950"], [class~="bg-zinc-900/80"], [class~="bg-zinc-900/60"]) { background-color: rgba(9, 9, 11, .72) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] [data-hero-thumbs] [class~="bg-zinc-950"] { background-color: #09090b !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] :is([class~="border-white/[0.08]"], [class~="border-white/10"], [class~="border-white/30"], [class~="hover:border-white/25"], [class~="hover:border-zinc-700"]) { border-color: rgba(255, 255, 255, .18) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] [class~="ring-white/10"] { --tw-ring-color: rgba(255, 255, 255, .18) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] [class~="hover:bg-zinc-800"]:hover { background-color: rgba(39, 39, 42, .9) !important; }
+    html[data-resolved-theme="light"] body.kv-public-route [data-hero-carousel] [class~="hover:text-white"]:hover { color: #fff !important; }
     @media (hover: none), (pointer: coarse) {
       [class*="hover:scale-"]:hover:not(:active),
       [class*="hover:-translate-"]:hover:not(:active),
@@ -5420,7 +5466,7 @@ function trackPageview() {
       var genres = ['All', 'Action', 'Romance', 'Fantasy', 'Isekai', 'Manhwa', 'Shounen', 'Adventure', 'Mystery', 'Supernatural', 'Comedy', 'Sci-Fi', 'Drama'];
       var genreHtml = genres.map(function (g) {
         var active = g === activeGenre;
-        return '<button type="button" data-action="quick-genre" data-landing="1" data-genre="' + escapeHtml(g) + '" class="flex-shrink-0 rounded-md px-2.5 py-1.5 text-[11px] font-semibold transition cursor-pointer ' + (active ? 'bg-white text-black' : 'text-zinc-500 hover:bg-white/5 hover:text-white') + '">' + escapeHtml(g) + '</button>';
+        return '<button type="button" data-action="quick-genre" data-landing="1" data-genre="' + escapeHtml(g) + '" data-active="' + (active ? 'true' : 'false') + '" class="flex-shrink-0 rounded-md px-2.5 py-1.5 text-[11px] font-semibold transition cursor-pointer ' + (active ? 'bg-white text-black' : 'text-zinc-500 hover:bg-white/5 hover:text-white') + '">' + escapeHtml(g) + '</button>';
       }).join('');
       var sortOptions = [['follow', 'Most Followed'], ['rating', 'Top Rated'], ['view', 'Most Viewed'], ['uploaded', 'Recently Updated'], ['title', 'Alphabetical']];
       var allowedSort = ['follow', 'rating', 'view', 'uploaded', 'title'];
