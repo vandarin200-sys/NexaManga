@@ -82,6 +82,13 @@ function saveManga(catalog, input) {
   const adultGenre = item.genres.some((genre) => ['18+', 'hentai', 'ecchi'].includes(String(genre).toLowerCase()));
   const adultFlag = item.isAdult === true || ['on', 'true', '1'].includes(String(item.isAdult).toLowerCase());
   item.isAdult = adultGenre || adultFlag;
+  if (item.releaseYear !== undefined && item.releaseYear !== null && item.releaseYear !== '') {
+    const releaseYear = Number(item.releaseYear);
+    if (!Number.isInteger(releaseYear) || releaseYear < 1900 || releaseYear > 2100) {
+      throw new ValidationError('Tahun rilis manga harus berupa tahun antara 1900 dan 2100.');
+    }
+    item.releaseYear = releaseYear;
+  }
   if (item.rating !== undefined && (!Number.isFinite(Number(item.rating)) || Number(item.rating) < 0 || Number(item.rating) > 10)) {
     throw new ValidationError('Rating manga harus berada di antara 0 dan 10.');
   }

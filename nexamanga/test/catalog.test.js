@@ -58,6 +58,16 @@ test('saveManga normalizes adult flag and preserves legacy adult genres', () => 
   );
 });
 
+test('saveManga stores valid release years and rejects invalid values', () => {
+  const data = catalog();
+  saveManga(data, { ...manga(), releaseYear: '2024' });
+  assert.equal(data.manga[0].releaseYear, 2024);
+  assert.throws(
+    () => saveManga(data, { ...manga('m2'), slug: 'judul-invalid', releaseYear: '20x4' }),
+    ValidationError
+  );
+});
+
 test('saves chapters and prevents duplicates within a manga', () => {
   const data = catalog();
   saveManga(data, manga());

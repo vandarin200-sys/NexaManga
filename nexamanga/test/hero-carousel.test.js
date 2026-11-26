@@ -425,6 +425,24 @@ test('chapter comment form has a responsive themed composer while detail comment
   }
 });
 
+test('manga detail removes trackers, places title above genres, and exposes the release year field', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(!source.includes('Trackers &amp; Sync'), target + ' should remove the tracker section');
+    assert.ok(source.includes("var leftColumn = '<div class=\"flex flex-col gap-4\">' + posterFrame + titleRow + detailMeta + '</div>';"), target + ' should place the title between the cover and genre metadata');
+    assert.ok(source.includes("var releaseYear = manga.releaseYear ? String(manga.releaseYear) : '';"), target + ' should display only the manually managed release year');
+    assert.ok(!source.includes("var releaseYear = manga.releaseYear || String(manga.updatedAt || '').slice(0, 4)"), target + ' should not mistake the last update for the manga year');
+    assert.ok(source.includes('name="releaseYear" type="number"'), target + ' should provide a dedicated admin year field');
+    assert.ok(source.includes('releaseYear: releaseYear'), target + ' should send the year when saving manga');
+    assert.ok(source.includes('id="manga-synopsis-content"'), target + ' should use the redesigned synopsis card');
+    assert.ok(source.includes('aria-controls="manga-synopsis-content"'), target + ' should keep the synopsis toggle accessible');
+  }
+});
+
 test('reader dock shows the compact page controls and keeps each action connected in both frontends', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
