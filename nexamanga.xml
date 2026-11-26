@@ -5104,7 +5104,7 @@ function trackPageview() {
         var genres = (m.genres || []).slice(0, 2).map(function (g) { return '<span>' + escapeHtml(g) + '</span>'; }).join('<span aria-hidden="true" class="h-px w-2.5 bg-zinc-700"></span>');
         var href = publicHref('/manga/' + escapeHtml(m.slug || ''));
         var synopsis = String(m.synopsis || '').trim();
-        var score = (10 - i * 0.1).toFixed(1);
+        var score = Math.max(0, Math.min(10, Number(m.rating) || 0)).toFixed(1);
         return '<div role="group" aria-roledescription="slide" class="yz-hero-slide min-w-0 shrink-0 grow-0 basis-full pl-0"><div class="relative h-[530px] sm:h-[600px] lg:h-[670px]" style="contain: layout style paint;">' + img +
           '<div class="absolute inset-0 z-[2] bg-zinc-950/65 backdrop-blur-[1px]"></div>' +
           '<div class="absolute inset-x-0 bottom-0 z-[3] h-3/4 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-transparent"></div>' +
@@ -8240,6 +8240,7 @@ function renderAdmin() {
           document.body.classList.toggle('kv-public-route', state.route !== 'reader' && state.route !== 'admin');
           if (state.route === 'admin') { applyTheme(false); } else { document.documentElement.classList.add('dark'); document.documentElement.setAttribute('data-theme', 'yumezone'); document.documentElement.setAttribute('data-resolved-theme', 'dark'); document.documentElement.style.colorScheme = 'dark'; }
         }
+        finalizeHeroTrack(document.querySelector('[data-hero-track]'));
         var bodyHtml = '';
         if (state.loading) {
           bodyHtml = '<div class="mx-auto min-h-[60vh] max-w-3xl px-4 pt-28 text-center text-sm text-zinc-400">Memuat...</div>';
@@ -8276,7 +8277,6 @@ function renderAdmin() {
         var runtimeNotice = state.sessionNotice || state.catalogNotice;
         var renderScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
         var contentPad = state.yzSidebarExpanded ? 'md:pl-[220px]' : 'md:pl-[60px]';
-        finalizeHeroTrack(document.querySelector('[data-hero-track]'));
         if (state.route === 'admin') {
           app.innerHTML = bodyHtml;
         } else if (state.route === 'reader') {
@@ -8389,9 +8389,11 @@ function setBannerDotsActive(index) {
       }
       var from = heroNormalizeIndex(current, total);
       var to = heroNormalizeIndex(target, total);
+      var forward = heroNormalizeIndex(to - from, total);
+      var backward = heroNormalizeIndex(from - to, total);
       var dir = direction === 'next' || direction === 'prev'
         ? direction
-        : (to === 0 && from === total - 1 ? 'next' : to === total - 1 && from === 0 ? 'prev' : to > from ? 'next' : 'prev');
+        : (forward <= backward ? 'next' : 'prev');
       var virtual = to + 1;
       var clone = false;
       if (dir === 'next' && from === total - 1 && to === 0) {
@@ -8408,6 +8410,16 @@ function setBannerDotsActive(index) {
       var value = Number(virtual);
       if (!isFinite(value)) value = 1;
       return heroNormalizeIndex(value - 1, count) + 1;
+    }
+
+    function heroAdvance(index, direction, count, steps) {
+      var total = Math.floor(Number(count) || 0);
+      if (total < 2) return { index: 0, direction: '' };
+      var from = heroNormalizeIndex(index, total);
+      var sign = direction === 'next' ? 1 : direction === 'prev' ? -1 : 0;
+      if (!sign) return { index: from, direction: '' };
+      var amount = Math.max(1, Math.trunc(Number(steps) || 1));
+      return { index: heroNormalizeIndex(from + sign * amount, total), direction: sign > 0 ? 'next' : 'prev' };
     }
 
     function heroDragProgress(delta, travel) {
@@ -8465,9 +8477,10 @@ function setBannerDotsActive(index) {
         : 'none';
       var shadeTransition = animated ? 'opacity var(--dur-swipe) var(--ease-swipe)' : 'none';
       for (var i = 0; i < count; i++) {
-        var offset = yzHeroWrappedOffset(i, centerPosition, count);
-        var pose = yzHeroThumbPose(offset);
         var thumb = thumbs[i];
+        var cardId = Number(thumb.getAttribute('data-hero-card-id'));
+        var offset = yzHeroWrappedOffset(isFinite(cardId) ? cardId : i, centerPosition, count);
+        var pose = yzHeroThumbPose(offset);
         if (thumb.style.transition !== transition) thumb.style.transition = transition;
         thumb.style.transform = pose.transform;
         thumb.style.zIndex = String(pose.zIndex);
@@ -8556,6 +8569,24 @@ function setBannerDotsActive(index) {
       state.heroAnimating = false;
     }
 
+    function syncHeroDots(carousel, index) {
+      var dots = carousel.querySelectorAll('[data-action="hero-dot"]');
+      var previousActive = carousel.querySelector('[data-action="hero-dot"].w-6');
+      if (previousActive) {
+        previousActive.className = previousActive.className.replace('w-6', 'w-1.5 bg-zinc-700 hover:bg-zinc-500');
+        previousActive.style.backgroundColor = '';
+      }
+      for (var k = 0; k < dots.length; k++) {
+        if (k === index) {
+          dots[k].className = dots[k].className.replace('w-1.5 bg-zinc-700 hover:bg-zinc-500', 'w-6').replace(/\s+/g, ' ').trim();
+          dots[k].style.backgroundColor = dots[k].getAttribute('data-color') || '';
+          dots[k].setAttribute('aria-current', 'true');
+        } else {
+          dots[k].removeAttribute('aria-current');
+        }
+      }
+    }
+
     function setHeroSlide(next, dir) {
       var count = Math.max(1, state.heroCount || 0);
       var target = heroNormalizeIndex(next, count);
@@ -8565,11 +8596,16 @@ function setBannerDotsActive(index) {
         finalizeHeroTrack(track);
         commitHeroState(target, target + 1);
         render();
-        return;
+        return true;
       }
       finalizeHeroTrack(track);
       var current = heroNormalizeIndex(state.heroSlide, count);
-      if (count < 2 || target === current) return;
+      if (count < 2 || target === current) {
+        commitHeroState(current, current + 1);
+        yzHeroApplyPoses(carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb'), current, true);
+        syncHeroDots(carousel, current);
+        return false;
+      }
       var plan = heroVirtualTarget(current, target, dir, count);
       var token = bumpHeroTrackToken(track);
       state.heroAnimDir = plan.direction;
@@ -8607,21 +8643,8 @@ function setBannerDotsActive(index) {
       setSlideAria(plan.virtual);
       var thumbs = carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb');
       yzHeroApplyPoses(thumbs, plan.target, true);
-      var dots = carousel.querySelectorAll('[data-action="hero-dot"]');
-      var previousActive = carousel.querySelector('[data-action="hero-dot"].w-6');
-      if (previousActive) {
-        previousActive.className = previousActive.className.replace('w-6', 'w-1.5 bg-zinc-700 hover:bg-zinc-500');
-        previousActive.style.backgroundColor = '';
-      }
-      for (var k = 0; k < dots.length; k++) {
-        if (k === plan.target) {
-          dots[k].className = dots[k].className.replace('w-1.5 bg-zinc-700 hover:bg-zinc-500', 'w-6').replace(/\s+/g, ' ').trim();
-          dots[k].style.backgroundColor = dots[k].getAttribute('data-color') || '';
-          dots[k].setAttribute('aria-current', 'true');
-        } else {
-          dots[k].removeAttribute('aria-current');
-        }
-      }
+      syncHeroDots(carousel, plan.target);
+      return true;
     }
 
     function bindHeroCarousel() {
@@ -8680,8 +8703,10 @@ function setBannerDotsActive(index) {
           window.__yzHeroSuppressClickUntil = Date.now() + heroSwipeDuration(track || carousel);
           window.__yzHeroSuppressClickTarget = carousel;
         }
-        if (decision.direction && !cancelled && slideCount > 1) setHeroSlide(decision.index, decision.direction);
-        else snapTo(heroNormalizeIndex(dragBase, slideCount), true);
+        var moved = decision.direction && !cancelled && slideCount > 1
+          ? setHeroSlide(decision.index, decision.direction)
+          : false;
+        if (!moved) snapTo(heroNormalizeIndex(state.heroSlide, slideCount), true);
       };
       thumbs.addEventListener('pointerdown', function (e) {
         if (active || (e.button !== undefined && e.button !== 0)) return;
@@ -9457,8 +9482,8 @@ function setBannerDotsActive(index) {
       var el = e.target.closest('[data-action]');
       if (!el) { if (closeMore) render(); return; }
       var act = el.getAttribute('data-action');
-         if (act === 'hero-prev') { markHeroInteraction(); setHeroSlide(heroNormalizeIndex((state.heroSlide || 0) - 1, state.heroCount), 'prev'); return; }
-      if (act === 'hero-next') { markHeroInteraction(); setHeroSlide(heroNormalizeIndex((state.heroSlide || 0) + 1, state.heroCount), 'next'); return; }
+         if (act === 'hero-prev') { markHeroInteraction(); var heroStep = heroAdvance(state.heroSlide, 'prev', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }
+      if (act === 'hero-next') { markHeroInteraction(); heroStep = heroAdvance(state.heroSlide, 'next', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }
       if (act === 'hero-dot' || act === 'hero-thumb') { markHeroInteraction(); setHeroSlide(Number(el.getAttribute('data-index')) || 0); return; }
       if (act === 'hero-browse') { navigate('/archive'); return; }
       if (act === 'kv-traffic-point') { showTrafficTooltip(el); return; }
@@ -9932,7 +9957,8 @@ function setBannerDotsActive(index) {
         var active = document.activeElement;
         if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT' || (active.matches && active.matches(':focus-visible') && carousel && carousel.contains(active)))) return;
         if (carousel && window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches && carousel.matches(':hover')) return;
-        setHeroSlide((state.heroSlide || 0) + 1, 'next');
+        var nextHero = heroAdvance(state.heroSlide, 'next', state.heroCount, 1);
+        setHeroSlide(nextHero.index, nextHero.direction);
       }, 6500);
 applyYumeAccent();
     applyTheme();

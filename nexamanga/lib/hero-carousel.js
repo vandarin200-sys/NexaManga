@@ -33,9 +33,11 @@ function heroVirtualTarget(current, target, direction, count) {
   }
   var from = heroNormalizeIndex(current, total);
   var to = heroNormalizeIndex(target, total);
+  var forward = heroNormalizeIndex(to - from, total);
+  var backward = heroNormalizeIndex(from - to, total);
   var dir = direction === 'next' || direction === 'prev'
     ? direction
-    : (to === 0 && from === total - 1 ? 'next' : to === total - 1 && from === 0 ? 'prev' : to > from ? 'next' : 'prev');
+    : (forward <= backward ? 'next' : 'prev');
   var virtual = to + 1;
   var clone = false;
   if (dir === 'next' && from === total - 1 && to === 0) {
@@ -52,6 +54,16 @@ function heroCanonicalVirtual(virtual, count) {
   var value = Number(virtual);
   if (!isFinite(value)) value = 1;
   return heroNormalizeIndex(value - 1, count) + 1;
+}
+
+function heroAdvance(index, direction, count, steps) {
+  var total = Math.floor(Number(count) || 0);
+  if (total < 2) return { index: 0, direction: '' };
+  var from = heroNormalizeIndex(index, total);
+  var sign = direction === 'next' ? 1 : direction === 'prev' ? -1 : 0;
+  if (!sign) return { index: from, direction: '' };
+  var amount = Math.max(1, Math.trunc(Number(steps) || 1));
+  return { index: heroNormalizeIndex(from + sign * amount, total), direction: sign > 0 ? 'next' : 'prev' };
 }
 
 function heroDragProgress(delta, travel) {
@@ -79,6 +91,7 @@ module.exports = {
   heroWrappedOffset,
   heroVirtualTarget,
   heroCanonicalVirtual,
+  heroAdvance,
   heroDragProgress,
   heroDragDecision
 };

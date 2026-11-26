@@ -10,6 +10,7 @@ const {
   heroWrappedOffset,
   heroVirtualTarget,
   heroCanonicalVirtual,
+  heroAdvance,
   heroDragProgress,
   heroDragDecision
 } = require('../lib/hero-carousel');
@@ -47,6 +48,19 @@ test('heroVirtualTarget handles clone wrap in both directions', () => {
   });
   assert.equal(heroCanonicalVirtual(0, 10), 10);
   assert.equal(heroCanonicalVirtual(11, 10), 1);
+  assert.equal(heroVirtualTarget(8, 0, undefined, 10).direction, 'next');
+  assert.equal(heroVirtualTarget(1, 9, undefined, 10).direction, 'prev');
+});
+
+test('heroAdvance wraps forward and backward without a terminal index', () => {
+  const count = 10;
+  assert.deepEqual(heroAdvance(0, 'prev', count), { index: 9, direction: 'prev' });
+  assert.deepEqual(heroAdvance(9, 'next', count), { index: 0, direction: 'next' });
+  assert.deepEqual(heroAdvance(-3, 'next', count), { index: 8, direction: 'next' });
+  assert.deepEqual(heroAdvance(23, 'prev', count), { index: 2, direction: 'prev' });
+  assert.deepEqual(heroAdvance(4, 'next', count, 7), { index: 1, direction: 'next' });
+  assert.deepEqual(heroAdvance(4, '', count), { index: 4, direction: '' });
+  assert.deepEqual(heroAdvance(0, 'next', 1), { index: 0, direction: '' });
 });
 
 test('heroDragDecision advances exactly once and clamps overshoot', () => {
@@ -57,6 +71,34 @@ test('heroDragDecision advances exactly once and clamps overshoot', () => {
   assert.deepEqual(heroDragDecision(10, 0.1, 48, 0, 10), { index: 0, direction: '' });
   assert.equal(heroDragProgress(-1000, 108), 1);
   assert.equal(heroDragProgress(1000, 108), -1);
+});
+
+test('sequential swipes stay in sync from slide one through ten and back', () => {
+  const count = 10;
+  let current = 0;
+  for (let step = 1; step <= 20; step += 1) {
+    const move = heroAdvance(current, 'next', count, 1);
+    const plan = heroVirtualTarget(current, move.index, move.direction, count);
+    assert.equal(plan.target, move.index);
+    assert.equal(heroCanonicalVirtual(plan.virtual, count), move.index + 1);
+    current = plan.target;
+  }
+  assert.equal(current, 0);
+  for (let step = 0; step < 20; step += 1) {
+    const move = heroAdvance(current, 'prev', count, 1);
+    const plan = heroVirtualTarget(current, move.index, move.direction, count);
+    assert.equal(plan.target, move.index);
+    assert.equal(heroCanonicalVirtual(plan.virtual, count), move.index + 1);
+    current = plan.target;
+  }
+  assert.equal(current, 0);
+  for (let step = 0; step < 20; step += 1) {
+    const move = heroAdvance(current, step % 2 === 0 ? 'next' : 'prev', count, 1);
+    const plan = heroVirtualTarget(current, move.index, move.direction, count);
+    assert.equal(plan.direction, step % 2 === 0 ? 'next' : 'prev');
+    assert.equal(heroCanonicalVirtual(plan.virtual, count), move.index + 1);
+    current = plan.target;
+  }
 });
 
 test('rapid circular swipes never leave stale or out-of-range indexes', () => {
@@ -113,7 +155,7 @@ function normalize(source) {
 }
 
 test('inline carousel helpers mirror the tested module in both frontends', () => {
-  const names = ['heroNormalizeIndex', 'heroWrapCenter', 'heroWrappedOffset', 'heroVirtualTarget', 'heroCanonicalVirtual', 'heroDragProgress', 'heroDragDecision'];
+  const names = ['heroNormalizeIndex', 'heroWrapCenter', 'heroWrappedOffset', 'heroVirtualTarget', 'heroCanonicalVirtual', 'heroAdvance', 'heroDragProgress', 'heroDragDecision'];
   const libSource = fs.readFileSync(path.join(__dirname, '..', 'lib', 'hero-carousel.js'), 'utf8');
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
@@ -128,5 +170,117 @@ test('inline carousel helpers mirror the tested module in both frontends', () =>
       assert.ok(expected, 'missing ' + name + ' in library');
       assert.equal(actual, expected, target + ' has stale ' + name);
     }
+  }
+});
+
+function simulateRuntime(target) {
+  const source = fs.readFileSync(target, 'utf8');
+  const names = [
+    'heroNormalizeIndex', 'heroWrapCenter', 'heroWrappedOffset', 'heroVirtualTarget',
+    'heroCanonicalVirtual', 'heroAdvance', 'heroDragProgress', 'heroDragDecision',
+    'yzHeroWrappedOffset', 'yzHeroThumbPose', 'yzHeroApplyPoses', 'bumpHeroTrackToken',
+    'heroSwipeDuration', 'commitHeroState', 'finalizeHeroTrack', 'syncHeroDots', 'setHeroSlide'
+  ];
+  const state = {
+    route: 'home', heroCount: 10, heroSlide: 0, yzHeroIndex: 0, heroTrackPosition: 1,
+    heroAnimDir: '', heroAnimating: false, heroDragActive: false, heroDragOffset: 0, heroDragged: false
+  };
+  const thumbs = Array.from({ length: 10 }, (_, id) => {
+    const attrs = { 'data-hero-card-id': String(id), 'data-center': id === 0 ? 'true' : 'false' };
+    const shade = { style: {}, className: 'transition-opacity' };
+    const gradient = { style: {}, className: 'yz-hero-thumb-gradient' };
+    return {
+      style: {}, className: 'yz-hero-thumb hover:border-white/20', attrs,
+      getAttribute: (key) => attrs[key] || null,
+      setAttribute(key, value) { attrs[key] = String(value); },
+      querySelector: (selector) => (selector.indexOf('yz-hero-thumb-gradient') >= 0 ? gradient : shade)
+    };
+  });
+  const dots = Array.from({ length: 10 }, (_, id) => ({
+    style: {}, className: id === 0 ? 'w-6' : 'w-1.5 bg-zinc-700 hover:bg-zinc-500', attrs: {},
+    getAttribute: (key) => (key === 'data-color' ? '#fff' : null),
+    setAttribute(key, value) { this.attrs[key] = String(value); },
+    removeAttribute() {}
+  }));
+  const slides = Array.from({ length: 12 }, () => ({ attrs: {}, setAttribute(key, value) { this.attrs[key] = value; } }));
+  const track = {
+    dataset: {}, style: {}, offsetWidth: 1, attrs: {},
+    addEventListener() {}, removeEventListener() {}, setAttribute(key, value) { this.attrs[key] = value; }
+  };
+  const carousel = {
+    querySelector(selector) {
+      if (selector.indexOf('hero-track') >= 0) return track;
+      if (selector.indexOf('hero-dot') >= 0) return dots.find((dot) => dot.className.indexOf('w-6') >= 0) || null;
+      return null;
+    },
+    querySelectorAll(selector) {
+      if (selector.indexOf('yz-hero-thumb') >= 0) return thumbs;
+      if (selector.indexOf('hero-dot') >= 0) return dots;
+      return slides;
+    }
+  };
+  const documentMock = { querySelector: (selector) => (selector.indexOf('hero-carousel') >= 0 ? carousel : null) };
+  const windowMock = { getComputedStyle: () => ({ transitionDuration: '0.28s' }) };
+  const runtime = new Function(
+    'state', 'document', 'window', 'prefersReducedMotion', 'setTimeout', 'clearTimeout',
+    names.map((name) => extractFunction(source, name)).join('\n') +
+      '\nreturn { setHeroSlide, finalizeHeroTrack, heroAdvance };'
+  )(state, documentMock, windowMock, () => false, () => 1, () => {});
+
+  const assertCoherent = (label, index) => {
+    assert.equal(state.heroSlide, index, label + ' slide');
+    assert.equal(state.yzHeroIndex, index, label + ' mirror index');
+    assert.equal(state.heroAnimating, false, label + ' animation lock');
+    assert.equal(track.style.transform, 'translate3d(-' + ((index + 1) * 100) + '%, 0px, 0px)', label + ' track');
+    const center = thumbs.find((thumb) => thumb.getAttribute('data-center') === 'true');
+    assert.equal(center && center.getAttribute('data-hero-card-id'), String(index), label + ' center card');
+    const activeDot = dots.find((dot) => dot.className.indexOf('w-6') >= 0);
+    assert.equal(dots.indexOf(activeDot), index, label + ' active dot');
+  };
+
+  let index = 0;
+  for (let step = 0; step < 20; step += 1) {
+    const move = runtime.heroAdvance(index, 'next', state.heroCount, 1);
+    runtime.setHeroSlide(move.index, move.direction);
+    runtime.finalizeHeroTrack(track);
+    index = move.index;
+    assertCoherent(target + ' next ' + (step + 1), index);
+  }
+  for (let step = 0; step < 20; step += 1) {
+    const move = runtime.heroAdvance(index, 'prev', state.heroCount, 1);
+    runtime.setHeroSlide(move.index, move.direction);
+    runtime.finalizeHeroTrack(track);
+    index = move.index;
+    assertCoherent(target + ' prev ' + (step + 1), index);
+  }
+  for (let step = 0; step < 20; step += 1) {
+    const direction = step % 2 === 0 ? 'next' : 'prev';
+    const move = runtime.heroAdvance(index, direction, state.heroCount, 1);
+    runtime.setHeroSlide(move.index, move.direction);
+    if (step % 3 === 0) runtime.setHeroSlide(state.heroSlide, '');
+    runtime.finalizeHeroTrack(track);
+    index = move.index;
+    assertCoherent(target + ' alternating ' + (step + 1), index);
+  }
+}
+
+test('runtime carousel stays coherent through 60 swipes and interrupted calls', () => {
+  simulateRuntime(path.join(__dirname, '..', 'public', 'index.html'));
+  simulateRuntime(path.join(__dirname, '..', '..', 'nexamanga.xml'));
+});
+
+test('render settles the hero track before generating slide markup', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    const renderStart = source.indexOf('function render()');
+    const markupStart = source.indexOf("var bodyHtml = '';", renderStart);
+    const finalize = source.indexOf("finalizeHeroTrack(document.querySelector('[data-hero-track]'))", renderStart);
+    assert.ok(renderStart >= 0 && markupStart > renderStart, target + ' has no render markup point');
+    assert.ok(finalize > renderStart && finalize < markupStart, target + ' generates slides from a stale track position');
+    assert.ok(source.includes('Number(m.rating) || 0'), target + ' shows an index-derived score instead of manga rating');
   }
 });
