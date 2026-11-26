@@ -1513,6 +1513,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .yz-hero-carousel .yz-hero-track { touch-action:pan-y; }
       .yz-hero-carousel .yz-hero-thumbs { transition:transform var(--dur-slow) var(--ease-out), opacity var(--dur-slow) var(--ease-out); }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging { transition:none !important; animation:none !important; cursor:grabbing; }
+      .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb { transition:none !important; }
       .yz-hero-carousel .yz-hero-thumb-gradient { opacity:0; transition:opacity var(--dur-slow) var(--ease-out); }
       .yz-hero-carousel .yz-hero-thumb[data-center="true"] .yz-hero-thumb-gradient { opacity:1; }
       .yz-hero-carousel .yz-hero-slide { animation:yzHeroReveal var(--dur-slow) var(--ease-out) both; }
@@ -8443,20 +8444,54 @@ function setBannerDotsActive(index) {
       var sampleTime = 0;
       var dragged = false;
       var pointerId = null;
+      var draggingCenter = null;
+      var draggingIncoming = null;
+      var draggingIncomingOffset = 0;
       var limit = Math.max(60, carousel.clientWidth * 0.42);
       var baseIndex = function () { return Math.abs(state.heroSlide || 0) % slideCount; };
+      var resetDragPose = function () {
+        if (draggingCenter) {
+          var centerPose = yzHeroThumbPose(0);
+          draggingCenter.style.transform = centerPose.transform;
+          draggingCenter.style.zIndex = String(centerPose.zIndex);
+        }
+        if (draggingIncoming) {
+          var incomingPose = yzHeroThumbPose(draggingIncomingOffset);
+          draggingIncoming.style.zIndex = String(incomingPose.zIndex);
+        }
+        draggingCenter = null;
+        draggingIncoming = null;
+        draggingIncomingOffset = 0;
+      };
       var applyDrag = function (offset) {
         var eased = Math.max(-limit, Math.min(limit, offset));
-        thumbs.style.transform = 'translate3d(' + Math.round(eased) + 'px, 0px, 0px)';
-        thumbs.style.opacity = String(Math.max(0.72, 1 - Math.abs(eased) / (limit * 3)));
+        var allThumbs = carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb');
+        if (!allThumbs.length) return;
+        var centerThumb = carousel.querySelector('[data-hero-thumbs] > .yz-hero-thumb[data-center="true"]') || allThumbs[baseIndex() % allThumbs.length];
+        if (!centerThumb) return;
+        var base = Number(centerThumb.getAttribute('data-index'));
+        if (!isFinite(base) || base < 0 || base >= allThumbs.length) base = baseIndex() % allThumbs.length;
+        var incomingOffset = eased < 0 ? -1 : 1;
+        var incomingIndex = (base + incomingOffset + allThumbs.length) % allThumbs.length;
+        var incoming = incomingIndex === base ? null : allThumbs[incomingIndex];
+        if (draggingIncoming && draggingIncoming !== incoming) {
+          var previousPose = yzHeroThumbPose(draggingIncomingOffset);
+          draggingIncoming.style.zIndex = String(previousPose.zIndex);
+        }
+        draggingCenter = centerThumb;
+        draggingIncoming = incoming;
+        draggingIncomingOffset = incomingOffset;
+        var x = Math.round(eased);
+        var shift = x >= 0 ? 'calc(-50% + ' + x + 'px)' : 'calc(-50% - ' + Math.abs(x) + 'px)';
+        centerThumb.style.transform = 'translate3d(' + shift + ', 0px, 0px) rotate(0deg) skewX(0deg) scale(1)';
+        if (incoming) incoming.style.zIndex = '31';
       };
-      var finishDrag = function (e) {
+      var finishDrag = function (e, cancelled) {
         if (!active || (e && e.pointerId !== undefined && e.pointerId !== pointerId)) return;
         active = false;
         window.__yzHeroInteractionUntil = Date.now() + 280;
         thumbs.classList.remove('is-dragging');
-        thumbs.style.transform = '';
-        thumbs.style.opacity = '';
+        resetDragPose();
         if (pointerId !== null && thumbs.releasePointerCapture) {
           try { thumbs.releasePointerCapture(pointerId); } catch (err) {}
         }
@@ -8466,15 +8501,15 @@ function setBannerDotsActive(index) {
         var threshold = Math.max(48, Math.min(110, carousel.clientWidth * 0.14));
         var next = baseIndex();
         var dir = '';
-        if (delta <= -threshold || (delta <= -24 && velocity > 0.35)) { next = (next + 1) % slideCount; dir = 'next'; }
-        else if (delta >= threshold || (delta >= 24 && velocity > 0.35)) { next = (next - 1 + slideCount) % slideCount; dir = 'prev'; }
+        if (delta <= -threshold || (delta <= -24 && velocity > 0.35)) { next = (next - 1 + slideCount) % slideCount; dir = 'prev'; }
+        else if (delta >= threshold || (delta >= 24 && velocity > 0.35)) { next = (next + 1) % slideCount; dir = 'next'; }
         state.heroDragOffset = 0;
         state.heroDragged = dragged;
-        if (dragged) {
+        if (dragged && !cancelled) {
           window.__yzHeroSuppressClickUntil = Date.now() + 280;
           window.__yzHeroSuppressClickTarget = carousel;
         }
-        if (dir) setHeroSlide(next, dir);
+        if (dir && !cancelled) setHeroSlide(next, dir);
       };
       thumbs.addEventListener('pointerdown', function (e) {
         if (active || (e.button !== undefined && e.button !== 0)) return;
@@ -8506,8 +8541,8 @@ function setBannerDotsActive(index) {
         applyDrag(delta);
       });
       thumbs.addEventListener('pointerup', finishDrag);
-      thumbs.addEventListener('pointercancel', finishDrag);
-      thumbs.addEventListener('lostpointercapture', finishDrag);
+      thumbs.addEventListener('pointercancel', function (e) { finishDrag(e, true); });
+      thumbs.addEventListener('lostpointercapture', function (e) { finishDrag(e, true); });
       if (!window.__yzHeroClickGuardBound) {
         window.__yzHeroClickGuardBound = true;
         document.addEventListener('click', function (e) {
