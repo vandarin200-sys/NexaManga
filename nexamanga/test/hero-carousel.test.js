@@ -347,30 +347,3 @@ test('both frontends keep cursor swipes from starting a native image drag', () =
     assert.ok(source.includes('-webkit-user-drag:none'), target + ' still allows native image dragging');
   }
 });
-
-test('public links use clean paths without the hash prefix', () => {
-  const targets = [
-    path.join(__dirname, '..', 'public', 'index.html'),
-    path.join(__dirname, '..', '..', 'nexamanga.xml')
-  ];
-  for (const target of targets) {
-    const source = fs.readFileSync(target, 'utf8');
-    assert.ok(source.includes('var YZ_HASH = false;'), target + ' still prefixes links with #/');
-    assert.ok(source.includes("var nextUrl = publicHref(routePath);"), target + ' still navigates with a hash URL');
-  }
-});
-
-test('appearance settings expose theme presets on desktop and mobile', () => {
-  const targets = [
-    path.join(__dirname, '..', 'public', 'index.html'),
-    path.join(__dirname, '..', '..', 'nexamanga.xml')
-  ];
-  for (const target of targets) {
-    const source = fs.readFileSync(target, 'utf8');
-    assert.ok(source.includes('Appearance Mode'), target + ' has no theme mode picker in settings');
-    assert.ok(source.includes('+ renderThemeMenuInline() +'), target + ' does not render the theme presets');
-    assert.ok(source.includes("['/settings?tab=appearance', 'Tema & Warna', 'palette']"), target + ' mobile menu has no appearance shortcut');
-    assert.ok(source.includes("root.setAttribute('data-accent-set', custom ? 'true' : 'false');"), target + ' cannot apply the accent color to themes');
-    assert.ok(!source.includes("'yumezone'"), target + ' still forces the public dark theme and ignores appearance');
-  }
-});

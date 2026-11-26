@@ -2933,24 +2933,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         --ns-accent: var(--primary) !important;
         --ns-chip: var(--secondary) !important;
       }
-      html[data-theme="anilist"] *, html[data-theme="catppuccin"] *, html[data-theme="mecha"] * {
-        --yz-bg: var(--background) !important; --yz-surface-0: var(--card) !important;
-        --yz-surface-1: var(--card) !important; --yz-surface-2: var(--secondary) !important;
-        --yz-surface-3: var(--muted) !important; --yz-border: var(--border) !important;
-        --yz-text: var(--foreground) !important; --yz-text-secondary: var(--muted-foreground) !important;
-        --yz-text-tertiary: var(--muted-foreground) !important;
-        --color-surface-0: var(--card) !important; --color-surface-1: var(--card) !important;
-        --color-surface-2: var(--secondary) !important; --color-surface-3: var(--muted) !important;
-        --color-border: var(--border) !important; --color-text-primary: var(--foreground) !important;
-        --color-text-secondary: var(--muted-foreground) !important; --color-text-tertiary: var(--muted-foreground) !important;
-      }
-      html[data-accent-set="true"] *, html[data-accent-set="true"] {
-        --kv-accent: var(--color-accent) !important; --kv-accent-hover: var(--color-accent) !important;
-        --kv-neon: var(--color-accent) !important; --yz-accent: var(--color-accent) !important;
-        --yz-accent-hover: var(--color-accent) !important; --yz-accent-rgb: var(--color-accent-rgb) !important;
-        --yz-accent-subtle: var(--color-accent-subtle) !important; --ad-teal: var(--color-accent) !important;
-        --kv-acct-accent: var(--color-accent) !important; --kv-notif-accent: var(--color-accent) !important;
-      }
       html[data-theme="anilist"] body, html[data-theme="catppuccin"] body, html[data-theme="mecha"] body { background: var(--background) !important; color: var(--foreground) !important; }
       html[data-theme="anilist"] [class*="bg-[#"], html[data-theme="catppuccin"] [class*="bg-[#"], html[data-theme="mecha"] [class*="bg-[#"] { background-color: var(--secondary) !important; background-image: none !important; }
       html[data-theme="anilist"] [class*="text-[#"], html[data-theme="catppuccin"] [class*="text-[#"], html[data-theme="mecha"] [class*="text-[#"], html[data-theme="anilist"] [class*="text-neutral"], html[data-theme="catppuccin"] [class*="text-neutral"], html[data-theme="mecha"] [class*="text-neutral"] { color: var(--foreground) !important; }
@@ -2998,18 +2980,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       --color-text-primary: #f0f0f5;
       --color-text-secondary: rgba(240, 240, 245, 0.88);
       --color-text-tertiary: rgba(240, 240, 245, 0.72);
-    }
-    html:not(.dark) {
-      --yz-bg: #f5f1e8; --yz-surface-0: #fffdf8; --yz-surface-1: #fbf7ef;
-      --yz-surface-2: #f0eadd; --yz-surface-3: #e7dfd0;
-      --yz-border: rgba(35, 28, 20, 0.14); --yz-text: #262019;
-      --yz-text-secondary: rgba(38, 32, 25, 0.78); --yz-text-tertiary: rgba(38, 32, 25, 0.62);
-      --color-surface-0: #fffdf8; --color-surface-1: #fbf7ef;
-      --color-surface-2: #f0eadd; --color-surface-3: #e7dfd0;
-      --color-border: rgba(35, 28, 20, 0.14); --color-text-primary: #262019;
-      --color-text-secondary: rgba(38, 32, 25, 0.78); --color-text-tertiary: rgba(38, 32, 25, 0.62);
-      --color-zinc-350: #3a342c; --color-zinc-450: #574f44; --color-zinc-550: #746a5d;
-      --color-zinc-650: #94897a; --color-zinc-850: #e7dfd0; --color-zinc-955: #f0eadd;
     }
     .scrollbar-none { scrollbar-width: none; }
     .scrollbar-none::-webkit-scrollbar { display: none; }
@@ -3486,7 +3456,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     var prefersReducedMotionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
     function prefersReducedMotion() { return !!(prefersReducedMotionQuery && prefersReducedMotionQuery.matches); }
     function scrollBehavior() { return prefersReducedMotion() ? 'auto' : 'smooth'; }
-    var YZ_HASH = false;
+    var YZ_HASH = true;
     function publicHref(path) {
       var value = String(path || '/');
       return YZ_HASH ? '#/' + value.replace(/^\//, '') : value;
@@ -3494,7 +3464,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         function applyYumeAccent() {
       try {
         var color = localStorage.getItem('yume_accent_color') || '#91b8b1';
-        var custom = String(color).toLowerCase() !== '#91b8b1';
         var clean = String(color).replace('#', '').trim();
         var r = 145, g = 184, b = 177;
         if (clean.length === 3) { r = parseInt(clean[0] + clean[0], 16); g = parseInt(clean[1] + clean[1], 16); b = parseInt(clean[2] + clean[2], 16); }
@@ -3509,11 +3478,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
           root.style.setProperty('--color-accent-rgb', r + ', ' + g + ', ' + b);
           root.style.setProperty('--color-accent-subtle', 'rgba(' + r + ',' + g + ',' + b + ',0.12)');
           root.style.setProperty('--accent-v', color);
-          root.style.setProperty('--kv-accent', color);
-          root.style.setProperty('--kv-accent-hover', 'rgba(' + r + ',' + g + ',' + b + ',0.75)');
-          root.setAttribute('data-accent-set', custom ? 'true' : 'false');
-          var metaTheme = document.querySelector('meta[name="theme-color"]');
-          if (metaTheme && custom) metaTheme.setAttribute('content', color);
         }
       } catch (e) {}
     }
@@ -3583,7 +3547,6 @@ function yzBtnClass(primary) {
         chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
         help: '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
         trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
-        palette: '<path d="M12 2a10 10 0 0 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-.8.7-1.5 1.5-1.5H17a5 5 0 0 0 5-5c0-5-4.5-9-10-9z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="15" cy="7" r="1"/>',
         file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/>',
         calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
         users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
@@ -4578,7 +4541,6 @@ function yzSettingRead(key, fallback) {
       if (persist !== false) localStorage.setItem('kv_theme', state.theme);
       var metaTheme = document.querySelector('meta[name="theme-color"]');
       if (metaTheme) metaTheme.setAttribute('content', state.theme === 'system' ? (resolved === 'dark' ? '#0B0E17' : '#F7F1E6') : (CONFIG.THEME_META[state.theme] || '#F7F1E6'));
-      if (typeof applyYumeAccent === 'function') applyYumeAccent();
     }
 
     function cleanMetaText(value) { return String(value || '').replace(/\s+/g, ' ').trim(); }
@@ -4757,13 +4719,13 @@ function trackPageview() {
         }).catch(function () {});
       }
 
-      function navigate(path) {
-        var routePath = String(path || '/').replace(/^#/, '');
-        if (routePath.charAt(0) !== '/') routePath = '/' + routePath;
-        var nextUrl = publicHref(routePath);
-        if (window.location.pathname + window.location.search + window.location.hash !== nextUrl) {
-          window.history.pushState(null, '', nextUrl);
-        }
+     function navigate(path) {
+       var routePath = String(path || '/').replace(/^#/, '');
+       if (routePath.charAt(0) !== '/') routePath = '/' + routePath;
+       var routeHash = '#' + routePath;
+       if (window.location.hash !== routeHash) {
+         window.history.pushState(null, '', routeHash);
+       }
 
          state.yzMoreOpen = false;
          state.filterDrawerOpen = false;
@@ -4961,7 +4923,7 @@ function trackPageview() {
         var moreActive = moreOpen || state.route === 'settings' || state.route === 'info';
         var moreSheet = moreOpen
           ? '<div class="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+96px)] right-2 z-[80] w-48 origin-bottom-right rounded-2xl border border-white/10 bg-[#0b0d11] p-1.5 shadow-[0_18px_60px_rgba(0,0,0,0.85)] transition-all duration-200 pointer-events-auto translate-y-0 scale-100 opacity-100 yz-more-pop md:hidden" data-yz-more-menu>' +
-              [['/tentang', 'About', 'help'], ['/leaderboard', 'Leaderboard', 'trophy'], ['/settings?tab=appearance', 'Tema & Warna', 'palette'], ['/settings', 'Settings', 'gear']].map(function (row) {
+              [['/tentang', 'About', 'help'], ['/leaderboard', 'Leaderboard', 'trophy'], ['/settings', 'Settings', 'gear']].map(function (row) {
                 return '<a href="' + publicHref(row[0]) + '" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-zinc-400 hover:bg-white/[0.06] hover:text-white">' + yzIco(row[2], 'h-[18px] w-[18px] shrink-0') + '<span>' + row[1] + '</span></a>';
               }).join('') +
               '<a href="' + escapeHtml(discordUrl() || 'https://discord.gg/VPNSMcG6jM') + '" target="_blank" rel="noopener noreferrer" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-[#5865F2] hover:bg-[#5865F2]/15 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-[18px] w-[18px] shrink-0 text-[#5865F2]" aria-hidden="true">' + svgs.discord + '</svg><span>Discord</span></a>' +
@@ -5896,7 +5858,6 @@ function renderSettings() {
             '<div class="flex-1 min-w-0"><div class="flex items-center justify-between gap-1.5"><span class="text-xs font-extrabold text-white truncate block">' + p[1] + '</span><span class="text-[8px] font-extrabold uppercase px-1.5 py-0.2 rounded ' + (active ? 'bg-[var(--color-accent,#91b8b1)] text-black' : 'bg-white/5 border border-white/10 text-zinc-400') + '">' + p[3] + '</span></div><p class="text-[10px] text-zinc-400 truncate mt-0.5">' + p[4] + '</p></div></button>';
         }).join('');
         return '<div class="space-y-6 font-sans">' + head('Theme & Accent Colors', 'Select a theme preset to personalize your buttons, badges, and glows.', 'palette', '<button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 text-xs font-bold transition-all cursor-pointer shrink-0 active:scale-95 shadow-sm" data-action="settings-reset-accent"><span>Reset</span></button>') +
-          '<div class="space-y-3"><h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Appearance Mode</h3><div class="flex flex-wrap items-center gap-2">' + renderThemeMenuInline() + '</div><p class="text-[10px] text-zinc-400 leading-relaxed">Pilih mode terang, gelap, atau preset warna. Perubahan langsung diterapkan ke seluruh halaman.</p></div>' +
           '<div class="space-y-3"><h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Select Theme Palette</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">' + cards + '</div></div></div>';
       }
 
@@ -8334,7 +8295,7 @@ function renderAdmin() {
           document.body.classList.toggle('kv-notification-route', state.route === 'notification');
           document.body.classList.toggle('kv-reader-route', state.route === 'reader');
           document.body.classList.toggle('kv-public-route', state.route !== 'reader' && state.route !== 'admin');
-          applyTheme(false);
+          if (state.route === 'admin') { applyTheme(false); } else { document.documentElement.classList.add('dark'); document.documentElement.setAttribute('data-theme', 'yumezone'); document.documentElement.setAttribute('data-resolved-theme', 'dark'); document.documentElement.style.colorScheme = 'dark'; }
         }
         finalizeHeroTrack(document.querySelector('[data-hero-track]'));
         var bodyHtml = '';
