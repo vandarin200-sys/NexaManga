@@ -418,6 +418,8 @@ test('chapter comment form has a responsive themed composer while detail comment
     assert.ok(source.includes('class="kv-detail-comment-form mt-5 kv-chapter-comment-form"'), target + ' should use the chapter composer layout');
     assert.ok(source.includes('aria-label="Isi komentar" placeholder="Tulis komentar..." required rows="4" class="kv-chapter-comment-input"'), target + ' should provide a larger accessible chapter input');
     assert.ok(source.includes('kv-chapter-comment-actions'), target + ' should group chapter comment actions');
+    assert.ok(source.includes('body.kv-reader-route .yz-comment-card { width:100%; max-width:920px; margin:48px auto 0; padding:0 16px;'), target + ' should inset chapter comments from mobile screen edges');
+    assert.ok(source.includes('padding-right:32px; padding-left:32px;'), target + ' should use wider gutters on desktop');
     assert.ok(source.includes('@media (max-width: 480px)'), target + ' should adapt the composer actions on small screens');
     assert.ok(source.includes('class="kv-detail-comment-form mt-5 space-y-3"'), target + ' should preserve the manga detail comment form');
   }
