@@ -5573,7 +5573,7 @@ function trackPageview() {
         var color = heroColors[i % heroColors.length];
         var rgb = rgbOf(color).join(', ');
         var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
-        var img = cover ? '<img alt="" decoding="async" style="position: absolute; height: 100%; width: 100%; inset: 0px;" loading="' + (i === 0 ? 'eager' : 'lazy') + '" src="' + cover + '" class="yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75 blur-sm">' : '';
+        var img = cover ? '<img alt="" decoding="async" style="position: absolute; height: 100%; width: 100%; inset: 0px;" loading="' + (i === 0 ? 'eager' : 'lazy') + '" src="' + cover + '" class="yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75">' : '';
         var num = i + 1 < 10 ? '0' + (i + 1) : String(i + 1);
         var genres = (m.genres || []).slice(0, 2).map(function (g) { return '<span>' + escapeHtml(g) + '</span>'; }).join('<span aria-hidden="true" class="h-px w-2.5 bg-zinc-700"></span>');
         var href = publicHref('/manga/' + escapeHtml(m.slug || ''));
@@ -9214,6 +9214,9 @@ function setBannerDotsActive(index) {
       var cleanup = function () {
         if (Number(track.dataset.heroTrackToken || 0) !== token) return;
         finalizeHeroTrack(track);
+        var canonical = heroNormalizeIndex(state.heroSlide, Math.max(1, state.heroCount || 0));
+        yzHeroApplyPoses(carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb'), canonical, false);
+        syncHeroDots(carousel, canonical);
         setSlideAria(state.heroTrackPosition);
       };
       var onEnd = function (e) {

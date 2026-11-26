@@ -449,7 +449,9 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
     assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-public-route [data-profile-avatar]'), target + ' light profile avatar rule missing');
     assert.ok(!source.includes('bg-zinc-950/65 backdrop-blur-[1px]'), target + ' hero blur overlay should be removed');
     assert.ok(!source.includes('yz-hero-glow'), target + ' hero thumb glow blur should be removed');
+    assert.ok(!source.includes('yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75 blur-sm'), target + ' hero art should not have blur-sm');
     assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'), target + ' hero active thumb should use natural shadow');
+    assert.ok(source.includes('yzHeroApplyPoses(carousel.querySelectorAll(\'[data-hero-thumbs] > .yz-hero-thumb\'), canonical, false);'), target + ' hero cleanup should resync thumb poses');
     assert.ok(source.includes('data-detail-cover-glow'), target + ' detail cover glow hook missing');
     assert.ok(source.includes('body.kv-detail-route [data-detail-cover-glow]'), target + ' detail cover glow theme rule missing');
   }
