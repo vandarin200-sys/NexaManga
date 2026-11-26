@@ -75,6 +75,13 @@ function saveManga(catalog, input) {
   if (!Array.isArray(item.genres) || item.genres.some((genre) => typeof genre !== 'string' || genre.length > 60)) {
     throw new ValidationError('Genre manga tidak valid.');
   }
+  if (item.isAdult !== undefined && typeof item.isAdult !== 'boolean' &&
+      !['on', 'off', 'true', 'false', '1', '0', ''].includes(String(item.isAdult).toLowerCase())) {
+    throw new ValidationError('Penanda manga 18+ tidak valid.');
+  }
+  const adultGenre = item.genres.some((genre) => ['18+', 'hentai', 'ecchi'].includes(String(genre).toLowerCase()));
+  const adultFlag = item.isAdult === true || ['on', 'true', '1'].includes(String(item.isAdult).toLowerCase());
+  item.isAdult = adultGenre || adultFlag;
   if (item.rating !== undefined && (!Number.isFinite(Number(item.rating)) || Number(item.rating) < 0 || Number(item.rating) > 10)) {
     throw new ValidationError('Rating manga harus berada di antara 0 dan 10.');
   }
@@ -257,7 +264,7 @@ function saveSettings(catalog, input) {
     throw new ValidationError('Data pengaturan tidak valid.');
   }
   const settings = Object.assign({}, catalog.settings || {});
-  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'faviconUrl', 'contactEmail', 'brandMode', 'siteNameColor', 'aboutContent', 'contactContent', 'privacyContent', 'termsContent', 'storageProvider'];
+  const stringFields = ['siteName', 'siteTagline', 'logoUrl', 'faviconUrl', 'contactEmail', 'discordUrl', 'brandMode', 'siteNameColor', 'aboutContent', 'contactContent', 'privacyContent', 'termsContent', 'storageProvider'];
   for (const field of stringFields) {
     const value = input[field];
     if (typeof value !== 'string') continue;
@@ -268,6 +275,8 @@ function saveSettings(catalog, input) {
     if (field === 'logoUrl' && trimmed && !/^https?:\/\//i.test(trimmed)) throw new ValidationError('URL logo harus menggunakan HTTP atau HTTPS.');
     if (field === 'faviconUrl' && trimmed.length > 2048) throw new ValidationError('URL favicon terlalu panjang.');
     if (field === 'faviconUrl' && trimmed && !/^https?:\/\//i.test(trimmed)) throw new ValidationError('URL favicon harus menggunakan HTTP atau HTTPS.');
+    if (field === 'discordUrl' && trimmed.length > 2048) throw new ValidationError('URL Discord terlalu panjang.');
+    if (field === 'discordUrl' && trimmed && !/^https?:\/\//i.test(trimmed)) throw new ValidationError('URL Discord harus menggunakan HTTP atau HTTPS.');
     if (field === 'contactEmail' && trimmed.length > 254) throw new ValidationError('Email kontak terlalu panjang.');
     if (['aboutContent', 'contactContent', 'privacyContent', 'termsContent'].includes(field) && trimmed.length > 20000) {
       throw new ValidationError('Konten halaman terlalu panjang (maks 20.000 karakter).');

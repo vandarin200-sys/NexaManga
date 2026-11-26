@@ -41,6 +41,23 @@ test('creates and updates manga while rejecting duplicate slugs', () => {
   );
 });
 
+test('saveManga normalizes adult flag and preserves legacy adult genres', () => {
+  const data = catalog();
+  saveManga(data, { ...manga(), isAdult: true });
+  assert.equal(data.manga[0].isAdult, true);
+
+  saveManga(data, { ...manga('m2'), slug: 'judul-dewasa', isAdult: false });
+  assert.equal(data.manga[1].isAdult, false);
+
+  saveManga(data, { ...manga('m3'), slug: 'judul-hentai', genres: ['Hentai'], isAdult: false });
+  assert.equal(data.manga[2].isAdult, true);
+
+  assert.throws(
+    () => saveManga(data, { ...manga('m4'), slug: 'judul-invalid', isAdult: 'mungkin' }),
+    ValidationError
+  );
+});
+
 test('saves chapters and prevents duplicates within a manga', () => {
   const data = catalog();
   saveManga(data, manga());
