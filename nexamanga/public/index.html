@@ -2952,6 +2952,31 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease;
       }
       .kv-theme-choice:hover::after, .kv-theme-choice:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+      .yz-theme-menu-wrap { position: relative; }
+      .yz-theme-menu {
+        position: absolute; top: calc(100% + 8px); right: 0; z-index: 90;
+        width: 184px; padding: 6px; border-radius: 14px;
+        border: 1px solid var(--kv-border); background: var(--kv-surface);
+        box-shadow: 0 18px 48px -20px rgba(0,0,0,.7);
+        animation: yzMorePop .18s cubic-bezier(.16,1,.3,1) both;
+      }
+      .yz-theme-menu-title {
+        padding: 4px 8px 6px; font-size: 9px; font-weight: 800; letter-spacing: .14em;
+        text-transform: uppercase; color: var(--kv-text-muted);
+      }
+      .yz-theme-option {
+        display: flex; align-items: center; gap: 9px; width: 100%; min-height: 34px;
+        padding: 6px 8px; border: 0; border-radius: 10px; background: transparent;
+        color: var(--kv-text-muted); cursor: pointer; text-align: left;
+        font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      }
+      .yz-theme-option:hover, .yz-theme-option:focus-visible { background: var(--kv-surface-2); color: var(--kv-text); outline: none; }
+      .yz-theme-option[data-current="true"] { color: var(--kv-accent); background: var(--kv-surface-2); }
+      .yz-theme-option-icon { display: inline-flex; width: 16px; height: 16px; flex: 0 0 16px; align-items: center; justify-content: center; }
+      .yz-theme-option-icon svg { width: 15px; height: 15px; display: block; }
+      .yz-theme-option-label { flex: 1; min-width: 0; }
+      .yz-theme-option-check { color: var(--kv-accent); font-size: 12px; }
+      @media (prefers-reduced-motion: reduce) { .yz-theme-menu { animation: none; } }
       .kv-reader-sheet .kv-theme-menu-inline { padding: 4px; background: var(--kv-surface-2); border-color: var(--kv-border); }
       .kv-admin-topbar .kv-theme-menu-inline { background: var(--ad-panel); border-color: var(--ad-line); }
       .kv-admin-topbar .kv-theme-choice { color: var(--ad-muted); }
@@ -3676,6 +3701,7 @@ function yzBtnClass(primary) {
         chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
         help: '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
         trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+        palette: '<path d="M12 2a10 10 0 0 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-.8.7-1.5 1.5-1.5H17a5 5 0 0 0 5-5c0-5-4.5-9-10-9z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="15" cy="7" r="1"/>',
         file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/>',
         calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
         users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
@@ -3865,6 +3891,7 @@ function yzSettingRead(key, fallback) {
       refocusLibrarySearch: false,
       yzMoreOpen: false,
       headerSearchOpen: false,
+      headerThemeOpen: false,
        profileTab: 'overview',
        profileReaction: '',
       yzSidebarExpanded: false,
@@ -4665,6 +4692,18 @@ function yzSettingRead(key, fallback) {
       return '<div class="kv-theme-menu-inline' + (compact ? ' is-compact' : '') + '" role="group" aria-label="Pilih tema">' + renderThemeChoices(true) + '</div>';
     }
 
+    function renderThemeListMenu() {
+      return '<div class="yz-theme-menu" id="header-theme-menu" data-header-theme-menu role="menu" aria-label="Daftar tema">' +
+        '<div class="yz-theme-menu-title">Daftar tema</div>' +
+        THEME_CHOICES.map(function (t) {
+          var current = state.theme === t.id;
+          return '<button type="button" role="menuitemradio" aria-checked="' + (current ? 'true' : 'false') + '" class="yz-theme-option" data-action="set-theme" data-value="' + t.id + '" data-current="' + (current ? 'true' : 'false') + '">' +
+            '<span class="yz-theme-option-icon">' + themeIconSvg(t.id) + '</span><span class="yz-theme-option-label">' + t.label + '</span>' +
+            (current ? '<span class="yz-theme-option-check" aria-hidden="true">&#10003;</span>' : '') + '</button>';
+        }).join('') +
+      '</div>';
+    }
+
     function resolvedTheme() {
       if (state.theme === 'system') return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       return state.theme === 'dark' || state.theme === 'anilist' || state.theme === 'catppuccin' || state.theme === 'mecha' ? 'dark' : 'light';
@@ -4868,8 +4907,9 @@ function trackPageview() {
          window.history.pushState(null, '', routeHash);
        }
 
-         state.yzMoreOpen = false;
-         state.filterDrawerOpen = false;
+          state.yzMoreOpen = false;
+          state.headerThemeOpen = false;
+          state.filterDrawerOpen = false;
          state.commentNotice = null;
         parseRoute();
        render();
@@ -5097,6 +5137,7 @@ function trackPageview() {
         if (state.route === 'admin' || state.route === 'reader') return '';
         var expanded = !!state.yzSidebarExpanded;
         var searchOpen = !!state.headerSearchOpen;
+        var themeMenuOpen = !!state.headerThemeOpen;
         var labelVis = expanded ? 'opacity-100' : 'opacity-0 pointer-events-none';
         function sideIcon(name, cls) {
           var p = {
@@ -5139,7 +5180,9 @@ function trackPageview() {
         var collapseClose = sideIcon('panel-left-close', 'transition-transform duration-200 ' + (expanded ? 'scale-100 opacity-100' : 'scale-75 opacity-0 absolute pointer-events-none'));
         var collapseOpen = sideIcon('panel-left-open', 'transition-transform duration-200 ' + (expanded ? 'scale-75 opacity-0 absolute pointer-events-none' : 'scale-100 opacity-100'));
         var collapseBtn = '<div class="relative w-full"><button id="sidebar-expand-toggle" aria-label="' + (expanded ? 'Collapse' : 'Expand') + '" type="button" data-action="toggle-yz-sidebar" aria-expanded="' + (expanded ? 'true' : 'false') + '" class="yz-rail-link w-full gap-0.5 pr-2 cursor-pointer"><span class="yz-rail-icon relative">' + collapseClose + collapseOpen + '</span><span class="min-w-0 flex-1 truncate whitespace-nowrap text-left text-xs font-semibold tracking-[0.01em] transition-opacity duration-150 ' + labelVis + '">' + (expanded ? 'Collapse' : 'Expand') + '</span></button></div>';
-        var themeBtn = '<button type="button" data-action="toggle-theme" aria-label="Ganti tema" class="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-zinc-300 transition hover:bg-white/15 hover:text-white">' + yzIco('gear', 'h-4 w-4') + '</button>';
+        var themeBtn = '<div class="yz-theme-menu-wrap pointer-events-auto shrink-0">' +
+          '<button type="button" data-action="toggle-header-theme" aria-label="Daftar tema" aria-haspopup="menu" aria-expanded="' + (themeMenuOpen ? 'true' : 'false') + '" aria-controls="header-theme-menu" class="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-zinc-300 transition hover:bg-white/15 hover:text-white">' + yzIco('palette', 'h-4 w-4') + '</button>' +
+          (themeMenuOpen ? renderThemeListMenu() : '') + '</div>';
         var unread = state.user && typeof getUnreadNotificationCount === 'function' ? getUnreadNotificationCount() : 0;
         var bell = state.user ? '<a href="' + publicHref('/notifikasi') + '" aria-label="Notifikasi" class="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-zinc-300 transition hover:bg-white/15 hover:text-white">' + yzIco('bell', 'h-4 w-4') + (unread ? '<span class="absolute -right-1 -top-1 min-w-[16px] rounded-full bg-[var(--color-accent)] px-1 text-center text-[9px] font-bold leading-4 text-black">' + (unread > 9 ? '9+' : unread) + '</span>' : '') + '</a>' : '';
         var account = state.user
@@ -9785,6 +9828,8 @@ function setBannerDotsActive(index) {
       var insideMore = e.target && e.target.closest ? (e.target.closest('[data-yz-more-menu]') || e.target.closest('[data-action="toggle-yz-more"]')) : null;
       var closeMore = !!state.yzMoreOpen && !insideMore;
       if (closeMore) state.yzMoreOpen = false;
+      var insideThemeMenu = e.target && e.target.closest ? (e.target.closest('[data-header-theme-menu]') || e.target.closest('[data-action="toggle-header-theme"]')) : null;
+      if (!insideThemeMenu && state.headerThemeOpen) state.headerThemeOpen = false;
       var trigger = e.target.closest && e.target.closest('.kv-dropdown-btn');
       if (trigger) {
         var container = trigger.closest('.kv-dropdown');
@@ -9838,7 +9883,8 @@ function setBannerDotsActive(index) {
            setTimeout(function () { var dialog = document.querySelector('[data-avatar-dialog]'); if (dialog) dialog.focus(); }, 0);
            return;
          }
-      if (act === 'toggle-header-search') { state.headerSearchOpen = !state.headerSearchOpen; render(); if (state.headerSearchOpen) { var si = document.getElementById('nav-search-mobile'); if (si) si.focus(); } return; }
+      if (act === 'toggle-header-search') { state.headerThemeOpen = false; state.headerSearchOpen = !state.headerSearchOpen; render(); if (state.headerSearchOpen) { var si = document.getElementById('nav-search-mobile'); if (si) si.focus(); } return; }
+      if (act === 'toggle-header-theme') { state.headerSearchOpen = false; state.yzMoreOpen = false; state.headerThemeOpen = !state.headerThemeOpen; render(); if (state.headerThemeOpen) { var currentThemeOption = document.querySelector('[data-header-theme-menu] [data-current="true"]'); if (currentThemeOption) currentThemeOption.focus(); } return; }
        if (act === 'close-header-search') { state.headerSearchOpen = false; state.search = ''; render(); return; }
        if (act === 'open-header-result') { var slug = el.getAttribute('data-slug'); if (slug) { state.headerSearchOpen = false; state.search = ''; navigate(publicHref('/manga/' + slug)); } return; }
        if (act === 'profile-tab') { state.profileTab = el.getAttribute('data-tab') || 'overview'; render(); return; }
@@ -9867,7 +9913,7 @@ function setBannerDotsActive(index) {
       if (act === 'hero-slide') { markHeroInteraction(); setHeroSlide(Number(el.getAttribute('data-index')) || 0); return; }
       if (act === 'surprise-me') { var pool = state.data.manga || []; var pick = pool[Math.floor(Math.random() * pool.length)]; if (pick) { state.search = ''; state.filterGenres = []; state.filterType = 'Semua'; state.filterStatus = 'Semua'; navigate(publicHref('/manga/' + pick.slug)); } return; }
         if (act === 'toggle-theme') { state.theme = isDarkTheme() ? 'light' : 'dark'; applyTheme(); render(); }
-        else if (act === 'set-theme') { var nextTheme = el.getAttribute('data-value'); if (CONFIG.THEME_IDS.indexOf(nextTheme) !== -1) { state.theme = nextTheme; applyTheme(); render(); } }
+        else if (act === 'set-theme') { var nextTheme = el.getAttribute('data-value'); if (CONFIG.THEME_IDS.indexOf(nextTheme) !== -1) { state.headerThemeOpen = false; state.theme = nextTheme; applyTheme(); render(); } }
 
       else if (act === 'oauth-login') {
         if (!CONFIG.API_BASE_URL) { toast('Backend Vercel belum dikonfigurasi.', 'warn'); return; }
@@ -10172,6 +10218,11 @@ else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); st
         if (state.mdLangMenuOpen) { setMdLangMenu(false); var mdLangBtnEsc = document.getElementById('kv-md-lang-btn'); if (mdLangBtnEsc) mdLangBtnEsc.focus(); return; }
         var trafficTip = document.getElementById('kv-traffic-tooltip');
         if (trafficTip && !trafficTip.hidden) { hideTrafficTooltip(); return; }
+      }
+      if (e.key === 'Escape' && state.headerThemeOpen) {
+        state.headerThemeOpen = false;
+        render();
+        return;
       }
       if (e.key === 'Escape' && state.openCatalogDropdown) {
         state.openCatalogDropdown = null;

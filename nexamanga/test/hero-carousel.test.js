@@ -347,3 +347,20 @@ test('both frontends keep cursor swipes from starting a native image drag', () =
     assert.ok(source.includes('-webkit-user-drag:none'), target + ' still allows native image dragging');
   }
 });
+
+test('header theme button opens the full theme list instead of toggling light and dark', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(!source.includes('data-action="toggle-theme"'), target + ' still has the old toggle button');
+    assert.ok(source.includes('data-action="toggle-header-theme"'), target + ' has no theme list trigger');
+    assert.ok(source.includes('renderThemeListMenu()'), target + ' never renders the theme list');
+    assert.ok(source.includes('headerThemeOpen: false'), target + ' has no theme list state');
+    assert.ok(source.includes('if (!insideThemeMenu && state.headerThemeOpen) state.headerThemeOpen = false;'), target + ' cannot close the theme list');
+    assert.ok(source.includes("e.key === 'Escape' && state.headerThemeOpen"), target + ' theme list has no Escape handling');
+    assert.ok(source.includes('state.headerThemeOpen = false; state.theme = nextTheme;'), target + ' theme list stays open after selection');
+  }
+});
