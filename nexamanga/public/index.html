@@ -1821,6 +1821,16 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     .kv-manga-reaction-emoji { font-size: 1.5rem; line-height: 1; }
     .kv-manga-reaction-count { font-size: .82rem; font-weight: 800; font-variant-numeric: tabular-nums; }
     .kv-manga-reaction-label { font-size: .7rem; font-weight: 600; text-align: center; line-height: 1.2; }
+    .kv-reaction-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 430px; margin: 0 auto; }
+    .kv-reaction-grid .kv-reaction-btn { flex: 0 0 calc(33.333% - 7px); min-width: 0; min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 8px; border-radius: 14px; border: 1px solid var(--kv-border); background: var(--kv-surface-2); color: var(--kv-text-muted); cursor: pointer; transition: border-color .15s ease, transform .15s ease, color .15s ease, background-color .15s ease; }
+    .kv-reaction-grid .kv-reaction-btn:hover { transform: translateY(-2px); border-color: var(--kv-accent); color: var(--kv-text); }
+    .kv-reaction-grid .kv-reaction-btn.active { border-color: var(--kv-accent); color: var(--kv-accent); background: var(--kv-surface); }
+    .kv-reaction-grid .kv-reaction-emoji { font-size: 24px; line-height: 1; }
+    .kv-reaction-grid .kv-reaction-meta { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+    .kv-reaction-grid .kv-reaction-meta strong { font-size: 13px; font-weight: 800; color: inherit; }
+    .kv-reaction-grid .kv-reaction-meta small { font-size: 10px; font-weight: 600; }
+    html body.kv-public-route .kv-reaction-grid .kv-reaction-btn, html body.kv-reader-route .kv-reaction-grid .kv-reaction-btn { background: var(--yz-surface-2); border-color: var(--yz-border); color: var(--yz-text-secondary); }
+    html body.kv-public-route .kv-reaction-grid .kv-reaction-btn.active, html body.kv-reader-route .kv-reaction-grid .kv-reaction-btn.active { background: var(--yz-accent-subtle); border-color: var(--yz-accent); color: var(--yz-accent); }
     .kv-comment-toggle-replies { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--kv-border); background: transparent; color: var(--kv-accent); font-size: .74rem; font-weight: 700; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
     .kv-comment-toggle-replies:hover { background: var(--kv-surface-2); border-color: var(--kv-accent); }
     .kv-comment-toggle-replies svg { width: 14px; height: 14px; transition: transform .2s ease; }
@@ -3064,8 +3074,15 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     .yz-fade-in-up { animation: yz-fade-in-up .28s ease-out both; }
     @keyframes yz-drawer-slide-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
     .yz-drawer-slide-up { animation: yz-drawer-slide-up .22s cubic-bezier(.16,1,.3,1) both; }
+    @keyframes yzMorePop { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .yz-more-pop { animation: yzMorePop .18s cubic-bezier(.16,1,.3,1) both; }
+    .yz-bottom-nav { border-radius:22px; background-color:rgba(9,9,11,.88); box-shadow:0 14px 42px rgba(0,0,0,.5); transition:border-radius .24s ease, background-color .24s ease, transform .24s ease; }
+    .yz-bottom-nav .yz-nav-icon { transition:transform .22s cubic-bezier(.16,1,.3,1); }
+    .yz-bottom-nav .group:hover .yz-nav-icon { transform:translateY(-2px); }
+    .yz-bottom-nav .yz-nav-label { max-height:14px; opacity:1; transition:max-height .18s ease, opacity .18s ease, margin-top .18s ease; }
+    .yz-bottom-nav.is-scrolling .yz-nav-label { max-height:0; opacity:0; margin-top:0 !important; }
     @media (prefers-reduced-motion: reduce) {
-      .yz-fade-in-up, .yz-drawer-slide-up, .hero-slide-img.svelte-1gn77ge { animation: none !important; transition: none !important; }
+      .yz-fade-in-up, .yz-drawer-slide-up, .yz-more-pop, .hero-slide-img.svelte-1gn77ge { animation: none !important; transition: none !important; }
     }
     @keyframes avatarPickerIn { from { opacity: 0; transform: scale(.96) translateY(8px); } to { opacity: 1; transform: none; } }
     .avatar-picker-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.78); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 14px; }
@@ -4804,30 +4821,28 @@ function trackPageview() {
         function navIcon(name, cls) {
           return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-' + name + ' h-4.5 w-4.5 shrink-0 ' + (cls || '') + '" aria-hidden="true">' + svgs[name] + '</svg>';
         }
-        var labelCls = 'block w-full select-none overflow-hidden truncate whitespace-nowrap text-center text-[10px] font-semibold leading-none tracking-wide mt-1';
+        var labelCls = 'yz-nav-label block w-full select-none overflow-hidden truncate whitespace-nowrap text-center text-[10px] font-semibold leading-none tracking-wide mt-1';
         var items = [
           { path: '/home', label: 'Home', icon: 'house', active: state.route === 'home' },
           { path: '/search', label: 'Browse', icon: 'compass', active: state.route === 'catalog' || state.route === 'detail' },
-          { path: '/notifikasi', label: 'Notifikasi', icon: 'bell', active: state.route === 'notification' },
-          { path: '/akun', label: 'Akun', icon: 'user', active: state.route === 'account' || state.route === 'profile' }
+          { path: '/akun', label: 'Akun', icon: 'user', active: state.route === 'account' || state.route === 'profile' },
+          { path: '/notifikasi', label: 'Notifikasi', icon: 'bell', active: state.route === 'notification' }
         ];
         var navHtml = items.map(function (n) {
-          return '<a href="' + publicHref(n.path) + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 transition-colors duration-150 ' + (n.active ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"' + (n.active ? ' aria-current="page"' : '') + ' aria-label="' + escapeHtml(n.label) + '"><span class="flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon(n.icon, n.active ? 'drop-shadow-[0_0_6px_rgba(var(--color-accent-rgb,145,184,177),0.55)]' : '') + '</span><span class="' + labelCls + '">' + escapeHtml(n.label) + '</span></a>';
+          return '<a href="' + publicHref(n.path) + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 transition-colors duration-150 ' + (n.active ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"' + (n.active ? ' aria-current="page"' : '') + ' aria-label="' + escapeHtml(n.label) + '"><span class="yz-nav-icon flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon(n.icon, n.active ? 'drop-shadow-[0_0_6px_rgba(var(--color-accent-rgb,145,184,177),0.55)]' : '') + '</span><span class="' + labelCls + '">' + escapeHtml(n.label) + '</span></a>';
         }).join('');
         var moreOpen = !!state.yzMoreOpen;
         var moreActive = moreOpen || state.route === 'settings' || state.route === 'info';
-        var discordHref = discordUrl();
-        var discordSheet = discordHref ? '<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white" href="' + escapeHtml(discordHref) + '" target="_blank" rel="noopener noreferrer" aria-label="Discord Community">' + navIcon('discord') + '<span>Discord</span></a>' : '';
         var moreSheet = moreOpen
-          ? '<div class="pointer-events-auto mx-auto mb-2 max-w-lg rounded-2xl border border-white/10 bg-[#0b0c0f]/98 p-2 shadow-2xl backdrop-blur-xl yz-drawer-slide-up">' + discordSheet +
+          ? '<div class="absolute bottom-[calc(100%+10px)] right-0 z-50 w-44 origin-bottom-right rounded-2xl border border-white/[0.09] bg-zinc-950/98 p-1.5 shadow-[0_16px_50px_rgba(0,0,0,0.7)] transition-all duration-200 pointer-events-auto translate-y-0 scale-100 opacity-100 yz-more-pop" data-yz-more-menu>' +
               [['/tentang', 'About', 'help'], ['/settings', 'Settings', 'gear']].map(function (row) {
-                return '<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white" href="' + publicHref(row[0]) + '">' + yzIco(row[2], 'h-4 w-4') + '<span>' + row[1] + '</span></a>';
+                return '<a href="' + publicHref(row[0]) + '" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-zinc-400 hover:bg-white/[0.06] hover:text-white">' + yzIco(row[2], 'h-[18px] w-[18px] shrink-0') + '<span>' + row[1] + '</span></a>';
               }).join('') +
             '</div>'
           : '';
         return '<div class="pointer-events-none fixed bottom-0 left-0 right-0 z-50 md:hidden" style="padding: 0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);">' + moreSheet +
-          '<nav class="pointer-events-auto mx-auto grid w-full max-w-lg grid-cols-5 justify-items-center rounded-2xl border border-white/[0.08] bg-zinc-950/95 px-2 py-1.5 shadow-[0_10px_36px_rgba(0,0,0,0.6)] backdrop-blur-xl" aria-label="Navigasi bawah">' + navHtml +
-            '<button type="button" data-action="toggle-yz-more" aria-label="More" aria-expanded="' + (moreOpen ? 'true' : 'false') + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 transition-colors duration-150 ' + (moreActive ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"><span class="flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon('ellipsis') + '</span><span class="' + labelCls + '">More</span></button>' +
+          '<nav class="yz-bottom-nav pointer-events-auto mx-auto grid w-full max-w-lg grid-cols-5 justify-items-center border border-white/[0.08] px-2.5 py-2 backdrop-blur-2xl" data-yz-bottom-nav aria-label="Navigasi bawah">' + navHtml +
+            '<button type="button" data-action="toggle-yz-more" aria-label="More" aria-expanded="' + (moreOpen ? 'true' : 'false') + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-1.5 transition-colors duration-150 ' + (moreActive ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"><span class="yz-nav-icon flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon('ellipsis') + '</span><span class="' + labelCls + '">More</span></button>' +
           '</nav>' +
         '</div>';
       }
@@ -5227,9 +5242,9 @@ function renderCommentSection(manga, chapterId) {
         { key: 'laugh', emoji: '&#128514;', label: 'Lucu' },
         { key: 'angry', emoji: '&#128545;', label: 'Marah' }
       ];
-      var reactionHtml = '<div class="mt-4"><div class="mb-2 text-[11px] font-semibold text-zinc-400">' + (aggregated ? 'Berikan reaksi untuk manga ini' : 'Reaksi untuk chapter ini') + '</div><div class="flex flex-wrap gap-2" role="group" aria-label="' + (aggregated ? 'Reaksi manga' : 'Reaksi chapter') + '">' + reactions.map(function (item) {
+      var reactionHtml = '<div class="mt-5"><div class="mb-3 text-center text-[11px] font-semibold text-zinc-400">' + (aggregated ? 'Berikan reaksi untuk manga ini' : 'Reaksi untuk chapter ini') + '</div><div class="kv-reaction-grid" role="group" aria-label="' + (aggregated ? 'Reaksi manga' : 'Reaksi chapter') + '">' + reactions.map(function (item) {
         var active = summary.userVote === item.key;
-        return '<button type="button" class="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition ' + (active ? 'border-[var(--yz-accent)]/60 bg-[var(--yz-accent-subtle)] text-white' : 'border-white/10 bg-white/[0.05] text-zinc-400 hover:text-white') + '" data-action="' + (aggregated ? 'manga-reaction' : 'chapter-reaction') + '" data-id="' + escapeHtml(aggregated ? manga.id : (chapterId || '')) + '" data-reaction="' + item.key + '" aria-pressed="' + (active ? 'true' : 'false') + '" title="' + item.label + '"><span aria-hidden="true">' + item.emoji + '</span><span>' + (summary.counts[item.key] || 0) + '</span><span class="hidden sm:inline">' + item.label + '</span></button>';
+        return '<button type="button" class="kv-reaction-btn' + (active ? ' active' : '') + '" data-action="' + (aggregated ? 'manga-reaction' : 'chapter-reaction') + '" data-id="' + escapeHtml(aggregated ? manga.id : (chapterId || '')) + '" data-reaction="' + item.key + '" aria-pressed="' + (active ? 'true' : 'false') + '" title="' + item.label + '"><span class="kv-reaction-emoji" aria-hidden="true">' + item.emoji + '</span><span class="kv-reaction-meta"><strong>' + (summary.counts[item.key] || 0) + '</strong><small>' + item.label + '</small></span></button>';
       }).join('') + '</div></div>';
       var formAvatar = myDisplayAvatar
         ? '<img src="' + escapeHtml(myDisplayAvatar) + '" alt="" class="h-9 w-9 rounded-full object-cover" referrerpolicy="no-referrer"/>'
@@ -5524,15 +5539,16 @@ function renderCommentSection(manga, chapterId) {
       var playIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
       var pauseIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
       var isPlaying = !!state.autoScroll;
-      var serverLabel = state.readerServer === 'yor' ? 'Yor' : String(state.readerServer || 'Yor').toUpperCase();
       var mode = state.readerMode === 'vertical' ? 'vertical' : (isDouble ? 'double' : 'single');
       var header = '<header class="yz-reader-header"><div class="yz-reader-header-inner">' +
-        '<div class="yz-reader-header-left"><a class="yz-reader-link" href="' + publicHref('/manga/' + escapeHtml(manga.slug)) + '">' + backIcon + '<span>Back</span></a><span class="yz-reader-title" title="' + escapeHtml(manga.title) + '">' + escapeHtml(manga.title) + '</span><select id="manga-header-chapter-select" class="yz-reader-chip" aria-label="Pilih chapter" data-action="reader-chapter-select">' + chapterOptions + '</select><span class="hidden text-[10px] font-semibold uppercase tracking-wider text-zinc-500 sm:inline">' + escapeHtml(serverLabel) + ' Community</span></div>' +
-        '<div class="yz-reader-header-right"><button type="button" class="yz-reader-icon-btn" data-action="reader-zoom-out" aria-label="Zoom out">' + zoomOutIcon + '</button><span class="text-[11px] font-bold text-zinc-300">' + (Number(state.readerZoom) || 100) + '%</span><button type="button" class="yz-reader-icon-btn" data-action="reader-zoom-in" aria-label="Zoom in">' + zoomInIcon + '</button><span class="hidden text-[11px] font-bold text-zinc-300 sm:inline">' + (state.currentPageIdx + 1) + ' / ' + pageTotal + '</span><button type="button" class="yz-reader-chip" data-action="toggle-auto-scroll" aria-pressed="' + (isPlaying ? 'true' : 'false') + '">' + (isPlaying ? pauseIcon : playIcon) + '<span>Auto</span></button><button type="button" class="yz-reader-chip" data-action="toggle-reader-servers" aria-expanded="' + (state.readerServersOpen ? 'true' : 'false') + '"><span class="yz-reader-live"></span><span>' + escapeHtml(serverLabel) + '</span></button><button type="button" class="yz-reader-icon-btn" data-action="toggle-reader-menu" aria-label="Chapters" aria-expanded="' + (state.readerMenuOpen ? 'true' : 'false') + '">' + listIcon + '</button><button type="button" class="yz-reader-icon-btn" data-action="toggle-reader-settings" aria-label="Reader Settings" aria-expanded="' + (state.readerSettingsOpen ? 'true' : 'false') + '">' + gearIcon + '</button><button type="button" class="yz-reader-icon-btn" data-action="toggle-fullscreen" aria-label="Fullscreen">' + fullIcon + '</button></div>' +
+        '<div class="yz-reader-header-left"><a class="yz-reader-link" href="' + publicHref('/manga/' + escapeHtml(manga.slug)) + '">' + backIcon + '<span>Back</span></a><span class="yz-reader-title" title="' + escapeHtml(manga.title) + '">' + escapeHtml(manga.title) + '</span><select id="manga-header-chapter-select" class="yz-reader-chip" aria-label="Pilih chapter" data-action="reader-chapter-select">' + chapterOptions + '</select></div>' +
+        '<div class="yz-reader-header-right"><button type="button" class="yz-reader-icon-btn" data-action="reader-zoom-out" aria-label="Zoom out">' + zoomOutIcon + '</button><span class="text-[11px] font-bold text-zinc-300">' + (Number(state.readerZoom) || 100) + '%</span><button type="button" class="yz-reader-icon-btn" data-action="reader-zoom-in" aria-label="Zoom in">' + zoomInIcon + '</button><span class="hidden text-[11px] font-bold text-zinc-300 sm:inline">' + (state.currentPageIdx + 1) + ' / ' + pageTotal + '</span><button type="button" class="yz-reader-icon-btn" data-action="toggle-reader-menu" aria-label="Chapters" aria-expanded="' + (state.readerMenuOpen ? 'true' : 'false') + '">' + listIcon + '</button><button type="button" class="yz-reader-icon-btn" data-action="toggle-reader-settings" aria-label="Reader Settings" aria-expanded="' + (state.readerSettingsOpen ? 'true' : 'false') + '">' + gearIcon + '</button><button type="button" class="yz-reader-icon-btn" data-action="toggle-fullscreen" aria-label="Fullscreen">' + fullIcon + '</button></div>' +
       '</div><div class="yz-reader-progress"><span style="width:' + progress + '%"></span></div></header>';
       var settingsSheet = state.readerSettingsOpen ? '<aside class="yz-reader-sheet2" role="dialog" aria-label="Reader Settings"><div class="yz-reader-sheet2-head"><strong>Reader Settings</strong><button type="button" class="yz-reader-icon-btn" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div><div class="yz-reader-sheet2-body">' +
         '<label><span>Reading Mode</span><span class="yz-seg"><button type="button" class="' + (mode === 'vertical' ? 'active' : '') + '" data-action="reader-set-mode" data-mode="vertical">Vertical</button><button type="button" class="' + (mode === 'single' ? 'active' : '') + '" data-action="reader-set-mode" data-mode="single">Single</button><button type="button" class="' + (mode === 'double' ? 'active' : '') + '" data-action="reader-set-mode" data-mode="double">Double</button></span></label>' +
         '<label><span>Reading Direction</span><span class="yz-seg"><button type="button" class="' + (state.readerDir === 'ltr' ? 'active' : '') + '" data-action="reader-set-dir" data-dir="ltr">LTR</button><button type="button" class="' + (state.readerDir === 'rtl' ? 'active' : '') + '" data-action="reader-set-dir" data-dir="rtl">RTL</button></span></label>' +
+        '<label><span>Auto Scroll</span><button type="button" class="yz-reader-chip" data-action="toggle-auto-scroll" aria-pressed="' + (isPlaying ? 'true' : 'false') + '">' + (isPlaying ? pauseIcon : playIcon) + '<span>' + (isPlaying ? 'On' : 'Off') + '</span></button></label>' +
+        '<label><span>Reading Server</span><span class="yz-seg"><button type="button" class="' + (state.readerServer === 'yor' ? 'active' : '') + '" data-action="reader-select-server" data-server="yor">Yor</button></span></label>' +
         '<label><span>Base Page Width</span><span class="yz-seg"><button type="button" class="' + (Number(state.readerWidth) === 650 ? 'active' : '') + '" data-action="reader-set-width" data-width="650">650</button><button type="button" class="' + (Number(state.readerWidth) === 850 ? 'active' : '') + '" data-action="reader-set-width" data-width="850">850</button><button type="button" class="' + (Number(state.readerWidth) === 1100 ? 'active' : '') + '" data-action="reader-set-width" data-width="1100">1100</button><button type="button" class="' + (Number(state.readerWidth) === 0 ? 'active' : '') + '" data-action="reader-set-width" data-width="0">100%</button></span></label>' +
         '<label><span>Zoom &mdash; ' + (Number(state.readerZoom) || 100) + '%</span><input id="kv-reader-zoom" type="range" min="50" max="200" step="5" value="' + (Number(state.readerZoom) || 100) + '"/></label>' +
         '<label><span>Page Spacing &mdash; ' + (Number(state.readerGap) || 0) + 'px</span><input id="kv-reader-gap" type="range" min="0" max="40" step="2" value="' + (Number(state.readerGap) || 0) + '"/></label>' +
@@ -5542,22 +5558,21 @@ function renderCommentSection(manga, chapterId) {
         '<button type="button" class="yz-reader-chip" data-action="toggle-fullscreen">&#9974; Layar Penuh</button>' +
       '</div></aside>' : '';
       var menuSheet = state.readerMenuOpen ? '<aside class="yz-reader-sheet2" role="dialog" aria-label="Daftar chapter"><div class="yz-reader-sheet2-head"><strong>Chapters</strong><button type="button" class="yz-reader-icon-btn" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div><div class="yz-reader-sheet2-body"><a class="yz-reader-link" href="' + publicHref('/manga/' + escapeHtml(manga.slug)) + '">&#8592; ' + escapeHtml(manga.title) + '</a><input id="kv-reader-chapter-search" class="h-9 w-full rounded-lg border border-white/10 bg-black/60 px-3 text-xs text-white outline-none" type="search" placeholder="Cari chapter..." value="' + escapeHtml(state.readerChapterSearch || '') + '" aria-label="Cari chapter"/><div class="yz-reader-chapter-list2">' + chapterRows + '</div></div></aside>' : '';
-      var serverSheet = state.readerServersOpen ? '<aside class="yz-reader-sheet2" role="dialog" aria-label="Reading Server"><div class="yz-reader-sheet2-head"><strong>Reading Server</strong><button type="button" class="yz-reader-icon-btn" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div><div class="yz-reader-sheet2-body"><button type="button" class="yz-reader-chip" data-action="reader-select-server" data-server="yor"><span class="yz-reader-live"></span>Yor ' + (state.readerServer === 'yor' ? '&check;' : '') + '</button><p>Server lain belum tersedia pada katalog lokal ini.</p></div></aside>' : '';
       var footer = '<footer class="yz-reader-footer"><div class="yz-reader-footer-inner">' +
         '<div class="yz-reader-footer-side"><a class="yz-reader-link" href="' + (prevCh ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id)) : '#') + '" aria-label="Chapter sebelumnya"' + (prevCh ? '' : ' aria-disabled="true"') + '>&#8592; Prev</a></div>' +
         '<div class="yz-reader-footer-center"><button type="button" class="yz-reader-icon-btn" data-action="reader-prev-page" aria-label="Halaman sebelumnya"' + (state.currentPageIdx <= 0 ? ' disabled' : '') + '>' + pagePrevIcon + '</button><input id="kv-reader-scrubber" class="yz-scrubber" type="range" min="0" max="' + Math.max(0, pageTotal - 1) + '" value="' + state.currentPageIdx + '" aria-label="Loncat halaman"/><button type="button" class="yz-reader-icon-btn" data-action="reader-next-page" aria-label="Halaman berikutnya"' + (state.currentPageIdx >= pageTotal - 1 ? ' disabled' : '') + '>' + pageNextIcon + '</button><span class="hidden whitespace-nowrap text-[11px] font-bold text-zinc-300 sm:inline">' + (state.currentPageIdx + 1) + ' / ' + pageTotal + '</span></div>' +
-        '<div class="yz-reader-footer-side"><button type="button" class="yz-reader-chip" data-action="reader-set-mode" data-mode="vertical">Vertical</button><button type="button" class="yz-reader-chip" data-action="reader-set-mode" data-mode="single">Single</button><button type="button" class="yz-reader-chip" data-action="reader-set-mode" data-mode="double">Double</button><button type="button" class="yz-reader-chip" data-action="toggle-reader-menu">Chapters</button><a class="yz-reader-link hidden sm:inline-flex" href="' + (nextCh ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id)) : '#') + '">Latest Ch.</a></div>' +
+        '<div class="yz-reader-footer-side"><a class="yz-reader-link hidden sm:inline-flex" href="' + (nextCh ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id)) : '#') + '">' + (nextCh ? 'Next Ch.' : 'Latest Ch.') + '</a></div>' +
       '</div></footer>';
-      var scrim = (state.readerSettingsOpen || state.readerMenuOpen || state.readerServersOpen) ? '<div class="fixed inset-0 z-[85] bg-black/60" data-action="close-reader-panels" aria-hidden="true"></div>' : '';
+      var scrim = (state.readerSettingsOpen || state.readerMenuOpen) ? '<div class="fixed inset-0 z-[85] bg-black/60" data-action="close-reader-panels" aria-hidden="true"></div>' : '';
       return '<div class="kv-reader-shell yz-reader-root" data-manga-reader="true" style="background-color:' + escapeHtml(state.readerBackground || '#000000') + '">' +
         header +
         '<div id="kv-reader-overlay" class="kv-reader-overlay" aria-hidden="true"></div>' +
         '<nav class="kv-reader-bottom-nav" style="display:none" aria-hidden="true"></nav>' +
         '<main class="yz-reader-main"><div class="mx-auto flex flex-col items-center">' + frame +
-          '<div id="chapter-comments-section" class="yz-comment-card"><div class="mb-4 flex flex-wrap items-center justify-between gap-3"><div><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Discussion</span><h2 class="text-sm font-black text-white">Chapter ' + escapeHtml(chapter.number) + (chapter.title ? ': ' + escapeHtml(chapter.title) : '') + '</h2></div><span class="text-[11px] text-zinc-500">' + (prevCh ? 'Prev: Chapter ' + escapeHtml(prevCh.number) : 'First chapter') + '</span></div>' + renderCommentSection(manga, chapter.id) + '</div>' +
+          '<div id="chapter-comments-section" class="yz-comment-card">' + renderCommentSection(manga, chapter.id) + '</div>' +
           '<button type="button" class="yz-reader-chip fixed bottom-24 right-4 z-[70] sm:right-8" data-action="reader-jump-comments">Jump to Comments</button>' +
         '</div></main>' +
-        footer + scrim + settingsSheet + menuSheet + serverSheet +
+        footer + scrim + settingsSheet + menuSheet +
       '</div>';
     }
 
@@ -8518,6 +8533,19 @@ function setBannerDotsActive(index) {
         window.addEventListener('scroll', updateOverlayDockState, { passive: true });
         window.addEventListener('resize', updateOverlayDockState);
       }
+      if (!window.__yzNavScrollBound) {
+        window.__yzNavScrollBound = true;
+        window.addEventListener('scroll', function () {
+          var nav = document.querySelector('[data-yz-bottom-nav]');
+          if (!nav) return;
+          nav.classList.add('is-scrolling');
+          clearTimeout(window.__yzNavScrollTimer);
+          window.__yzNavScrollTimer = setTimeout(function () {
+            var current = document.querySelector('[data-yz-bottom-nav]');
+            if (current) current.classList.remove('is-scrolling');
+          }, 360);
+        }, { passive: true });
+      }
       if (state.readerDockTimer) clearInterval(state.readerDockTimer);
       state.readerDockTimer = setInterval(updateOverlayDockState, 400);
       updateOverlayDockState();
@@ -9085,6 +9113,9 @@ function setBannerDotsActive(index) {
       if (!trafficPoint && !e.target.closest('.kv-traffic-tooltip')) hideTrafficTooltip();
       var insideBrandMenu = e.target && e.target.closest ? e.target.closest('.kv-brand-mode-menu') : null;
       if (!insideBrandMenu) setBrandModePanel(false);
+      var insideMore = e.target && e.target.closest ? (e.target.closest('[data-yz-more-menu]') || e.target.closest('[data-action="toggle-yz-more"]')) : null;
+      var closeMore = !!state.yzMoreOpen && !insideMore;
+      if (closeMore) state.yzMoreOpen = false;
       var trigger = e.target.closest && e.target.closest('.kv-dropdown-btn');
       if (trigger) {
         var container = trigger.closest('.kv-dropdown');
@@ -9094,7 +9125,7 @@ function setBannerDotsActive(index) {
         return;
       }
       var el = e.target.closest('[data-action]');
-      if (!el) return;
+      if (!el) { if (closeMore) render(); return; }
       var act = el.getAttribute('data-action');
         if (act === 'hero-prev') { setHeroSlide((state.heroSlide || 0) - 1, 'prev'); return; }
       if (act === 'hero-next') { setHeroSlide((state.heroSlide || 0) + 1, 'next'); return; }
@@ -9261,7 +9292,7 @@ function setBannerDotsActive(index) {
       else if (act === 'reader-set-bg') { state.readerBackground = el.getAttribute('data-bg') || '#000000'; yzReaderSavePrefs(); render(); }
       else if (act === 'reader-jump-comments') { var commentTarget = document.getElementById('chapter-comments-section'); if (commentTarget && commentTarget.scrollIntoView) commentTarget.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       else if (act === 'toggle-reader-servers') { state.readerServersOpen = !state.readerServersOpen; state.readerSettingsOpen = false; state.readerMenuOpen = false; render(); }
-      else if (act === 'reader-select-server') { state.readerServer = el.getAttribute('data-server') || 'yor'; state.readerServersOpen = false; yzReaderSavePrefs(); render(); }
+      else if (act === 'reader-select-server') { state.readerServer = el.getAttribute('data-server') || 'yor'; state.readerServersOpen = false; state.readerSettingsOpen = false; state.readerMenuOpen = false; yzReaderSavePrefs(); render(); }
       else if (act === 'scroll-reader-up') { window.scrollBy({ top: -Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
       else if (act === 'scroll-reader-down') { window.scrollBy({ top: Math.round(window.innerHeight * 0.8), behavior: 'smooth' }); }
        else if (act === 'toggle-auto-scroll') { toggleAutoScroll(); }
