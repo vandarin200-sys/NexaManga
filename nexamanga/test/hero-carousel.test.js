@@ -602,17 +602,21 @@ test('light theme keeps account name and settings surfaces readable', () => {
   }
 });
 
-test('blocked themes show soon notice and hero accents stay colorful in light mode', () => {
+test('Anilist, Catppuccin, and Mecha themes are available with home palette colors', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
     path.join(__dirname, '..', '..', 'nexamanga.xml')
   ];
   for (const target of targets) {
     const source = fs.readFileSync(target, 'utf8');
-    assert.ok(source.includes("{ id: 'anilist', label: 'ANILIST', soon: true }"), target + ' anilist should be marked soon');
-    assert.ok(source.includes("toast('Segera hadir', 'info')"), target + ' soon theme toast missing');
+    assert.ok(source.includes("{ id: 'anilist', label: 'ANILIST' }"), target + ' Anilist should be available');
+    assert.ok(source.includes("{ id: 'catppuccin', label: 'CATPPUCCIN' }"), target + ' Catppuccin should be available');
+    assert.ok(source.includes("{ id: 'mecha', label: 'MECHA' }"), target + ' Mecha should be available');
+    assert.ok(!source.includes("label: 'ANILIST', soon: true") && !source.includes("label: 'CATPPUCCIN', soon: true") && !source.includes("label: 'MECHA', soon: true"), target + ' themes should not be gated as upcoming');
+    assert.ok(source.includes('html[data-theme="catppuccin"] { --yz-bg:var(--background);'), target + ' Catppuccin should use its shared admin color palette');
+    assert.ok(source.includes('html[data-theme="mecha"] { --yz-bg:var(--background);'), target + ' Mecha should use its shared admin color palette');
+    assert.ok(source.includes('html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel]'), target + ' all three palettes should style the home hero');
     assert.ok(source.includes('data-hero-accent'), target + ' hero accent hook missing');
-    assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [data-hero-accent]'), target + ' light hero accent rule missing');
     assert.ok(source.includes('top-20 sm:top-24 lg:top-28 z-[7] flex justify-center'), target + ' hero thumb spacing fix missing');
   }
 });

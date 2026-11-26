@@ -3835,6 +3835,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-public-route [data-profile-avatar] { background-color: var(--yz-surface-1) !important; --tw-ring-color: var(--yz-surface-0) !important; border: 1px solid var(--yz-border) !important; color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-public-route [data-profile-avatar] + button { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; color: var(--yz-text-muted) !important; }
     html[data-theme="anilist"] { --yz-bg:#0B1622; --yz-surface-0:#0B1622; --yz-surface-1:#151F2E; --yz-surface-2:#1B2636; --yz-surface-3:#233247; --yz-border:rgba(159,173,189,.18); --yz-text:#EDF1F5; --yz-text-secondary:#C9D7E3; --yz-text-tertiary:#9FADBD; --yz-accent:#3DB4F2; --yz-accent-hover:#5CC4F7; --yz-accent-rgb:61,180,242; --yz-accent-subtle:rgba(61,180,242,.14); }
+    html[data-theme="catppuccin"] { --yz-bg:var(--background); --yz-surface-0:var(--background); --yz-surface-1:var(--card); --yz-surface-2:var(--secondary); --yz-surface-3:var(--muted); --yz-border:var(--border); --yz-text:var(--foreground); --yz-text-secondary:var(--muted-foreground); --yz-text-tertiary:var(--muted-foreground); --yz-accent:var(--primary); --yz-accent-hover:var(--ring); --yz-accent-rgb:137,180,250; --yz-accent-subtle:rgba(137,180,250,.14); }
+    html[data-theme="mecha"] { --yz-bg:var(--background); --yz-surface-0:var(--background); --yz-surface-1:var(--card); --yz-surface-2:var(--secondary); --yz-surface-3:var(--muted); --yz-border:var(--border); --yz-text:var(--foreground); --yz-text-secondary:var(--muted-foreground); --yz-text-tertiary:var(--muted-foreground); --yz-accent:var(--primary); --yz-accent-hover:var(--ring); --yz-accent-rgb:54,241,205; --yz-accent-subtle:rgba(54,241,205,.14); }
     html[data-theme="anilist"] body.kv-public-route { background: var(--background) !important; color: var(--foreground) !important; }
     html[data-theme="anilist"] body.kv-public-route :is(.yz-header, .yz-bottom-nav, .yz-footer, .kv-public-bottom-nav) { background: #152232 !important; border-color: var(--border) !important; }
     html[data-theme="anilist"] body.kv-public-route :is(.yz-bottom-item, .kv-public-bottom-item, .yz-footer a, .yz-nav-btn, .yz-icon-btn, .yz-search input) { color: var(--muted-foreground) !important; }
@@ -3862,6 +3864,18 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-theme="anilist"] body.kv-public-route [data-settings-root] :is([class~="bg-white"][class~="text-black"], [class~="bg-red-600"], [class~="bg-blue-500"], [class~="bg-emerald-500"]) { color: #0B1622 !important; }
     html[data-theme="anilist"] body.kv-public-route [data-settings-root] .text-zinc-300, html[data-theme="anilist"] body.kv-public-route [data-settings-root] .text-zinc-400, html[data-theme="anilist"] body.kv-public-route [data-settings-root] .text-zinc-500 { color: var(--muted-foreground) !important; }
     html[data-theme="anilist"] body.kv-public-route [data-settings-root] :is([class~="bg-white"][class~="text-black"], [class~="bg-red-600"], [class~="bg-blue-500"], [class~="bg-emerald-500"]) { background-color: var(--primary) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] { background:var(--background) !important; border-color:var(--border) !important; color:var(--foreground) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] .yz-hero-art { opacity:.28 !important; filter:brightness(.76) saturate(1.05) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] [class~="bg-zinc-950/65"] { background-color:color-mix(in srgb,var(--background) 76%,transparent) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] .yz-hero-slide [class~="bg-gradient-to-t"] { background-image:linear-gradient(to top,var(--background) 0%,color-mix(in srgb,var(--background) 84%,transparent) 55%,transparent 100%) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] :is(.text-white, .text-zinc-100, .text-zinc-200, [class*="text-white"]) { color:var(--foreground) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] :is(.text-zinc-300, .text-zinc-400, .text-zinc-500, [class~="text-zinc-300/85"]) { color:var(--muted-foreground) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] [data-hero-accent],
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] [style*="color:"] { color:var(--primary) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] :is([class~="bg-zinc-950"], [class~="bg-zinc-900/60"], [class~="bg-zinc-900/80"], [class~="bg-zinc-800"]) { background-color:color-mix(in srgb,var(--card) 86%,transparent) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] :is([class~="border-white/[0.08]"], [class~="border-white/10"], [class~="border-white/30"], [class~="border-zinc-800"], [class~="hover:border-white/25"], [class~="hover:border-zinc-700"]) { border-color:var(--border) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] [class~="hover:bg-zinc-800"]:hover { background-color:var(--secondary) !important; color:var(--foreground) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="mecha"]) body.kv-home-route [data-hero-carousel] [class~="hover:text-white"]:hover { color:var(--primary) !important; }
     @media (hover: none), (pointer: coarse) {
       [class*="hover:scale-"]:hover:not(:active),
       [class*="hover:-translate-"]:hover:not(:active),
@@ -4950,9 +4964,9 @@ function yzSettingRead(key, fallback) {
     var THEME_CHOICES = [
       { id: 'system', label: 'SYSTEM' },
       { id: 'light', label: 'LIGHT' },
-      { id: 'anilist', label: 'ANILIST', soon: true },
-      { id: 'catppuccin', label: 'CATPPUCCIN', soon: true },
-      { id: 'mecha', label: 'MECHA', soon: true },
+      { id: 'anilist', label: 'ANILIST' },
+      { id: 'catppuccin', label: 'CATPPUCCIN' },
+      { id: 'mecha', label: 'MECHA' },
       { id: 'dark', label: 'DARK' }
     ];
 
@@ -10301,7 +10315,7 @@ function setBannerDotsActive(index) {
       if (act === 'hero-slide') { markHeroInteraction(); setHeroSlide(Number(el.getAttribute('data-index')) || 0); return; }
       if (act === 'surprise-me') { var pool = state.data.manga || []; var pick = pool[Math.floor(Math.random() * pool.length)]; if (pick) { state.search = ''; state.filterGenres = []; state.filterType = 'Semua'; state.filterStatus = 'Semua'; navigate(publicHref('/manga/' + pick.slug)); } return; }
         if (act === 'toggle-theme') { state.theme = isDarkTheme() ? 'light' : 'dark'; applyTheme(); render(); }
-        else if (act === 'set-theme') { if (el.getAttribute('data-soon') === 'true') { toast('Segera hadir', 'info'); state.headerThemeOpen = false; render(); return; } var nextTheme = el.getAttribute('data-value'); if (CONFIG.THEME_IDS.indexOf(nextTheme) !== -1) { state.headerThemeOpen = false; state.theme = nextTheme; applyTheme(); render(); } }
+        else if (act === 'set-theme') { var nextTheme = el.getAttribute('data-value'); if (CONFIG.THEME_IDS.indexOf(nextTheme) !== -1) { state.headerThemeOpen = false; state.theme = nextTheme; applyTheme(); render(); } }
 
       else if (act === 'oauth-login') {
         if (!CONFIG.API_BASE_URL) { toast('Backend Vercel belum dikonfigurasi.', 'warn'); return; }
