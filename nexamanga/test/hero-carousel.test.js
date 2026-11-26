@@ -437,6 +437,11 @@ test('manga detail removes trackers, places title above genres, and exposes the 
     assert.ok(source.includes("var releaseYear = manga.releaseYear ? String(manga.releaseYear) : '';"), target + ' should display only the manually managed release year');
     assert.ok(!source.includes("var releaseYear = manga.releaseYear || String(manga.updatedAt || '').slice(0, 4)"), target + ' should not mistake the last update for the manga year');
     assert.ok(source.includes('name="releaseYear" type="number"'), target + ' should provide a dedicated admin year field');
+    assert.ok(source.includes('.kv-admin-main .kv-admin-meta-label { display:flex; flex-direction:column;'), target + ' should style metadata labels like the other manga form fields');
+    assert.ok(source.includes('align-items:flex-start;flex-wrap:wrap;'), target + ' should align the metadata field labels consistently');
+    assert.ok(source.includes('<label class="kv-admin-meta-label">Tipe<select'), target + ' should stack the type label above its control');
+    assert.ok(source.includes('<label class="kv-admin-meta-label">Status<select'), target + ' should stack the status label above its control');
+    assert.ok(source.includes('<label class="kv-admin-meta-label">Rating 0-10<input'), target + ' should use the shared rating label style');
     assert.ok(source.includes('releaseYear: releaseYear'), target + ' should send the year when saving manga');
     assert.ok(source.includes('id="manga-synopsis-content"'), target + ' should use the redesigned synopsis card');
     assert.ok(source.includes('aria-controls="manga-synopsis-content"'), target + ' should keep the synopsis toggle accessible');
@@ -482,6 +487,21 @@ test('reader settings control auto-scroll speed and light or dark display withou
     assert.ok(source.includes('data-action="set-theme" data-value="light"'), target + ' should offer light mode');
     assert.ok(source.includes('data-action="set-theme" data-value="dark"'), target + ' should offer dark mode');
     assert.ok(source.includes('background:var(--kv-reader-bg)'), target + ' should apply the selected reader background to manga pages');
+  }
+});
+
+test('manga links use clean paths and legacy hash routes are normalized', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('function publicHref(path) {') && source.includes('return value;'), target + ' should generate path URLs');
+    assert.ok(!source.includes("return YZ_HASH ? '#/'"), target + ' should not generate hash-based manga URLs');
+    assert.ok(source.includes("var legacyRoute = window.location.hash.indexOf('#/') === 0"), target + ' should still recognize old hash routes');
+    assert.ok(source.includes("window.history.pushState(null, '', routeUrl);"), target + ' should navigate using clean paths');
+    assert.ok(!source.includes("+ '#' + routePath"), target + ' should normalize old hash URLs to path URLs');
   }
 });
 
