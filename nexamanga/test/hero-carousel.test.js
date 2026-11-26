@@ -417,6 +417,24 @@ test('light theme keeps account name and settings surfaces readable', () => {
   }
 });
 
+test('settings, profile, hero, and detail theme surfaces stay clean', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('<h1 class="text-xl sm:text-2xl font-black tracking-tight text-white">Settings</h1>'), target + ' settings heading should not have border styling');
+    assert.ok(!source.includes('uppercase tracking-wider">Settings</h1>'), target + ' settings heading should not use boxed uppercase treatment');
+    assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] [data-action="settings-tab"].bg-zinc-800'), target + ' light settings tab rule missing');
+    assert.ok(source.includes('data-profile-avatar'), target + ' profile avatar hook missing');
+    assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-public-route [data-profile-avatar]'), target + ' light profile avatar rule missing');
+    assert.ok(!source.includes('bg-zinc-950/65 backdrop-blur-[1px]'), target + ' hero blur overlay should be removed');
+    assert.ok(source.includes('data-detail-cover-glow'), target + ' detail cover glow hook missing');
+    assert.ok(source.includes('body.kv-detail-route [data-detail-cover-glow]'), target + ' detail cover glow theme rule missing');
+  }
+});
+
 test('anilist theme keeps hero, account name, and settings readable', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
