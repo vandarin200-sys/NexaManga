@@ -659,7 +659,7 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
   }
 });
 
-test('anilist theme keeps hero, account name, and settings readable', () => {
+test('anilist theme styles the full homepage with readable palette colors', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
     path.join(__dirname, '..', '..', 'nexamanga.xml')
@@ -669,7 +669,11 @@ test('anilist theme keeps hero, account name, and settings readable', () => {
     assert.ok(source.includes('--background: #0B1622 !important; --foreground: #EDF1F5 !important;'), target + ' anilist base palette not updated');
     assert.ok(source.includes('--card: #151F2E !important; --card-foreground: #EDF1F5 !important;'), target + ' anilist card palette not updated');
     assert.ok(source.includes('--primary: #3DB4F2 !important; --primary-foreground: #0B1622 !important;'), target + ' anilist accent not updated');
-    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] { background: #0B1622'), target + ' anilist hero background missing');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route .min-h-screen.bg-zinc-950 { background:var(--background)'), target + ' anilist home background missing');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route [class*="text-white"] { color:var(--foreground)'), target + ' homepage text should not inherit the dark primary foreground');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route #manga-library-catalog input'), target + ' library search should match the anilist palette');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route main [data-manga-title] { padding:7px; border:1px solid var(--border)'), target + ' manga cards should use the anilist surfaces');
+    assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] .yz-hero-art { opacity:.46'), target + ' hero artwork should remain visible in anilist mode');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-account-route [data-account-name]'), target + ' anilist account name rule missing');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-public-route [data-settings-root]'), target + ' anilist settings rule missing');
   }
