@@ -1513,6 +1513,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .yz-hero-carousel .yz-hero-track,
       .yz-hero-carousel .yz-hero-thumbs,
       .yz-hero-carousel .yz-hero-thumb { touch-action:pan-y; }
+      .yz-hero-carousel .yz-hero-thumb,
+      .yz-hero-carousel .yz-hero-thumb::before,
+      .yz-hero-carousel .yz-hero-thumb::after,
+      .yz-hero-carousel .yz-hero-thumb img { filter:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
       .yz-hero-carousel .yz-hero-thumbs { transition:transform var(--dur-slow) var(--ease-out), opacity var(--dur-slow) var(--ease-out); }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging { transition:none !important; animation:none !important; cursor:grabbing; }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb { transition:none !important; will-change:transform; }
@@ -3667,7 +3671,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] #kv-app [class*="min-h-[60vh]"] [class*="bg-zinc-950"] { background: var(--yz-surface-0) !important; border-color: var(--yz-border) !important; }
     html[data-resolved-theme="light"] #kv-app [class*="min-h-[60vh]"] [class~="bg-white"] { background: var(--yz-accent) !important; color: #FFFCF6 !important; }
     html[data-resolved-theme="light"] #kv-app main.text-zinc-300 { color: var(--yz-text-secondary) !important; }
-    html[data-resolved-theme="light"] #kv-app main.text-zinc-300 h1 { background-image: linear-gradient(180deg, #7A4A1F, #BFA986, #E9DAC2) !important; }
+    html[data-resolved-theme="light"] #kv-app main.text-zinc-300 h1:not([data-account-name]):not([class~="bg-transparent"]) { background-image: linear-gradient(180deg, #7A4A1F, #BFA986, #E9DAC2) !important; }
+    #kv-app main[data-settings-root] > div:first-child h1 { background: transparent !important; background-image: none !important; background-color: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+    #kv-app main.text-zinc-300 [data-account-name], #kv-app main.text-zinc-300 [data-account-name] .styled-username { background: transparent !important; background-color: transparent !important; background-image: none !important; border: 0 !important; box-shadow: none !important; text-shadow: none !important; }
     html[data-resolved-theme="light"] #kv-app main.text-zinc-300 h2 { color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] #kv-app main.text-zinc-300 p { color: var(--yz-text-tertiary) !important; }
     html[data-resolved-theme="light"] #kv-app main.text-zinc-300 [class*="border-zinc-800"] { background: var(--yz-surface-0) !important; border-color: var(--yz-border) !important; color: var(--yz-text) !important; }
@@ -3777,9 +3783,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] .rounded-2xl.bg-zinc-900\/60.border { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; box-shadow: none !important; }
     html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] .rounded-2xl.bg-zinc-950\/70.backdrop-blur-xl { background-color: var(--yz-surface-0) !important; border-color: var(--yz-border) !important; box-shadow: none !important; }
     html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] [data-action="settings-tab"] { color: var(--yz-text-muted) !important; }
-    html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] [data-action="settings-tab"].bg-zinc-800 { background-color: var(--yz-accent-subtle) !important; color: var(--yz-accent) !important; border-color: transparent !important; box-shadow: none !important; }
-    html[data-resolved-theme="dark"] body.kv-public-route [data-settings-root] [data-action="settings-tab"].bg-zinc-800 { background-color: var(--yz-accent-subtle) !important; color: var(--yz-accent) !important; border-color: transparent !important; box-shadow: none !important; }
+    html[data-resolved-theme="light"] body.kv-public-route #kv-app [data-settings-root] [data-action="settings-tab"][aria-pressed="true"]:not([data-tab="danger"]) { background-color: var(--yz-accent-subtle) !important; color: var(--yz-accent) !important; border-color: transparent !important; box-shadow: none !important; }
+    html[data-resolved-theme="dark"] body.kv-public-route #kv-app [data-settings-root] [data-action="settings-tab"][aria-pressed="true"]:not([data-tab="danger"]) { background-color: var(--yz-accent-subtle) !important; color: var(--yz-accent) !important; border-color: transparent !important; box-shadow: none !important; }
     html[data-resolved-theme="dark"] body.kv-public-route [data-settings-root] [data-action="settings-accent"][class*="ring-1"] { border-color: var(--yz-accent) !important; box-shadow: 0 0 0 1px var(--yz-accent), 0 10px 24px rgba(var(--yz-accent-rgb), .16) !important; }
+    html[data-resolved-theme="dark"] body.kv-public-route [data-settings-root] :is(.text-amber-500, .text-blue-300, .text-emerald-400) { color: var(--yz-accent) !important; }
     html[data-resolved-theme="light"] body.kv-public-route [data-profile-avatar] { background-color: var(--yz-surface-1) !important; --tw-ring-color: var(--yz-surface-0) !important; border: 1px solid var(--yz-border) !important; color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-public-route [data-profile-avatar] + button { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; color: var(--yz-text-muted) !important; }
     html[data-theme="anilist"] { --yz-bg:#0B1622; --yz-surface-0:#0B1622; --yz-surface-1:#151F2E; --yz-surface-2:#1B2636; --yz-surface-3:#233247; --yz-border:rgba(159,173,189,.18); --yz-text:#EDF1F5; --yz-text-secondary:#C9D7E3; --yz-text-tertiary:#9FADBD; --yz-accent:#3DB4F2; --yz-accent-hover:#5CC4F7; --yz-accent-rgb:61,180,242; --yz-accent-subtle:rgba(61,180,242,.14); }
@@ -3787,7 +3794,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-theme="anilist"] body.kv-public-route :is(.yz-header, .yz-bottom-nav, .yz-footer, .kv-public-bottom-nav) { background: #152232 !important; border-color: var(--border) !important; }
     html[data-theme="anilist"] body.kv-public-route :is(.yz-bottom-item, .kv-public-bottom-item, .yz-footer a, .yz-nav-btn, .yz-icon-btn, .yz-search input) { color: var(--muted-foreground) !important; }
     html[data-theme="anilist"] body.kv-public-route :is(.yz-bottom-item.is-active, .kv-public-bottom-item.active, .yz-nav-btn:hover, .yz-icon-btn:hover, .yz-footer a:hover) { color: var(--primary) !important; background: rgba(61,180,242,.12) !important; }
-    html[data-theme="anilist"] body.kv-public-route :is(.kv-detail-hero, #manga-library-catalog, [data-settings-root] .rounded-2xl.border, [data-account-name]) { background-color: var(--card) !important; border-color: var(--border) !important; color: var(--foreground) !important; }
+    html[data-theme="anilist"] body.kv-public-route :is(.kv-detail-hero, #manga-library-catalog, [data-settings-root] .rounded-2xl.border) { background-color: var(--card) !important; border-color: var(--border) !important; color: var(--foreground) !important; }
     html[data-theme="anilist"] body.kv-public-route :is([data-settings-root] input, [data-settings-root] textarea, [data-settings-root] select) { background-color: var(--input) !important; color: var(--foreground) !important; border-color: var(--border) !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] { background: #0B1622 !important; color: #EDF1F5 !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] .yz-hero-art { opacity: .32 !important; filter: brightness(.7) saturate(1.05) !important; }
@@ -5618,7 +5625,7 @@ function trackPageview() {
         var pose = yzHeroThumbPose(offset);
         var center = offset === 0;
         var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
-        return '<div role="button" tabindex="' + (center ? '0' : '-1') + '" aria-hidden="' + (center ? 'false' : 'true') + '" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" data-hero-card-id="' + i + '" data-hero-position="' + offset + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-colors ' + (center ? 'border-white/30 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
+        return '<div role="button" tabindex="' + (center ? '0' : '-1') + '" aria-hidden="' + (center ? 'false' : 'true') + '" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" data-hero-card-id="' + i + '" data-hero-position="' + offset + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe), border-color var(--dur-swipe) var(--ease-swipe), box-shadow var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
       }).join('');
       var heroDots = heroItems.map(function (m, i) {
         var active = i === heroIndex;
@@ -9074,7 +9081,7 @@ function setBannerDotsActive(index) {
       var count = thumbs.length;
       if (!count) return;
       var transition = animated
-        ? 'transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe)'
+        ? 'transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe), border-color var(--dur-swipe) var(--ease-swipe), box-shadow var(--dur-swipe) var(--ease-swipe)'
         : 'none';
       var shadeTransition = animated ? 'opacity var(--dur-swipe) var(--ease-swipe)' : 'none';
       for (var i = 0; i < count; i++) {
@@ -9101,7 +9108,7 @@ function setBannerDotsActive(index) {
         thumb.setAttribute('aria-hidden', center ? 'false' : 'true');
         thumb.setAttribute('data-center', center ? 'true' : 'false');
         if (center !== wasCenter) {
-          var centerClass = 'border-white/30 ring-1 ring-white/10';
+          var centerClass = 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10';
           var sideClass = 'hover:border-white/20';
           var cls = thumb.className;
           cls = center

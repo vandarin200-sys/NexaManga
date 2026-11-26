@@ -351,7 +351,8 @@ test('featured carousel content and archive action follow the single active mang
   assert.ok(source.includes("mangaId: new URLSearchParams(routeQuery).get('mangaId') || ''"));
   assert.ok(source.includes("if (selectedMangaId) return String(m.id) === selectedMangaId;"));
   assert.ok(source.includes("escapeHtml(m.status || 'Ongoing')"));
-  assert.ok(!source.includes('shadow-lg shadow-black/30'));
+  assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'));
+  assert.ok(source.includes("var centerClass = 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10';"));
 });
 
 test('render settles the hero track before generating slide markup', () => {
@@ -476,23 +477,26 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
   ];
   for (const target of targets) {
     const source = fs.readFileSync(target, 'utf8');
-    const usesActiveIndex = target.endsWith(path.join('public', 'index.html'));
     assert.ok(source.includes('<h1 class="text-xl sm:text-2xl font-black tracking-tight text-white bg-transparent !bg-none border-0 shadow-none p-0">Settings</h1>'), target + ' settings heading should not have border styling');
     assert.ok(source.includes('data-account-name class="text-xl sm:text-3xl font-extrabold text-white tracking-tight inline-flex items-center gap-2 bg-transparent !bg-none border-0 shadow-none p-0 m-0"'), target + ' profile name background should be removed');
+    assert.ok(source.includes('#kv-app main[data-settings-root] > div:first-child h1 { background: transparent !important; background-image: none !important;'), target + ' settings heading background should be fully removed');
+    assert.ok(source.includes('#kv-app main.text-zinc-300 [data-account-name], #kv-app main.text-zinc-300 [data-account-name] .styled-username { background: transparent !important; background-color: transparent !important; background-image: none !important;'), target + ' profile name background should be fully removed');
+    assert.ok(source.includes('main.text-zinc-300 h1:not([data-account-name]):not([class~="bg-transparent"])'), target + ' light heading gradient should skip settings and profile headings');
     assert.ok(source.includes('Aksen ini mengikuti tema aktif, termasuk mode gelap.'), target + ' theme palette dark mode hint missing');
     assert.ok(source.includes('html[data-resolved-theme="dark"] body.kv-public-route [data-settings-root] [data-action="settings-accent"][class*="ring-1"]'), target + ' dark theme palette active rule missing');
+    assert.ok(source.includes('html[data-resolved-theme="dark"] body.kv-public-route #kv-app [data-settings-root] [data-action="settings-tab"][aria-pressed="true"]:not([data-tab="danger"])'), target + ' dark active settings tab should use the selected palette');
+    assert.ok(source.includes('html[data-resolved-theme="dark"] body.kv-public-route [data-settings-root] :is(.text-amber-500, .text-blue-300, .text-emerald-400)'), target + ' dark settings accents should use the selected palette');
     assert.ok(!source.includes('uppercase tracking-wider">Settings</h1>'), target + ' settings heading should not use boxed uppercase treatment');
-    assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] [data-action="settings-tab"].bg-zinc-800'), target + ' light settings tab rule missing');
+    assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-public-route #kv-app [data-settings-root] [data-action="settings-tab"][aria-pressed="true"]:not([data-tab="danger"])'), target + ' light active settings tab should use the selected palette');
+    assert.ok(!source.includes(':is(.kv-detail-hero, #manga-library-catalog, [data-settings-root] .rounded-2xl.border, [data-account-name])'), target + ' AniList theme should not restore a background on the profile name');
     assert.ok(source.includes('data-profile-avatar'), target + ' profile avatar hook missing');
     assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-public-route [data-profile-avatar]'), target + ' light profile avatar rule missing');
     assert.ok(!source.includes('bg-zinc-950/65 backdrop-blur-[1px]'), target + ' hero blur overlay should be removed');
     assert.ok(!source.includes('yz-hero-glow'), target + ' hero thumb glow blur should be removed');
     assert.ok(!source.includes('yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75 blur-sm'), target + ' hero art should not have blur-sm');
-    if (usesActiveIndex) {
-      assert.ok(!source.includes('shadow-lg shadow-black/30'), target + ' hero active thumb should not have a spreading shadow');
-    } else {
-      assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'), target + ' hero active thumb should use natural shadow');
-    }
+    assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'), target + ' hero active thumb should use natural shadow');
+    assert.ok(source.includes('var centerClass = \'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10\';'), target + ' hero shadow should move with the active thumbnail');
+    assert.ok(source.includes('.yz-hero-thumb img { filter:none !important; backdrop-filter:none !important;'), target + ' hero thumbnail should not blur');
     assert.ok(source.includes('yzHeroApplyPoses(carousel.querySelectorAll(\'[data-hero-thumbs] > .yz-hero-thumb\'), canonical, false);'), target + ' hero cleanup should resync thumb poses');
     assert.ok(source.includes('data-detail-cover-glow'), target + ' detail cover glow hook missing');
     assert.ok(source.includes('body.kv-detail-route [data-detail-cover-glow]'), target + ' detail cover glow theme rule missing');
