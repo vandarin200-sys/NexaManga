@@ -1526,14 +1526,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .yz-hero-carousel .yz-hero-slide { animation:yzHeroReveal var(--dur-slow) var(--ease-out) both; }
       .yz-hero-carousel .yz-hero-slide .yz-hero-art { animation:yzHeroDrift 10s ease-in-out infinite alternate; }
       .yz-hero-carousel .yz-hero-thumb[data-center="true"] img { animation:yzHeroFloat 4.5s ease-in-out infinite; }
-      .yz-hero-carousel .yz-hero-glow { animation:yzHeroGlow 3.4s ease-in-out infinite alternate; }
       @keyframes yzHeroReveal { from { opacity:.35; transform:scale(1.015); } to { opacity:1; transform:scale(1); } }
       @keyframes yzHeroDrift { from { transform:scale(1.05) translate3d(0,0,0); } to { transform:scale(1.1) translate3d(-1.2%,-1%,0); } }
       @keyframes yzHeroFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
-      @keyframes yzHeroGlow { from { opacity:.45; } to { opacity:.85; } }
       html.motion-paused .yz-hero-carousel .yz-hero-art,
       html.motion-paused .yz-hero-carousel .yz-hero-thumb[data-center="true"] img,
-      html.motion-paused .yz-hero-carousel .yz-hero-glow,
       html.motion-paused .yz-reader-live { animation-play-state: paused; }
       @media (max-width:700px) {
         body.kv-reader-route .yz-reader-header { height:52px; }
@@ -1549,7 +1546,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         body.kv-reader-route .yz-page-shell, body.kv-reader-route .yz-reader-sheet2, body.kv-reader-route .yz-reader-live,
         body.kv-reader-route .yz-reader-header, body.kv-reader-route .yz-reader-footer, body.kv-reader-route .yz-reader-main,
         .yz-hero-carousel .yz-hero-slide, .yz-hero-carousel .yz-hero-slide .yz-hero-art,
-        .yz-hero-carousel .yz-hero-thumb[data-center="true"] img, .yz-hero-carousel .yz-hero-glow { animation:none !important; }
+        .yz-hero-carousel .yz-hero-thumb[data-center="true"] img { animation:none !important; }
       }
       html:not(.dark) body.kv-home-route .kv-catalog-page { padding-top: 10px; padding-bottom: 48px; }
       html:not(.dark) body.kv-home-route .kv-catalog-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 0 6px; }
@@ -5469,14 +5466,14 @@ function trackPageview() {
         var pose = yzHeroThumbPose(offset);
         var center = offset === 0;
         var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
-        return '<div role="button" tabindex="' + (center ? '0' : '-1') + '" aria-hidden="' + (center ? 'false' : 'true') + '" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" data-hero-card-id="' + i + '" data-hero-position="' + offset + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
+        return '<div role="button" tabindex="' + (center ? '0' : '-1') + '" aria-hidden="' + (center ? 'false' : 'true') + '" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" data-hero-card-id="' + i + '" data-hero-position="' + offset + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
       }).join('');
       var heroDots = heroItems.map(function (m, i) {
         var active = i === heroIndex;
         return '<button type="button" data-action="hero-dot" data-index="' + i + '" data-color="' + heroColors[i % heroColors.length] + '" aria-label="Go to slide ' + (i + 1) + '" class="h-1 rounded-full transition-all duration-300 ' + (active ? 'w-6' : 'w-1.5 bg-zinc-700 hover:bg-zinc-500') + '" style="' + (active ? 'background-color: ' + heroColors[i % heroColors.length] + ';' : '') + '"></button>';
       }).join('');
       var hero = heroItems.length ? '<div class="yz-hero-carousel group relative overflow-hidden select-none bg-zinc-950 text-white" data-hero-carousel="true" role="region" aria-roledescription="carousel" aria-label="Trending Manga Carousel"><div class="overflow-hidden"><div class="yz-hero-track flex ml-0" data-hero-track="true" style="transform: translate3d(-' + (state.heroTrackPosition * 100) + '%, 0px, 0px); transition: transform var(--dur-swipe) var(--ease-swipe); backface-visibility: hidden;">' + heroSlideHtml + '</div></div>' +
-        '<div class="pointer-events-none absolute inset-x-0 top-20 sm:top-24 lg:top-28 z-[7] flex justify-center"><div class="yz-hero-thumbs pointer-events-auto relative h-[160px] w-[108px] sm:h-[215px] sm:w-[145px] lg:h-[265px] lg:w-[178px] cursor-grab active:cursor-grabbing select-none" data-hero-thumbs="true" style="touch-action: pan-y;"><span aria-hidden="true" class="yz-hero-glow absolute left-1/2 -bottom-7 h-10 w-[420%] -translate-x-1/2 rounded-[50%] bg-black/65 blur-2xl pointer-events-none"></span>' + heroThumbs + '</div></div>' +
+        '<div class="pointer-events-none absolute inset-x-0 top-20 sm:top-24 lg:top-28 z-[7] flex justify-center"><div class="yz-hero-thumbs pointer-events-auto relative h-[160px] w-[108px] sm:h-[215px] sm:w-[145px] lg:h-[265px] lg:w-[178px] cursor-grab active:cursor-grabbing select-none" data-hero-thumbs="true" style="touch-action: pan-y;">' + heroThumbs + '</div></div>' +
         '<button type="button" data-action="hero-prev" aria-label="Previous slide" class="hidden sm:grid absolute left-3 sm:left-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronLeft', 'h-4 w-4') + '</button>' +
         '<button type="button" data-action="hero-next" aria-label="Next slide" class="hidden sm:grid absolute right-3 sm:right-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronRight', 'h-4 w-4') + '</button>' +
         '<div class="absolute inset-x-0 bottom-3.5 z-[8] flex items-center justify-center gap-1.5 pointer-events-auto">' + heroDots + '</div></div>' : '';
@@ -8846,7 +8843,7 @@ function setBannerDotsActive(index) {
         thumb.setAttribute('aria-hidden', center ? 'false' : 'true');
         thumb.setAttribute('data-center', center ? 'true' : 'false');
         if (center !== wasCenter) {
-          var centerClass = 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10';
+          var centerClass = 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10';
           var sideClass = 'hover:border-white/20';
           var cls = thumb.className;
           cls = center
