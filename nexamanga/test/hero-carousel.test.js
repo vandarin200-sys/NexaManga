@@ -69,46 +69,47 @@ test('heroAdvance wraps forward and backward without a terminal index', () => {
   assert.deepEqual(heroAdvance(0, 'next', 1), { index: 0, direction: '' });
 });
 
-test('heroDragDecision advances once for a short swipe and keeps the pointer pose bounded', () => {
+test('heroDragDecision advances once for a short swipe without bounding the pointer pose', () => {
   assert.deepEqual(heroDragDecision(-60, 0, 48, 0, 10), { index: 1, direction: 'next', steps: 1 });
   assert.deepEqual(heroDragDecision(-30, 0.5, 48, 0, 10), { index: 1, direction: 'next', steps: 1 });
   assert.deepEqual(heroDragDecision(60, 0, 48, 0, 10), { index: 9, direction: 'prev', steps: 1 });
   assert.deepEqual(heroDragDecision(30, 0.5, 48, 0, 10), { index: 9, direction: 'prev', steps: 1 });
   assert.deepEqual(heroDragDecision(10, 0.1, 48, 0, 10), { index: 0, direction: '', steps: 0 });
-  assert.equal(heroDragProgress(-1000, 108), 1);
-  assert.equal(heroDragProgress(1000, 108), -1);
+  assert.equal(heroDragProgress(-1000, 108), 1000 / 108);
+  assert.equal(heroDragProgress(1000, 108), -1000 / 108);
 });
 
-test('a long drag advances several cards and stops exactly at the circular clones', () => {
+test('a long drag keeps counting past the card count and wraps around forever', () => {
   const threshold = 45;
   const travel = 108;
-  assert.deepEqual(heroDragDecision(-95, 0, threshold, 0, 10, 3, travel), { index: 1, direction: 'next', steps: 1 });
-  assert.deepEqual(heroDragDecision(-190, 0, threshold, 0, 10, 3, travel), { index: 2, direction: 'next', steps: 2 });
-  assert.deepEqual(heroDragDecision(-310, 0, threshold, 0, 10, 3, travel), { index: 3, direction: 'next', steps: 3 });
-  assert.deepEqual(heroDragDecision(-900, 0, threshold, 0, 10, 3, travel), { index: 3, direction: 'next', steps: 3 });
-  assert.deepEqual(heroDragDecision(310, 0, threshold, 0, 10, 3, travel), { index: 7, direction: 'prev', steps: 3 });
-  assert.deepEqual(heroDragDecision(-310, 0, threshold, 8, 10, 3, travel), { index: 1, direction: 'next', steps: 3 });
-  assert.deepEqual(heroDragDecision(310, 0, threshold, 1, 10, 3, travel), { index: 8, direction: 'prev', steps: 3 });
-  assert.equal(heroDragProgress(-900, travel, 3), 3);
-  assert.equal(heroDragProgress(900, travel, 3), -3);
+  assert.deepEqual(heroDragDecision(-95, 0, threshold, 0, 10, travel), { index: 1, direction: 'next', steps: 1 });
+  assert.deepEqual(heroDragDecision(-190, 0, threshold, 0, 10, travel), { index: 2, direction: 'next', steps: 2 });
+  assert.deepEqual(heroDragDecision(-310, 0, threshold, 0, 10, travel), { index: 3, direction: 'next', steps: 3 });
+  assert.deepEqual(heroDragDecision(-900, 0, threshold, 0, 10, travel), { index: 8, direction: 'next', steps: 8 });
+  assert.deepEqual(heroDragDecision(900, 0, threshold, 0, 10, travel), { index: 2, direction: 'prev', steps: 8 });
+  assert.deepEqual(heroDragDecision(-2637, 0, threshold, 0, 10, travel), { index: 5, direction: 'next', steps: 25 });
+  assert.equal(heroDragProgress(-900, travel), 900 / travel);
+  assert.equal(heroDragProgress(900, travel), -900 / travel);
 });
 
-test('multi-step circular plans stay inside the clone range for every start card', () => {
+test('unlimited circular plans stay inside the clone range for every start card', () => {
   const count = 10;
   for (let from = 0; from < count; from += 1) {
-    for (let steps = 1; steps <= 3; steps += 1) {
+    for (let steps = 1; steps <= 25; steps += 1) {
       for (const direction of ['next', 'prev']) {
-        const decision = heroDragDecision(
-          direction === 'next' ? -steps * 120 : steps * 120, 0, 45, from, count, 3, 108
+        const move = heroAdvance(from, direction, count, steps);
+        const plan = heroVirtualTarget(from, move.index, direction, count, steps);
+        assert.equal(plan.target, move.index);
+        assert.ok(
+          plan.virtual >= 1 - count && plan.virtual <= count * 2,
+          direction + ' ' + steps + ' from ' + from + ' virtual ' + plan.virtual
         );
-        assert.equal(decision.steps, steps, direction + ' from ' + from);
-        const plan = heroVirtualTarget(from, decision.index, decision.direction, count);
-        assert.equal(plan.target, decision.index);
-        assert.ok(plan.virtual >= -3 && plan.virtual <= count + 3, 'virtual ' + plan.virtual);
-        assert.equal(heroCanonicalVirtual(plan.virtual, count), decision.index + 1);
+        assert.equal(heroCanonicalVirtual(plan.virtual, count), move.index + 1);
       }
     }
   }
+  assert.equal(heroVirtualTarget(0, 0, 'next', count, count).virtual, count + 1);
+  assert.equal(heroVirtualTarget(0, 0, 'prev', count, count).virtual, 1 - count);
 });
 
 test('sequential swipes stay in sync from slide one through ten and back', () => {
@@ -262,7 +263,7 @@ function simulateRuntime(target) {
   const runtime = new Function(
     'state', 'document', 'window', 'prefersReducedMotion', 'setTimeout', 'clearTimeout',
     names.map((name) => extractFunction(source, name)).join('\n') +
-      '\nreturn { setHeroSlide, finalizeHeroTrack, heroAdvance };'
+      '\nreturn { setHeroSlide, finalizeHeroTrack, heroAdvance, heroDragDecision };'
   )(state, documentMock, windowMock, () => false, () => 1, () => {});
 
   const assertCoherent = (label, index) => {
@@ -300,6 +301,15 @@ function simulateRuntime(target) {
     index = move.index;
     assertCoherent(target + ' alternating ' + (step + 1), index);
   }
+  for (const swipeSteps of [3, 10, 17, 26]) {
+    const decision = runtime.heroDragDecision(
+      -(45 + (swipeSteps - 1) * 108), 0, 45, index, state.heroCount, 108
+    );
+    runtime.setHeroSlide(decision.index, decision.direction, decision.steps);
+    runtime.finalizeHeroTrack(track);
+    index = decision.index;
+    assertCoherent(target + ' cursor drag ' + swipeSteps, index);
+  }
 }
 
 test('runtime carousel stays coherent through 60 swipes and interrupted calls', () => {
@@ -320,5 +330,20 @@ test('render settles the hero track before generating slide markup', () => {
     assert.ok(renderStart >= 0 && markupStart > renderStart, target + ' has no render markup point');
     assert.ok(finalize > renderStart && finalize < markupStart, target + ' generates slides from a stale track position');
     assert.ok(source.includes('Number(m.rating) || 0'), target + ' shows an index-derived score instead of manga rating');
+  }
+});
+
+test('both frontends keep cursor swipes from starting a native image drag', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(
+      source.includes("thumbs.addEventListener('dragstart', function (e) { e.preventDefault(); });"),
+      target + ' has no cursor drag guard'
+    );
+    assert.ok(source.includes('-webkit-user-drag:none'), target + ' still allows native image dragging');
   }
 });

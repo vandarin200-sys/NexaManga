@@ -26,7 +26,7 @@ function heroWrappedOffset(index, center, count) {
   return offset;
 }
 
-function heroVirtualTarget(current, target, direction, count) {
+function heroVirtualTarget(current, target, direction, count, steps) {
   var total = Math.floor(Number(count) || 0);
   if (total < 2) {
     return { current: 0, target: 0, direction: '', virtual: 1, canonicalVirtual: 1, clone: false };
@@ -38,9 +38,15 @@ function heroVirtualTarget(current, target, direction, count) {
   var dir = direction === 'next' || direction === 'prev'
     ? direction
     : (forward <= backward ? 'next' : 'prev');
-  var span = dir === 'next' ? forward : dir === 'prev' ? -backward : (forward <= backward ? forward : -backward);
+  var span;
+  if (steps !== undefined && steps !== null && Number(steps) > 0) {
+    var cycle = Math.trunc(Number(steps)) % total || total;
+    span = dir === 'prev' ? -cycle : cycle;
+  } else {
+    span = dir === 'next' ? forward : dir === 'prev' ? -backward : (forward <= backward ? forward : -backward);
+  }
   var virtual = from + 1 + span;
-  if (virtual < -3 || virtual > total + 3) virtual = to + 1;
+  if (virtual < 1 - total || virtual > total * 2) virtual = to + 1;
   var clone = virtual < 1 || virtual > total;
   return { current: from, target: to, direction: dir, virtual: virtual, canonicalVirtual: to + 1, clone: clone };
 }
@@ -61,13 +67,12 @@ function heroAdvance(index, direction, count, steps) {
   return { index: heroNormalizeIndex(from + sign * amount, total), direction: sign > 0 ? 'next' : 'prev' };
 }
 
-function heroDragProgress(delta, travel, limit) {
+function heroDragProgress(delta, travel) {
   var width = Math.max(1, Number(travel) || 1);
-  var reach = Math.max(1, Math.floor(Number(limit) || 1));
-  return Math.max(-reach, Math.min(reach, -(Number(delta) || 0) / width));
+  return -(Number(delta) || 0) / width;
 }
 
-function heroDragDecision(delta, velocity, threshold, base, count, maxSteps, stepTravel) {
+function heroDragDecision(delta, velocity, threshold, base, count, stepTravel) {
   var distance = Number(delta) || 0;
   var speed = Math.max(0, Number(velocity) || 0);
   var limit = Math.max(1, Number(threshold) || 48);
@@ -79,12 +84,10 @@ function heroDragDecision(delta, velocity, threshold, base, count, maxSteps, ste
   else if (magnitude >= 24 && speed > 0.35) requested = 1;
   if (!requested) return { index: from, direction: '', steps: 0 };
   var sign = distance < 0 ? 1 : -1;
-  var cap = Math.max(1, Math.floor(Number(maxSteps) || 1));
-  var steps = Math.min(cap, requested);
   return {
-    index: heroNormalizeIndex(from + sign * steps, count),
+    index: heroNormalizeIndex(from + sign * requested, count),
     direction: sign > 0 ? 'next' : 'prev',
-    steps: steps
+    steps: requested
   };
 }
 

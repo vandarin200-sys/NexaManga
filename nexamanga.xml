@@ -1519,6 +1519,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging { transition:none !important; animation:none !important; cursor:grabbing; }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb { transition:none !important; will-change:transform; }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb[data-center="true"] img { animation:none !important; }
+      .yz-hero-carousel .yz-hero-thumbs,
+      .yz-hero-carousel .yz-hero-thumbs img { user-select:none; -webkit-user-select:none; -webkit-user-drag:none; }
       .yz-hero-carousel .yz-hero-thumb-gradient { opacity:0; transition:opacity var(--dur-swipe) var(--ease-swipe); }
       .yz-hero-carousel .yz-hero-thumb[data-center="true"] .yz-hero-thumb-gradient { opacity:1; }
       .yz-hero-carousel .yz-hero-slide { animation:yzHeroReveal var(--dur-slow) var(--ease-out) both; }
@@ -5123,8 +5125,12 @@ function trackPageview() {
       var cloneHeroAt = function (virtual) {
         return cloneHeroSlide(heroSlideParts[heroNormalizeIndex(virtual - 1, heroItems.length)] || '');
       };
+      var leadingClones = [];
+      for (var leadingVirtual = 1 - heroItems.length; leadingVirtual <= 0; leadingVirtual += 1) leadingClones.push(leadingVirtual);
+      var trailingClones = [];
+      for (var trailingVirtual = heroItems.length + 1; trailingVirtual <= heroItems.length * 2; trailingVirtual += 1) trailingClones.push(trailingVirtual);
       var heroSlideHtml = heroItems.length
-        ? [-2, -1, 0].map(cloneHeroAt).join('') + heroSlideParts.join('') + [heroItems.length + 1, heroItems.length + 2, heroItems.length + 3].map(cloneHeroAt).join('')
+        ? leadingClones.map(cloneHeroAt).join('') + heroSlideParts.join('') + trailingClones.map(cloneHeroAt).join('')
         : '';
       state.heroTrackPosition = heroItems.length ? heroIndex + 1 : 0;
       var heroThumbs = heroItems.map(function (m, i) {
@@ -8385,7 +8391,7 @@ function setBannerDotsActive(index) {
       return offset;
     }
 
-    function heroVirtualTarget(current, target, direction, count) {
+    function heroVirtualTarget(current, target, direction, count, steps) {
       var total = Math.floor(Number(count) || 0);
       if (total < 2) {
         return { current: 0, target: 0, direction: '', virtual: 1, canonicalVirtual: 1, clone: false };
@@ -8397,9 +8403,15 @@ function setBannerDotsActive(index) {
       var dir = direction === 'next' || direction === 'prev'
         ? direction
         : (forward <= backward ? 'next' : 'prev');
-      var span = dir === 'next' ? forward : dir === 'prev' ? -backward : (forward <= backward ? forward : -backward);
+      var span;
+      if (steps !== undefined && steps !== null && Number(steps) > 0) {
+        var cycle = Math.trunc(Number(steps)) % total || total;
+        span = dir === 'prev' ? -cycle : cycle;
+      } else {
+        span = dir === 'next' ? forward : dir === 'prev' ? -backward : (forward <= backward ? forward : -backward);
+      }
       var virtual = from + 1 + span;
-      if (virtual < -3 || virtual > total + 3) virtual = to + 1;
+      if (virtual < 1 - total || virtual > total * 2) virtual = to + 1;
       var clone = virtual < 1 || virtual > total;
       return { current: from, target: to, direction: dir, virtual: virtual, canonicalVirtual: to + 1, clone: clone };
     }
@@ -8420,13 +8432,12 @@ function setBannerDotsActive(index) {
       return { index: heroNormalizeIndex(from + sign * amount, total), direction: sign > 0 ? 'next' : 'prev' };
     }
 
-    function heroDragProgress(delta, travel, limit) {
+    function heroDragProgress(delta, travel) {
       var width = Math.max(1, Number(travel) || 1);
-      var reach = Math.max(1, Math.floor(Number(limit) || 1));
-      return Math.max(-reach, Math.min(reach, -(Number(delta) || 0) / width));
+      return -(Number(delta) || 0) / width;
     }
 
-    function heroDragDecision(delta, velocity, threshold, base, count, maxSteps, stepTravel) {
+    function heroDragDecision(delta, velocity, threshold, base, count, stepTravel) {
       var distance = Number(delta) || 0;
       var speed = Math.max(0, Number(velocity) || 0);
       var limit = Math.max(1, Number(threshold) || 48);
@@ -8438,12 +8449,10 @@ function setBannerDotsActive(index) {
       else if (magnitude >= 24 && speed > 0.35) requested = 1;
       if (!requested) return { index: from, direction: '', steps: 0 };
       var sign = distance < 0 ? 1 : -1;
-      var cap = Math.max(1, Math.floor(Number(maxSteps) || 1));
-      var steps = Math.min(cap, requested);
       return {
-        index: heroNormalizeIndex(from + sign * steps, count),
+        index: heroNormalizeIndex(from + sign * requested, count),
         direction: sign > 0 ? 'next' : 'prev',
-        steps: steps
+        steps: requested
       };
     }
 
@@ -8593,7 +8602,7 @@ function setBannerDotsActive(index) {
       }
     }
 
-    function setHeroSlide(next, dir) {
+    function setHeroSlide(next, dir, steps) {
       var count = Math.max(1, state.heroCount || 0);
       var target = heroNormalizeIndex(next, count);
       var carousel = document.querySelector('[data-hero-carousel]');
@@ -8612,7 +8621,7 @@ function setBannerDotsActive(index) {
         syncHeroDots(carousel, current);
         return false;
       }
-      var plan = heroVirtualTarget(current, target, dir, count);
+      var plan = heroVirtualTarget(current, target, dir, count, steps);
       var token = bumpHeroTrackToken(track);
       state.heroAnimDir = plan.direction;
       commitHeroState(plan.target, plan.virtual);
@@ -8624,8 +8633,8 @@ function setBannerDotsActive(index) {
       var setSlideAria = function (virtual) {
         var items = carousel.querySelectorAll('[data-hero-track] > *');
         for (var j = 0; j < items.length; j++) {
-          var isClone = j < 3 || j >= count + 3;
-          items[j].setAttribute('aria-hidden', !isClone && j === virtual + 2 ? 'false' : 'true');
+          var isClone = j < count || j >= count * 2;
+          items[j].setAttribute('aria-hidden', !isClone && j === virtual + count - 1 ? 'false' : 'true');
         }
       };
       var cleanup = function () {
@@ -8658,11 +8667,11 @@ function setBannerDotsActive(index) {
       var thumbs = carousel ? carousel.querySelector('[data-hero-thumbs]') : null;
       if (!carousel || !thumbs || thumbs.dataset.dragBound === '1') return;
       thumbs.dataset.dragBound = '1';
+      thumbs.addEventListener('dragstart', function (e) { e.preventDefault(); });
       var track = carousel ? carousel.querySelector('[data-hero-track]') : null;
-      var slideCount = Math.max(1, state.heroCount || Math.max(1, carousel.querySelectorAll('[data-hero-track] > *').length - 6));
-      var maxDragSteps = Math.min(3, Math.max(1, slideCount - 1));
+      var slideCount = Math.max(1, state.heroCount || Math.max(1, Math.round(carousel.querySelectorAll('[data-hero-track] > *').length / 3)));
       var trackSlides = carousel.querySelectorAll('[data-hero-track] > *');
-      for (var s = 0; s < trackSlides.length; s++) trackSlides[s].setAttribute('aria-hidden', s === (state.heroTrackPosition || 1) + 2 ? 'false' : 'true');
+      for (var s = 0; s < trackSlides.length; s++) trackSlides[s].setAttribute('aria-hidden', s === (state.heroTrackPosition || 1) + slideCount - 1 ? 'false' : 'true');
       var active = false;
       var startX = 0;
       var lastX = 0;
@@ -8682,7 +8691,7 @@ function setBannerDotsActive(index) {
       var renderDrag = function () {
         dragFrame = 0;
         if (!active) return;
-        dragProgress = heroDragProgress(lastX - startX, dragTravel, maxDragSteps);
+        dragProgress = heroDragProgress(lastX - startX, dragTravel);
         state.heroDragOffset = dragProgress;
         snapTo(dragBase + dragProgress, false);
       };
@@ -8703,7 +8712,7 @@ function setBannerDotsActive(index) {
           Math.abs(lastX - startX) / Math.max(1, lastTime - startTime)
         );
         var threshold = Math.max(32, Math.min(dragTravel * 0.42, 96));
-        var decision = heroDragDecision(delta, velocity, threshold, dragBase, slideCount, maxDragSteps, dragTravel);
+        var decision = heroDragDecision(delta, velocity, threshold, dragBase, slideCount, dragTravel);
         state.heroDragOffset = 0;
         state.heroDragged = dragged;
         if (dragged && !cancelled) {
@@ -8711,7 +8720,7 @@ function setBannerDotsActive(index) {
           window.__yzHeroSuppressClickTarget = carousel;
         }
         var moved = decision.direction && !cancelled && slideCount > 1
-          ? setHeroSlide(decision.index, decision.direction)
+          ? setHeroSlide(decision.index, decision.direction, decision.steps)
           : false;
         if (!moved) snapTo(heroNormalizeIndex(state.heroSlide, slideCount), true);
       };
