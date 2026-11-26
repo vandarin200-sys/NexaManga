@@ -425,6 +425,25 @@ test('chapter comment form has a responsive themed composer while detail comment
   }
 });
 
+test('reader dock groups chapter, page, and auto-scroll controls in a responsive themed bar', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('role="group" aria-label="Pilih chapter"'), target + ' should group chapter navigation');
+    assert.ok(source.includes('role="group" aria-label="Pilih halaman"'), target + ' should group page navigation');
+    assert.ok(source.includes('class="yz-reader-dock-item yz-reader-dock-auto'), target + ' should retain an auto-scroll control');
+    assert.ok(source.includes('data-action="reader-prev-page"'), target + ' should retain previous-page navigation');
+    assert.ok(source.includes('data-action="reader-next-page"'), target + ' should retain next-page navigation');
+    assert.ok(source.includes('data-action="toggle-auto-scroll"'), target + ' should retain auto-scroll behavior');
+    assert.ok(source.includes('yz-reader-dock { display:flex;'), target + ' should use the redesigned dock layout');
+    assert.ok(source.includes('body.kv-reader-route .yz-reader-dock-label { display:none; }'), target + ' should hide labels on narrow screens');
+    assert.ok(source.includes('body.kv-reader-route .yz-reader-dock-item.active { background:var(--yz-accent)'), target + ' should theme the active auto-scroll state');
+  }
+});
+
 test('both frontends keep cursor swipes from starting a native image drag', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),

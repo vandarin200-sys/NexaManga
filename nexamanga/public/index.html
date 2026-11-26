@@ -1494,15 +1494,18 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .yz-reader-main { transition:padding .2s ease; }
       body.kv-reader-route .yz-reader-nav-hidden .yz-reader-main { padding-top:0; padding-bottom:0; }
       body.kv-reader-route .yz-reader-footer-inner { width:100%; max-width:860px; margin:0 auto; display:flex; justify-content:center; }
-      body.kv-reader-route .yz-reader-dock { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); align-items:center; gap:2px; width:100%; max-width:620px; padding:6px; border:1px solid rgba(255,255,255,.12); border-radius:18px; background:rgba(8,8,10,.92); box-shadow:0 20px 50px -22px #000; backdrop-filter:blur(18px); }
-      body.kv-reader-route .yz-reader-dock-item { min-width:0; height:42px; display:flex; align-items:center; justify-content:center; gap:6px; border:0; border-radius:12px; background:transparent; color:#d4d4d8; text-decoration:none; font-size:10px; font-weight:800; letter-spacing:.02em; cursor:pointer; }
-      body.kv-reader-route .yz-reader-dock-item:hover:not(:disabled) { background:rgba(255,255,255,.08); color:#fff; }
-      body.kv-reader-route .yz-reader-dock-item:disabled, body.kv-reader-route .yz-reader-dock-item.is-disabled { opacity:.28; cursor:not-allowed; }
-      body.kv-reader-route .yz-reader-dock-item.active { background:var(--yz-accent-subtle); color:var(--yz-accent); }
+      body.kv-reader-route .yz-reader-dock { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; max-width:700px; padding:8px; border:1px solid var(--yz-border); border-radius:20px; background:var(--yz-surface-1); color:var(--yz-text); box-shadow:0 16px 40px -24px rgba(0,0,0,.65); backdrop-filter:blur(14px); }
+      body.kv-reader-route .yz-reader-dock-group { display:flex; align-items:center; gap:4px; min-width:0; }
+      body.kv-reader-route .yz-reader-dock-item { min-width:42px; height:42px; display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:0 11px; border:1px solid transparent; border-radius:13px; background:transparent; color:var(--yz-text-secondary); text-decoration:none; font-size:11px; font-weight:750; cursor:pointer; transition:background-color .16s ease, color .16s ease, border-color .16s ease, transform .16s ease; }
+      body.kv-reader-route .yz-reader-dock-item:hover:not(:disabled):not(.is-disabled) { background:var(--yz-surface-2); color:var(--yz-text); }
+      body.kv-reader-route .yz-reader-dock-item:disabled, body.kv-reader-route .yz-reader-dock-item.is-disabled { opacity:.38; cursor:not-allowed; }
+      body.kv-reader-route .yz-reader-dock-item.active { background:var(--yz-accent); border-color:var(--yz-accent); color:var(--yz-bg); }
       body.kv-reader-route .yz-reader-dock-item svg { width:18px; height:18px; flex:0 0 auto; }
-      body.kv-reader-route .yz-reader-dock-page { display:flex; flex-direction:column; align-items:center; justify-content:center; height:42px; border-left:1px solid rgba(255,255,255,.1); border-right:1px solid rgba(255,255,255,.1); color:#fff; font-variant-numeric:tabular-nums; }
+      body.kv-reader-route .yz-reader-dock-label { white-space:nowrap; }
+      body.kv-reader-route .yz-reader-dock-separator { width:1px; height:28px; flex:0 0 auto; background:var(--yz-border); opacity:.75; }
+      body.kv-reader-route .yz-reader-dock-page { display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:88px; height:42px; padding:0 12px; border-radius:12px; background:var(--yz-surface-2); color:var(--yz-text); font-variant-numeric:tabular-nums; }
       body.kv-reader-route .yz-reader-dock-page strong { font-size:13px; line-height:1; }
-      body.kv-reader-route .yz-reader-dock-page small { margin-top:3px; color:#71717a; font-size:9px; letter-spacing:.08em; }
+      body.kv-reader-route .yz-reader-dock-page small { margin-top:3px; color:var(--yz-text-tertiary); font-size:9px; letter-spacing:.08em; }
       body.kv-reader-route .yz-scrubber { width:100%; accent-color:#22c55e; cursor:pointer; }
       body.kv-reader-route .yz-reader-sheet2 { position:fixed; top:64px; right:clamp(12px,2vw,28px); z-index:90; width:min(360px,calc(100vw - 24px)); max-height:calc(100vh - 140px); overflow:auto; border:1px solid rgba(255,255,255,.1); border-radius:16px; background:rgba(10,10,13,.97); box-shadow:0 28px 70px -30px #000; backdrop-filter:blur(18px); animation:yzSheetIn .2s ease both; }
       body.kv-reader-route .yz-reader-sheet2-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
@@ -1558,9 +1561,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         body.kv-reader-route .yz-reader-header { height:52px; }
         body.kv-reader-route .yz-reader-title { max-width:36vw; }
         body.kv-reader-route .yz-reader-main { padding:64px 0 126px; }
-        body.kv-reader-route .yz-reader-dock { grid-template-columns:repeat(6,minmax(0,1fr)); border-radius:14px; }
-        body.kv-reader-route .yz-reader-dock-item { gap:0; padding:0; }
+        body.kv-reader-route .yz-reader-dock { gap:5px; padding:6px; border-radius:16px; }
+        body.kv-reader-route .yz-reader-dock-group { gap:2px; }
+        body.kv-reader-route .yz-reader-dock-item { width:36px; min-width:36px; height:38px; gap:0; padding:0; border-radius:11px; }
         body.kv-reader-route .yz-reader-dock-label { display:none; }
+        body.kv-reader-route .yz-reader-dock-page { min-width:62px; height:38px; padding:0 6px; }
+        body.kv-reader-route .yz-reader-dock-page strong { font-size:12px; }
         body.kv-reader-route .yz-reader-sheet2 { top:58px; }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -3721,10 +3727,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-reader-route :is(.yz-reader-link, .yz-reader-icon-btn) { background: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; color: var(--yz-text-secondary) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-link:hover,
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-icon-btn:hover { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
-    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock { background: rgba(255, 252, 246, .94) !important; border-color: var(--yz-border) !important; box-shadow: 0 20px 50px -22px rgba(82, 52, 22, .25) !important; }
-    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-item { color: var(--yz-text-muted) !important; }
-    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-item:hover:not(:disabled) { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
-    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-page { border-color: var(--yz-border) !important; color: var(--yz-text) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock { background: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; box-shadow: 0 16px 40px -24px rgba(82, 52, 22, .35) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-item { color: var(--yz-text-secondary) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-item:hover:not(:disabled):not(.is-disabled) { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-item.active { background: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-separator { background: var(--yz-border) !important; }
+    html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-page { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-dock-page small { color: var(--yz-text-tertiary) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-sheet2 { background: rgba(255, 252, 246, .97) !important; border-color: var(--yz-border) !important; box-shadow: 0 28px 70px -30px rgba(82, 52, 22, .35) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-sheet2-head,
@@ -6139,12 +6147,16 @@ function renderCommentSection(manga, chapterId) {
       '</div><div class="yz-reader-progress"><span style="transform:scaleX(' + (progress / 100).toFixed(3) + ')"></span></div></header>';
       var menuSheet = state.readerMenuOpen ? '<aside class="yz-reader-sheet2" role="dialog" aria-label="Daftar chapter"><div class="yz-reader-sheet2-head"><strong>Chapters</strong><button type="button" class="yz-reader-icon-btn" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div><div class="yz-reader-sheet2-body"><a class="yz-reader-link" href="' + publicHref('/manga/' + escapeHtml(manga.slug)) + '">&#8592; ' + escapeHtml(manga.title) + '</a><input id="kv-reader-chapter-search" class="h-9 w-full rounded-lg border border-white/10 bg-black/60 px-3 text-xs text-white outline-none" type="search" placeholder="Cari chapter..." value="' + escapeHtml(state.readerChapterSearch || '') + '" aria-label="Cari chapter"/><div class="yz-reader-chapter-list2">' + chapterRows + '</div></div></aside>' : '';
       var footer = '<footer class="yz-reader-footer"><div class="yz-reader-footer-inner"><nav class="yz-reader-dock" aria-label="Navigasi chapter">' +
-        '<a class="yz-reader-dock-item' + (prevCh ? '' : ' is-disabled') + '" href="' + (prevCh ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id)) : '#') + '" aria-label="Chapter sebelumnya"' + (prevCh ? '' : ' aria-disabled="true"') + '>' + chapterPrevIcon + '<span class="yz-reader-dock-label">Prev</span></a>' +
-        '<button type="button" class="yz-reader-dock-item" data-action="reader-prev-page" aria-label="Halaman sebelumnya"' + (state.currentPageIdx <= 0 ? ' disabled' : '') + '>' + pagePrevIcon + '</button>' +
-        '<button type="button" class="yz-reader-dock-item' + (isPlaying ? ' active' : '') + '" data-action="toggle-auto-scroll" aria-pressed="' + (isPlaying ? 'true' : 'false') + '" aria-label="Auto scroll" title="Auto scroll">' + (isPlaying ? pauseIcon : playIcon) + '</button>' +
-        '<div class="yz-reader-dock-page"><strong>' + (state.currentPageIdx + 1) + ' / ' + pageTotal + '</strong><small>PAGE</small></div>' +
-        '<button type="button" class="yz-reader-dock-item" data-action="reader-next-page" aria-label="Halaman berikutnya"' + (state.currentPageIdx >= pageTotal - 1 ? ' disabled' : '') + '>' + pageNextIcon + '</button>' +
-        '<a class="yz-reader-dock-item' + (nextCh ? '' : ' is-disabled') + '" href="' + (nextCh ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id)) : '#') + '" aria-label="Chapter berikutnya"' + (nextCh ? '' : ' aria-disabled="true"') + '><span class="yz-reader-dock-label">' + (nextCh ? 'Next Ch.' : 'Latest Ch.') + '</span>' + chapterNextIcon + '</a>' +
+       '<div class="yz-reader-dock-group" role="group" aria-label="Pilih chapter">' +
+         '<a class="yz-reader-dock-item' + (prevCh ? '' : ' is-disabled') + '" href="' + (prevCh ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(prevCh.id)) : '#') + '" aria-label="Chapter sebelumnya"' + (prevCh ? '' : ' aria-disabled="true"') + ' title="Chapter sebelumnya">' + chapterPrevIcon + '<span class="yz-reader-dock-label">Prev Ch.</span></a>' +
+         '<a class="yz-reader-dock-item' + (nextCh ? '' : ' is-disabled') + '" href="' + (nextCh ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(nextCh.id)) : '#') + '" aria-label="Chapter berikutnya"' + (nextCh ? '' : ' aria-disabled="true"') + ' title="Chapter berikutnya">' + chapterNextIcon + '<span class="yz-reader-dock-label">' + (nextCh ? 'Next Ch.' : 'Latest Ch.') + '</span></a>' +
+       '</div><span class="yz-reader-dock-separator" aria-hidden="true"></span>' +
+       '<div class="yz-reader-dock-group" role="group" aria-label="Pilih halaman">' +
+         '<button type="button" class="yz-reader-dock-item" data-action="reader-prev-page" aria-label="Halaman sebelumnya"' + (state.currentPageIdx <= 0 ? ' disabled' : '') + '>' + pagePrevIcon + '</button>' +
+         '<div class="yz-reader-dock-page"><strong>' + (state.currentPageIdx + 1) + ' / ' + pageTotal + '</strong><small>PAGE</small></div>' +
+         '<button type="button" class="yz-reader-dock-item" data-action="reader-next-page" aria-label="Halaman berikutnya"' + (state.currentPageIdx >= pageTotal - 1 ? ' disabled' : '') + '>' + pageNextIcon + '</button>' +
+       '</div><span class="yz-reader-dock-separator" aria-hidden="true"></span>' +
+       '<button type="button" class="yz-reader-dock-item yz-reader-dock-auto' + (isPlaying ? ' active' : '') + '" data-action="toggle-auto-scroll" aria-pressed="' + (isPlaying ? 'true' : 'false') + '" aria-label="Auto scroll" title="Auto scroll">' + (isPlaying ? pauseIcon : playIcon) + '<span class="yz-reader-dock-label">Auto scroll</span></button>' +
       '</nav></div></footer>';
       var scrim = state.readerMenuOpen ? '<div class="fixed inset-0 z-[85] bg-black/60" data-action="close-reader-panels" aria-hidden="true"></div>' : '';
       return '<div class="kv-reader-shell yz-reader-root' + (state.readerNavHidden ? ' yz-reader-nav-hidden' : '') + '" data-manga-reader="true" style="background-color:' + escapeHtml(state.readerBackground || '#F7F1E6') + '">' +
