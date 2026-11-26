@@ -494,6 +494,7 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
     assert.ok(!source.includes('bg-zinc-950/65 backdrop-blur-[1px]'), target + ' hero blur overlay should be removed');
     assert.ok(!source.includes('yz-hero-glow'), target + ' hero thumb glow blur should be removed');
     assert.ok(!source.includes('yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75 blur-sm'), target + ' hero art should not have blur-sm');
+    assert.ok(!source.includes('yzHeroFloat'), target + ' center thumbnail image should not shift and resample continuously');
     assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'), target + ' hero active thumb should use natural shadow');
     assert.ok(source.includes('var centerClass = \'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10\';'), target + ' hero shadow should move with the active thumbnail');
     assert.ok(source.includes('.yz-hero-thumb img { filter:none !important; backdrop-filter:none !important;'), target + ' hero thumbnail should not blur');

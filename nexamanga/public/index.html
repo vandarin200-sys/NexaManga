@@ -1527,12 +1527,9 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .yz-hero-carousel .yz-hero-thumb[data-center="true"] .yz-hero-thumb-gradient { opacity:1; }
       .yz-hero-carousel .yz-hero-slide { animation:yzHeroReveal var(--dur-slow) var(--ease-out) both; }
       .yz-hero-carousel .yz-hero-slide .yz-hero-art { animation:yzHeroDrift 10s ease-in-out infinite alternate; }
-      .yz-hero-carousel .yz-hero-thumb[data-center="true"] img { animation:yzHeroFloat 4.5s ease-in-out infinite; }
       @keyframes yzHeroReveal { from { opacity:.35; transform:scale(1.015); } to { opacity:1; transform:scale(1); } }
       @keyframes yzHeroDrift { from { transform:scale(1.05) translate3d(0,0,0); } to { transform:scale(1.1) translate3d(-1.2%,-1%,0); } }
-      @keyframes yzHeroFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
       html.motion-paused .yz-hero-carousel .yz-hero-art,
-      html.motion-paused .yz-hero-carousel .yz-hero-thumb[data-center="true"] img,
       html.motion-paused .yz-reader-live { animation-play-state: paused; }
       @media (max-width:700px) {
         body.kv-reader-route .yz-reader-header { height:52px; }
@@ -1547,8 +1544,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         :root { --dur-swipe: 180ms; }
         body.kv-reader-route .yz-page-shell, body.kv-reader-route .yz-reader-sheet2, body.kv-reader-route .yz-reader-live,
         body.kv-reader-route .yz-reader-header, body.kv-reader-route .yz-reader-footer, body.kv-reader-route .yz-reader-main,
-        .yz-hero-carousel .yz-hero-slide, .yz-hero-carousel .yz-hero-slide .yz-hero-art,
-        .yz-hero-carousel .yz-hero-thumb[data-center="true"] img { animation:none !important; }
+        .yz-hero-carousel .yz-hero-slide, .yz-hero-carousel .yz-hero-slide .yz-hero-art { animation:none !important; }
       }
       html:not(.dark) body.kv-home-route .kv-catalog-page { padding-top: 10px; padding-bottom: 48px; }
       html:not(.dark) body.kv-home-route .kv-catalog-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 0 6px; }
