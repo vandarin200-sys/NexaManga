@@ -2972,6 +2972,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       }
       .yz-theme-option:hover, .yz-theme-option:focus-visible { background: var(--kv-surface-2); color: var(--kv-text); outline: none; }
       .yz-theme-option[data-current="true"] { color: var(--kv-accent); background: var(--kv-surface-2); }
+      .yz-theme-option.is-soon { opacity: .68; }
       .yz-theme-option-icon { display: inline-flex; width: 16px; height: 16px; flex: 0 0 16px; align-items: center; justify-content: center; }
       .yz-theme-option-icon svg { width: 15px; height: 15px; display: block; }
       .yz-theme-option-label { flex: 1; min-width: 0; }
@@ -3753,7 +3754,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [class~="bg-gradient-to-b"] { background-image: linear-gradient(to bottom, rgba(122, 74, 31, .12) 0%, rgba(122, 74, 31, .05) 55%, transparent 100%) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] :is(.text-white, .text-zinc-100, .text-zinc-200) { color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] :is(.text-zinc-300, .text-zinc-400, .text-zinc-500, [class~="text-zinc-300/85"]) { color: var(--yz-text-muted) !important; }
-    html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [style*="color:"] { color: var(--yz-accent) !important; }
+    html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [data-hero-accent] { color: var(--yz-accent) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [class~="text-white/[0.04]"] { color: rgba(122, 74, 31, .08) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] :is([class~="bg-zinc-900/60"], [class~="bg-zinc-800"], [class~="bg-zinc-950"]) { background-color: var(--yz-surface-2) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [data-hero-thumbs] [class~="bg-zinc-950"] { background-color: rgba(122, 74, 31, .18) !important; }
@@ -4898,9 +4899,9 @@ function yzSettingRead(key, fallback) {
     var THEME_CHOICES = [
       { id: 'system', label: 'SYSTEM' },
       { id: 'light', label: 'LIGHT' },
-      { id: 'anilist', label: 'ANILIST' },
-      { id: 'catppuccin', label: 'CATPPUCCIN' },
-      { id: 'mecha', label: 'MECHA' },
+      { id: 'anilist', label: 'ANILIST', soon: true },
+      { id: 'catppuccin', label: 'CATPPUCCIN', soon: true },
+      { id: 'mecha', label: 'MECHA', soon: true },
       { id: 'dark', label: 'DARK' }
     ];
 
@@ -4935,8 +4936,8 @@ function yzSettingRead(key, fallback) {
         '<div class="yz-theme-menu-title">Daftar tema</div>' +
         THEME_CHOICES.map(function (t) {
           var current = state.theme === t.id;
-          return '<button type="button" role="menuitemradio" aria-checked="' + (current ? 'true' : 'false') + '" class="yz-theme-option" data-action="set-theme" data-value="' + t.id + '" data-current="' + (current ? 'true' : 'false') + '">' +
-            '<span class="yz-theme-option-icon">' + themeIconSvg(t.id) + '</span><span class="yz-theme-option-label">' + t.label + '</span>' +
+          return '<button type="button" role="menuitemradio" aria-checked="' + (current ? 'true' : 'false') + '" class="yz-theme-option' + (t.soon ? ' is-soon' : '') + '" data-action="set-theme" data-value="' + t.id + '" data-soon="' + (t.soon ? 'true' : 'false') + '" data-current="' + (current ? 'true' : 'false') + '">' +
+            '<span class="yz-theme-option-icon">' + themeIconSvg(t.id) + '</span><span class="yz-theme-option-label">' + t.label + (t.soon ? ' <span class="text-[10px] opacity-60 ml-1">SOON</span>' : '') + '</span>' +
             (current ? '<span class="yz-theme-option-check" aria-hidden="true">&#10003;</span>' : '') + '</button>';
         }).join('') +
       '</div>';
@@ -5583,13 +5584,13 @@ function trackPageview() {
           '<div class="absolute inset-x-0 bottom-0 z-[3] h-3/4 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-transparent"></div>' +
           '<div class="absolute inset-x-0 top-0 z-[4] h-28 bg-gradient-to-b from-black/85 via-black/45 to-transparent pointer-events-none"></div>' +
           '<span aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 z-[4] h-px" style="background: linear-gradient(to right, transparent, rgba(' + rgb + ', 0.6), transparent);"></span>' +
-          '<div class="absolute left-4 right-4 top-16 z-[5] flex items-center justify-between sm:left-10 sm:right-10 sm:top-20"><div class="flex items-center gap-3"><span class="h-px w-8 sm:w-10 transition-colors duration-500" style="background-color: rgb(' + rgb + ');"></span><span class="font-semibold text-xs uppercase tracking-wider transition-colors duration-500" style="color: rgb(' + rgb + ');">Featured / ' + num + '</span></div><div class="flex items-center gap-2"><span class="hidden font-medium text-xs uppercase tracking-wider text-zinc-500 sm:block">' + heroItems.length + ' Total</span></div></div>' +
+          '<div class="absolute left-4 right-4 top-16 z-[5] flex items-center justify-between sm:left-10 sm:right-10 sm:top-20"><div class="flex items-center gap-3"><span class="h-px w-8 sm:w-10 transition-colors duration-500" style="background-color: rgb(' + rgb + ');"></span><span data-hero-accent class="font-semibold text-xs uppercase tracking-wider transition-colors duration-500" style="color: rgb(' + rgb + ');">Featured / ' + num + '</span></div><div class="flex items-center gap-2"><span class="hidden font-medium text-xs uppercase tracking-wider text-zinc-500 sm:block">' + heroItems.length + ' Total</span></div></div>' +
           '<span aria-hidden="true" class="pointer-events-none absolute right-4 -bottom-3 z-[3] select-none font-black text-[5rem] leading-none tracking-tighter text-white/[0.04] sm:right-10 sm:-bottom-5 sm:text-[9rem] lg:text-[11rem]">' + num + '</span>' +
           '<div class="pointer-events-none absolute inset-0 z-[6] flex items-end justify-center"><div class="w-full px-4 pb-10 sm:px-10 sm:pb-12 max-w-2xl text-center space-y-2 sm:space-y-2.5"><div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 font-medium text-xs tracking-wide text-zinc-400 transform-gpu transition-all duration-300 translate-y-0 opacity-100"><span class="text-zinc-200 font-semibold">Score &mdash; ' + score + '</span><span class="h-3 w-px bg-zinc-700"></span><span class="text-zinc-400">Ongoing</span></div>' +
           '<h2 class="line-clamp-2 text-balance font-bold tracking-tight text-white text-2xl sm:text-4xl lg:text-5xl transform-gpu transition-all duration-300 delay-75 translate-y-0 opacity-100">' + heroTitleHtml(m, color) + '</h2>' +
           '<div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 font-medium text-xs tracking-wide text-zinc-400 transform-gpu transition-all duration-300 delay-100 translate-y-0 opacity-100"><span>' + escapeHtml(m.type || 'manga') + '</span>' + (genres ? '<span aria-hidden="true" class="h-px w-2.5 bg-zinc-700"></span>' + genres : '') + '</div>' +
           (synopsis ? '<p class="mx-auto line-clamp-2 max-w-xl text-center text-xs leading-6 text-zinc-300/85 sm:line-clamp-3 sm:text-sm">' + escapeHtml(synopsis) + '</p>' : '') +
-          '<div class="pointer-events-auto flex flex-nowrap items-center justify-center gap-2 pt-1 sm:gap-3 transform-gpu transition-all duration-300 delay-150 translate-y-0 opacity-100"><a class="group/btn relative inline-flex items-center gap-1.5 border px-3.5 py-2 font-semibold text-xs tracking-wide transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg shadow-lg" href="' + href + '" style="border-color: ' + rgbaOf(color, 0.4) + '; background-color: ' + rgbaOf(color, 0.094) + '; color: rgb(' + rgb + ');">' + icon('book', 'h-3 w-3 sm:h-3.5 sm:w-3.5') + '<span>Read Now</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</a>' +
+          '<div class="pointer-events-auto flex flex-nowrap items-center justify-center gap-2 pt-1 sm:gap-3 transform-gpu transition-all duration-300 delay-150 translate-y-0 opacity-100"><a data-hero-accent class="group/btn relative inline-flex items-center gap-1.5 border px-3.5 py-2 font-semibold text-xs tracking-wide transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg shadow-lg" href="' + href + '" style="border-color: ' + rgbaOf(color, 0.4) + '; background-color: ' + rgbaOf(color, 0.094) + '; color: rgb(' + rgb + ');">' + icon('book', 'h-3 w-3 sm:h-3.5 sm:w-3.5') + '<span>Read Now</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</a>' +
           '<button type="button" data-action="hero-browse" class="group/btn inline-flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 hover:border-zinc-700 px-3 py-2 font-semibold text-xs tracking-wide text-zinc-300 hover:text-white transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg"><span class="sm:hidden">Archive</span><span class="hidden sm:inline">Browse Archive</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</button></div></div></div></div></div>';
       });
       var cloneHeroSlide = function (html) { return html ? html.replace('role="group"', 'role="group" aria-hidden="true" inert') : ''; };
@@ -5616,7 +5617,7 @@ function trackPageview() {
         return '<button type="button" data-action="hero-dot" data-index="' + i + '" data-color="' + heroColors[i % heroColors.length] + '" aria-label="Go to slide ' + (i + 1) + '" class="h-1 rounded-full transition-all duration-300 ' + (active ? 'w-6' : 'w-1.5 bg-zinc-700 hover:bg-zinc-500') + '" style="' + (active ? 'background-color: ' + heroColors[i % heroColors.length] + ';' : '') + '"></button>';
       }).join('');
       var hero = heroItems.length ? '<div class="yz-hero-carousel group relative overflow-hidden select-none bg-zinc-950 text-white" data-hero-carousel="true" role="region" aria-roledescription="carousel" aria-label="Trending Manga Carousel"><div class="overflow-hidden"><div class="yz-hero-track flex ml-0" data-hero-track="true" style="transform: translate3d(-' + (state.heroTrackPosition * 100) + '%, 0px, 0px); transition: transform var(--dur-swipe) var(--ease-swipe); backface-visibility: hidden;">' + heroSlideHtml + '</div></div>' +
-        '<div class="pointer-events-none absolute inset-x-0 top-24 sm:top-28 lg:top-32 z-[7] flex justify-center"><div class="yz-hero-thumbs pointer-events-auto relative h-[160px] w-[108px] sm:h-[215px] sm:w-[145px] lg:h-[265px] lg:w-[178px] cursor-grab active:cursor-grabbing select-none" data-hero-thumbs="true" style="touch-action: pan-y;"><span aria-hidden="true" class="yz-hero-glow absolute left-1/2 -bottom-7 h-10 w-[420%] -translate-x-1/2 rounded-[50%] bg-black/65 blur-2xl pointer-events-none"></span>' + heroThumbs + '</div></div>' +
+        '<div class="pointer-events-none absolute inset-x-0 top-20 sm:top-24 lg:top-28 z-[7] flex justify-center"><div class="yz-hero-thumbs pointer-events-auto relative h-[160px] w-[108px] sm:h-[215px] sm:w-[145px] lg:h-[265px] lg:w-[178px] cursor-grab active:cursor-grabbing select-none" data-hero-thumbs="true" style="touch-action: pan-y;"><span aria-hidden="true" class="yz-hero-glow absolute left-1/2 -bottom-7 h-10 w-[420%] -translate-x-1/2 rounded-[50%] bg-black/65 blur-2xl pointer-events-none"></span>' + heroThumbs + '</div></div>' +
         '<button type="button" data-action="hero-prev" aria-label="Previous slide" class="hidden sm:grid absolute left-3 sm:left-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronLeft', 'h-4 w-4') + '</button>' +
         '<button type="button" data-action="hero-next" aria-label="Next slide" class="hidden sm:grid absolute right-3 sm:right-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronRight', 'h-4 w-4') + '</button>' +
         '<div class="absolute inset-x-0 bottom-3.5 z-[8] flex items-center justify-center gap-1.5 pointer-events-auto">' + heroDots + '</div></div>' : '';
@@ -10152,7 +10153,7 @@ function setBannerDotsActive(index) {
       if (act === 'hero-slide') { markHeroInteraction(); setHeroSlide(Number(el.getAttribute('data-index')) || 0); return; }
       if (act === 'surprise-me') { var pool = state.data.manga || []; var pick = pool[Math.floor(Math.random() * pool.length)]; if (pick) { state.search = ''; state.filterGenres = []; state.filterType = 'Semua'; state.filterStatus = 'Semua'; navigate(publicHref('/manga/' + pick.slug)); } return; }
         if (act === 'toggle-theme') { state.theme = isDarkTheme() ? 'light' : 'dark'; applyTheme(); render(); }
-        else if (act === 'set-theme') { var nextTheme = el.getAttribute('data-value'); if (CONFIG.THEME_IDS.indexOf(nextTheme) !== -1) { state.headerThemeOpen = false; state.theme = nextTheme; applyTheme(); render(); } }
+        else if (act === 'set-theme') { if (el.getAttribute('data-soon') === 'true') { toast('Segera hadir', 'info'); state.headerThemeOpen = false; render(); return; } var nextTheme = el.getAttribute('data-value'); if (CONFIG.THEME_IDS.indexOf(nextTheme) !== -1) { state.headerThemeOpen = false; state.theme = nextTheme; applyTheme(); render(); } }
 
       else if (act === 'oauth-login') {
         if (!CONFIG.API_BASE_URL) { toast('Backend Vercel belum dikonfigurasi.', 'warn'); return; }

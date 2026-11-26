@@ -417,6 +417,21 @@ test('light theme keeps account name and settings surfaces readable', () => {
   }
 });
 
+test('blocked themes show soon notice and hero accents stay colorful in light mode', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes("{ id: 'anilist', label: 'ANILIST', soon: true }"), target + ' anilist should be marked soon');
+    assert.ok(source.includes("toast('Segera hadir', 'info')"), target + ' soon theme toast missing');
+    assert.ok(source.includes('data-hero-accent'), target + ' hero accent hook missing');
+    assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [data-hero-accent]'), target + ' light hero accent rule missing');
+    assert.ok(source.includes('top-20 sm:top-24 lg:top-28 z-[7] flex justify-center'), target + ' hero thumb spacing fix missing');
+  }
+});
+
 test('settings, profile, hero, and detail theme surfaces stay clean', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
