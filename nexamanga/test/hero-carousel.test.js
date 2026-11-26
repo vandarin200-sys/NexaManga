@@ -393,7 +393,7 @@ test('landing latest updates paginate all manga in groups of twelve and omit Mos
   }
 });
 
-test('chapter reader omits the floating Jump to Comments button', () => {
+test('chapter reader keeps comments navigation in the dock without restoring the floating shortcut', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
     path.join(__dirname, '..', '..', 'nexamanga.xml')
@@ -402,7 +402,7 @@ test('chapter reader omits the floating Jump to Comments button', () => {
     const source = fs.readFileSync(target, 'utf8');
     assert.ok(source.includes('id="chapter-comments-section"'), target + ' should keep the chapter comments section');
     assert.ok(!source.includes('Jump to Comments'), target + ' should not show the floating comments shortcut');
-    assert.ok(!source.includes('reader-jump-comments'), target + ' should remove the shortcut action handler');
+    assert.ok(source.includes('data-action="reader-jump-comments"'), target + ' should keep comments navigation in the dock');
     assert.ok(!source.includes('.yz-reader-chip'), target + ' should remove styles used only by the shortcut');
   }
 });
@@ -425,22 +425,27 @@ test('chapter comment form has a responsive themed composer while detail comment
   }
 });
 
-test('reader dock groups chapter, page, and auto-scroll controls in a responsive themed bar', () => {
+test('reader dock shows the compact page controls and keeps each action connected in both frontends', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
     path.join(__dirname, '..', '..', 'nexamanga.xml')
   ];
   for (const target of targets) {
     const source = fs.readFileSync(target, 'utf8');
-    assert.ok(source.includes('role="group" aria-label="Pilih chapter"'), target + ' should group chapter navigation');
-    assert.ok(source.includes('role="group" aria-label="Pilih halaman"'), target + ' should group page navigation');
-    assert.ok(source.includes('class="yz-reader-dock-item yz-reader-dock-auto'), target + ' should retain an auto-scroll control');
+    assert.ok(source.includes('aria-label="Kontrol pembaca"'), target + ' should expose the redesigned reader dock');
+    assert.ok(source.includes('data-action="toggle-reader-settings"'), target + ' should open reader settings');
+    assert.ok(source.includes('data-action="toggle-reader-menu"'), target + ' should retain the chapter list');
     assert.ok(source.includes('data-action="reader-prev-page"'), target + ' should retain previous-page navigation');
     assert.ok(source.includes('data-action="reader-next-page"'), target + ' should retain next-page navigation');
-    assert.ok(source.includes('data-action="toggle-auto-scroll"'), target + ' should retain auto-scroll behavior');
-    assert.ok(source.includes('yz-reader-dock { display:flex;'), target + ' should use the redesigned dock layout');
-    assert.ok(source.includes('body.kv-reader-route .yz-reader-dock-label { display:none; }'), target + ' should hide labels on narrow screens');
-    assert.ok(source.includes('body.kv-reader-route .yz-reader-dock-item.active { background:var(--yz-accent)'), target + ' should theme the active auto-scroll state');
+    assert.ok(source.includes('data-action="toggle-auto-scroll"'), target + ' should retain the auto-scroll control');
+    assert.ok(source.includes('data-action="reader-vip-download"'), target + ' should show the VIP download control');
+    assert.ok(source.includes('aria-label="Laporkan masalah chapter"'), target + ' should provide a report link');
+    assert.ok(source.includes('data-action="reader-jump-comments"'), target + ' should scroll to comments');
+    assert.ok(source.includes('reader-jump-comments'), target + ' should handle the comments action');
+    assert.ok(source.includes('yz-reader-dock { display:flex; align-items:center; justify-content:center;'), target + ' should use the compact centered layout');
+    assert.ok(source.includes('body.kv-reader-route .yz-reader-dock-primary { width:44px;'), target + ' should emphasize the auto-scroll control');
+    assert.ok(!source.includes('yz-reader-dock-page'), target + ' should not display the page counter in the dock');
+    assert.ok(!source.includes('(state.currentPageIdx + 1) + \' / \' + pageTotal'), target + ' should not display a page counter in the reader header');
   }
 });
 
