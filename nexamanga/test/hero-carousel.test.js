@@ -439,7 +439,10 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
   ];
   for (const target of targets) {
     const source = fs.readFileSync(target, 'utf8');
-    assert.ok(source.includes('<h1 class="text-xl sm:text-2xl font-black tracking-tight text-white bg-transparent">Settings</h1>'), target + ' settings heading should not have border styling');
+    assert.ok(source.includes('<h1 class="text-xl sm:text-2xl font-black tracking-tight text-white bg-transparent !bg-none border-0 shadow-none p-0">Settings</h1>'), target + ' settings heading should not have border styling');
+    assert.ok(source.includes('data-account-name class="text-xl sm:text-3xl font-extrabold text-white tracking-tight inline-flex items-center gap-2 bg-transparent !bg-none border-0 shadow-none p-0 m-0"'), target + ' profile name background should be removed');
+    assert.ok(source.includes('Aksen ini mengikuti tema aktif, termasuk mode gelap.'), target + ' theme palette dark mode hint missing');
+    assert.ok(source.includes('html[data-resolved-theme="dark"] body.kv-public-route [data-settings-root] [data-action="settings-accent"][class*="ring-1"]'), target + ' dark theme palette active rule missing');
     assert.ok(!source.includes('uppercase tracking-wider">Settings</h1>'), target + ' settings heading should not use boxed uppercase treatment');
     assert.ok(source.includes('html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] [data-action="settings-tab"].bg-zinc-800'), target + ' light settings tab rule missing');
     assert.ok(source.includes('data-profile-avatar'), target + ' profile avatar hook missing');
