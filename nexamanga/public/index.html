@@ -52,7 +52,7 @@
       --dur-fast: 160ms;
       --dur-base: 220ms;
       --dur-slow: 280ms;
-      --dur-swipe: 780ms;
+      --dur-swipe: var(--dur-slow);
     }
 
     html.dark {
@@ -1510,10 +1510,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       @keyframes yzSheetIn { from { opacity:0; transform:translateY(-8px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
       @keyframes yzLivePulse { 0% { box-shadow:0 0 0 0 rgba(34,197,94,.55); } 70% { box-shadow:0 0 0 7px rgba(34,197,94,0); } 100% { box-shadow:0 0 0 0 rgba(34,197,94,0); } }
       .yz-hero-carousel { isolation:isolate; }
-      .yz-hero-carousel .yz-hero-track { touch-action:pan-y; }
+      .yz-hero-carousel .yz-hero-track,
+      .yz-hero-carousel .yz-hero-thumbs,
+      .yz-hero-carousel .yz-hero-thumb { touch-action:pan-y; }
       .yz-hero-carousel .yz-hero-thumbs { transition:transform var(--dur-slow) var(--ease-out), opacity var(--dur-slow) var(--ease-out); }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging { transition:none !important; animation:none !important; cursor:grabbing; }
-      .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb { transition:none !important; }
+      .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb { transition:none !important; will-change:transform; }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging .yz-hero-thumb[data-center="true"] img { animation:none !important; }
       .yz-hero-carousel .yz-hero-thumb-gradient { opacity:0; transition:opacity var(--dur-swipe) var(--ease-swipe); }
       .yz-hero-carousel .yz-hero-thumb[data-center="true"] .yz-hero-thumb-gradient { opacity:1; }
@@ -8634,31 +8636,35 @@ function setBannerDotsActive(index) {
       var transition = animated
         ? 'transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe)'
         : 'none';
+      var shadeTransition = animated ? 'opacity var(--dur-swipe) var(--ease-swipe)' : 'none';
       for (var i = 0; i < count; i++) {
         var offset = yzHeroWrappedOffset(i, centerPosition, count);
         var pose = yzHeroThumbPose(offset);
         var thumb = thumbs[i];
-        thumb.style.transition = transition;
+        if (thumb.style.transition !== transition) thumb.style.transition = transition;
         thumb.style.transform = pose.transform;
         thumb.style.zIndex = String(pose.zIndex);
         thumb.style.opacity = String(pose.opacity);
         thumb.style.visibility = pose.visibility;
         var shade = thumb.querySelector('span[class*="transition-opacity"]');
         if (shade) {
-          shade.style.transition = animated ? 'opacity var(--dur-swipe) var(--ease-swipe)' : 'none';
+          if (shade.style.transition !== shadeTransition) shade.style.transition = shadeTransition;
           shade.style.opacity = pose.shade;
         }
         var gradient = thumb.querySelector('.yz-hero-thumb-gradient');
-        if (gradient) gradient.style.transition = animated ? 'opacity var(--dur-swipe) var(--ease-swipe)' : 'none';
+        if (gradient && gradient.style.transition !== shadeTransition) gradient.style.transition = shadeTransition;
         var center = offset > -0.5 && offset <= 0.5;
+        var wasCenter = thumb.getAttribute('data-center') === 'true';
         thumb.setAttribute('data-center', center ? 'true' : 'false');
-        var centerClass = 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10';
-        var sideClass = 'hover:border-white/20';
-        var cls = thumb.className;
-        cls = center
-          ? cls.replace(sideClass, '').replace(centerClass, '') + ' ' + centerClass
-          : cls.replace(centerClass, '').replace(sideClass, '') + ' ' + sideClass;
-        thumb.className = cls.replace(/\s+/g, ' ').trim();
+        if (center !== wasCenter) {
+          var centerClass = 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10';
+          var sideClass = 'hover:border-white/20';
+          var cls = thumb.className;
+          cls = center
+            ? cls.replace(sideClass, '').replace(centerClass, '') + ' ' + centerClass
+            : cls.replace(centerClass, '').replace(sideClass, '') + ' ' + sideClass;
+          thumb.className = cls.replace(/\s+/g, ' ').trim();
+        }
       }
     }
 
@@ -8769,12 +8775,23 @@ function setBannerDotsActive(index) {
       var pointerId = null;
       var dragBase = 0;
       var dragProgress = 0;
+      var dragTravel = 1;
+      var dragFrame = 0;
       var baseIndex = function () { return Math.abs(state.heroSlide || 0) % slideCount; };
       var thumbNodes = function () { return carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb'); };
       var snapTo = function (centerPosition, animated) { yzHeroApplyPoses(thumbNodes(), centerPosition, animated); };
+      var renderDrag = function () {
+        dragFrame = 0;
+        if (!active) return;
+        var delta = lastX - startX;
+        dragProgress = Math.max(-1.25, Math.min(1.25, -delta / dragTravel));
+        state.heroDragOffset = dragProgress;
+        snapTo(((dragBase + dragProgress) % slideCount + slideCount) % slideCount, false);
+      };
       var finishDrag = function (e, cancelled) {
         if (!active || (e && e.pointerId !== undefined && e.pointerId !== pointerId)) return;
         active = false;
+        if (dragFrame) { window.cancelAnimationFrame(dragFrame); dragFrame = 0; }
         state.heroDragActive = false;
         markHeroInteraction(1000);
         thumbs.classList.remove('is-dragging');
@@ -8783,7 +8800,10 @@ function setBannerDotsActive(index) {
         }
         pointerId = null;
         var delta = lastX - startX;
-        var velocity = Math.abs(lastX - sampleX) / Math.max(1, lastTime - sampleTime);
+        var velocity = Math.max(
+          Math.abs(lastX - sampleX) / Math.max(1, lastTime - sampleTime),
+          Math.abs(lastX - startX) / Math.max(1, lastTime - startTime)
+        );
         var threshold = Math.max(48, Math.min(110, carousel.clientWidth * 0.14));
         var next = baseIndex();
         var dir = '';
@@ -8812,6 +8832,7 @@ function setBannerDotsActive(index) {
         state.heroDragActive = true;
         dragBase = baseIndex();
         dragProgress = 0;
+        dragTravel = Math.max(1, thumbs.getBoundingClientRect().width || 108);
         markHeroInteraction(1200);
         thumbs.classList.add('is-dragging');
         if (thumbs.setPointerCapture) {
@@ -8826,12 +8847,8 @@ function setBannerDotsActive(index) {
           sampleX = lastX;
           sampleTime = lastTime;
         }
-        var delta = lastX - startX;
-        if (Math.abs(delta) > 8) dragged = true;
-        var travel = Math.max(1, thumbs.getBoundingClientRect().width || 108);
-        dragProgress = Math.max(-1.25, Math.min(1.25, -delta / travel));
-        state.heroDragOffset = dragProgress;
-        snapTo(((dragBase + dragProgress) % slideCount + slideCount) % slideCount, false);
+        if (Math.abs(lastX - startX) > 8) dragged = true;
+        if (!dragFrame) dragFrame = window.requestAnimationFrame(renderDrag);
       });
       thumbs.addEventListener('pointerup', finishDrag);
       thumbs.addEventListener('pointercancel', function (e) { finishDrag(e, true); });
