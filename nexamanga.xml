@@ -1526,7 +1526,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .yz-hero-carousel .yz-hero-thumbs,
       .yz-hero-carousel .yz-hero-thumbs img { user-select:none; -webkit-user-select:none; -webkit-user-drag:none; }
       .yz-hero-carousel .yz-hero-thumb-gradient { opacity:0; transition:opacity var(--dur-swipe) var(--ease-swipe); }
-      .yz-hero-carousel .yz-hero-thumb[data-center="true"] .yz-hero-thumb-gradient { opacity:1; }
       .yz-hero-carousel .yz-hero-slide { animation:yzHeroReveal var(--dur-slow) var(--ease-out) both; }
       .yz-hero-carousel .yz-hero-slide .yz-hero-art { animation:yzHeroDrift 10s ease-in-out infinite alternate; }
       @keyframes yzHeroReveal { from { opacity:.35; transform:scale(1.015); } to { opacity:1; transform:scale(1); } }
@@ -3632,8 +3631,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] { background: var(--yz-surface-0) !important; color: var(--yz-text) !important; border-color: var(--yz-border) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] .yz-hero-art { opacity: .18 !important; filter: brightness(1.05) saturate(.95) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [class~="bg-zinc-950/65"] { background-color: rgba(247, 241, 230, .74) !important; }
-    html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [class~="bg-gradient-to-t"] { background-image: linear-gradient(to top, var(--yz-surface-0) 0%, rgba(247, 241, 230, .78) 58%, transparent 100%) !important; }
-    html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [class~="bg-gradient-to-b"] { background-image: linear-gradient(to bottom, rgba(122, 74, 31, .12) 0%, rgba(122, 74, 31, .05) 55%, transparent 100%) !important; }
+    html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] .yz-hero-slide [class~="bg-gradient-to-t"] { background-image: linear-gradient(to top, var(--yz-surface-0) 0%, rgba(247, 241, 230, .78) 58%, transparent 100%) !important; }
+    html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] .yz-hero-slide [class~="bg-gradient-to-b"] { background-image: linear-gradient(to bottom, rgba(122, 74, 31, .12) 0%, rgba(122, 74, 31, .05) 55%, transparent 100%) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] :is(.text-white, .text-zinc-100, .text-zinc-200) { color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] :is(.text-zinc-300, .text-zinc-400, .text-zinc-500, [class~="text-zinc-300/85"]) { color: var(--yz-text-muted) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-hero-carousel] [data-hero-accent] { color: var(--yz-accent) !important; }
@@ -3678,7 +3677,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] { background: #0B1622 !important; color: #EDF1F5 !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] .yz-hero-art { opacity: .32 !important; filter: brightness(.7) saturate(1.05) !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [class~="bg-zinc-950/65"] { background-color: rgba(11, 22, 34, .58) !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [class~="bg-gradient-to-t"] { background-image: linear-gradient(to top, #0B1622 0%, rgba(11,22,34,.84) 55%, transparent 100%) !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] .yz-hero-slide [class~="bg-gradient-to-t"] { background-image: linear-gradient(to top, #0B1622 0%, rgba(11,22,34,.84) 55%, transparent 100%) !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is(.text-white, .text-zinc-100, .text-zinc-200, [class*="text-white"]) { color: #EDF1F5 !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is(.text-zinc-300, .text-zinc-400, .text-zinc-500, [class~="text-zinc-300/85"]) { color: #9FADBD !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [style*="color:"] { color: #3DB4F2 !important; }

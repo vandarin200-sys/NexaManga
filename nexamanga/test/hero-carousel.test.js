@@ -495,6 +495,9 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
     assert.ok(!source.includes('yz-hero-glow'), target + ' hero thumb glow blur should be removed');
     assert.ok(!source.includes('yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75 blur-sm'), target + ' hero art should not have blur-sm');
     assert.ok(!source.includes('yzHeroFloat'), target + ' center thumbnail image should not shift and resample continuously');
+    assert.ok(!source.includes('.yz-hero-thumb[data-center="true"] .yz-hero-thumb-gradient { opacity:1;'), target + ' center thumbnail should not be washed out by its gradient overlay');
+    assert.ok(source.includes('[data-hero-carousel] .yz-hero-slide [class~="bg-gradient-to-t"]'), target + ' light theme gradient should only restyle hero slide overlays');
+    assert.ok(!source.includes('[data-hero-carousel] [class~="bg-gradient-to-t"] { background-image:'), target + ' hero theme gradient should not recolor thumbnail overlays');
     assert.ok(source.includes('center ? \'border-white/30 ring-1 ring-white/10\' : \'hover:border-white/20\''), target + ' hero active thumb should keep its crisp ring');
     assert.ok(!source.includes('shadow-lg shadow-black/30'), target + ' hero active thumb should not have a diffuse shadow');
     assert.ok(source.includes('var centerClass = \'border-white/30 ring-1 ring-white/10\';'), target + ' hero ring should move with the active thumbnail');
