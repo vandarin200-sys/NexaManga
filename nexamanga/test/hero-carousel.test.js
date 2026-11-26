@@ -351,8 +351,8 @@ test('featured carousel content and archive action follow the single active mang
   assert.ok(source.includes("mangaId: new URLSearchParams(routeQuery).get('mangaId') || ''"));
   assert.ok(source.includes("if (selectedMangaId) return String(m.id) === selectedMangaId;"));
   assert.ok(source.includes("escapeHtml(m.status || 'Ongoing')"));
-  assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'));
-  assert.ok(source.includes("var centerClass = 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10';"));
+  assert.ok(!source.includes('shadow-lg shadow-black/30'), 'center thumbnail should not use a diffuse shadow');
+  assert.ok(source.includes("var centerClass = 'border-white/30 ring-1 ring-white/10';"));
 });
 
 test('render settles the hero track before generating slide markup', () => {
@@ -495,8 +495,9 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
     assert.ok(!source.includes('yz-hero-glow'), target + ' hero thumb glow blur should be removed');
     assert.ok(!source.includes('yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75 blur-sm'), target + ' hero art should not have blur-sm');
     assert.ok(!source.includes('yzHeroFloat'), target + ' center thumbnail image should not shift and resample continuously');
-    assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'), target + ' hero active thumb should use natural shadow');
-    assert.ok(source.includes('var centerClass = \'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10\';'), target + ' hero shadow should move with the active thumbnail');
+    assert.ok(source.includes('center ? \'border-white/30 ring-1 ring-white/10\' : \'hover:border-white/20\''), target + ' hero active thumb should keep its crisp ring');
+    assert.ok(!source.includes('shadow-lg shadow-black/30'), target + ' hero active thumb should not have a diffuse shadow');
+    assert.ok(source.includes('var centerClass = \'border-white/30 ring-1 ring-white/10\';'), target + ' hero ring should move with the active thumbnail');
     assert.ok(source.includes('.yz-hero-thumb img { filter:none !important; backdrop-filter:none !important;'), target + ' hero thumbnail should not blur');
     assert.ok(source.includes('yzHeroApplyPoses(carousel.querySelectorAll(\'[data-hero-thumbs] > .yz-hero-thumb\'), canonical, false);'), target + ' hero cleanup should resync thumb poses');
     assert.ok(source.includes('data-detail-cover-glow'), target + ' detail cover glow hook missing');
