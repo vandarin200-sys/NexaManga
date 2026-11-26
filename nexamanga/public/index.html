@@ -5280,10 +5280,11 @@ function trackPageview() {
         '<button type="button" data-action="hero-prev" aria-label="Previous slide" class="hidden sm:grid absolute left-3 sm:left-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronLeft', 'h-4 w-4') + '</button>' +
         '<button type="button" data-action="hero-next" aria-label="Next slide" class="hidden sm:grid absolute right-3 sm:right-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronRight', 'h-4 w-4') + '</button>' +
         '<div class="absolute inset-x-0 bottom-3.5 z-[8] flex items-center justify-center gap-1.5 pointer-events-auto">' + heroDots + '</div></div>' : '';
+      var trendingRailHtml = trending.map(function (m) { return '<div class="w-32 shrink-0 snap-start sm:w-36 md:w-40 lg:w-44 xl:w-48 2xl:w-52">' + landingCard(m) + '</div>'; }).join('');
       var nextBtn = '<button type="button" data-action="scroll-landing-rail" data-target="manga-rail-trending" class="grid h-9 w-9 place-items-center rounded-lg bg-white/5 text-zinc-300 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white" title="Next titles" aria-label="Next titles">' + icon('chevron', 'h-5 w-5') + '</button>';
       var gridClass = 'grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 min-[1900px]:grid-cols-8 min-[2200px]:grid-cols-9';
       var sections = '<div class="space-y-11">' +
-        '<section class="space-y-4">' + sectionHead('Trending Now', 'book', 'h-4 w-4 text-red-300', nextBtn, trending.length) + '<div class="flex gap-3 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden sm:gap-4" id="manga-rail-trending" style="cursor: grab;">' + trending.map(function (m) { return '<div class="w-32 shrink-0 snap-start sm:w-36 md:w-40 lg:w-44 xl:w-48 2xl:w-52">' + landingCard(m) + '</div>'; }).join('') + '</div></section>' +
+        '<section class="space-y-4">' + sectionHead('Trending Now', 'book', 'h-4 w-4 text-red-300', nextBtn, trending.length) + '<div class="flex gap-3 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden sm:gap-4" id="manga-rail-trending" data-infinite-rail="true" style="cursor: grab;">' + trendingRailHtml + '</div></section>' +
         '<section class="space-y-4">' + sectionHead('Latest Update', 'layers', 'h-4 w-4 text-zinc-300', '', recentAll.length) + '<div class="' + gridClass + '">' + recentAll.map(landingCard).join('') + '</div></section>' +
         '<section class="space-y-4">' + sectionHead('Most Followed', 'layers', 'h-4 w-4 text-zinc-300', '', followed.length) + '<div class="' + gridClass + '">' + followed.map(landingCard).join('') + '</div></section>' +
       '</div>';
@@ -8870,6 +8871,88 @@ function setBannerDotsActive(index) {
       }
     }
 
+    function bindLandingRail(rail) {
+      if (!rail || rail.dataset.infiniteBound === '1') return;
+      rail.dataset.infiniteBound = '1';
+      var baseCards = Array.prototype.slice.call(rail.children);
+      if (!baseCards.length) return;
+      var cardsPerCopy = baseCards.length;
+      var copyWidth = 0;
+      var stride = 0;
+      var lastWidth = 0;
+      var frame = 0;
+      function jump(left) {
+        rail.style.scrollBehavior = 'auto';
+        rail.scrollLeft = left;
+        rail.style.scrollBehavior = '';
+      }
+      function setAccess() {
+        var nodes = rail.children;
+        for (var i = 0; i < nodes.length; i++) {
+          if (Math.floor(i / cardsPerCopy) === 1) {
+            nodes[i].removeAttribute('aria-hidden');
+            nodes[i].removeAttribute('inert');
+          } else {
+            nodes[i].setAttribute('aria-hidden', 'true');
+            nodes[i].setAttribute('inert', '');
+          }
+        }
+      }
+      function relativePosition() {
+        if (!copyWidth || !stride) return 0;
+        return (rail.scrollLeft - copyWidth) / stride;
+      }
+      function rebuild(position) {
+        var first = baseCards[0];
+        var last = baseCards[baseCards.length - 1];
+        var styles = window.getComputedStyle(rail);
+        var gap = parseFloat(styles.columnGap) || parseFloat(styles.gap) || 0;
+        var baseWidth = (last.offsetLeft - first.offsetLeft) + last.offsetWidth + gap;
+        if (!baseWidth) return;
+        var copies = Math.max(3, 2 + Math.ceil((rail.clientWidth + gap) / baseWidth));
+        var unchanged = copyWidth && stride && lastWidth === rail.clientWidth && rail.children.length === copies * cardsPerCopy;
+        if (!unchanged) {
+          while (rail.firstChild) rail.removeChild(rail.firstChild);
+          for (var c = 0; c < copies; c++) {
+            baseCards.forEach(function (card) {
+              rail.appendChild(c === 0 ? card : card.cloneNode(true));
+            });
+          }
+          var head = rail.children[0];
+          var nextCopy = rail.children[cardsPerCopy];
+          copyWidth = nextCopy ? (nextCopy.offsetLeft - head.offsetLeft) : baseWidth;
+          stride = cardsPerCopy > 1 ? (rail.children[1].offsetLeft - head.offsetLeft) : copyWidth;
+          lastWidth = rail.clientWidth;
+          rail.dataset.railStride = String(stride);
+          rail.dataset.railCopyWidth = String(copyWidth);
+          setAccess();
+        }
+        if (!copyWidth || !stride) return;
+        var left = copyWidth + (typeof position === 'number' ? position * stride : 0);
+        var maxLeft = Math.max(0, rail.scrollWidth - rail.clientWidth);
+        jump(Math.max(0, Math.min(left, maxLeft)));
+      }
+      rebuild();
+      rail.__yzRailRebuild = function () { rebuild(relativePosition()); };
+      if (window.requestAnimationFrame) window.requestAnimationFrame(function () { rebuild(relativePosition()); });
+      rail.addEventListener('scroll', function () {
+        if (frame || !copyWidth) return;
+        frame = window.requestAnimationFrame(function () {
+          frame = 0;
+          var left = rail.scrollLeft;
+          if (left >= copyWidth * 2) jump(left - copyWidth);
+          else if (left < copyWidth) jump(left + copyWidth);
+        });
+      }, { passive: true });
+      if (!window.__yzLandingRailResizeBound) {
+        window.__yzLandingRailResizeBound = true;
+        window.addEventListener('resize', function () {
+          var current = document.querySelector('[data-infinite-rail="true"]');
+          if (current && typeof current.__yzRailRebuild === 'function') current.__yzRailRebuild();
+        }, { passive: true });
+      }
+    }
+
     var dockFrame = null;
     var readerFrameObserver = null;
     var lastDockState = { overlayEl: null, navEl: null, settled: null, overlay: null, nav: null };
@@ -9082,6 +9165,8 @@ function setBannerDotsActive(index) {
       }
       var heroCarousel = document.querySelector('[data-hero-carousel]');
       if (heroCarousel) bindHeroCarousel();
+      var landingRail = document.querySelector('[data-infinite-rail="true"]');
+      if (landingRail) bindLandingRail(landingRail);
        var rWidth = document.getElementById('kv-reader-width');
        if (rWidth) rWidth.onchange = function (e) { state.readerWidth = Number(e.target.value); yzReaderSavePrefs(); render(); };
        var rZoom = document.getElementById('kv-reader-zoom');
@@ -9645,7 +9730,7 @@ function setBannerDotsActive(index) {
       else if (act === 'quick-genre') { var genre = el.getAttribute('data-genre'); if (el.getAttribute('data-landing') === '1') { state.yzLandingGenre = genre && genre !== 'All' ? genre : 'All'; state.homePage = 1; render(); } else { state.filterGenres = genre && genre !== 'Semua' ? [genre] : []; state.openCatalogDropdown = 'genre'; state.page = 1; navigate('#/archive'); } }
         else if (act === 'toggle-yz-blur') { state.yzBlurSafe = !state.yzBlurSafe; render(); }
         else if (act === 'toggle-synopsis') { state.synopsisExpanded = !state.synopsisExpanded; render(); }
-        else if (act === 'scroll-landing-rail') { var rail = document.getElementById(el.getAttribute('data-target') || 'manga-rail-trending'); if (rail && typeof rail.scrollBy === 'function') rail.scrollBy({ left: Math.max(240, rail.clientWidth * 0.8), behavior: scrollBehavior() }); }
+        else if (act === 'scroll-landing-rail') { var rail = document.getElementById(el.getAttribute('data-target') || 'manga-rail-trending'); if (rail && typeof rail.scrollBy === 'function') { var stride = Number(rail.dataset.railStride) || 0; var copyWidth = Number(rail.dataset.railCopyWidth) || 0; var fallback = Math.max(240, rail.clientWidth * 0.8); var step = stride && copyWidth ? Math.min(fallback, Math.max(stride, copyWidth - stride)) : fallback; rail.scrollBy({ left: step, behavior: scrollBehavior() }); } }
       else if (act === 'home-page') { state.homePage = Number(el.getAttribute('data-page')) || 1; render(); }
       else if (act === 'toggle-ch-sort') { state.chapterSortAsc = !state.chapterSortAsc; render(); }
        else if (act === 'toggle-filter-drawer') { state.filterDrawerOpen = !state.filterDrawerOpen; state.filterDrawerSkipAnim = false; render(); }
