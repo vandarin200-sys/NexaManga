@@ -4123,7 +4123,7 @@ function yzSettingRead(key, fallback) {
       filterDrawerSkipAnim: false,
       page: 1,
       homePage: 1,
-      yzHeroIndex: 0,
+      activeIndex: 0,
       yzLandingGenre: 'All',
       yzLandingSearch: '',
       yzBlurSafe: true,
@@ -4134,7 +4134,6 @@ function yzSettingRead(key, fallback) {
        profileTab: 'overview',
        profileReaction: '',
       yzSidebarExpanded: false,
-      heroSlide: 0,
       heroCount: 0,
       heroTrackPosition: 1,
       heroDragActive: false,
@@ -5107,8 +5106,11 @@ function yzSettingRead(key, fallback) {
         window.history.replaceState(null, '', cleanUrl);
       }
       var parts = routePath.split('?')[0].split('/').filter(Boolean);
+      var routeQuery = legacyRoute
+        ? (routePath.indexOf('?') === -1 ? '' : routePath.slice(routePath.indexOf('?') + 1))
+        : window.location.search.replace(/^\?/, '');
       if (parts.length === 0 || parts[0] === 'home') { state.route = 'home'; state.params = {}; return; }
-      if (parts[0] === 'catalog' || parts[0] === 'archive' || parts[0] === 'search') { state.route = 'catalog'; state.params = { nav: 'browse' }; return; }
+      if (parts[0] === 'catalog' || parts[0] === 'archive' || parts[0] === 'search') { state.route = 'catalog'; state.params = { nav: 'browse', mangaId: new URLSearchParams(routeQuery).get('mangaId') || '' }; return; }
       if (parts[0] === 'manga' && !parts[1]) { state.route = 'catalog'; state.params = { nav: 'manga' }; return; }
       if (parts[0] === 'manga' && parts[1]) { state.route = 'detail'; state.params = { slug: parts[1] }; return; }
       if (parts[0] === 'baca' && parts[1] && parts[2]) { state.route = 'reader'; state.params = { slug: parts[1], chapterId: parts[2] }; state.currentPageIdx = 0; return; }
@@ -5565,33 +5567,39 @@ function trackPageview() {
         return lead + (last ? ' <span class="font-extrabold italic" style="color: ' + color + ';">' + escapeHtml(last) + '</span>' : '');
       }
       var heroItems = landingSort(pool.slice()).slice(0, 10);
-      var heroIndex = Math.max(0, Math.min(heroItems.length - 1, state.heroSlide || 0));
+      var heroIndex = Math.max(0, Math.min(heroItems.length - 1, state.activeIndex || 0));
+      var activeManga = heroItems[heroIndex];
+      state.activeIndex = heroIndex;
       state.heroCount = heroItems.length;
-      state.heroSlide = heroIndex;
-      state.yzHeroIndex = heroIndex;
       var heroSlideParts = heroItems.map(function (m, i) {
+        var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
         var color = heroColors[i % heroColors.length];
         var rgb = rgbOf(color).join(', ');
-        var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
         var img = cover ? '<img alt="" decoding="async" style="position: absolute; height: 100%; width: 100%; inset: 0px;" loading="' + (i === 0 ? 'eager' : 'lazy') + '" src="' + cover + '" class="yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75">' : '';
-        var num = i + 1 < 10 ? '0' + (i + 1) : String(i + 1);
-        var genres = (m.genres || []).slice(0, 2).map(function (g) { return '<span>' + escapeHtml(g) + '</span>'; }).join('<span aria-hidden="true" class="h-px w-2.5 bg-zinc-700"></span>');
-        var href = publicHref('/manga/' + escapeHtml(m.slug || ''));
-        var synopsis = String(m.synopsis || '').trim();
-        var score = Math.max(0, Math.min(10, Number(m.rating) || 0)).toFixed(1);
         return '<div role="group" aria-roledescription="slide" class="yz-hero-slide min-w-0 shrink-0 grow-0 basis-full pl-0"><div class="relative h-[530px] sm:h-[600px] lg:h-[670px]" style="contain: layout style paint;">' + img +
           '<div class="absolute inset-0 z-[2] bg-zinc-950/65"></div>' +
           '<div class="absolute inset-x-0 bottom-0 z-[3] h-3/4 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-transparent"></div>' +
           '<div class="absolute inset-x-0 top-0 z-[4] h-28 bg-gradient-to-b from-black/85 via-black/45 to-transparent pointer-events-none"></div>' +
-          '<span aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 z-[4] h-px" style="background: linear-gradient(to right, transparent, rgba(' + rgb + ', 0.6), transparent);"></span>' +
-          '<div class="absolute left-4 right-4 top-16 z-[5] flex items-center justify-between sm:left-10 sm:right-10 sm:top-20"><div class="flex items-center gap-3"><span class="h-px w-8 sm:w-10 transition-colors duration-500" style="background-color: rgb(' + rgb + ');"></span><span data-hero-accent class="font-semibold text-xs uppercase tracking-wider transition-colors duration-500" style="color: rgb(' + rgb + ');">Featured / ' + num + '</span></div><div class="flex items-center gap-2"><span class="hidden font-medium text-xs uppercase tracking-wider text-zinc-500 sm:block">' + heroItems.length + ' Total</span></div></div>' +
-          '<span aria-hidden="true" class="pointer-events-none absolute right-4 -bottom-3 z-[3] select-none font-black text-[5rem] leading-none tracking-tighter text-white/[0.04] sm:right-10 sm:-bottom-5 sm:text-[9rem] lg:text-[11rem]">' + num + '</span>' +
-          '<div class="pointer-events-none absolute inset-0 z-[6] flex items-end justify-center"><div class="w-full px-4 pb-10 sm:px-10 sm:pb-12 max-w-2xl text-center space-y-2 sm:space-y-2.5"><div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 font-medium text-xs tracking-wide text-zinc-400 transform-gpu transition-all duration-300 translate-y-0 opacity-100"><span class="text-zinc-200 font-semibold">Score &mdash; ' + score + '</span><span class="h-3 w-px bg-zinc-700"></span><span class="text-zinc-400">Ongoing</span></div>' +
+          '<span aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 z-[4] h-px" style="background: linear-gradient(to right, transparent, rgba(' + rgb + ', 0.6), transparent);"></span></div></div>';
+      });
+      var heroContentParts = heroItems.map(function (m, i) {
+        var color = heroColors[i % heroColors.length];
+        var rgb = rgbOf(color).join(', ');
+        var rgba = rgbaOf(color, 0.4);
+        var num = i + 1 < 10 ? '0' + (i + 1) : String(i + 1);
+        var genres = (m.genres || []).slice(0, 2).map(function (g) { return '<span>' + escapeHtml(g) + '</span>'; }).join('<span aria-hidden="true" class="h-px w-2.5 bg-zinc-700"></span>');
+        var href = publicHref('/manga/' + encodeURIComponent(m.slug || ''));
+        var archiveHref = publicHref('/archive?mangaId=' + encodeURIComponent(m.id || ''));
+        var synopsis = String(m.synopsis || '').trim();
+        var score = Math.max(0, Math.min(10, Number(m.rating) || 0)).toFixed(1);
+        return '<div class="absolute inset-0 z-[6] flex items-end justify-center pointer-events-none"><div class="absolute left-4 right-4 top-16 flex items-center justify-between sm:left-10 sm:right-10 sm:top-20"><div class="flex items-center gap-3"><span class="h-px w-8 sm:w-10" style="background-color: rgb(' + rgb + ');"></span><span data-hero-accent class="font-semibold text-xs uppercase tracking-wider" style="color: rgb(' + rgb + ');">Featured / ' + num + '</span></div><div class="flex items-center gap-2"><span class="hidden font-medium text-xs uppercase tracking-wider text-zinc-500 sm:block">' + heroItems.length + ' Total</span></div></div>' +
+          '<span aria-hidden="true" class="absolute right-4 -bottom-3 z-[3] select-none font-black text-[5rem] leading-none tracking-tighter text-white/[0.04] sm:right-10 sm:-bottom-5 sm:text-[9rem] lg:text-[11rem]">' + num + '</span>' +
+          '<div class="w-full px-4 pb-10 sm:px-10 sm:pb-12 max-w-2xl text-center space-y-2 sm:space-y-2.5"><div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 font-medium text-xs tracking-wide text-zinc-400"><span class="text-zinc-200 font-semibold">Score &mdash; ' + score + '</span><span class="h-3 w-px bg-zinc-700"></span><span class="text-zinc-400">' + escapeHtml(m.status || 'Ongoing') + '</span></div>' +
           '<h2 class="line-clamp-2 text-balance font-bold tracking-tight text-white text-2xl sm:text-4xl lg:text-5xl transform-gpu transition-all duration-300 delay-75 translate-y-0 opacity-100">' + heroTitleHtml(m, color) + '</h2>' +
           '<div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 font-medium text-xs tracking-wide text-zinc-400 transform-gpu transition-all duration-300 delay-100 translate-y-0 opacity-100"><span>' + escapeHtml(m.type || 'manga') + '</span>' + (genres ? '<span aria-hidden="true" class="h-px w-2.5 bg-zinc-700"></span>' + genres : '') + '</div>' +
           (synopsis ? '<p class="mx-auto line-clamp-2 max-w-xl text-center text-xs leading-6 text-zinc-300/85 sm:line-clamp-3 sm:text-sm">' + escapeHtml(synopsis) + '</p>' : '') +
-          '<div class="pointer-events-auto flex flex-nowrap items-center justify-center gap-2 pt-1 sm:gap-3 transform-gpu transition-all duration-300 delay-150 translate-y-0 opacity-100"><a data-hero-accent class="group/btn relative inline-flex items-center gap-1.5 border px-3.5 py-2 font-semibold text-xs tracking-wide transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg shadow-lg" href="' + href + '" style="border-color: ' + rgbaOf(color, 0.4) + '; background-color: ' + rgbaOf(color, 0.094) + '; color: rgb(' + rgb + ');">' + icon('book', 'h-3 w-3 sm:h-3.5 sm:w-3.5') + '<span>Read Now</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</a>' +
-          '<button type="button" data-action="hero-browse" class="group/btn inline-flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 hover:border-zinc-700 px-3 py-2 font-semibold text-xs tracking-wide text-zinc-300 hover:text-white transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg"><span class="sm:hidden">Archive</span><span class="hidden sm:inline">Browse Archive</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</button></div></div></div></div></div>';
+          '<div class="pointer-events-auto flex flex-nowrap items-center justify-center gap-2 pt-1 sm:gap-3"><a data-hero-accent class="group/btn relative inline-flex items-center gap-1.5 border px-3.5 py-2 font-semibold text-xs tracking-wide transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg" href="' + href + '" data-manga-id="' + escapeHtml(m.id || '') + '" style="border-color: ' + rgba + '; background-color: ' + rgbaOf(color, 0.094) + '; color: rgb(' + rgb + ');">' + icon('book', 'h-3 w-3 sm:h-3.5 sm:w-3.5') + '<span>Read Now</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</a>' +
+          '<a data-action="hero-browse" data-manga-id="' + escapeHtml(m.id || '') + '" href="' + archiveHref + '" class="group/btn inline-flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 hover:border-zinc-700 px-3 py-2 font-semibold text-xs tracking-wide text-zinc-300 hover:text-white transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg"><span class="sm:hidden">Archive</span><span class="hidden sm:inline">Browse Archive</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</a></div></div></div>';
       });
       var cloneHeroSlide = function (html) { return html ? html.replace('role="group"', 'role="group" aria-hidden="true" inert') : ''; };
       var cloneHeroAt = function (virtual) {
@@ -5610,13 +5618,15 @@ function trackPageview() {
         var pose = yzHeroThumbPose(offset);
         var center = offset === 0;
         var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
-        return '<div role="button" tabindex="' + (center ? '0' : '-1') + '" aria-hidden="' + (center ? 'false' : 'true') + '" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" data-hero-card-id="' + i + '" data-hero-position="' + offset + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
+        return '<div role="button" tabindex="' + (center ? '0' : '-1') + '" aria-hidden="' + (center ? 'false' : 'true') + '" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" data-hero-card-id="' + i + '" data-hero-position="' + offset + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-colors ' + (center ? 'border-white/30 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
       }).join('');
       var heroDots = heroItems.map(function (m, i) {
         var active = i === heroIndex;
         return '<button type="button" data-action="hero-dot" data-index="' + i + '" data-color="' + heroColors[i % heroColors.length] + '" aria-label="Go to slide ' + (i + 1) + '" class="h-1 rounded-full transition-all duration-300 ' + (active ? 'w-6' : 'w-1.5 bg-zinc-700 hover:bg-zinc-500') + '" style="' + (active ? 'background-color: ' + heroColors[i % heroColors.length] + ';' : '') + '"></button>';
       }).join('');
+      var heroTemplates = heroContentParts.map(function (html, i) { return '<template data-hero-content-template="' + i + '">' + html + '</template>'; }).join('');
       var hero = heroItems.length ? '<div class="yz-hero-carousel group relative overflow-hidden select-none bg-zinc-950 text-white" data-hero-carousel="true" role="region" aria-roledescription="carousel" aria-label="Trending Manga Carousel"><div class="overflow-hidden"><div class="yz-hero-track flex ml-0" data-hero-track="true" style="transform: translate3d(-' + (state.heroTrackPosition * 100) + '%, 0px, 0px); transition: transform var(--dur-swipe) var(--ease-swipe); backface-visibility: hidden;">' + heroSlideHtml + '</div></div>' +
+        '<div data-hero-content="true" aria-live="polite">' + (activeManga ? heroContentParts[heroIndex] : '') + '</div>' + heroTemplates +
         '<div class="pointer-events-none absolute inset-x-0 top-20 sm:top-24 lg:top-28 z-[7] flex justify-center"><div class="yz-hero-thumbs pointer-events-auto relative h-[160px] w-[108px] sm:h-[215px] sm:w-[145px] lg:h-[265px] lg:w-[178px] cursor-grab active:cursor-grabbing select-none" data-hero-thumbs="true" style="touch-action: pan-y;">' + heroThumbs + '</div></div>' +
         '<button type="button" data-action="hero-prev" aria-label="Previous slide" class="hidden sm:grid absolute left-3 sm:left-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronLeft', 'h-4 w-4') + '</button>' +
         '<button type="button" data-action="hero-next" aria-label="Next slide" class="hidden sm:grid absolute right-3 sm:right-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronRight', 'h-4 w-4') + '</button>' +
@@ -5684,7 +5694,9 @@ function renderFilterDrawer(allGenres, typeOptions, statusOptions) {
 
             function renderCatalog() {
         var allGenres = collectGenres();
+        var selectedMangaId = String(state.params.mangaId || '');
         var list = (state.data.manga || []).filter(function (m) {
+          if (selectedMangaId) return String(m.id) === selectedMangaId;
           var q = String(state.search || '').toLowerCase();
           var matchQ = !q || String(m.title || '').toLowerCase().indexOf(q) !== -1;
           var matchG = !state.filterGenres.length || (m.genres || []).some(function (g) { return state.filterGenres.indexOf(g) !== -1; });
@@ -9089,7 +9101,7 @@ function setBannerDotsActive(index) {
         thumb.setAttribute('aria-hidden', center ? 'false' : 'true');
         thumb.setAttribute('data-center', center ? 'true' : 'false');
         if (center !== wasCenter) {
-          var centerClass = 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10';
+          var centerClass = 'border-white/30 ring-1 ring-white/10';
           var sideClass = 'hover:border-white/20';
           var cls = thumb.className;
           cls = center
@@ -9120,8 +9132,7 @@ function setBannerDotsActive(index) {
     function commitHeroState(index, virtual) {
       var count = Math.max(1, state.heroCount || 0);
       var canonical = heroNormalizeIndex(index, count);
-      state.heroSlide = canonical;
-      state.yzHeroIndex = canonical;
+      state.activeIndex = canonical;
       state.heroTrackPosition = heroCanonicalVirtual(virtual, count);
     }
 
@@ -9131,7 +9142,7 @@ function setBannerDotsActive(index) {
         return;
       }
       var count = Math.max(1, state.heroCount || 0);
-      var canonical = heroNormalizeIndex(state.heroSlide, count) + 1;
+      var canonical = heroNormalizeIndex(state.activeIndex, count) + 1;
       bumpHeroTrackToken(track);
       track.__yzHeroIgnoreEventsUntil = Date.now() + 80;
       if (track.__yzHeroEnd) {
@@ -9176,6 +9187,14 @@ function setBannerDotsActive(index) {
       }
     }
 
+    function syncHeroContent(carousel, index) {
+      var content = carousel.querySelector('[data-hero-content]');
+      var template = carousel.querySelector('template[data-hero-content-template="' + index + '"]');
+      if (!content || !template) return;
+      content.innerHTML = template.innerHTML;
+      content.setAttribute('data-active-index', String(index));
+    }
+
     function setHeroSlide(next, dir, steps) {
       var count = Math.max(1, state.heroCount || 0);
       var target = heroNormalizeIndex(next, count);
@@ -9188,9 +9207,10 @@ function setBannerDotsActive(index) {
         return true;
       }
       finalizeHeroTrack(track);
-      var current = heroNormalizeIndex(state.heroSlide, count);
+      var current = heroNormalizeIndex(state.activeIndex, count);
       if (count < 2 || target === current) {
         commitHeroState(current, current + 1);
+        syncHeroContent(carousel, current);
         yzHeroApplyPoses(carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb'), current, true);
         syncHeroDots(carousel, current);
         return false;
@@ -9199,6 +9219,7 @@ function setBannerDotsActive(index) {
       var token = bumpHeroTrackToken(track);
       state.heroAnimDir = plan.direction;
       commitHeroState(plan.target, plan.virtual);
+      syncHeroContent(carousel, plan.target);
       state.heroAnimating = true;
       track.dataset.heroVirtual = String(plan.virtual);
       var swipeTransition = 'transform var(--dur-swipe) var(--ease-swipe)';
@@ -9214,7 +9235,7 @@ function setBannerDotsActive(index) {
       var cleanup = function () {
         if (Number(track.dataset.heroTrackToken || 0) !== token) return;
         finalizeHeroTrack(track);
-        var canonical = heroNormalizeIndex(state.heroSlide, Math.max(1, state.heroCount || 0));
+        var canonical = heroNormalizeIndex(state.activeIndex, Math.max(1, state.heroCount || 0));
         yzHeroApplyPoses(carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb'), canonical, false);
         syncHeroDots(carousel, canonical);
         setSlideAria(state.heroTrackPosition);
@@ -9262,7 +9283,7 @@ function setBannerDotsActive(index) {
       var dragProgress = 0;
       var dragTravel = 1;
       var dragFrame = 0;
-      var baseIndex = function () { return heroNormalizeIndex(state.heroSlide, slideCount); };
+      var baseIndex = function () { return heroNormalizeIndex(state.activeIndex, slideCount); };
       var thumbNodes = function () { return carousel.querySelectorAll('[data-hero-thumbs] > .yz-hero-thumb'); };
       var snapTo = function (centerPosition, animated) { yzHeroApplyPoses(thumbNodes(), heroWrapCenter(centerPosition, slideCount), animated); };
       var renderDrag = function () {
@@ -9299,7 +9320,7 @@ function setBannerDotsActive(index) {
         var moved = decision.direction && !cancelled && slideCount > 1
           ? setHeroSlide(decision.index, decision.direction, decision.steps)
           : false;
-        if (!moved) snapTo(heroNormalizeIndex(state.heroSlide, slideCount), true);
+        if (!moved) snapTo(heroNormalizeIndex(state.activeIndex, slideCount), true);
       };
       thumbs.addEventListener('pointerdown', function (e) {
         if (active || (e.button !== undefined && e.button !== 0)) return;
@@ -10084,10 +10105,15 @@ function setBannerDotsActive(index) {
       var el = e.target.closest('[data-action]');
       if (!el) { if (closeMore) render(); return; }
       var act = el.getAttribute('data-action');
-        if (act === 'hero-prev') { markHeroInteraction(); var heroStep = heroAdvance(state.heroSlide, 'prev', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }
-      if (act === 'hero-next') { markHeroInteraction(); heroStep = heroAdvance(state.heroSlide, 'next', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }
+        if (act === 'hero-prev') { markHeroInteraction(); var heroStep = heroAdvance(state.activeIndex, 'prev', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }
+      if (act === 'hero-next') { markHeroInteraction(); heroStep = heroAdvance(state.activeIndex, 'next', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }
       if (act === 'hero-dot' || act === 'hero-thumb') { markHeroInteraction(); setHeroSlide(Number(el.getAttribute('data-index')) || 0); return; }
-      if (act === 'hero-browse') { navigate('/archive'); return; }
+      if (act === 'hero-browse') {
+        var archiveMangaId = el.getAttribute('data-manga-id');
+        if (!archiveMangaId) { toast('Manga aktif tidak memiliki ID yang valid.', 'warn'); return; }
+        navigate('/archive?mangaId=' + encodeURIComponent(archiveMangaId));
+        return;
+      }
       if (act === 'kv-traffic-point') { showTrafficTooltip(el); return; }
        if (act === 'settings-tab') { state.settingsTab = el.getAttribute('data-tab') || 'profile'; state.settingsDeleteOpen = false; state.settingsDeleteText = ''; render(); return; }
        if (act === 'settings-accent') { yzSettingWrite('yume_accent_color', el.getAttribute('data-color') || '#91b8b1'); applyYumeAccent(); render(); return; }
@@ -10582,7 +10608,7 @@ else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); st
         var active = document.activeElement;
         if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT' || (active.matches && active.matches(':focus-visible') && carousel && carousel.contains(active)))) return;
         if (carousel && window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches && carousel.matches(':hover')) return;
-        var nextHero = heroAdvance(state.heroSlide, 'next', state.heroCount, 1);
+        var nextHero = heroAdvance(state.activeIndex, 'next', state.heroCount, 1);
         setHeroSlide(nextHero.index, nextHero.direction);
       }, 6500);
 applyYumeAccent();

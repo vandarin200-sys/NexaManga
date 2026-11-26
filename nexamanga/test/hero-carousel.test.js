@@ -218,10 +218,11 @@ function simulateRuntime(target) {
     'heroNormalizeIndex', 'heroWrapCenter', 'heroWrappedOffset', 'heroVirtualTarget',
     'heroCanonicalVirtual', 'heroAdvance', 'heroDragProgress', 'heroDragDecision',
     'yzHeroWrappedOffset', 'yzHeroThumbPose', 'yzHeroApplyPoses', 'bumpHeroTrackToken',
-    'heroSwipeDuration', 'commitHeroState', 'finalizeHeroTrack', 'syncHeroDots', 'setHeroSlide'
+    'heroSwipeDuration', 'commitHeroState', 'finalizeHeroTrack', 'syncHeroDots', 'syncHeroContent', 'setHeroSlide'
   ];
+  const usesActiveIndex = target.endsWith(path.join('public', 'index.html'));
   const state = {
-    route: 'home', heroCount: 10, heroSlide: 0, yzHeroIndex: 0, heroTrackPosition: 1,
+    route: 'home', heroCount: 10, activeIndex: 0, heroSlide: 0, yzHeroIndex: 0, heroTrackPosition: 1,
     heroAnimDir: '', heroAnimating: false, heroDragActive: false, heroDragOffset: 0, heroDragged: false
   };
   const thumbs = Array.from({ length: 10 }, (_, id) => {
@@ -242,12 +243,17 @@ function simulateRuntime(target) {
     removeAttribute() {}
   }));
   const slides = Array.from({ length: 12 }, () => ({ attrs: {}, setAttribute(key, value) { this.attrs[key] = value; } }));
+  const content = { innerHTML: '', attrs: {}, setAttribute(key, value) { this.attrs[key] = value; } };
+  const templates = Array.from({ length: 10 }, (_, index) => ({ innerHTML: 'manga-' + index }));
   const track = {
     dataset: {}, style: {}, offsetWidth: 1, attrs: {},
     addEventListener() {}, removeEventListener() {}, setAttribute(key, value) { this.attrs[key] = value; }
   };
   const carousel = {
     querySelector(selector) {
+      if (selector === '[data-hero-content]') return content;
+      const templateMatch = selector.match(/data-hero-content-template="(\d+)"/);
+      if (templateMatch) return templates[Number(templateMatch[1])] || null;
       if (selector.indexOf('hero-track') >= 0) return track;
       if (selector.indexOf('hero-dot') >= 0) return dots.find((dot) => dot.className.indexOf('w-6') >= 0) || null;
       return null;
@@ -267,8 +273,12 @@ function simulateRuntime(target) {
   )(state, documentMock, windowMock, () => false, () => 1, () => {});
 
   const assertCoherent = (label, index) => {
-    assert.equal(state.heroSlide, index, label + ' slide');
-    assert.equal(state.yzHeroIndex, index, label + ' mirror index');
+    assert.equal(usesActiveIndex ? state.activeIndex : state.heroSlide, index, label + ' active slide');
+    if (usesActiveIndex) {
+      assert.equal(content.innerHTML, 'manga-' + index, label + ' active manga content');
+    } else {
+      assert.equal(state.yzHeroIndex, index, label + ' mirror index');
+    }
     assert.equal(state.heroAnimating, false, label + ' animation lock');
     assert.equal(track.style.transform, 'translate3d(-' + ((index + 1) * 100) + '%, 0px, 0px)', label + ' track');
     const center = thumbs.find((thumb) => thumb.getAttribute('data-center') === 'true');
@@ -277,10 +287,17 @@ function simulateRuntime(target) {
     assert.equal(dots.indexOf(activeDot), index, label + ' active dot');
   };
 
+  const assertTargetSynced = (label, index) => {
+    if (!usesActiveIndex) return;
+    assert.equal(state.activeIndex, index, label + ' active index during transition');
+    assert.equal(content.innerHTML, 'manga-' + index, label + ' content during transition');
+  };
+
   let index = 0;
   for (let step = 0; step < 20; step += 1) {
     const move = runtime.heroAdvance(index, 'next', state.heroCount, 1);
     runtime.setHeroSlide(move.index, move.direction);
+    assertTargetSynced(target + ' next ' + (step + 1), move.index);
     runtime.finalizeHeroTrack(track);
     index = move.index;
     assertCoherent(target + ' next ' + (step + 1), index);
@@ -288,6 +305,7 @@ function simulateRuntime(target) {
   for (let step = 0; step < 20; step += 1) {
     const move = runtime.heroAdvance(index, 'prev', state.heroCount, 1);
     runtime.setHeroSlide(move.index, move.direction);
+    assertTargetSynced(target + ' prev ' + (step + 1), move.index);
     runtime.finalizeHeroTrack(track);
     index = move.index;
     assertCoherent(target + ' prev ' + (step + 1), index);
@@ -296,7 +314,11 @@ function simulateRuntime(target) {
     const direction = step % 2 === 0 ? 'next' : 'prev';
     const move = runtime.heroAdvance(index, direction, state.heroCount, 1);
     runtime.setHeroSlide(move.index, move.direction);
-    if (step % 3 === 0) runtime.setHeroSlide(state.heroSlide, '');
+    assertTargetSynced(target + ' alternating ' + (step + 1), move.index);
+    if (step % 3 === 0) {
+      runtime.setHeroSlide(usesActiveIndex ? state.activeIndex : state.heroSlide, '');
+      assertTargetSynced(target + ' interrupted ' + (step + 1), move.index);
+    }
     runtime.finalizeHeroTrack(track);
     index = move.index;
     assertCoherent(target + ' alternating ' + (step + 1), index);
@@ -306,6 +328,7 @@ function simulateRuntime(target) {
       -(45 + (swipeSteps - 1) * 108), 0, 45, index, state.heroCount, 108
     );
     runtime.setHeroSlide(decision.index, decision.direction, decision.steps);
+    assertTargetSynced(target + ' cursor drag ' + swipeSteps, decision.index);
     runtime.finalizeHeroTrack(track);
     index = decision.index;
     assertCoherent(target + ' cursor drag ' + swipeSteps, index);
@@ -315,6 +338,20 @@ function simulateRuntime(target) {
 test('runtime carousel stays coherent through 60 swipes and interrupted calls', () => {
   simulateRuntime(path.join(__dirname, '..', 'public', 'index.html'));
   simulateRuntime(path.join(__dirname, '..', '..', 'nexamanga.xml'));
+});
+
+test('featured carousel content and archive action follow the single active manga index', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'public', 'index.html'), 'utf8');
+  assert.ok(source.includes('var activeManga = heroItems[heroIndex];'));
+  assert.ok(source.includes('state.activeIndex = canonical;'));
+  assert.ok(!source.includes('state.heroSlide'));
+  assert.ok(!source.includes('state.yzHeroIndex'));
+  assert.ok(source.includes('syncHeroContent(carousel, plan.target);'));
+  assert.ok(source.includes("var archiveHref = publicHref('/archive?mangaId=' + encodeURIComponent(m.id || ''));"));
+  assert.ok(source.includes("mangaId: new URLSearchParams(routeQuery).get('mangaId') || ''"));
+  assert.ok(source.includes("if (selectedMangaId) return String(m.id) === selectedMangaId;"));
+  assert.ok(source.includes("escapeHtml(m.status || 'Ongoing')"));
+  assert.ok(!source.includes('shadow-lg shadow-black/30'));
 });
 
 test('render settles the hero track before generating slide markup', () => {
@@ -439,6 +476,7 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
   ];
   for (const target of targets) {
     const source = fs.readFileSync(target, 'utf8');
+    const usesActiveIndex = target.endsWith(path.join('public', 'index.html'));
     assert.ok(source.includes('<h1 class="text-xl sm:text-2xl font-black tracking-tight text-white bg-transparent !bg-none border-0 shadow-none p-0">Settings</h1>'), target + ' settings heading should not have border styling');
     assert.ok(source.includes('data-account-name class="text-xl sm:text-3xl font-extrabold text-white tracking-tight inline-flex items-center gap-2 bg-transparent !bg-none border-0 shadow-none p-0 m-0"'), target + ' profile name background should be removed');
     assert.ok(source.includes('Aksen ini mengikuti tema aktif, termasuk mode gelap.'), target + ' theme palette dark mode hint missing');
@@ -450,7 +488,11 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
     assert.ok(!source.includes('bg-zinc-950/65 backdrop-blur-[1px]'), target + ' hero blur overlay should be removed');
     assert.ok(!source.includes('yz-hero-glow'), target + ' hero thumb glow blur should be removed');
     assert.ok(!source.includes('yz-hero-art h-full w-full object-cover scale-105 opacity-40 brightness-75 blur-sm'), target + ' hero art should not have blur-sm');
-    assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'), target + ' hero active thumb should use natural shadow');
+    if (usesActiveIndex) {
+      assert.ok(!source.includes('shadow-lg shadow-black/30'), target + ' hero active thumb should not have a spreading shadow');
+    } else {
+      assert.ok(source.includes('shadow-lg shadow-black/30 ring-1 ring-white/10'), target + ' hero active thumb should use natural shadow');
+    }
     assert.ok(source.includes('yzHeroApplyPoses(carousel.querySelectorAll(\'[data-hero-thumbs] > .yz-hero-thumb\'), canonical, false);'), target + ' hero cleanup should resync thumb poses');
     assert.ok(source.includes('data-detail-cover-glow'), target + ' detail cover glow hook missing');
     assert.ok(source.includes('body.kv-detail-route [data-detail-cover-glow]'), target + ' detail cover glow theme rule missing');
