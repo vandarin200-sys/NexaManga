@@ -22,13 +22,13 @@ const catalog = {
 
 test('buildEmbed uses generic metadata for home with no admin settings', () => {
   const embed = buildEmbed({ manga: [], settings: {} }, '/', 'https://demo.example');
-  assert.equal(embed.title, 'Katalog Manga');
-  assert.equal(embed.description, 'Katalog manga berbahasa Indonesia.');
+  assert.equal(embed.title, 'Archive Manga');
+  assert.equal(embed.description, 'Arsip manga berbahasa Indonesia.');
   assert.equal(embed.type, 'website');
   assert.equal(embed.image, '');
   assert.equal(embed.favicon, '');
   assert.equal(embed.themeColor, '');
-  assert.equal(embed.siteName, 'Katalog Manga');
+  assert.equal(embed.siteName, 'Archive Manga');
   assert.equal(embed.twitterCard, 'summary');
   assert.equal(embed.url, 'https://demo.example/');
 });

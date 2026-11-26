@@ -8,11 +8,11 @@
   <meta expr:content='data:blog.metaDescription' name='description'/>
   <b:include data='blog' name='all-head-content'/>
   <meta content='website' property='og:type'/>
-  <meta content='Katalog Manga' property='og:title'/>
-  <meta content='Katalog manga berbahasa Indonesia.' property='og:description'/>
+  <meta content='Archive Manga' property='og:title'/>
+  <meta content='Arsip manga berbahasa Indonesia.' property='og:description'/>
   <meta content='summary' name='twitter:card'/>
-  <meta content='Katalog Manga' name='twitter:title'/>
-  <meta content='Katalog manga berbahasa Indonesia.' name='twitter:description'/>
+  <meta content='Archive Manga' name='twitter:title'/>
+  <meta content='Arsip manga berbahasa Indonesia.' name='twitter:description'/>
   <meta content='#F7F1E6' name='theme-color'/>
   <script>(function(){try{var v=localStorage.getItem(&#39;kv_theme&#39;)||&#39;system&#39;;var ids=[&#39;system&#39;,&#39;light&#39;,&#39;anilist&#39;,&#39;catppuccin&#39;,&#39;mecha&#39;,&#39;dark&#39;];if(ids.indexOf(v)&lt;0)v=&#39;system&#39;;var dark=v===&#39;dark&#39;||v===&#39;anilist&#39;||v===&#39;catppuccin&#39;||v===&#39;mecha&#39;||(v===&#39;system&#39;&amp;&amp;window.matchMedia&amp;&amp;window.matchMedia(&#39;(prefers-color-scheme: dark)&#39;).matches);var r=document.documentElement;r.classList.toggle(&#39;dark&#39;,dark);r.setAttribute(&#39;data-theme&#39;,v);r.setAttribute(&#39;data-resolved-theme&#39;,dark?&#39;dark&#39;:&#39;light&#39;);r.style.colorScheme=dark?&#39;dark&#39;:&#39;light&#39;;var c={light:&#39;#F7F1E6&#39;,dark:&#39;#0B0E17&#39;,anilist:&#39;#0F1014&#39;,catppuccin:&#39;#1E1E2E&#39;,mecha:&#39;#080C10&#39;};var m=document.querySelector(&#39;meta[name=&quot;theme-color&quot;]&#39;);if(m)m.setAttribute(&#39;content&#39;,v===&#39;system&#39;?(dark?&#39;#0B0E17&#39;:&#39;#F7F1E6&#39;):(c[v]||&#39;#F7F1E6&#39;));}catch(e){}})();</script>
 
@@ -2994,6 +2994,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     .yz-drawer-slide-up { animation: yz-drawer-slide-up .22s cubic-bezier(.16,1,.3,1) both; }
     @keyframes yzMorePop { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
     .yz-more-pop { animation: yzMorePop .18s cubic-bezier(.16,1,.3,1) both; }
+    .yz-detail-poster { aspect-ratio:2/3; }
+    .yz-detail-poster[data-orientation="landscape"] { aspect-ratio:4/3; }
+    .yz-detail-poster img { object-fit:cover; }
+    .yz-detail-poster[data-orientation="landscape"] img { object-fit:contain; }
     .yz-bottom-nav { border-radius:22px; background-color:rgba(9,9,11,.88); box-shadow:0 14px 42px rgba(0,0,0,.5); transition:border-radius .24s ease, background-color .24s ease, transform .24s ease; }
     .yz-bottom-nav .yz-nav-icon { transition:transform .22s cubic-bezier(.16,1,.3,1); }
     .yz-bottom-nav .group:hover .yz-nav-icon { transform:translateY(-2px); }
@@ -3720,6 +3724,7 @@ function yzSettingRead(key, fallback) {
 
       user: null,
       bookmarks: JSON.parse(localStorage.getItem('kv_bookmarks') || '[]'),
+      myRatings: JSON.parse(localStorage.getItem('kv_my_ratings') || '{}'),
       history: JSON.parse(localStorage.getItem('kv_history') || '[]'),
       adminToken: localStorage.getItem('kv_session_token') || '',
       refocusSearch: false,
@@ -4529,8 +4534,8 @@ function yzSettingRead(key, fallback) {
     }
     function applyEmbed() {
       var name = siteName();
-      var baseTitle = name || 'Katalog Manga';
-      var baseDescription = siteTagline() || 'Katalog manga berbahasa Indonesia.';
+      var baseTitle = name || 'Archive Manga';
+      var baseDescription = siteTagline() || 'Arsip manga berbahasa Indonesia.';
       var title = baseTitle;
       var description = baseDescription;
       var image = absoluteMetaUrl(siteLogo());
@@ -4672,9 +4677,10 @@ function trackPageview() {
          window.history.pushState(null, '', routeHash);
        }
 
-        state.filterDrawerOpen = false;
-        state.commentNotice = null;
-       parseRoute();
+         state.yzMoreOpen = false;
+         state.filterDrawerOpen = false;
+         state.commentNotice = null;
+        parseRoute();
        render();
        window.scrollTo(0, 0);
        trackPageview();
@@ -4856,7 +4862,7 @@ function trackPageview() {
         var labelCls = 'yz-nav-label block w-full select-none overflow-hidden truncate whitespace-nowrap text-center text-[10px] font-semibold leading-none tracking-wide mt-1';
         var items = [
           { path: '/home', label: 'Home', icon: 'house', active: state.route === 'home' },
-          { path: '/search', label: 'Browse', icon: 'compass', active: state.route === 'catalog' || state.route === 'detail' },
+          { path: '/search', label: 'Archive', icon: 'compass', active: state.route === 'catalog' || state.route === 'detail' },
           { path: '/akun', label: 'Akun', icon: 'user', active: state.route === 'account' || state.route === 'profile' },
           { path: '/notifikasi', label: 'Notifikasi', icon: 'bell', active: state.route === 'notification' }
         ];
@@ -4866,14 +4872,14 @@ function trackPageview() {
         var moreOpen = !!state.yzMoreOpen;
         var moreActive = moreOpen || state.route === 'settings' || state.route === 'info';
         var moreSheet = moreOpen
-          ? '<div class="absolute bottom-[calc(100%+10px)] right-0 z-[60] w-44 origin-bottom-right rounded-2xl border border-white/[0.09] bg-zinc-950/98 p-1.5 shadow-[0_16px_50px_rgba(0,0,0,0.7)] transition-all duration-200 pointer-events-auto translate-y-0 scale-100 opacity-100 yz-more-pop" data-yz-more-menu>' +
+          ? '<div class="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+96px)] right-2 z-[80] w-48 origin-bottom-right rounded-2xl border border-white/10 bg-[#0b0d11] p-1.5 shadow-[0_18px_60px_rgba(0,0,0,0.85)] transition-all duration-200 pointer-events-auto translate-y-0 scale-100 opacity-100 yz-more-pop md:hidden" data-yz-more-menu>' +
               [['/tentang', 'About', 'help'], ['/settings', 'Settings', 'gear']].map(function (row) {
                 return '<a href="' + publicHref(row[0]) + '" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-zinc-400 hover:bg-white/[0.06] hover:text-white">' + yzIco(row[2], 'h-[18px] w-[18px] shrink-0') + '<span>' + row[1] + '</span></a>';
               }).join('') +
               '<a href="' + escapeHtml(discordUrl() || 'https://discord.gg/VPNSMcG6jM') + '" target="_blank" rel="noopener noreferrer" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-[#5865F2] hover:bg-[#5865F2]/15 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-[18px] w-[18px] shrink-0 text-[#5865F2]" aria-hidden="true">' + svgs.discord + '</svg><span>Discord</span></a>' +
             '</div>'
           : '';
-        return '<div class="pointer-events-none fixed bottom-0 left-0 right-0 z-50 md:hidden" style="padding: 0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);">' + moreSheet +
+        return moreSheet + '<div class="pointer-events-none fixed bottom-0 left-0 right-0 z-50 md:hidden" style="padding: 0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);">' +
           '<nav class="yz-bottom-nav pointer-events-auto mx-auto grid w-full max-w-lg grid-cols-5 justify-items-center border border-white/[0.08] px-2.5 py-2 backdrop-blur-2xl" data-yz-bottom-nav aria-label="Navigasi bawah">' + navHtml +
             '<button type="button" data-action="toggle-yz-more" aria-label="More" aria-expanded="' + (moreOpen ? 'true' : 'false') + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-1.5 transition-colors duration-150 ' + (moreActive ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"><span class="yz-nav-icon flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon('ellipsis') + '</span><span class="' + labelCls + '">More</span></button>' +
           '</nav>' +
@@ -4925,7 +4931,7 @@ function trackPageview() {
         }
         var navItems = [
           ['/', 'Home', 'house', state.route === 'home'],
-          ['/catalog', 'Browse', 'compass', state.route === 'catalog' || state.route === 'detail'],
+          ['/catalog', 'Archive', 'compass', state.route === 'catalog' || state.route === 'detail'],
           ['/leaderboard', 'Leaderboard', 'trophy', state.route === 'info' && state.params.page === 'leaderboard']
         ];
         var navHtml = navItems.map(function (n) { return sideLink(n[0], n[1], n[2], n[3]); }).join('');
@@ -5108,7 +5114,7 @@ function trackPageview() {
           '<div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 font-medium text-xs tracking-wide text-zinc-400 transform-gpu transition-all duration-300 delay-100 translate-y-0 opacity-100"><span>' + escapeHtml(m.type || 'manga') + '</span>' + (genres ? '<span aria-hidden="true" class="h-px w-2.5 bg-zinc-700"></span>' + genres : '') + '</div>' +
           (synopsis ? '<p class="mx-auto line-clamp-2 max-w-xl text-center text-xs leading-6 text-zinc-300/85 sm:line-clamp-3 sm:text-sm">' + escapeHtml(synopsis) + '</p>' : '') +
           '<div class="pointer-events-auto flex flex-nowrap items-center justify-center gap-2 pt-1 sm:gap-3 transform-gpu transition-all duration-300 delay-150 translate-y-0 opacity-100"><a class="group/btn relative inline-flex items-center gap-1.5 border px-3.5 py-2 font-semibold text-xs tracking-wide transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg shadow-lg" href="' + href + '" style="border-color: ' + rgbaOf(color, 0.4) + '; background-color: ' + rgbaOf(color, 0.094) + '; color: rgb(' + rgb + ');">' + icon('book', 'h-3 w-3 sm:h-3.5 sm:w-3.5') + '<span>Read Now</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</a>' +
-          '<button type="button" data-action="hero-browse" class="group/btn inline-flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 hover:border-zinc-700 px-3 py-2 font-semibold text-xs tracking-wide text-zinc-300 hover:text-white transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg"><span class="sm:hidden">Browse</span><span class="hidden sm:inline">Browse Catalogue</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</button></div></div></div></div></div>';
+          '<button type="button" data-action="hero-browse" class="group/btn inline-flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 hover:border-zinc-700 px-3 py-2 font-semibold text-xs tracking-wide text-zinc-300 hover:text-white transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg"><span class="sm:hidden">Archive</span><span class="hidden sm:inline">Browse Archive</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</button></div></div></div></div></div>';
       });
       var cloneHeroSlide = function (html) { return html ? html.replace('role="group"', 'role="group" aria-hidden="true" inert') : ''; };
       var heroSlideHtml = heroSlideParts.length
@@ -5250,7 +5256,7 @@ function renderFilterDrawer(allGenres, typeOptions, statusOptions) {
                 '<button type="button" data-action="clear-filters" class="w-full rounded-lg border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white">Reset Filter</button>' +
               '</div>' +
             '</aside>' +
-            '<div class="lg:col-span-3"><div class="mb-4 flex items-center justify-between"><p class="text-xs text-zinc-500">' + list.length + ' judul ditemukan</p><span class="text-[10px] uppercase tracking-wider text-zinc-600">Katalog NexaManga</span></div>' +
+            '<div class="lg:col-span-3"><div class="mb-4 flex items-center justify-between"><p class="text-xs text-zinc-500">' + list.length + ' judul ditemukan</p><span class="text-[10px] uppercase tracking-wider text-zinc-600">Archive NexaManga</span></div>' +
               (paged.length ? '<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">' + cards + '</div>' : '<div class="rounded-xl border border-zinc-900 bg-zinc-950 p-10 text-center text-sm text-zinc-500">Tidak ada manga yang cocok.</div>') + pagination +
             '</div>' +
           '</div>' +
@@ -5403,6 +5409,7 @@ function renderCommentSection(manga, chapterId) {
       var releaseYear = manga.releaseYear || String(manga.updatedAt || '').slice(0, 4) || '-';
       var followers = compact(manga.followers || manga.views || 0);
       var ratingCount = Number(manga.ratingCount || manga.reviewCount || 0);
+      var myRating = Number((state.myRatings || {})[manga.id] || 0);
       var genres = manga.genres || [];
       var adult = isAdult(manga);
       var blurred = !!state.yzBlurSafe && adult;
@@ -5410,37 +5417,34 @@ function renderCommentSection(manga, chapterId) {
         ? '<img src="' + escapeHtml(manga.coverBloggerUrl) + '" alt="' + escapeHtml(yzTitle(manga)) + '" class="h-full w-full object-cover opacity-25 filter ' + (blurred ? 'blur-2xl scale-110 brightness-75' : '') + '" referrerpolicy="no-referrer"/>'
         : '<div class="h-full w-full bg-gradient-to-br from-zinc-900 via-black to-zinc-950"></div>';
       var poster = manga.coverBloggerUrl
-        ? '<img src="' + escapeHtml(manga.coverBloggerUrl) + '" alt="' + escapeHtml(yzTitle(manga)) + '" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02] ' + (blurred ? 'filter blur-2xl scale-110 brightness-75 contrast-125' : '') + '" referrerpolicy="no-referrer"/>'
+        ? '<img src="' + escapeHtml(manga.coverBloggerUrl) + '" alt="' + escapeHtml(yzTitle(manga)) + '" data-detail-cover="true" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02] ' + (blurred ? 'filter blur-2xl scale-110 brightness-75 contrast-125' : '') + '" referrerpolicy="no-referrer"/>'
         : '<div class="flex h-full w-full items-center justify-center bg-zinc-900 p-4 text-center text-[11px] font-semibold text-zinc-500">' + escapeHtml(yzTitle(manga)) + '</div>';
       var banner = '<div class="relative h-[180px] w-full overflow-hidden sm:h-[300px] md:h-[350px] z-0">' + cover + '<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div></div>';
-      var breadcrumb = '<div class="flex items-center gap-2 mb-8 text-[11px] text-zinc-500 font-semibold font-sans"><a href="' + publicHref('/archive') + '" class="hover:text-white transition-colors flex items-center gap-1.5">' + yzIco('chevron', 'lucide-arrow-left h-3.5 w-3.5 rotate-180') + 'Manga Catalog</a>' + yzIco('chevron', 'h-3 w-3') + '<span class="text-zinc-400 line-clamp-1">' + escapeHtml(yzTitle(manga)) + '</span></div>';
+      var breadcrumb = '<div class="flex items-center gap-2 mb-8 text-[11px] text-zinc-500 font-semibold font-sans"><a href="' + publicHref('/archive') + '" class="hover:text-white transition-colors flex items-center gap-1.5">' + yzIco('chevron', 'lucide-arrow-left h-3.5 w-3.5 rotate-180') + 'Archive</a>' + yzIco('chevron', 'h-3 w-3') + '<span class="text-zinc-400 line-clamp-1">' + escapeHtml(yzTitle(manga)) + '</span></div>';
 
-      var metaRows = '<div class="grid grid-cols-2 gap-y-4 gap-x-2">' +
-        '<div><span class="text-zinc-500 block mb-0.5 font-medium">Status</span><span class="text-white font-bold flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>' + escapeHtml(status) + '</span></div>' +
-        '<div><span class="text-zinc-500 block mb-0.5 font-medium">Demographic</span><span class="text-white font-bold capitalize">' + escapeHtml(demographic) + '</span></div>' +
-        '<div><span class="text-zinc-500 block mb-0.5 font-medium">Release Year</span><span class="text-white font-bold">' + escapeHtml(releaseYear) + '</span></div>' +
-        '<div><span class="text-zinc-500 block mb-0.5 font-medium">Chapters</span><span class="text-white font-bold">' + allChapters.length + '</span></div>' +
-        '<div><span class="text-zinc-500 block mb-0.5 font-medium">Followers</span><span class="text-white font-bold flex items-center gap-1.5">' + yzIco('users', 'h-3.5 w-3.5 text-zinc-500') + escapeHtml(followers) + '</span></div>' +
-      '</div>';
-      var leftGenres = genres.map(function (g) {
-        return '<a href="' + publicHref('/archive') + '" data-action="quick-genre" data-genre="' + escapeHtml(g) + '" class="text-[9px] font-bold text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:text-white border border-zinc-800 rounded px-2 py-0.5 uppercase tracking-wide inline-block transition-colors cursor-pointer">' + escapeHtml(g) + '</a>';
-      }).join('');
-      var trackerLinks = '';
-      if (manga.anilistUrl) trackerLinks += '<a href="' + escapeHtml(manga.anilistUrl) + '" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/50 hover:bg-zinc-850 hover:border-zinc-700 px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white transition-all shadow-sm cursor-pointer" title="Open on AniList">' + yzIco('globe', 'h-4 w-4 object-contain shrink-0') + '<span>AniList</span>' + yzIco('chevron', 'h-3 w-3 text-zinc-500 group-hover:text-zinc-300 ml-0.5') + '</a>';
-      if (manga.comickUrl) trackerLinks += '<a href="' + escapeHtml(manga.comickUrl) + '" target="_blank" rel="noopener noreferrer" class="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-800 hover:border-zinc-700 transition-all cursor-pointer shadow-sm p-1.5" title="View on Comick">' + yzIco('globe', 'h-full w-full object-contain rounded-sm') + '</a>';
-      if (manga.mangaUpdatesUrl) trackerLinks += '<a href="' + escapeHtml(manga.mangaUpdatesUrl) + '" target="_blank" rel="noopener noreferrer" class="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-800 hover:border-zinc-700 transition-all cursor-pointer shadow-sm p-1.5" title="View on MangaUpdates">' + yzIco('globe', 'h-full w-full object-contain rounded-sm') + '</a>';
-      var trackers = '<div class="border-t border-zinc-900/80 pt-4 space-y-2.5"><div class="flex items-center justify-between"><span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Trackers &amp; Sync</span></div><div class="flex items-center gap-2 flex-wrap">' + (trackerLinks || '<span class="text-[11px] text-zinc-500">-</span>') + '</div></div>';
-      var leftColumn = '<div class="flex flex-col gap-6"><div class="aspect-[2/3] w-[180px] sm:w-[200px] md:w-full overflow-hidden rounded-2xl bg-zinc-950 shadow-2xl border border-zinc-900 self-center md:self-start relative group">' + poster + (adult ? '<span class="absolute left-2 top-2 rounded-md border border-rose-500/30 bg-black/85 px-2 py-0.5 text-[10px] font-extrabold text-rose-300">18+</span>' : '') + (blurred ? '<span role="button" tabindex="0" data-action="toggle-yz-blur" aria-label="Reveal 18+ cover" class="absolute inset-0 z-20 flex items-center justify-center bg-black/35 cursor-pointer"><span class="rounded-full border border-white/20 bg-black/85 px-2.5 py-1 text-[10px] font-bold text-white">18+ &middot; Tap to reveal</span></span>' : '') + '</div><div class="rounded-2xl border border-zinc-900 bg-zinc-950/60 p-5 space-y-4 backdrop-blur-md shadow-xl text-xs font-sans">' + metaRows + '<div class="border-t border-zinc-900 pt-3"><span class="text-zinc-500 block mb-1.5 font-medium">Genres</span><div class="flex flex-wrap gap-1">' + (leftGenres || '<span class="text-zinc-500">-</span>') + '</div></div>' + trackers + '</div></div>';
-
-      var topChips = '<div class="flex flex-wrap items-center gap-1.5 text-xs">' +
+      var metaChips = '<div class="flex flex-wrap items-center gap-1.5">' +
         '<span class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 border border-zinc-800 px-2.5 py-1 text-[11px] text-zinc-300 font-semibold"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span class="capitalize">' + escapeHtml(status) + '</span></span>' +
         (adult ? '<span class="rounded-lg bg-rose-950/70 border border-rose-500/30 px-2.5 py-1 text-[11px] font-extrabold text-rose-300">18+</span>' : '') +
         '<span class="rounded-lg bg-zinc-900/80 border border-zinc-800 px-2.5 py-1 text-[11px] text-zinc-400 font-semibold capitalize">' + escapeHtml(demographic) + '</span>' +
         '<span class="rounded-lg bg-zinc-900/80 border border-zinc-800 px-2.5 py-1 text-[11px] text-zinc-400 font-semibold">' + escapeHtml(releaseYear) + '</span>' +
         genres.map(function (g) { return '<a href="' + publicHref('/archive') + '" data-action="quick-genre" data-genre="' + escapeHtml(g) + '" class="rounded-lg bg-zinc-950 hover:bg-zinc-900 border border-zinc-900 hover:border-zinc-750 px-2.5 py-1 text-[10px] text-zinc-400 hover:text-white font-bold tracking-wide transition-all cursor-pointer">' + escapeHtml(g) + '</a>'; }).join('') +
       '</div>';
+      var metaStats = '<div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-zinc-900 pt-3 text-xs">' +
+        '<div class="flex items-center gap-2">' + stars(manga.rating) + '<span class="text-base font-black text-white font-mono tracking-tight">' + escapeHtml(Number(manga.rating || 0).toFixed(1)) + '</span><span class="text-zinc-400 font-medium">(' + ratingCount + ' ratings)</span></div>' +
+        '<span class="hidden h-3.5 w-px bg-zinc-800 sm:block"></span>' +
+        '<div class="flex items-center gap-1.5 text-zinc-300 font-medium" title="' + escapeHtml(String(manga.followers || manga.views || 0)) + ' readers following">' + yzIco('users', 'h-3.5 w-3.5 text-zinc-500') + '<span class="font-bold text-white">' + escapeHtml(followers) + '</span><span class="text-zinc-400">followers</span></div>' +
+      '</div>';
+      var detailMeta = '<div class="rounded-2xl border border-zinc-900 bg-zinc-950/70 p-3.5 shadow-xl backdrop-blur-md font-sans">' + metaChips + metaStats + '</div>';
+      var trackerLinks = '';
+      if (manga.anilistUrl) trackerLinks += '<a href="' + escapeHtml(manga.anilistUrl) + '" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/50 hover:bg-zinc-850 hover:border-zinc-700 px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white transition-all shadow-sm cursor-pointer" title="Open on AniList">' + yzIco('globe', 'h-4 w-4 object-contain shrink-0') + '<span>AniList</span>' + yzIco('chevron', 'h-3 w-3 text-zinc-500 group-hover:text-zinc-300 ml-0.5') + '</a>';
+      if (manga.comickUrl) trackerLinks += '<a href="' + escapeHtml(manga.comickUrl) + '" target="_blank" rel="noopener noreferrer" class="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-800 hover:border-zinc-700 transition-all cursor-pointer shadow-sm p-1.5" title="View on Comick">' + yzIco('globe', 'h-full w-full object-contain rounded-sm') + '</a>';
+      if (manga.mangaUpdatesUrl) trackerLinks += '<a href="' + escapeHtml(manga.mangaUpdatesUrl) + '" target="_blank" rel="noopener noreferrer" class="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-800 hover:border-zinc-700 transition-all cursor-pointer shadow-sm p-1.5" title="View on MangaUpdates">' + yzIco('globe', 'h-full w-full object-contain rounded-sm') + '</a>';
+      var trackers = '<div class="space-y-2.5"><div class="flex items-center justify-between"><span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Trackers &amp; Sync</span></div><div class="flex items-center gap-2 flex-wrap">' + (trackerLinks || '<span class="text-[11px] text-zinc-500">-</span>') + '</div></div>';
+      var posterFrame = '<div class="yz-detail-poster w-[180px] sm:w-[200px] md:w-full overflow-hidden rounded-2xl bg-zinc-950 shadow-2xl border border-zinc-900 self-center md:self-start relative group" data-detail-poster="true" data-orientation="portrait">' + poster + (adult ? '<span class="absolute left-2 top-2 rounded-md border border-rose-500/30 bg-black/85 px-2 py-0.5 text-[10px] font-extrabold text-rose-300">18+</span>' : '') + (blurred ? '<span role="button" tabindex="0" data-action="toggle-yz-blur" aria-label="Reveal 18+ cover" class="absolute inset-0 z-20 flex items-center justify-center bg-black/35 cursor-pointer"><span class="rounded-full border border-white/20 bg-black/85 px-2.5 py-1 text-[10px] font-bold text-white">18+ &middot; Tap to reveal</span></span>' : '') + '</div>';
+      var leftColumn = '<div class="flex flex-col gap-4">' + posterFrame + detailMeta + '<div class="rounded-2xl border border-zinc-900 bg-zinc-950/60 p-4 backdrop-blur-md shadow-xl text-xs font-sans">' + trackers + '</div></div>';
+
       var titleRow = '<div class="space-y-1.5"><div class="flex items-center gap-3 flex-wrap"><div class="group flex items-center gap-2.5 cursor-pointer select-none flex-wrap" title="Tap / click to copy manga title" role="button" tabindex="0"><h1 class="text-2xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl leading-tight group-hover:text-zinc-200 active:text-zinc-300 transition-colors">' + escapeHtml(yzTitle(manga)) + '</h1><button type="button" data-action="share-manga" class="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-800/80 bg-zinc-950/80 text-zinc-400 opacity-70 group-hover:opacity-100 hover:text-white hover:border-zinc-700 transition-all cursor-pointer shadow-sm active:scale-90" title="Copy manga title">' + copyIcon() + '</button></div></div></div>';
-      var ratingRow = '<div class="flex flex-wrap items-center gap-x-4 gap-y-2.5 py-2 text-xs sm:text-sm"><div class="flex items-center gap-2">' + stars(manga.rating) + '<span class="text-base sm:text-lg font-black text-white font-mono tracking-tight">' + escapeHtml(Number(manga.rating || 0).toFixed(1)) + '</span><span class="text-zinc-400 text-xs sm:text-sm font-medium">(' + ratingCount + ' ratings)</span></div><div class="h-3.5 w-px bg-zinc-800 hidden sm:block"></div><div class="flex items-center gap-1.5 text-xs text-zinc-300 font-medium" title="' + escapeHtml(String(manga.followers || manga.views || 0)) + ' readers following">' + yzIco('users', 'h-3.5 w-3.5 text-zinc-400') + '<span class="font-bold text-white">' + escapeHtml(followers) + '</span><span class="text-zinc-400">followers</span></div><div class="h-3.5 w-px bg-zinc-800 hidden sm:block"></div><div class="relative inline-flex items-center"><button type="button" data-action="manga-reaction" data-reaction="star" class="group flex items-center gap-1.5 text-xs sm:text-sm font-semibold transition-all hover:text-white cursor-pointer select-none" aria-label="Set your personal rating"><span class="text-zinc-400 group-hover:text-zinc-300">Your rating:</span>' + starSvg('h-4 w-4 text-zinc-500 group-hover:text-amber-400 transition-colors') + '</button></div></div>';
+      var ratingRow = '<div class="flex items-center py-1 text-xs sm:text-sm"><button type="button" data-action="set-my-rating" data-id="' + escapeHtml(manga.id) + '" class="group flex items-center gap-1.5 font-semibold transition-all hover:text-white cursor-pointer select-none" aria-label="Set your personal rating"><span class="text-zinc-400 group-hover:text-zinc-300">Your rating:</span>' + starSvg('h-4 w-4 ' + (myRating ? 'text-amber-400 fill-amber-400' : 'text-zinc-500 group-hover:text-amber-400 transition-colors')) + (myRating ? '<span class="font-bold text-white">' + myRating + '/10</span>' : '') + '</button></div>';
       var readHref = startChapter ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(startChapter.id)) : publicHref('/archive');
       var actions = '<div class="flex flex-wrap items-center gap-3 pt-1"><a href="' + readHref + '" data-action="open-reader" data-slug="' + escapeHtml(manga.slug) + '" data-cid="' + escapeHtml(startChapter ? startChapter.id : '') + '" class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-xs font-bold text-black hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl cursor-pointer font-sans">' + yzIco('book', 'h-4 w-4 fill-current') + '<span>Start Reading (Ch. ' + escapeHtml(startChapter ? startChapter.number : 1) + ')</span></a><button type="button" data-action="toggle-bookmark" data-id="' + escapeHtml(manga.id) + '" class="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-3 text-xs font-bold text-zinc-200 shadow-md transition-all hover:bg-zinc-850 hover:border-zinc-700 cursor-pointer">' + yzIco('book', 'h-4 w-4 text-zinc-400') + '<span>' + (isBookmarked ? 'Added to Readlist' : 'Add to Readlist') + '</span>' + chevronDownIcon() + '</button></div>';
       var synopsisExpanded = !!state.synopsisExpanded;
@@ -5450,13 +5454,12 @@ function renderCommentSection(manga, chapterId) {
       var shown = chapters.filter(function (c) { return !chapterQuery || (String(c.number) + ' ' + (c.title || '')).toLowerCase().indexOf(chapterQuery) !== -1; });
       var ascActive = !!state.chapterSortAsc;
       var sortControl = '<div class="flex items-center rounded-lg bg-zinc-900 border border-zinc-800 p-0.5"><button type="button" data-action="toggle-ch-sort" class="px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center gap-1 ' + (ascActive ? 'bg-white text-black font-bold shadow-sm' : 'text-zinc-400 hover:text-white') + '" title="Ascending Order (1 → End)">' + arrowIcon('up') + '<span>ASC</span></button><button type="button" data-action="toggle-ch-sort" class="px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center gap-1 ' + (ascActive ? 'text-zinc-400 hover:text-white' : 'bg-white text-black font-bold shadow-sm') + '" title="Descending Order (End → 1)">' + arrowIcon('down') + '<span>DSC</span></button></div>';
-      var serverButton = '<div class="relative inline-block text-left"><button type="button" class="group flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 hover:border-zinc-700 text-zinc-200 hover:text-white text-xs font-bold transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-zinc-600 cursor-pointer"><span class="flex items-center gap-1.5"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Server:</span><span class="font-extrabold text-white">Yor</span></span>' + chevronDownIcon() + '</button></div>';
       var chapterHtml = shown.map(function (c) {
         var href = publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(c.id));
         return '<a href="' + href + '" data-action="open-reader" data-slug="' + escapeHtml(manga.slug) + '" data-cid="' + escapeHtml(c.id) + '" class="group flex items-center justify-between rounded-xl border px-3.5 py-3 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md border-zinc-900/80 bg-zinc-950/40 hover:bg-zinc-900/60 hover:border-zinc-750"><div class="flex items-center gap-3 min-w-0"><span class="text-xs font-bold rounded-lg px-2.5 py-1.5 shrink-0 transition-colors font-mono text-zinc-400 bg-zinc-900 group-hover:text-white group-hover:bg-zinc-800 border border-zinc-800/80">' + escapeHtml(c.number) + '</span><div class="min-w-0"><div class="flex items-center gap-2"><h4 class="line-clamp-1 text-xs font-semibold transition-colors text-zinc-200 group-hover:text-white">Chapter ' + escapeHtml(c.number) + (c.title ? ': ' + escapeHtml(c.title) : '') + '</h4></div><div class="flex items-center gap-2 mt-1 flex-wrap"><span class="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-400 bg-zinc-900/90 border border-zinc-800/60 px-1.5 py-0.5 rounded group-hover:text-zinc-300">' + yzIco('users', 'h-2.5 w-2.5 text-zinc-500') + '<span class="truncate max-w-[130px]">Community</span></span></div></div></div>' + yzIco('chevron', 'h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0 ml-2') + '</a>';
       }).join('') || '<p class="py-8 text-center text-xs text-zinc-500">Tidak ada chapter yang cocok.</p>';
-      var chaptersSection = '<div class="space-y-4 border-t border-zinc-900 pt-8 font-sans"><div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-900 pb-4 gap-3"><div class="flex items-center gap-2.5 flex-wrap"><h3 class="text-sm font-bold uppercase tracking-wider text-white">Chapters</h3><span class="text-[11px] text-zinc-300 font-bold px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">' + allChapters.length + ' Chapters <span class="text-zinc-500 font-normal">on Yor</span></span>' + serverButton + '</div><div class="flex items-center gap-2 flex-wrap">' + sortControl + '</div></div><div class="pt-4"><div class="relative">' + yzIco('search', 'lucide-search pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500') + '<input id="chapter-search" name="chapter_search" type="search" value="' + escapeHtml(state.chapterSearch || '') + '" placeholder="Search chapters by number, title, or translation group..." maxlength="120" class="w-full rounded-xl border border-zinc-900 bg-zinc-950/60 py-2.5 pl-10 pr-9 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-zinc-700 backdrop-blur-md transition-colors"/></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" data-sveltekit-preload-data="tap">' + chapterHtml + '</div></div>';
-      var rightColumn = '<div class="flex flex-col gap-8 min-w-0"><div class="space-y-4">' + topChips + titleRow + ratingRow + actions + synopsis + chaptersSection + '</div></div>';
+      var chaptersSection = '<div class="space-y-4 border-t border-zinc-900 pt-8 font-sans"><div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-900 pb-4 gap-3"><div class="flex items-center gap-2.5 flex-wrap"><h3 class="text-sm font-bold uppercase tracking-wider text-white">Chapters</h3><span class="text-[11px] text-zinc-300 font-bold px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">' + allChapters.length + ' Chapters</span></div><div class="flex items-center gap-2 flex-wrap">' + sortControl + '</div></div><div class="pt-4"><div class="relative">' + yzIco('search', 'lucide-search pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500') + '<input id="chapter-search" name="chapter_search" type="search" value="' + escapeHtml(state.chapterSearch || '') + '" placeholder="Search chapters by number, title, or translation group..." maxlength="120" class="w-full rounded-xl border border-zinc-900 bg-zinc-950/60 py-2.5 pl-10 pr-9 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-zinc-700 backdrop-blur-md transition-colors"/></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" data-sveltekit-preload-data="tap">' + chapterHtml + '</div></div>';
+      var rightColumn = '<div class="flex flex-col gap-8 min-w-0"><div class="space-y-4">' + titleRow + ratingRow + actions + synopsis + chaptersSection + '</div></div>';
 
       var discussionsBody = state.user
         ? renderCommentSection(manga, null)
@@ -8653,6 +8656,18 @@ function setBannerDotsActive(index) {
       readerFrameObserver.observe(frame);
     }
 
+    function bindDetailCover() {
+      var frame = document.querySelector('[data-detail-poster]');
+      var img = frame ? frame.querySelector('[data-detail-cover]') : null;
+      if (!frame || !img) return;
+      var apply = function () {
+        var w = Number(img.naturalWidth) || 0;
+        var h = Number(img.naturalHeight) || 0;
+        if (w && h) frame.setAttribute('data-orientation', w >= h ? 'landscape' : 'portrait');
+      };
+      if (img.complete) apply(); else img.addEventListener('load', apply, { once: true });
+    }
+
     function bindEvents() {
       if (!window.__yzBinderBound) {
         window.__yzBinderBound = true;
@@ -8696,6 +8711,7 @@ function setBannerDotsActive(index) {
         }, { passive: true });
       }
       updateOverlayDockState();
+      bindDetailCover();
       observeReaderFrame();
       var readerStage = document.querySelector('[data-reader-stage]');
       if (readerStage && !readerStage.__yzNavTapBound) {
@@ -9347,6 +9363,16 @@ function setBannerDotsActive(index) {
       }
       else if (act === 'chapter-reaction') { chapterReactionLocal(el.getAttribute('data-id'), el.getAttribute('data-reaction')); }
       else if (act === 'manga-reaction') { mangaReactionLocal(el.getAttribute('data-id'), el.getAttribute('data-reaction')); }
+      else if (act === 'set-my-rating') {
+        var ratingId = el.getAttribute('data-id');
+        var ratingBefore = Number((state.myRatings || {})[ratingId] || 0);
+        var ratingNext = ratingBefore >= 10 ? 0 : ratingBefore + 1;
+        if (!state.myRatings) state.myRatings = {};
+        if (ratingNext) state.myRatings[ratingId] = ratingNext; else delete state.myRatings[ratingId];
+        localStorage.setItem('kv_my_ratings', JSON.stringify(state.myRatings));
+        toast(ratingNext ? 'Rating kamu: ' + ratingNext + '/10' : 'Rating kamu dihapus.', 'ok');
+        render();
+      }
       else if (act === 'open-reader') { navigate('#/baca/' + el.getAttribute('data-slug') + '/' + el.getAttribute('data-cid')); }
       else if (act === 'quick-genre') { var genre = el.getAttribute('data-genre'); if (el.getAttribute('data-landing') === '1') { state.yzLandingGenre = genre && genre !== 'All' ? genre : 'All'; state.homePage = 1; render(); } else { state.filterGenres = genre && genre !== 'Semua' ? [genre] : []; state.openCatalogDropdown = 'genre'; state.page = 1; navigate('#/archive'); } }
         else if (act === 'toggle-yz-blur') { state.yzBlurSafe = !state.yzBlurSafe; render(); }
@@ -10199,7 +10225,7 @@ applyYumeAccent();
           <li><b>01</b>Aktifkan JavaScript</li>
           <li><b>02</b>Muat ulang halaman</li>
         </ul>
-        <div class='kv-noscript-foot'>Katalog manga &#183; Mode tanpa skrip</div>
+        <div class='kv-noscript-foot'>Arsip manga &#183; Mode tanpa skrip</div>
       </div>
     </div>
   </noscript>

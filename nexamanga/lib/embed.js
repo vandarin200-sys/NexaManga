@@ -1,7 +1,7 @@
 'use strict';
 
-const DEFAULT_TITLE = 'Katalog Manga';
-const DEFAULT_DESCRIPTION = 'Katalog manga berbahasa Indonesia.';
+const DEFAULT_TITLE = 'Archive Manga';
+const DEFAULT_DESCRIPTION = 'Arsip manga berbahasa Indonesia.';
 const DEFAULT_THEME_COLOR = '#F7F1E6';
 
 function clean(value) {
