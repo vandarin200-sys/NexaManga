@@ -12,7 +12,7 @@
   <meta name="twitter:title" content="Archive Manga">
   <meta name="twitter:description" content="Arsip manga berbahasa Indonesia.">
   <meta name="theme-color" content="#F7F1E6">
-  <script>(function(){try{var v=localStorage.getItem('kv_theme')||'system';var ids=['system','light','anilist','catppuccin','mecha','dark'];if(ids.indexOf(v)<0)v='system';var dark=v==='dark'||v==='anilist'||v==='catppuccin'||v==='mecha'||(v==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);var r=document.documentElement;r.classList.toggle('dark',dark);r.setAttribute('data-theme',v);r.setAttribute('data-resolved-theme',dark?'dark':'light');r.style.colorScheme=dark?'dark':'light';var c={light:'#F7F1E6',dark:'#0B0E17',anilist:'#0F1014',catppuccin:'#1E1E2E',mecha:'#080C10'};var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',v==='system'?(dark?'#0B0E17':'#F7F1E6'):(c[v]||'#F7F1E6'));}catch(e){}})();</script>
+  <script>(function(){try{var v=localStorage.getItem('kv_theme')||'system';var ids=['system','light','anilist','catppuccin','mecha','dark'];if(ids.indexOf(v)<0)v='system';var dark=v==='dark'||v==='anilist'||v==='catppuccin'||v==='mecha'||(v==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);var r=document.documentElement;r.classList.toggle('dark',dark);r.setAttribute('data-theme',v);r.setAttribute('data-resolved-theme',dark?'dark':'light');r.style.colorScheme=dark?'dark':'light';var c={light:'#F7F1E6',dark:'#0B0E17',anilist:'#0B1622',catppuccin:'#1E1E2E',mecha:'#080C10'};var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',v==='system'?(dark?'#0B0E17':'#F7F1E6'):(c[v]||'#F7F1E6'));}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -2982,14 +2982,14 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-topbar .kv-theme-choice { color: var(--ad-muted); }
       .kv-admin-topbar .kv-theme-choice[data-current="true"] { color: var(--ad-teal); background: var(--ad-raised); border-color: var(--ad-line); }
       html[data-theme="anilist"] {
-        --background: #0F1014 !important; --foreground: #E9EEF7 !important;
-        --card: #1A1C25 !important; --card-foreground: #E9EEF7 !important;
-        --primary: #02A9FF !important; --primary-foreground: #05121C !important;
-        --secondary: #242838 !important; --muted: #242838 !important;
-        --muted-foreground: #A3B1C6 !important; --border: #2F3546 !important;
-        --accent: #3DB4F2 !important; --accent-foreground: #05121C !important;
-        --input: #151821 !important; --ring: #02A9FF !important;
-        --kv-success: #4ADE80 !important; --kv-warning: #FBBF24 !important; --kv-danger: #FB7185 !important;
+        --background: #0B1622 !important; --foreground: #EDF1F5 !important;
+        --card: #151F2E !important; --card-foreground: #EDF1F5 !important;
+        --primary: #3DB4F2 !important; --primary-foreground: #0B1622 !important;
+        --secondary: #1B2636 !important; --muted: #1B2636 !important;
+        --muted-foreground: #9FADBD !important; --border: #2B3A4A !important;
+        --accent: #3DB4F2 !important; --accent-foreground: #0B1622 !important;
+        --input: #111B29 !important; --ring: #3DB4F2 !important;
+        --kv-success: #4CCA51 !important; --kv-warning: #E5A00D !important; --kv-danger: #E85D75 !important;
         color-scheme: dark;
       }
       html[data-theme="catppuccin"] {
@@ -3772,22 +3772,29 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] :is([class~="bg-red-600"], [class~="bg-blue-500"], [class~="bg-emerald-500"]) { color: #fff !important; }
     html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] :is(.text-red-400, .text-rose-400) { color: #A32020 !important; }
     html[data-resolved-theme="light"] body.kv-public-route [data-settings-root] :is(.text-amber-500, .text-blue-300, .text-emerald-400) { color: var(--yz-accent) !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] { background: #0B1622 !important; color: #E9EEF7 !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is(.text-white, .text-zinc-100, .text-zinc-200, [class*="text-white"]) { color: #E9EEF7 !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is(.text-zinc-300, .text-zinc-400, .text-zinc-500, [class~="text-zinc-300/85"]) { color: #A3B1C6 !important; }
+    html[data-theme="anilist"] { --yz-bg:#0B1622; --yz-surface-0:#0B1622; --yz-surface-1:#151F2E; --yz-surface-2:#1B2636; --yz-surface-3:#233247; --yz-border:rgba(159,173,189,.18); --yz-text:#EDF1F5; --yz-text-secondary:#C9D7E3; --yz-text-tertiary:#9FADBD; --yz-accent:#3DB4F2; --yz-accent-hover:#5CC4F7; --yz-accent-rgb:61,180,242; --yz-accent-subtle:rgba(61,180,242,.14); }
+    html[data-theme="anilist"] body.kv-public-route { background: var(--background) !important; color: var(--foreground) !important; }
+    html[data-theme="anilist"] body.kv-public-route :is(.yz-header, .yz-bottom-nav, .yz-footer, .kv-public-bottom-nav) { background: #152232 !important; border-color: var(--border) !important; }
+    html[data-theme="anilist"] body.kv-public-route :is(.yz-bottom-item, .kv-public-bottom-item, .yz-footer a, .yz-nav-btn, .yz-icon-btn, .yz-search input) { color: var(--muted-foreground) !important; }
+    html[data-theme="anilist"] body.kv-public-route :is(.yz-bottom-item.is-active, .kv-public-bottom-item.active, .yz-nav-btn:hover, .yz-icon-btn:hover, .yz-footer a:hover) { color: var(--primary) !important; background: rgba(61,180,242,.12) !important; }
+    html[data-theme="anilist"] body.kv-public-route :is(.kv-detail-hero, #manga-library-catalog, [data-settings-root] .rounded-2xl.border, [data-account-name]) { background-color: var(--card) !important; border-color: var(--border) !important; color: var(--foreground) !important; }
+    html[data-theme="anilist"] body.kv-public-route :is([data-settings-root] input, [data-settings-root] textarea, [data-settings-root] select) { background-color: var(--input) !important; color: var(--foreground) !important; border-color: var(--border) !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] { background: #0B1622 !important; color: #EDF1F5 !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] .yz-hero-art { opacity: .32 !important; filter: brightness(.7) saturate(1.05) !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [class~="bg-zinc-950/65"] { background-color: rgba(11, 22, 34, .58) !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [class~="bg-gradient-to-t"] { background-image: linear-gradient(to top, #0B1622 0%, rgba(11,22,34,.84) 55%, transparent 100%) !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is(.text-white, .text-zinc-100, .text-zinc-200, [class*="text-white"]) { color: #EDF1F5 !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is(.text-zinc-300, .text-zinc-400, .text-zinc-500, [class~="text-zinc-300/85"]) { color: #9FADBD !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [style*="color:"] { color: #3DB4F2 !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is([class~="bg-zinc-950"], [class~="bg-zinc-900/60"], [class~="bg-zinc-900/80"], [class~="bg-zinc-800"]) { background-color: rgba(15, 16, 20, .72) !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [class~="bg-zinc-950/65"] { background-color: rgba(11, 22, 34, .62) !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is([class~="border-white/[0.08]"], [class~="border-white/10"], [class~="border-white/30"], [class~="border-zinc-800"], [class~="hover:border-white/25"], [class~="hover:border-zinc-700"]) { border-color: rgba(61, 180, 242, .28) !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [class~="hover:bg-zinc-800"]:hover { background-color: #242838 !important; color: #E9EEF7 !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is([class~="bg-zinc-950"], [class~="bg-zinc-900/60"], [class~="bg-zinc-900/80"], [class~="bg-zinc-800"]) { background-color: rgba(21, 31, 46, .84) !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] :is([class~="border-white/[0.08]"], [class~="border-white/10"], [class~="border-white/30"], [class~="border-zinc-800"], [class~="hover:border-white/25"], [class~="hover:border-zinc-700"]) { border-color: rgba(159,173,189,.22) !important; }
+    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [class~="hover:bg-zinc-800"]:hover { background-color: #1B2636 !important; color: #EDF1F5 !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [class~="hover:text-white"]:hover { color: #3DB4F2 !important; }
-    html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] .yz-hero-art { opacity: .34 !important; filter: brightness(.72) saturate(1.05) !important; }
     html[data-theme="anilist"] body.kv-account-route [data-account-name],
-    html[data-theme="anilist"] body.kv-account-route [data-account-name] .styled-username { color: #E9EEF7 !important; text-shadow: none !important; }
-    html[data-theme="anilist"] body.kv-public-route [data-settings-root] :is(.text-white, .text-zinc-100, .text-zinc-200, .text-zinc-300, .text-zinc-400, .text-zinc-500) { color: inherit; }
-    html[data-theme="anilist"] body.kv-public-route [data-settings-root] :is([class~="bg-[#111214]"], [class~="bg-[#141518]"], [class~="bg-zinc-900/50"], [class~="bg-zinc-900/70"], [class~="bg-zinc-950/70"]) { background-color: var(--card) !important; }
-    html[data-theme="anilist"] body.kv-public-route [data-settings-root] :is(input, textarea, select) { background-color: var(--input) !important; color: var(--foreground) !important; border-color: var(--border) !important; }
-    html[data-theme="anilist"] body.kv-public-route [data-settings-root] :is([class~="bg-red-600"], [class~="bg-blue-500"], [class~="bg-emerald-500"], [class~="bg-white"][class~="text-black"]) { color: #05121C !important; }
+    html[data-theme="anilist"] body.kv-account-route [data-account-name] .styled-username { color: #EDF1F5 !important; text-shadow: none !important; }
+    html[data-theme="anilist"] body.kv-public-route [data-settings-root] :is([class~="bg-white"][class~="text-black"], [class~="bg-red-600"], [class~="bg-blue-500"], [class~="bg-emerald-500"]) { color: #0B1622 !important; }
+    html[data-theme="anilist"] body.kv-public-route [data-settings-root] .text-zinc-300, html[data-theme="anilist"] body.kv-public-route [data-settings-root] .text-zinc-400, html[data-theme="anilist"] body.kv-public-route [data-settings-root] .text-zinc-500 { color: var(--muted-foreground) !important; }
+    html[data-theme="anilist"] body.kv-public-route [data-settings-root] :is([class~="bg-white"][class~="text-black"], [class~="bg-red-600"], [class~="bg-blue-500"], [class~="bg-emerald-500"]) { background-color: var(--primary) !important; }
     @media (hover: none), (pointer: coarse) {
       [class*="hover:scale-"]:hover:not(:active),
       [class*="hover:-translate-"]:hover:not(:active),
@@ -4047,7 +4054,7 @@ function yzBtnClass(primary) {
       API_BASE_URL: window.location.origin,
       DEFAULT_THEME: 'system',
       THEME_IDS: ['system', 'light', 'anilist', 'catppuccin', 'mecha', 'dark'],
-      THEME_META: { light: '#F7F1E6', dark: '#0B0E17', anilist: '#0F1014', catppuccin: '#1E1E2E', mecha: '#080C10' },
+      THEME_META: { light: '#F7F1E6', dark: '#0B0E17', anilist: '#0B1622', catppuccin: '#1E1E2E', mecha: '#080C10' },
       ITEMS_PER_PAGE: 8,
        CONTACT_EMAIL: '' /* Diisi dari Pengaturan Admin */
     };

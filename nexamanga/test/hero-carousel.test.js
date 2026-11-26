@@ -424,6 +424,9 @@ test('anilist theme keeps hero, account name, and settings readable', () => {
   ];
   for (const target of targets) {
     const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('--background: #0B1622 !important; --foreground: #EDF1F5 !important;'), target + ' anilist base palette not updated');
+    assert.ok(source.includes('--card: #151F2E !important; --card-foreground: #EDF1F5 !important;'), target + ' anilist card palette not updated');
+    assert.ok(source.includes('--primary: #3DB4F2 !important; --primary-foreground: #0B1622 !important;'), target + ' anilist accent not updated');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] { background: #0B1622'), target + ' anilist hero background missing');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-account-route [data-account-name]'), target + ' anilist account name rule missing');
     assert.ok(source.includes('html[data-theme="anilist"] body.kv-public-route [data-settings-root]'), target + ' anilist settings rule missing');
