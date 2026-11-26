@@ -467,6 +467,24 @@ test('reader dock shows the compact page controls and keeps each action connecte
   }
 });
 
+test('reader settings control auto-scroll speed and light or dark display without a top gap', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('padding:56px 0 132px'), target + ' should place reader content immediately below the desktop header');
+    assert.ok(source.includes('padding:52px 0 126px'), target + ' should place reader content immediately below the mobile header');
+    assert.ok(source.includes('id="kv-reader-speed" type="range" min="0.5" max="10" step="0.5"'), target + ' should offer adjustable auto-scroll speed');
+    assert.ok(source.includes('rSpeed.oninput = function (e)'), target + ' should apply speed changes while the reader is scrolling');
+    assert.ok(source.includes('speed: state.autoScrollSpeed'), target + ' should persist reader speed');
+    assert.ok(source.includes('data-action="set-theme" data-value="light"'), target + ' should offer light mode');
+    assert.ok(source.includes('data-action="set-theme" data-value="dark"'), target + ' should offer dark mode');
+    assert.ok(source.includes('background:var(--kv-reader-bg)'), target + ' should apply the selected reader background to manga pages');
+  }
+});
+
 test('both frontends keep cursor swipes from starting a native image drag', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
