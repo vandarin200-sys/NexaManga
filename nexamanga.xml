@@ -1489,10 +1489,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       @keyframes yzLivePulse { 0% { box-shadow:0 0 0 0 rgba(34,197,94,.55); } 70% { box-shadow:0 0 0 7px rgba(34,197,94,0); } 100% { box-shadow:0 0 0 0 rgba(34,197,94,0); } }
       .yz-hero-carousel { isolation:isolate; }
       .yz-hero-carousel .yz-hero-track { touch-action:pan-y; }
-      .yz-hero-carousel .yz-hero-thumbs { transition:transform 600ms cubic-bezier(.16, 1, 0.3, 1), opacity 600ms cubic-bezier(.16, 1, 0.3, 1); }
+      .yz-hero-carousel .yz-hero-thumbs { transition:transform 480ms cubic-bezier(.16, 1, 0.3, 1), opacity 480ms cubic-bezier(.16, 1, 0.3, 1); }
       .yz-hero-carousel .yz-hero-thumbs.is-dragging { transition:none !important; animation:none !important; cursor:grabbing; }
-      .yz-hero-carousel .yz-hero-thumbs--next { animation:yzThumbsInNext 520ms cubic-bezier(.16, 1, 0.3, 1) both; }
-      .yz-hero-carousel .yz-hero-thumbs--prev { animation:yzThumbsInPrev 520ms cubic-bezier(.16, 1, 0.3, 1) both; }
       .yz-hero-carousel .yz-hero-slide { animation:yzHeroReveal .72s cubic-bezier(.16, 1, 0.3, 1) both; }
       .yz-hero-carousel .yz-hero-slide .yz-hero-art { animation:yzHeroDrift 10s ease-in-out infinite alternate; }
       .yz-hero-carousel .yz-hero-thumb[data-center="true"] img { animation:yzHeroFloat 4.5s ease-in-out infinite; }
@@ -1501,8 +1499,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       @keyframes yzHeroDrift { from { transform:scale(1.05) translate3d(0,0,0); } to { transform:scale(1.1) translate3d(-1.2%,-1%,0); } }
       @keyframes yzHeroFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
       @keyframes yzHeroGlow { from { opacity:.45; } to { opacity:.85; } }
-      @keyframes yzThumbsInNext { from { opacity:.3; transform:translate3d(28%,0,0) scale(.96); } to { opacity:1; transform:translate3d(0,0,0) scale(1); } }
-      @keyframes yzThumbsInPrev { from { opacity:.3; transform:translate3d(-28%,0,0) scale(.96); } to { opacity:1; transform:translate3d(0,0,0) scale(1); } }
       @media (max-width:700px) {
         body.kv-reader-route .yz-reader-header { height:52px; }
         body.kv-reader-route .yz-reader-title { max-width:36vw; }
@@ -1515,7 +1511,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         body.kv-reader-route .yz-page-shell, body.kv-reader-route .yz-reader-sheet2, body.kv-reader-route .yz-reader-live,
         body.kv-reader-route .yz-reader-header, body.kv-reader-route .yz-reader-footer, body.kv-reader-route .yz-reader-main,
         .yz-hero-carousel .yz-hero-slide, .yz-hero-carousel .yz-hero-slide .yz-hero-art,
-        .yz-hero-carousel .yz-hero-thumbs--next, .yz-hero-carousel .yz-hero-thumbs--prev,
         .yz-hero-carousel .yz-hero-thumb[data-center="true"] img, .yz-hero-carousel .yz-hero-glow { animation:none !important; }
       }
       html:not(.dark) body.kv-home-route .kv-catalog-page { padding-top: 10px; padding-bottom: 48px; }
@@ -3716,7 +3711,6 @@ function yzSettingRead(key, fallback) {
         usersCache: undefined,
         adminDrawerOpen: false,
         adminBottomExpanded: false,
-        editingProfile: false,
         avatarPickerOpen: false,
         avatarPickerTab: 'characters',
         avatarPickerDraft: '',
@@ -4700,10 +4694,11 @@ function trackPageview() {
         var moreOpen = !!state.yzMoreOpen;
         var moreActive = moreOpen || state.route === 'settings' || state.route === 'info';
         var moreSheet = moreOpen
-          ? '<div class="absolute bottom-[calc(100%+10px)] right-0 z-50 w-44 origin-bottom-right rounded-2xl border border-white/[0.09] bg-zinc-950/98 p-1.5 shadow-[0_16px_50px_rgba(0,0,0,0.7)] transition-all duration-200 pointer-events-auto translate-y-0 scale-100 opacity-100 yz-more-pop" data-yz-more-menu>' +
+          ? '<div class="absolute bottom-[calc(100%+10px)] right-0 z-[60] w-44 origin-bottom-right rounded-2xl border border-white/[0.09] bg-zinc-950/98 p-1.5 shadow-[0_16px_50px_rgba(0,0,0,0.7)] transition-all duration-200 pointer-events-auto translate-y-0 scale-100 opacity-100 yz-more-pop" data-yz-more-menu>' +
               [['/tentang', 'About', 'help'], ['/settings', 'Settings', 'gear']].map(function (row) {
                 return '<a href="' + publicHref(row[0]) + '" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-zinc-400 hover:bg-white/[0.06] hover:text-white">' + yzIco(row[2], 'h-[18px] w-[18px] shrink-0') + '<span>' + row[1] + '</span></a>';
               }).join('') +
+              '<a href="' + escapeHtml(discordUrl() || 'https://discord.gg/VPNSMcG6jM') + '" target="_blank" rel="noopener noreferrer" class="flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors text-[#5865F2] hover:bg-[#5865F2]/15 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-[18px] w-[18px] shrink-0 text-[#5865F2]" aria-hidden="true">' + svgs.discord + '</svg><span>Discord</span></a>' +
             '</div>'
           : '';
         return '<div class="pointer-events-none fixed bottom-0 left-0 right-0 z-50 md:hidden" style="padding: 0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);">' + moreSheet +
@@ -4941,28 +4936,34 @@ function trackPageview() {
           '<button type="button" data-action="hero-browse" class="group/btn inline-flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 hover:border-zinc-700 px-3 py-2 font-semibold text-xs tracking-wide text-zinc-300 hover:text-white transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg"><span class="sm:hidden">Browse</span><span class="hidden sm:inline">Browse Catalogue</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</button></div></div></div></div></div>';
       }).join('');
       var thumbStyles = {
-        '-2': 'translate3d(calc(-174%), 20px, 0px) rotate(-20deg) skewX(0deg) scale(0.74); z-index: 26; opacity: 0.7',
-        '-1': 'translate3d(calc(-112%), 10px, 0px) rotate(-10deg) skewX(0deg) scale(0.87); z-index: 28; opacity: 1',
-        '0': 'translate3d(calc(-50%), 0px, 0px) rotate(0deg) skewX(0deg) scale(1); z-index: 30; opacity: 1',
-        '1': 'translate3d(calc(12%), 10px, 0px) rotate(10deg) skewX(0deg) scale(0.87); z-index: 28; opacity: 1',
-        '2': 'translate3d(calc(74%), 20px, 0px) rotate(20deg) skewX(0deg) scale(0.74); z-index: 26; opacity: 0.7'
+        '-5': 'translate3d(calc(-360%), 50px, 0px) rotate(-50deg) skewX(0deg) scale(0.35); z-index: 20; opacity: 0; visibility: hidden',
+        '-4': 'translate3d(calc(-298%), 40px, 0px) rotate(-40deg) skewX(0deg) scale(0.48); z-index: 22; opacity: 0; visibility: hidden',
+        '-3': 'translate3d(calc(-236%), 30px, 0px) rotate(-30deg) skewX(0deg) scale(0.61); z-index: 24; opacity: 0.55; visibility: visible',
+        '-2': 'translate3d(calc(-174%), 20px, 0px) rotate(-20deg) skewX(0deg) scale(0.74); z-index: 26; opacity: 1; visibility: visible',
+        '-1': 'translate3d(calc(-112%), 10px, 0px) rotate(-10deg) skewX(0deg) scale(0.87); z-index: 28; opacity: 1; visibility: visible',
+        '0': 'translate3d(calc(-50%), 0px, 0px) rotate(0deg) skewX(0deg) scale(1); z-index: 30; opacity: 1; visibility: visible',
+        '1': 'translate3d(calc(12%), 10px, 0px) rotate(10deg) skewX(0deg) scale(0.87); z-index: 28; opacity: 1; visibility: visible',
+        '2': 'translate3d(calc(74%), 20px, 0px) rotate(20deg) skewX(0deg) scale(0.74); z-index: 26; opacity: 1; visibility: visible',
+        '3': 'translate3d(calc(136%), 30px, 0px) rotate(30deg) skewX(0deg) scale(0.61); z-index: 24; opacity: 0.55; visibility: visible',
+        '4': 'translate3d(calc(198%), 40px, 0px) rotate(40deg) skewX(0deg) scale(0.48); z-index: 22; opacity: 0; visibility: hidden',
+        '5': 'translate3d(calc(260%), 50px, 0px) rotate(50deg) skewX(0deg) scale(0.35); z-index: 20; opacity: 0; visibility: hidden'
       };
+      var thumbShades = { '-5': '0.72', '-4': '0.72', '-3': '0.72', '-2': '0.7', '-1': '0.35', '0': '0', '1': '0.35', '2': '0.7', '3': '0.72', '4': '0.72', '5': '0.72' };
       var heroThumbs = heroItems.map(function (m, i) {
         var offset = i - heroIndex;
         if (offset > 5) offset -= heroItems.length;
         if (offset < -5) offset += heroItems.length;
-        var key = String(offset >= -2 && offset <= 2 ? offset : (offset < 0 ? -2 : 2));
+        var key = String(offset >= -5 && offset <= 5 ? offset : (offset < 0 ? -5 : 5));
         var center = offset === 0;
         var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
-        return '<div role="button" tabindex="0" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; will-change: transform, opacity; transform: ' + thumbStyles[key] + '; visibility: visible; transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1), opacity 480ms cubic-bezier(0.16, 1, 0.3, 1);">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + (center ? '0' : '0.35') + ';"></span>' + (center ? '<span aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' : '') + '</div>';
+        return '<div role="button" tabindex="0" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-2xl shadow-black/80 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; will-change: transform, opacity; transform: ' + thumbStyles[key] + '; transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1), opacity 480ms cubic-bezier(0.16, 1, 0.3, 1);">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + thumbShades[key] + ';"></span>' + (center ? '<span aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' : '') + '</div>';
       }).join('');
-      var heroThumbsAnimClass = state.heroAnimDir === 'next' ? ' yz-hero-thumbs--next' : state.heroAnimDir === 'prev' ? ' yz-hero-thumbs--prev' : '';
       var heroDots = heroItems.map(function (m, i) {
         var active = i === heroIndex;
         return '<button type="button" data-action="hero-dot" data-index="' + i + '" aria-label="Go to slide ' + (i + 1) + '" class="h-1 rounded-full transition-all duration-300 ' + (active ? 'w-6' : 'w-1.5 bg-zinc-700 hover:bg-zinc-500') + '" style="' + (active ? 'background-color: ' + heroColors[i % heroColors.length] + ';' : '') + '"></button>';
       }).join('');
-      var hero = heroItems.length ? '<div class="yz-hero-carousel group relative overflow-hidden select-none bg-zinc-950 text-white" data-hero-carousel="true" role="region" aria-roledescription="carousel" aria-label="Trending Manga Carousel"><div class="overflow-hidden"><div class="yz-hero-track flex ml-0" data-hero-track="true" style="transform: translate3d(-' + (heroIndex * 100) + '%, 0px, 0px); transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; backface-visibility: hidden;">' + heroSlideHtml + '</div></div>' +
-        '<div class="pointer-events-none absolute inset-x-0 top-24 sm:top-28 lg:top-32 z-[7] flex justify-center"><div class="yz-hero-thumbs pointer-events-auto relative h-[160px] w-[108px] sm:h-[215px] sm:w-[145px] lg:h-[265px] lg:w-[178px] cursor-grab active:cursor-grabbing select-none' + heroThumbsAnimClass + '" data-hero-thumbs="true" style="touch-action: pan-y;"><span aria-hidden="true" class="yz-hero-glow absolute left-1/2 -bottom-7 h-10 w-[420%] -translate-x-1/2 rounded-[50%] bg-black/65 blur-2xl pointer-events-none"></span>' + heroThumbs + '</div></div>' +
+      var hero = heroItems.length ? '<div class="yz-hero-carousel group relative overflow-hidden select-none bg-zinc-950 text-white" data-hero-carousel="true" role="region" aria-roledescription="carousel" aria-label="Trending Manga Carousel"><div class="overflow-hidden"><div class="yz-hero-track flex ml-0" data-hero-track="true" style="transform: translate3d(-' + (heroIndex * 100) + '%, 0px, 0px); transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; backface-visibility: hidden;">' + heroSlideHtml + '</div></div>' +
+        '<div class="pointer-events-none absolute inset-x-0 top-24 sm:top-28 lg:top-32 z-[7] flex justify-center"><div class="yz-hero-thumbs pointer-events-auto relative h-[160px] w-[108px] sm:h-[215px] sm:w-[145px] lg:h-[265px] lg:w-[178px] cursor-grab active:cursor-grabbing select-none" data-hero-thumbs="true" style="touch-action: pan-y;"><span aria-hidden="true" class="yz-hero-glow absolute left-1/2 -bottom-7 h-10 w-[420%] -translate-x-1/2 rounded-[50%] bg-black/65 blur-2xl pointer-events-none"></span>' + heroThumbs + '</div></div>' +
         '<button type="button" data-action="hero-prev" aria-label="Previous slide" class="hidden sm:grid absolute left-3 sm:left-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronLeft', 'h-4 w-4') + '</button>' +
         '<button type="button" data-action="hero-next" aria-label="Next slide" class="hidden sm:grid absolute right-3 sm:right-6 top-[52%] -translate-y-1/2 z-[8] h-10 w-10 place-items-center rounded-full bg-zinc-900/80 border border-white/10 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-white/25 transition-all shadow-xl backdrop-blur">' + icon('chevronRight', 'h-4 w-4') + '</button>' +
         '<div class="absolute inset-x-0 bottom-3.5 z-[8] flex items-center justify-center gap-1.5 pointer-events-auto">' + heroDots + '</div></div>' : '';
@@ -6204,7 +6205,7 @@ function renderSettings() {
       var override = profileOverride();
       var displayName = String(override.name || user.name || 'Member');
       var displayAvatar = override.avatar || user.avatar || '';
-      var formAvatar = state.avatarPickerApplied || displayAvatar;
+      var pickerAvatar = state.avatarPickerApplied || displayAvatar;
       var displayBackground = currentDisplayBackground('');
       var bio = yzSettingRead('yume_profile_bio', '');
       var username = slugify(displayName);
@@ -6228,19 +6229,6 @@ function renderSettings() {
       var tierBadge = '<span class="tier-badge relative inline-flex items-center overflow-hidden rounded-full border bg-[#0d0f12]/90 font-bold tracking-tight whitespace-nowrap select-none shrink-0 h-5 pl-0.5 pr-2 text-[11px] gap-1 border-zinc-600/60 text-zinc-300" title="' + escapeHtml(tierRank + ' · Level ' + level) + '"><span class="relative grid place-items-center rounded-full bg-gradient-to-br shrink-0 h-4 w-4 from-zinc-600 to-zinc-400">' + pIcon('shield', 'h-2.5 w-2.5 text-black/75') + '</span><span class="opacity-90">' + escapeHtml(tierRank) + '</span><span class="tabular-nums opacity-80">Lv.' + level + '</span></span>';
       var avatar = '<div class="relative shrink-0"><div class="relative h-24 w-24 sm:h-28 sm:w-28 rounded-full overflow-hidden bg-[#0a0c10] ring-4 ring-[#0a0c10] shadow-2xl flex items-center justify-center text-2xl font-extrabold text-white">' + (displayAvatar ? '<img src="' + escapeHtml(displayAvatar) + '" alt="' + escapeHtml(displayName) + '" class="h-full w-full object-cover" referrerpolicy="no-referrer"/>' : escapeHtml(displayName.charAt(0).toUpperCase())) + '</div>' + (isPublic ? '' : '<button type="button" data-action="toggle-edit-profile" class="absolute -bottom-1 -right-1 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-[#13161c] border border-white/20 text-white shadow-xl transition-transform hover:scale-105 active:scale-95 cursor-pointer touch-manipulation" title="Ubah tampilan profil" aria-label="Ubah tampilan profil">' + pIcon('pencil', 'h-3.5 w-3.5') + '</button></div></div>');
       var vanityButton = '<button type="button" data-action="profile-copy-vanity" class="inline-flex items-center gap-1 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] px-2.5 py-0.5 text-[11px] font-medium text-zinc-300 transition-colors cursor-pointer touch-manipulation" title="Salin URL profil"><span>y/' + escapeHtml(username) + '</span>' + pIcon('copy', 'h-2.5 w-2.5 text-zinc-500') + '</button>';
-
-      var editForm = (!isPublic && state.editingProfile) ? '<form id="kv-profile-form" class="mb-5 rounded-2xl border border-white/[0.08] bg-[#0a0c10] p-4 sm:p-5 space-y-4">' +
-        '<div class="flex items-center justify-between"><div><span class="text-[10px] uppercase tracking-wider text-zinc-500">Profil</span><h2 class="text-sm font-black text-white">Edit identitas tampilan</h2></div><button type="button" class="text-xs text-zinc-400 hover:text-white" data-action="close-edit-profile">Batal</button></div>' +
-        '<div class="grid gap-3 sm:grid-cols-2">' +
-          '<label class="space-y-1"><span class="text-[10px] text-zinc-500">Nama tampilan</span><input name="name" type="text" value="' + escapeHtml(displayName) + '" required class="h-9 w-full rounded-lg border border-white/10 bg-black/60 px-3 text-xs text-white outline-none"/></label>' +
-          '<div class="space-y-1 sm:col-span-2"><span class="text-[10px] text-zinc-500">Avatar</span><div class="flex items-center gap-3 rounded-lg border border-white/10 bg-black/60 p-2"><div class="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-zinc-900"><img data-avatar-form-preview src="' + escapeHtml(formAvatar) + '" alt="" class="h-full w-full object-cover"' + (formAvatar ? '' : ' hidden') + '/><span data-avatar-form-initial class="grid h-full w-full place-items-center text-sm font-bold text-white"' + (formAvatar ? ' hidden' : '') + '>' + escapeHtml(displayName.charAt(0).toUpperCase()) + '</span></div><div class="min-w-0 flex-1"><p data-avatar-form-label class="truncate text-xs text-zinc-200">' + escapeHtml(formAvatar || 'Avatar bawaan') + '</p><p class="text-[10px] text-zinc-600">Pilih karakter, unggah gambar, atau pakai URL.</p></div><button type="button" class="' + yzBtnClass(false) + ' h-8 px-3 shrink-0" data-action="open-avatar-picker">Pilih Avatar</button></div><input id="kv-profile-avatar" name="avatar" type="hidden" value="' + escapeHtml(formAvatar) + '"/></div>' +
-          '<label class="space-y-1 sm:col-span-2"><span class="text-[10px] text-zinc-500">URL background</span><input name="background" type="url" value="' + escapeHtml(displayBackground || '') + '" placeholder="https://..." class="h-9 w-full rounded-lg border border-white/10 bg-black/60 px-3 text-xs text-white outline-none"/></label>' +
-          '<label class="space-y-1 sm:col-span-2"><span class="text-[10px] text-zinc-500">Bio</span><textarea name="bio" rows="2" maxlength="160" placeholder="Ceritakan sedikit tentang dirimu..." class="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-xs text-white outline-none">' + escapeHtml(bio) + '</textarea></label>' +
-          '<label class="space-y-1 sm:col-span-2"><span class="text-[10px] text-zinc-500">Unggah background</span><input name="backgroundFile" type="file" accept="image/*" class="w-full text-[11px] text-zinc-400"/></label>' +
-        '</div>' +
-        '<p class="text-[10px] text-zinc-600">Disimpan di browser ini. Tidak mengubah data akun di server OAuth.</p>' +
-        '<button type="submit" class="' + yzBtnClass(true) + '">Simpan Profil</button>' +
-      '</form>' : '';
 
       var reactions = [['like', '👍', 'Suka'], ['heart', '❤️', 'Cinta'], ['laugh', '😂', 'Lucu'], ['wow', '😮', 'Kaget'], ['cry', '😭', 'Sedih'], ['fire', '🔥', 'Panas']].map(function (r) {
         var active = state.profileReaction === r[0];
@@ -6298,14 +6286,14 @@ function renderSettings() {
             '<div class="relative h-36 sm:h-52 md:h-64 w-full overflow-hidden bg-gradient-to-br from-[#101319] via-[#151a22] to-[#0a0c10]">' +
               (displayBackground ? '<img class="absolute inset-0 h-full w-full object-cover opacity-70" src="' + escapeHtml(displayBackground) + '" alt="" referrerpolicy="no-referrer"/>' : '<div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(145,184,177,0.16),transparent_55%)]"></div>') +
               '<div class="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/75 via-black/25 to-transparent pointer-events-none"></div><div class="absolute inset-x-0 bottom-0 h-32 sm:h-40 bg-gradient-to-t from-[#0a0c10] via-[#0a0c10]/65 to-transparent pointer-events-none"></div>' +
-              (isPublic ? '' : '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects">' + pIcon('sparkles', 'h-3.5 w-3.5 text-[var(--yz-accent)]') + '<span class="hidden sm:inline">Effects</span></button><button type="button" data-action="profile-edit-banner" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Customize Profile Banner">' + pIcon('compass', 'h-3.5 w-3.5 text-zinc-300') + '<span>Edit Banner</span></button></div>') +
+              (isPublic ? '' : '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects">' + pIcon('sparkles', 'h-3.5 w-3.5 text-[var(--yz-accent)]') + '<span class="hidden sm:inline">Effects</span></button></div>') +
             '</div>' +
             '<div class="relative z-10 px-4 sm:px-7 pb-5 sm:pb-7 -mt-12 sm:-mt-16 space-y-5">' +
               '<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5">' +
                 '<div class="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-5 text-center sm:text-left">' + avatar +
                   '<div class="min-w-0 space-y-1.5 pb-0.5"><div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap"><h1 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2"><span class="styled-username">' + escapeHtml(displayName) + '</span></h1>' + tierBadge + '</div>' +
                     '<div class="flex items-center justify-center sm:justify-start gap-2 text-xs text-zinc-400 flex-wrap"><span class="font-medium text-zinc-300">@' + escapeHtml(username) + '</span><span class="text-zinc-600">&middot;</span><span class="inline-flex items-center gap-1 text-zinc-400">' + pIcon('calendar', 'h-3 w-3 text-zinc-500') + '<span>Joined ' + escapeHtml(monthYear(user.createdAt)) + '</span></span><span class="text-zinc-600 hidden sm:inline">&middot;</span>' + vanityButton + '</div>' +
-                    (bio ? '<p class="mx-auto sm:mx-0 max-w-xl text-xs leading-6 text-zinc-400 whitespace-pre-line">' + escapeHtml(bio) + '</p>' : (isPublic ? '' : '<button type="button" data-action="profile-add-bio" class="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--yz-accent)] hover:underline pt-0.5 cursor-pointer">' + pIcon('plus', 'h-3 w-3') + '<span>Add bio</span></button>')) +
+                    (bio ? '<p class="mx-auto sm:mx-0 max-w-xl text-xs leading-6 text-zinc-400 whitespace-pre-line">' + escapeHtml(bio) + '</p>' : '') +
                   '</div></div>' +
                 '<div class="flex flex-wrap items-center justify-center md:justify-end gap-2 shrink-0">' +
                   (isPublic ? '' : '<a href="' + publicHref('/settings') + '" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('settings', 'h-3.5 w-3.5 text-zinc-400') + '<span>Settings</span></a><a href="' + publicHref('/akun') + '" class="flex items-center gap-1.5 rounded-xl bg-[var(--yz-accent)] hover:brightness-110 text-black px-3.5 py-2 text-xs font-bold transition-colors">' + pIcon('book', 'h-3.5 w-3.5') + '<span>My Library</span></a><button type="button" data-action="logout-user" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('out', 'h-3.5 w-3.5 text-zinc-400') + '<span>Log Out</span></button>') +
@@ -6316,11 +6304,10 @@ function renderSettings() {
                 '<div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3.5 sm:p-4 flex items-center justify-between gap-3 flex-wrap"><div class="space-y-0.5"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">Reactions</span><span class="text-xs text-zinc-400 inline-flex items-center gap-1.5 tabular-nums">' + pIcon('flame', 'size-3.5 text-amber-400') + '<span>Best streak: <strong class="text-white">0d</strong></span></span></div><div class="flex items-center gap-1 flex-wrap">' + reactions + '</div></div></div>' +
             '</div>' +
           '</section>' +
-          editForm +
           '<div class="sticky top-16 z-30 flex items-center"><div class="w-full sm:w-auto inline-flex items-center gap-1 p-1 rounded-2xl border border-white/[0.08] bg-[#0a0c10]/90 backdrop-blur-xl shadow-xl overflow-x-auto scrollbar-none">' + tabHtml + '</div></div>' +
           activeView +
         '</div></main>' +
-      '</div>' + (state.avatarPickerOpen && !isPublic ? renderAvatarPicker(formAvatar, displayName) : '');
+      '</div>' + (state.avatarPickerOpen && !isPublic ? renderAvatarPicker(pickerAvatar, displayName) : '');
     }
 
     function renderOAuthButtons() {
@@ -8436,58 +8423,6 @@ function setBannerDotsActive(index) {
        var rDir = document.getElementById('kv-reader-dir');
        if (rDir) rDir.onchange = function (e) { state.readerDir = e.target.value; yzReaderSavePrefs(); render(); };
 
-      var pForm = document.getElementById('kv-profile-form');
-      if (pForm) {
-        pForm.onsubmit = function (e) {
-          e.preventDefault();
-          var fd = new FormData(pForm);
-          var name = String(fd.get('name') || '').trim();
-          var avatar = String(fd.get('avatar') || '').trim();
-          var background = String(fd.get('background') || '').trim();
-          var bio = String(fd.get('bio') || '').trim();
-          var bgFile = fd.get('backgroundFile');
-          if (name.length < 2) { toast('Nama minimal 2 karakter.', 'warn'); return; }
-          var overrideId = state.user && state.user.id;
-          if (!overrideId) { toast('Masuk terlebih dahulu untuk menyimpan profil.', 'warn'); return; }
-          var save = function (bgValue) {
-            try { localStorage.setItem('kv_profile_override_v2_' + overrideId, JSON.stringify({ name: name, avatar: avatar, background: bgValue || background || '' })); yzSettingWrite('yume_profile_bio', bio); } catch (err) { toast('Gagal menyimpan profil di browser.', 'warn'); }
-            state.editingProfile = false;
-            toast('Profil berhasil disimpan.', 'ok');
-            render();
-          };
-          if (bgFile && bgFile.size) {
-            var token = state.adminToken || localStorage.getItem('kv_session_token') || '';
-            if (CONFIG.API_BASE_URL && token) {
-              state.adminToken = token;
-              var reader = new FileReader();
-              reader.onload = function (ev) {
-                var dataUrl = String(ev.target.result || '');
-                toast('Mengunggah background ke Telegram...', 'info');
-                fetch(CONFIG.API_BASE_URL + '/api/profile/upload-background', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                  body: JSON.stringify({ fileName: bgFile.name || 'background.jpg', dataBase64: dataUrl })
-                }).then(function (res) { return res.json().then(function (json) { return { ok: res.ok, status: res.status, json: json }; }); })
-                  .then(function (result) {
-                    if (!result.ok) throw new Error((result.json && result.json.error) || ('HTTP ' + result.status));
-                    save((result.json && (result.json.url || result.json.bloggerUrl)) || dataUrl);
-                    toast('Background tersimpan di Telegram.', 'ok');
-                  })
-                  .catch(function (err) {
-                    toast('Gagal unggah ke Telegram: ' + (err && err.message ? err.message : 'unknown'), 'err');
-                  });
-              };
-              reader.onerror = function () { toast('Gagal membaca file.', 'err'); };
-              reader.readAsDataURL(bgFile);
-            } else {
-              toast('Backend/token tidak tersedia. Upload background ke Telegram tidak bisa dilakukan.', 'err');
-            }
-          } else {
-            save(background);
-          }
-        };
-      }
-
       var sForm = document.getElementById('kv-site-settings-form');
       if (sForm) {
         sForm.onsubmit = function (e) {
@@ -8918,9 +8853,8 @@ function setBannerDotsActive(index) {
          return;
        }
        if (act === 'settings-sync-anilist' || act === 'settings-connect-tracker' || act === 'settings-unlink-tracker') { toast('Koneksi tracker anime tidak tersedia di build ini.', 'warn'); return; }
-         if (act === 'settings-edit-profile') {
-           state.editingProfile = true;
-           state.avatarPickerApplied = currentDisplayAvatar('');
+          if (act === 'settings-edit-profile') {
+            state.avatarPickerApplied = currentDisplayAvatar('');
            state.avatarPickerDraft = state.avatarPickerApplied;
            state.avatarPickerTab = 'characters';
            state.avatarPickerOpen = true;
@@ -8933,31 +8867,24 @@ function setBannerDotsActive(index) {
        if (act === 'open-header-result') { var slug = el.getAttribute('data-slug'); if (slug) { state.headerSearchOpen = false; state.search = ''; navigate(publicHref('/manga/' + slug)); } return; }
        if (act === 'profile-tab') { state.profileTab = el.getAttribute('data-tab') || 'overview'; render(); return; }
         if (act === 'profile-reaction') { state.profileReaction = el.getAttribute('data-reaction') || ''; render(); return; }
-        if (act === 'open-avatar-picker') {
-          var avatarInput = document.getElementById('kv-profile-avatar');
-          state.avatarPickerApplied = avatarInput ? avatarInput.value : '';
-          state.avatarPickerDraft = state.avatarPickerApplied;
-          state.avatarPickerTab = 'characters';
-          state.avatarPickerOpen = true;
-          render();
-          setTimeout(function () { var dialog = document.querySelector('[data-avatar-dialog]'); if (dialog) dialog.focus(); }, 0);
-          return;
-        }
-        if (act === 'avatar-picker-cancel') { state.avatarPickerOpen = false; state.avatarPickerDraft = state.avatarPickerApplied || ''; render(); return; }
-        if (act === 'avatar-picker-tab') { state.avatarPickerTab = el.getAttribute('data-tab') || 'characters'; render(); return; }
-        if (act === 'avatar-picker-select' || act === 'avatar-picker-use-anilist') { setAvatarPickerDraft(el.getAttribute('data-avatar-url') || ''); return; }
-        if (act === 'avatar-picker-save') {
-          var avatarSaveInput = document.getElementById('kv-profile-avatar');
-          if (avatarSaveInput) avatarSaveInput.value = state.avatarPickerDraft;
-          state.avatarPickerApplied = state.avatarPickerDraft;
+         if (act === 'avatar-picker-cancel') { state.avatarPickerOpen = false; state.avatarPickerDraft = state.avatarPickerApplied || ''; render(); return; }
+         if (act === 'avatar-picker-tab') { state.avatarPickerTab = el.getAttribute('data-tab') || 'characters'; render(); return; }
+         if (act === 'avatar-picker-select' || act === 'avatar-picker-use-anilist') { setAvatarPickerDraft(el.getAttribute('data-avatar-url') || ''); return; }
+         if (act === 'avatar-picker-save') {
+          var avatarOverrideId = state.user && state.user.id;
+          if (!avatarOverrideId) { toast('Masuk terlebih dahulu untuk menyimpan avatar.', 'warn'); return; }
+          var avatarOverride = profileOverride();
+          avatarOverride.avatar = state.avatarPickerDraft || '';
+          try { localStorage.setItem('kv_profile_override_v2_' + avatarOverrideId, JSON.stringify(avatarOverride)); } catch (err) { toast('Gagal menyimpan avatar di browser.', 'warn'); return; }
+          state.avatarPickerApplied = avatarOverride.avatar;
           state.avatarPickerOpen = false;
           render();
           toast('Avatar dipilih.', 'ok');
           return;
         }
         if (act === 'profile-copy-vanity') { var vanityName = String(currentDisplayName(state.user ? state.user.name : 'member')).toLowerCase().replace(/[^a-z0-9_]+/g, '').replace(/^_+|_+$/g, '') || 'member'; var vanity = 'y/' + vanityName; try { navigator.clipboard.writeText(vanity); } catch (err) {} toast('URL profil disalin: ' + vanity, 'ok'); return; }
-       if (act === 'profile-effects') { toast('Efek profil akan segera hadir.', 'info'); return; }
-        if (act === 'profile-edit-banner' || act === 'profile-add-bio') { state.editingProfile = true; state.avatarPickerApplied = ''; state.avatarPickerDraft = ''; state.avatarPickerOpen = false; render(); setTimeout(function () { var target = document.querySelector('[name="' + (act === 'profile-edit-banner' ? 'background' : 'bio') + '"]'); if (target) target.focus(); }, 0); return; }
+        if (act === 'profile-effects') { toast('Efek profil akan segera hadir.', 'info'); return; }
+
        if (act === 'toggle-yz-more') { state.yzMoreOpen = !state.yzMoreOpen; render(); return; }
       if (act === 'toggle-yz-sidebar') { state.yzSidebarExpanded = !state.yzSidebarExpanded; render(); return; }
 
@@ -9095,7 +9022,6 @@ function setBannerDotsActive(index) {
         setTimeout(function () { el.textContent = prevLabel; }, 2000);
       }
       else if (act === 'toggle-edit-profile') {
-        state.editingProfile = true;
         state.avatarPickerApplied = currentDisplayAvatar('');
         state.avatarPickerDraft = state.avatarPickerApplied;
         state.avatarPickerTab = 'characters';
@@ -9103,7 +9029,6 @@ function setBannerDotsActive(index) {
         render();
         setTimeout(function () { var dialog = document.querySelector('[data-avatar-dialog]'); if (dialog) dialog.focus(); }, 0);
       }
-      else if (act === 'close-edit-profile') { state.editingProfile = false; state.avatarPickerApplied = ''; state.avatarPickerDraft = ''; state.avatarPickerOpen = false; render(); }
       else if (act === 'logout-user' || act === 'logout-admin') {
         clearSession();
         clearProfileOverrides();
