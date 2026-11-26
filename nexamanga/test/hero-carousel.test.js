@@ -351,8 +351,8 @@ test('featured carousel content and archive action follow the single active mang
   assert.ok(source.includes("mangaId: new URLSearchParams(routeQuery).get('mangaId') || ''"));
   assert.ok(source.includes("if (selectedMangaId) return String(m.id) === selectedMangaId;"));
   assert.ok(source.includes("escapeHtml(m.status || 'Ongoing')"));
-  assert.ok(!source.includes('shadow-lg shadow-black/30'), 'center thumbnail should not use a diffuse shadow');
-  assert.ok(source.includes("var centerClass = 'border-white/30 ring-1 ring-white/10';"));
+  assert.ok(source.includes('center ? \'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10\' :'), 'center thumbnail should restore its shadow');
+  assert.ok(source.includes("var centerClass = 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10';"));
 });
 
 test('render settles the hero track before generating slide markup', () => {
@@ -368,6 +368,24 @@ test('render settles the hero track before generating slide markup', () => {
     assert.ok(renderStart >= 0 && markupStart > renderStart, target + ' has no render markup point');
     assert.ok(finalize > renderStart && finalize < markupStart, target + ' generates slides from a stale track position');
     assert.ok(source.includes('Number(m.rating) || 0'), target + ' shows an index-derived score instead of manga rating');
+  }
+});
+
+test('landing latest updates paginate all manga in groups of twelve and omit Most Followed', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('var latestPageSize = 12;'), target + ' latest updates should use twelve items per page');
+    assert.ok(source.includes('var recentAll = pool.slice().sort(function (a, b) { return String(b.updatedAt || \'\').localeCompare(String(a.updatedAt || \'\')); });'), target + ' latest updates should include the complete sorted manga list');
+    assert.ok(source.includes('var latestPageItems = recentAll.slice((state.homePage - 1) * latestPageSize, state.homePage * latestPageSize);'), target + ' latest updates should slice by the selected page');
+    assert.ok(source.includes('latestPageItems.map(landingCard).join(\'\')'), target + ' latest updates should render only the current page');
+    assert.ok(source.includes('data-action="home-page" data-page="'), target + ' latest updates should expose page controls');
+    assert.ok(source.includes('state.homePage = 1; state.refocusLibrarySearch = true;'), target + ' searching should reset landing pagination');
+    assert.ok(source.includes("state.homePage = 1; render(); } else { state.filterGenres"), target + ' changing the landing genre should reset pagination');
+    assert.ok(!source.includes("sectionHead('Most Followed'"), target + ' should remove the Most Followed section');
   }
 });
 
@@ -439,6 +457,19 @@ test('light theme restyles the landing catalog and the hero stage', () => {
   }
 });
 
+test('dark theme palette accents primary and active genre buttons', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(source.includes('html[data-resolved-theme="dark"] body.kv-public-route :is([class~="bg-white"][class~="text-black"]) { background-color: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; }'), target + ' primary buttons should use the selected palette in dark mode');
+    assert.ok(source.includes('html[data-resolved-theme="dark"] body.kv-public-route :is([class~="hover:bg-zinc-200"]):hover { background-color: var(--yz-accent-hover) !important; color: var(--yz-bg) !important; }'), target + ' primary button hover should use the selected palette in dark mode');
+    assert.ok(source.includes('html[data-resolved-theme="dark"] body.kv-home-route button[data-action="quick-genre"][data-landing="1"][data-active="true"] { background: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; }'), target + ' active genre button should use the selected palette in dark mode');
+  }
+});
+
 test('light theme keeps account name and settings surfaces readable', () => {
   const targets = [
     path.join(__dirname, '..', 'public', 'index.html'),
@@ -498,9 +529,9 @@ test('settings, profile, hero, and detail theme surfaces stay clean', () => {
     assert.ok(!source.includes('.yz-hero-thumb[data-center="true"] .yz-hero-thumb-gradient { opacity:1;'), target + ' center thumbnail should not be washed out by its gradient overlay');
     assert.ok(source.includes('[data-hero-carousel] .yz-hero-slide [class~="bg-gradient-to-t"]'), target + ' light theme gradient should only restyle hero slide overlays');
     assert.ok(!source.includes('[data-hero-carousel] [class~="bg-gradient-to-t"] { background-image:'), target + ' hero theme gradient should not recolor thumbnail overlays');
-    assert.ok(source.includes('center ? \'border-white/30 ring-1 ring-white/10\' : \'hover:border-white/20\''), target + ' hero active thumb should keep its crisp ring');
-    assert.ok(!source.includes('shadow-lg shadow-black/30'), target + ' hero active thumb should not have a diffuse shadow');
-    assert.ok(source.includes('var centerClass = \'border-white/30 ring-1 ring-white/10\';'), target + ' hero ring should move with the active thumbnail');
+    assert.ok(source.includes('center ? \'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10\' : \'hover:border-white/20\''), target + ' hero active thumb should keep its crisp ring and shadow');
+    assert.ok(source.includes('center ? \'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10\' :'), target + ' hero active thumb should restore its shadow');
+    assert.ok(source.includes('var centerClass = \'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10\';'), target + ' hero shadow and ring should move with the active thumbnail');
     assert.ok(source.includes('.yz-hero-thumb img { filter:none !important; backdrop-filter:none !important;'), target + ' hero thumbnail should not blur');
     assert.ok(source.includes('yzHeroApplyPoses(carousel.querySelectorAll(\'[data-hero-thumbs] > .yz-hero-thumb\'), canonical, false);'), target + ' hero cleanup should resync thumb poses');
     assert.ok(source.includes('data-detail-cover-glow'), target + ' detail cover glow hook missing');

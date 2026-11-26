@@ -3610,9 +3610,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-public-route :is([class~="ring-white/5"], [class~="ring-white/10"], [class~="ring-[#0a0c10]"]) { --tw-ring-color: var(--yz-border) !important; }
     html[data-resolved-theme="light"] body.kv-public-route [class~="shadow-white/10"] { --tw-shadow-color: rgba(122, 74, 31, .18) !important; }
     html[data-resolved-theme="light"] body.kv-public-route :is([class~="bg-white"][class~="text-black"]) { background-color: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: #FFFCF6 !important; }
+    html[data-resolved-theme="dark"] body.kv-public-route :is([class~="bg-white"][class~="text-black"]) { background-color: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; }
     html[data-resolved-theme="light"] body.kv-public-route [class~="bg-zinc-500"] { background-color: var(--yz-accent) !important; }
     html[data-resolved-theme="light"] body.kv-public-route :is([class~="hover:bg-white/5"], [class~="hover:bg-white/10"], [class~="hover:bg-white/15"], [class~="hover:bg-zinc-800"], [class~="hover:bg-zinc-850"], [class~="hover:bg-zinc-900"], [class~="hover:bg-zinc-900/60"], [class~="hover:bg-zinc-900/70"], [class~="hover:bg-zinc-900/80"], [class~="focus:bg-zinc-900"]):hover { background-color: var(--yz-surface-2) !important; }
     html[data-resolved-theme="light"] body.kv-public-route :is([class~="hover:bg-zinc-200"]):hover { background-color: var(--yz-accent-hover) !important; color: #FFFCF6 !important; }
+    html[data-resolved-theme="dark"] body.kv-public-route :is([class~="hover:bg-zinc-200"]):hover { background-color: var(--yz-accent-hover) !important; color: var(--yz-bg) !important; }
     html[data-resolved-theme="light"] body.kv-public-route :is([class~="hover:text-white"], [class~="hover:text-zinc-200"], [class~="hover:text-zinc-300"]):hover { color: var(--yz-accent) !important; }
     html[data-resolved-theme="light"] body.kv-public-route .group:hover :is([class~="group-hover:text-white"], [class~="group-hover:text-zinc-200"], [class~="group-hover:text-zinc-300"]) { color: var(--yz-accent) !important; }
     html[data-resolved-theme="light"] body.kv-public-route :is(input, textarea, select) { background-color: var(--yz-surface-0) !important; color: var(--yz-text) !important; border-color: var(--yz-border) !important; }
@@ -3621,6 +3623,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-home-route #manga-library-catalog { background: var(--yz-surface-0) !important; border-color: var(--yz-border) !important; box-shadow: 0 18px 44px -30px rgba(82, 52, 22, .32) !important; }
     html[data-resolved-theme="light"] body.kv-home-route button[data-action="quick-genre"][data-landing="1"] { background: var(--yz-surface-2) !important; border-color: var(--yz-border) !important; color: var(--yz-text-muted) !important; }
     html[data-resolved-theme="light"] body.kv-home-route button[data-action="quick-genre"][data-landing="1"][data-active="true"] { background: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: #FFFCF6 !important; }
+    html[data-resolved-theme="dark"] body.kv-home-route button[data-action="quick-genre"][data-landing="1"][data-active="true"] { background: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-manga-id] > div[class~="bg-zinc-900"] { background: var(--yz-surface-2) !important; color: var(--yz-text-muted) !important; }
     html[data-resolved-theme="light"] body.kv-home-route [data-manga-id] [class~="bg-zinc-950/95"] { background: var(--yz-surface-0) !important; border-color: var(--yz-border) !important; color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-home-route main [class~="bg-white/5"][class~="ring-white/10"] { background: var(--yz-surface-2) !important; border-color: var(--yz-border) !important; color: var(--yz-text-secondary) !important; box-shadow: none !important; }
@@ -5397,7 +5400,7 @@ function trackPageview() {
         '<div class="flex items-center gap-2 flex-wrap"><div class="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/50 px-2.5 py-1.5 text-xs text-zinc-300 shadow-lg">' + icon('sort', 'h-3.5 w-3.5 text-zinc-400') + '<select data-yz-filter="sort" class="bg-transparent text-[11px] font-medium text-zinc-200 outline-none cursor-pointer">' + sortHtml + '</select></div>' +
         '<a href="' + publicHref('/archive') + '" class="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/50 px-2.5 py-1.5 text-xs font-semibold text-zinc-300 select-none transition-all cursor-pointer hover:bg-white/10 hover:text-white active:scale-95" title="Open Advanced Manga Filter &amp; Browse">' + icon('sliders', 'h-3.5 w-3.5 text-zinc-400') + '<span class="text-[11px] font-medium">Advanced Browse</span></a>' +
         '<button type="button" data-action="toggle-yz-blur" class="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/50 px-2.5 py-1.5 text-xs font-semibold select-none transition-all cursor-pointer hover:bg-white/10 active:scale-95" title="' + blurTitle + '" aria-label="Toggle 18+ blur safe mode">' + icon('eyeoff', 'h-3.5 w-3.5 text-rose-400') + '<span class="text-rose-300 text-[11px] font-bold">' + blurLabel + '</span></button>' +
-        '<button type="button" data-action="home-page" data-page="1" class="hidden" aria-hidden="true"></button></div></div>' +
+        '</div></div>' +
         '<div class="mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center"><form class="relative min-w-0" autocomplete="off">' + icon('search', 'pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500') + '<input id="manga-library-search" name="q" type="search" value="' + escapeHtml(state.yzLandingSearch || '') + '" placeholder="Search manga, manhwa, authors, genres..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="120" class="h-11 w-full rounded-lg border border-white/5 bg-black/40 pl-10 pr-24 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-white/15 focus:bg-black/60"/><div class="absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1"><button type="submit" class="rounded-md bg-white px-3 py-1.5 text-xs font-bold text-black transition hover:bg-zinc-200">Search</button></div></form>' +
         '<div class="flex max-w-full gap-1 overflow-x-auto rounded-lg border border-white/5 bg-black/40 p-1 [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden lg:max-w-[580px] xl:max-w-[760px] 2xl:max-w-none">' + genreHtml + '</div></div></section>';
 
@@ -5408,8 +5411,14 @@ function trackPageview() {
         return genreOk && (!q || haystack.indexOf(q) !== -1);
       });
       var trending = landingSort(pool.slice()).slice(0, 20);
-      var followed = pool.slice().sort(function (a, b) { return (b.followers || b.views || 0) - (a.followers || a.views || 0); }).slice(0, 20);
-      var recentAll = pool.slice().sort(function (a, b) { return String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')); }).slice(0, 20);
+      var recentAll = pool.slice().sort(function (a, b) { return String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')); });
+      var latestPageSize = 12;
+      var latestPageCount = Math.max(1, Math.ceil(recentAll.length / latestPageSize));
+      state.homePage = Math.max(1, Math.min(Number(state.homePage) || 1, latestPageCount));
+      var latestPageItems = recentAll.slice((state.homePage - 1) * latestPageSize, state.homePage * latestPageSize);
+      var latestPagination = latestPageCount > 1
+        ? '<nav class="mt-5 flex items-center justify-center gap-3" aria-label="Pagination Latest Update"><button type="button" data-action="home-page" data-page="' + (state.homePage - 1) + '" class="rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-40"' + (state.homePage === 1 ? ' disabled' : '') + '>Sebelumnya</button><span class="text-xs text-zinc-500" aria-live="polite">Halaman ' + state.homePage + ' / ' + latestPageCount + '</span><button type="button" data-action="home-page" data-page="' + (state.homePage + 1) + '" class="rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-40"' + (state.homePage === latestPageCount ? ' disabled' : '') + '>Berikutnya</button></nav>'
+        : '';
       var heroColors = ['#c60101', '#fa0a0a', '#7b4be2', '#ef4444', '#24c292', '#e53e3e', '#d53f8c', '#3182ce', '#f59e0b', '#06b6d4'];
       function rgbOf(hex) {
         var h = String(hex || '#91b8b1').replace('#', '');
@@ -5471,7 +5480,7 @@ function trackPageview() {
         var pose = yzHeroThumbPose(offset);
         var center = offset === 0;
         var cover = m.coverBloggerUrl ? escapeHtml(m.coverBloggerUrl) : '';
-        return '<div role="button" tabindex="' + (center ? '0' : '-1') + '" aria-hidden="' + (center ? 'false' : 'true') + '" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" data-hero-card-id="' + i + '" data-hero-position="' + offset + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe), border-color var(--dur-swipe) var(--ease-swipe), box-shadow var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
+        return '<div role="button" tabindex="' + (center ? '0' : '-1') + '" aria-hidden="' + (center ? 'false' : 'true') + '" aria-label="' + escapeHtml(yzTitle(m)) + '" data-action="hero-thumb" data-index="' + i + '" data-hero-card-id="' + i + '" data-hero-position="' + offset + '" class="yz-hero-thumb absolute left-1/2 top-0 h-full w-full overflow-hidden rounded-lg border border-white/[0.08] sm:rounded-xl cursor-pointer transition-shadow ' + (center ? 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10' : 'hover:border-white/20') + '" data-center="' + (center ? 'true' : 'false') + '" style="backface-visibility: hidden; transform: ' + pose.transform + '; transition: transform var(--dur-swipe) var(--ease-swipe), opacity var(--dur-swipe) var(--ease-swipe), border-color var(--dur-swipe) var(--ease-swipe), box-shadow var(--dur-swipe) var(--ease-swipe); z-index: ' + pose.zIndex + '; opacity: ' + pose.opacity + '; visibility: ' + pose.visibility + ';">' + (cover ? '<img loading="lazy" decoding="async" alt="' + escapeHtml(yzTitle(m)) + '" src="' + cover + '" class="h-full w-full object-cover select-none pointer-events-none transition-all duration-300 ">' : '') + '<span aria-hidden="true" class="absolute inset-0 bg-zinc-950 pointer-events-none transition-opacity duration-300" style="opacity: ' + pose.shade + ';"></span>' + '<span aria-hidden="true" class="yz-hero-thumb-gradient pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></span>' + '</div>';
       }).join('');
       var heroDots = heroItems.map(function (m, i) {
         var active = i === heroIndex;
@@ -5487,8 +5496,7 @@ function trackPageview() {
       var gridClass = 'grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 min-[1900px]:grid-cols-8 min-[2200px]:grid-cols-9';
       var sections = '<div class="space-y-11">' +
         '<section class="space-y-4">' + sectionHead('Trending Now', 'book', 'h-4 w-4 text-red-300', nextBtn, trending.length) + '<div class="flex gap-3 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden sm:gap-4" id="manga-rail-trending" data-infinite-rail="true" style="cursor: grab;">' + trendingRailHtml + '</div></section>' +
-        '<section class="space-y-4">' + sectionHead('Latest Update', 'layers', 'h-4 w-4 text-zinc-300', '', recentAll.length) + '<div class="' + gridClass + '">' + recentAll.map(landingCard).join('') + '</div></section>' +
-        '<section class="space-y-4">' + sectionHead('Most Followed', 'layers', 'h-4 w-4 text-zinc-300', '', followed.length) + '<div class="' + gridClass + '">' + followed.map(landingCard).join('') + '</div></section>' +
+        '<section id="landing-latest-update" class="space-y-4">' + sectionHead('Latest Update', 'layers', 'h-4 w-4 text-zinc-300', '', recentAll.length) + '<div class="' + gridClass + '">' + latestPageItems.map(landingCard).join('') + '</div>' + latestPagination + '</section>' +
       '</div>';
       if (!pool.length) {
         sections = '<div class="rounded-xl border border-dashed border-white/10 bg-white/[0.02] py-24 text-center">' + icon('book', 'mx-auto mb-2 h-8 w-8 text-zinc-600') + '<p class="text-sm font-semibold text-zinc-300">No manga data available</p><p class="mt-1 text-xs text-zinc-500">Unable to load titles right now. Please refresh or try again in a moment.</p></div>';
@@ -8848,7 +8856,7 @@ function setBannerDotsActive(index) {
         thumb.setAttribute('aria-hidden', center ? 'false' : 'true');
         thumb.setAttribute('data-center', center ? 'true' : 'false');
         if (center !== wasCenter) {
-          var centerClass = 'border-white/30 ring-1 ring-white/10';
+          var centerClass = 'border-white/30 shadow-lg shadow-black/30 ring-1 ring-white/10';
           var sideClass = 'hover:border-white/20';
           var cls = thumb.className;
           cls = center
@@ -9346,7 +9354,7 @@ function setBannerDotsActive(index) {
       });
       var librarySearch = document.getElementById('manga-library-search');
       if (librarySearch) {
-        librarySearch.oninput = function (e) { state.yzLandingSearch = e.target.value; state.refocusLibrarySearch = true; render(); };
+        librarySearch.oninput = function (e) { state.yzLandingSearch = e.target.value; state.homePage = 1; state.refocusLibrarySearch = true; render(); };
         if (librarySearch.form) librarySearch.form.onsubmit = function (e) { e.preventDefault(); };
       }
       if (state.refocusLibrarySearch) {
