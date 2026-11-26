@@ -364,3 +364,23 @@ test('header theme button opens the full theme list instead of toggling light an
     assert.ok(source.includes('state.headerThemeOpen = false; state.theme = nextTheme;'), target + ' theme list stays open after selection');
   }
 });
+
+test('light theme is honored on every route instead of being forced dark', () => {
+  const targets = [
+    path.join(__dirname, '..', 'public', 'index.html'),
+    path.join(__dirname, '..', '..', 'nexamanga.xml')
+  ];
+  for (const target of targets) {
+    const source = fs.readFileSync(target, 'utf8');
+    assert.ok(!source.includes("setAttribute('data-theme', 'yumezone')"), target + ' still forces the yumezone theme');
+    assert.ok(!source.includes('classList.add(\'dark\')'), target + ' still forces the dark class from render');
+    assert.ok(source.includes('html[data-resolved-theme="light"]'), target + ' has no light theme overrides');
+    assert.ok(source.includes('--yz-bg: #F7F1E6'), target + ' has no light surface tokens');
+    assert.ok(source.includes("state.readerBackground = resolved === 'dark' ? '#000000' : '#F7F1E6'"), target + ' reader background ignores the resolved theme');
+    assert.ok(!source.includes('min-h-screen bg-black text-[#f0f0f5]'), target + ' still hardcodes a dark public shell');
+  }
+  const lightCoverage = targets.map(function (target) {
+    return fs.readFileSync(target, 'utf8').split('html[data-resolved-theme="light"]').length - 1;
+  });
+  assert.strictEqual(lightCoverage[0], lightCoverage[1], 'frontends have different light override coverage');
+});
