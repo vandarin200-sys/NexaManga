@@ -5261,8 +5261,11 @@ function trackPageview() {
           '<button type="button" data-action="hero-browse" class="group/btn inline-flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 hover:border-zinc-700 px-3 py-2 font-semibold text-xs tracking-wide text-zinc-300 hover:text-white transition-all duration-200 sm:gap-2 sm:px-5 sm:py-2.5 rounded-lg"><span class="sm:hidden">Archive</span><span class="hidden sm:inline">Browse Archive</span>' + icon('arrow', 'h-3 w-3 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 sm:h-3.5 sm:w-3.5') + '</button></div></div></div></div></div>';
       });
       var cloneHeroSlide = function (html) { return html ? html.replace('role="group"', 'role="group" aria-hidden="true" inert') : ''; };
-      var heroSlideHtml = heroSlideParts.length
-        ? cloneHeroSlide(heroSlideParts[heroSlideParts.length - 1]) + heroSlideParts.join('') + cloneHeroSlide(heroSlideParts[0])
+      var cloneHeroAt = function (virtual) {
+        return cloneHeroSlide(heroSlideParts[heroNormalizeIndex(virtual - 1, heroItems.length)] || '');
+      };
+      var heroSlideHtml = heroItems.length
+        ? [-2, -1, 0].map(cloneHeroAt).join('') + heroSlideParts.join('') + [heroItems.length + 1, heroItems.length + 2, heroItems.length + 3].map(cloneHeroAt).join('')
         : '';
       state.heroTrackPosition = heroItems.length ? heroIndex + 1 : 0;
       var heroThumbs = heroItems.map(function (m, i) {
@@ -8637,15 +8640,10 @@ function setBannerDotsActive(index) {
       var dir = direction === 'next' || direction === 'prev'
         ? direction
         : (forward <= backward ? 'next' : 'prev');
-      var virtual = to + 1;
-      var clone = false;
-      if (dir === 'next' && from === total - 1 && to === 0) {
-        virtual = total + 1;
-        clone = true;
-      } else if (dir === 'prev' && from === 0 && to === total - 1) {
-        virtual = 0;
-        clone = true;
-      }
+      var span = dir === 'next' ? forward : dir === 'prev' ? -backward : (forward <= backward ? forward : -backward);
+      var virtual = from + 1 + span;
+      if (virtual < -3 || virtual > total + 3) virtual = to + 1;
+      var clone = virtual < 1 || virtual > total;
       return { current: from, target: to, direction: dir, virtual: virtual, canonicalVirtual: to + 1, clone: clone };
     }
 
@@ -8665,23 +8663,31 @@ function setBannerDotsActive(index) {
       return { index: heroNormalizeIndex(from + sign * amount, total), direction: sign > 0 ? 'next' : 'prev' };
     }
 
-    function heroDragProgress(delta, travel) {
+    function heroDragProgress(delta, travel, limit) {
       var width = Math.max(1, Number(travel) || 1);
-      return Math.max(-1, Math.min(1, -(Number(delta) || 0) / width));
+      var reach = Math.max(1, Math.floor(Number(limit) || 1));
+      return Math.max(-reach, Math.min(reach, -(Number(delta) || 0) / width));
     }
 
-    function heroDragDecision(delta, velocity, threshold, base, count) {
+    function heroDragDecision(delta, velocity, threshold, base, count, maxSteps, stepTravel) {
       var distance = Number(delta) || 0;
       var speed = Math.max(0, Number(velocity) || 0);
       var limit = Math.max(1, Number(threshold) || 48);
       var from = heroNormalizeIndex(base, count);
-      if (distance <= -limit || (distance <= -24 && speed > 0.35)) {
-        return { index: heroNormalizeIndex(from + 1, count), direction: 'next' };
-      }
-      if (distance >= limit || (distance >= 24 && speed > 0.35)) {
-        return { index: heroNormalizeIndex(from - 1, count), direction: 'prev' };
-      }
-      return { index: from, direction: '' };
+      var magnitude = Math.abs(distance);
+      var stepWidth = Math.max(limit, Number(stepTravel) || limit * 2);
+      var requested = 0;
+      if (magnitude >= limit) requested = 1 + Math.floor((magnitude - limit) / stepWidth);
+      else if (magnitude >= 24 && speed > 0.35) requested = 1;
+      if (!requested) return { index: from, direction: '', steps: 0 };
+      var sign = distance < 0 ? 1 : -1;
+      var cap = Math.max(1, Math.floor(Number(maxSteps) || 1));
+      var steps = Math.min(cap, requested);
+      return {
+        index: heroNormalizeIndex(from + sign * steps, count),
+        direction: sign > 0 ? 'next' : 'prev',
+        steps: steps
+      };
     }
 
     function yzHeroWrappedOffset(index, centerPosition, count) {
@@ -8861,8 +8867,8 @@ function setBannerDotsActive(index) {
       var setSlideAria = function (virtual) {
         var items = carousel.querySelectorAll('[data-hero-track] > *');
         for (var j = 0; j < items.length; j++) {
-          var isClone = j === 0 || j === count + 1;
-          items[j].setAttribute('aria-hidden', !isClone && j === virtual ? 'false' : 'true');
+          var isClone = j < 3 || j >= count + 3;
+          items[j].setAttribute('aria-hidden', !isClone && j === virtual + 2 ? 'false' : 'true');
         }
       };
       var cleanup = function () {
@@ -8896,9 +8902,10 @@ function setBannerDotsActive(index) {
       if (!carousel || !thumbs || thumbs.dataset.dragBound === '1') return;
       thumbs.dataset.dragBound = '1';
       var track = carousel ? carousel.querySelector('[data-hero-track]') : null;
-      var slideCount = Math.max(1, state.heroCount || Math.max(1, carousel.querySelectorAll('[data-hero-track] > *').length - 2));
+      var slideCount = Math.max(1, state.heroCount || Math.max(1, carousel.querySelectorAll('[data-hero-track] > *').length - 6));
+      var maxDragSteps = Math.min(3, Math.max(1, slideCount - 1));
       var trackSlides = carousel.querySelectorAll('[data-hero-track] > *');
-      for (var s = 0; s < trackSlides.length; s++) trackSlides[s].setAttribute('aria-hidden', s === (state.heroTrackPosition || 1) ? 'false' : 'true');
+      for (var s = 0; s < trackSlides.length; s++) trackSlides[s].setAttribute('aria-hidden', s === (state.heroTrackPosition || 1) + 2 ? 'false' : 'true');
       var active = false;
       var startX = 0;
       var lastX = 0;
@@ -8918,7 +8925,7 @@ function setBannerDotsActive(index) {
       var renderDrag = function () {
         dragFrame = 0;
         if (!active) return;
-        dragProgress = heroDragProgress(lastX - startX, dragTravel);
+        dragProgress = heroDragProgress(lastX - startX, dragTravel, maxDragSteps);
         state.heroDragOffset = dragProgress;
         snapTo(dragBase + dragProgress, false);
       };
@@ -8939,7 +8946,7 @@ function setBannerDotsActive(index) {
           Math.abs(lastX - startX) / Math.max(1, lastTime - startTime)
         );
         var threshold = Math.max(32, Math.min(dragTravel * 0.42, 96));
-        var decision = heroDragDecision(delta, velocity, threshold, dragBase, slideCount);
+        var decision = heroDragDecision(delta, velocity, threshold, dragBase, slideCount, maxDragSteps, dragTravel);
         state.heroDragOffset = 0;
         state.heroDragged = dragged;
         if (dragged && !cancelled) {

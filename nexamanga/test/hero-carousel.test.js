@@ -50,6 +50,12 @@ test('heroVirtualTarget handles clone wrap in both directions', () => {
   assert.equal(heroCanonicalVirtual(11, 10), 1);
   assert.equal(heroVirtualTarget(8, 0, undefined, 10).direction, 'next');
   assert.equal(heroVirtualTarget(1, 9, undefined, 10).direction, 'prev');
+  assert.deepEqual(heroVirtualTarget(8, 1, 'next', 10), {
+    current: 8, target: 1, direction: 'next', virtual: 12, canonicalVirtual: 2, clone: true
+  });
+  assert.deepEqual(heroVirtualTarget(1, 8, 'prev', 10), {
+    current: 1, target: 8, direction: 'prev', virtual: -1, canonicalVirtual: 9, clone: true
+  });
 });
 
 test('heroAdvance wraps forward and backward without a terminal index', () => {
@@ -63,14 +69,46 @@ test('heroAdvance wraps forward and backward without a terminal index', () => {
   assert.deepEqual(heroAdvance(0, 'next', 1), { index: 0, direction: '' });
 });
 
-test('heroDragDecision advances exactly once and clamps overshoot', () => {
-  assert.deepEqual(heroDragDecision(-60, 0, 48, 0, 10), { index: 1, direction: 'next' });
-  assert.deepEqual(heroDragDecision(-30, 0.5, 48, 0, 10), { index: 1, direction: 'next' });
-  assert.deepEqual(heroDragDecision(60, 0, 48, 0, 10), { index: 9, direction: 'prev' });
-  assert.deepEqual(heroDragDecision(30, 0.5, 48, 0, 10), { index: 9, direction: 'prev' });
-  assert.deepEqual(heroDragDecision(10, 0.1, 48, 0, 10), { index: 0, direction: '' });
+test('heroDragDecision advances once for a short swipe and keeps the pointer pose bounded', () => {
+  assert.deepEqual(heroDragDecision(-60, 0, 48, 0, 10), { index: 1, direction: 'next', steps: 1 });
+  assert.deepEqual(heroDragDecision(-30, 0.5, 48, 0, 10), { index: 1, direction: 'next', steps: 1 });
+  assert.deepEqual(heroDragDecision(60, 0, 48, 0, 10), { index: 9, direction: 'prev', steps: 1 });
+  assert.deepEqual(heroDragDecision(30, 0.5, 48, 0, 10), { index: 9, direction: 'prev', steps: 1 });
+  assert.deepEqual(heroDragDecision(10, 0.1, 48, 0, 10), { index: 0, direction: '', steps: 0 });
   assert.equal(heroDragProgress(-1000, 108), 1);
   assert.equal(heroDragProgress(1000, 108), -1);
+});
+
+test('a long drag advances several cards and stops exactly at the circular clones', () => {
+  const threshold = 45;
+  const travel = 108;
+  assert.deepEqual(heroDragDecision(-95, 0, threshold, 0, 10, 3, travel), { index: 1, direction: 'next', steps: 1 });
+  assert.deepEqual(heroDragDecision(-190, 0, threshold, 0, 10, 3, travel), { index: 2, direction: 'next', steps: 2 });
+  assert.deepEqual(heroDragDecision(-310, 0, threshold, 0, 10, 3, travel), { index: 3, direction: 'next', steps: 3 });
+  assert.deepEqual(heroDragDecision(-900, 0, threshold, 0, 10, 3, travel), { index: 3, direction: 'next', steps: 3 });
+  assert.deepEqual(heroDragDecision(310, 0, threshold, 0, 10, 3, travel), { index: 7, direction: 'prev', steps: 3 });
+  assert.deepEqual(heroDragDecision(-310, 0, threshold, 8, 10, 3, travel), { index: 1, direction: 'next', steps: 3 });
+  assert.deepEqual(heroDragDecision(310, 0, threshold, 1, 10, 3, travel), { index: 8, direction: 'prev', steps: 3 });
+  assert.equal(heroDragProgress(-900, travel, 3), 3);
+  assert.equal(heroDragProgress(900, travel, 3), -3);
+});
+
+test('multi-step circular plans stay inside the clone range for every start card', () => {
+  const count = 10;
+  for (let from = 0; from < count; from += 1) {
+    for (let steps = 1; steps <= 3; steps += 1) {
+      for (const direction of ['next', 'prev']) {
+        const decision = heroDragDecision(
+          direction === 'next' ? -steps * 120 : steps * 120, 0, 45, from, count, 3, 108
+        );
+        assert.equal(decision.steps, steps, direction + ' from ' + from);
+        const plan = heroVirtualTarget(from, decision.index, decision.direction, count);
+        assert.equal(plan.target, decision.index);
+        assert.ok(plan.virtual >= -3 && plan.virtual <= count + 3, 'virtual ' + plan.virtual);
+        assert.equal(heroCanonicalVirtual(plan.virtual, count), decision.index + 1);
+      }
+    }
+  }
 });
 
 test('sequential swipes stay in sync from slide one through ten and back', () => {
