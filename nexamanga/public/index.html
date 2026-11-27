@@ -5165,6 +5165,20 @@ function yzSettingRead(key, fallback) {
         body: JSON.stringify(payload || {})
       }).then(parseApiResponse);
     }
+    function runAccountAction(path, payload, successMessage, onDone) {
+      if (!state.adminToken) {
+        toast('Silakan masuk terlebih dahulu.', 'warn');
+        return Promise.resolve(null);
+      }
+      return apiPublicWrite(path, payload).then(function (result) {
+        if (successMessage) toast(successMessage, 'ok');
+        if (typeof onDone === 'function') onDone(result);
+        return result;
+      }).catch(function (err) {
+        toast(err && err.message ? err.message : 'Gagal memproses permintaan.', 'error');
+        return null;
+      });
+    }
     function apiSync(path, payload, successMessage) {
       if (!CONFIG.API_BASE_URL || !state.adminToken) {
         toast('Backend tidak terhubung.', 'error');
@@ -6769,7 +6783,7 @@ function renderSettings() {
         var displayName = String(currentDisplayName(user.name) || user.name || 'Member');
         var displayAvatar = currentDisplayAvatar(user.avatar || '') || user.avatar || '';
         var avatar = displayAvatar ? '<img src="' + escapeHtml(displayAvatar) + '" alt="Avatar" class="h-full w-full object-cover" referrerpolicy="no-referrer"/>' : '<span class="text-xl font-black text-white">' + escapeHtml(displayName.charAt(0).toUpperCase()) + '</span>';
-        var synced = !!user.anilist_connected;
+        var synced = !!(user.connections && user.connections.anilist && user.connections.anilist.connected);
         var badges = synced ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-[#3db4f2]/40 bg-[#3db4f2]/10 text-[#3db4f2]"><span class="h-1.5 w-1.5 rounded-full bg-[#3db4f2]"></span> AniList Synced</span>' : '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-zinc-400">Direct Account</span>';
         var emailValue = user.email ? '<span class="text-zinc-300 font-mono truncate text-xs">' + escapeHtml(user.email) + '</span>' : '<span class="text-zinc-500 italic text-[11px]">No email linked</span>';
         return '<div class="space-y-6 font-sans">' + head('Profile & Customization', 'Customize your avatar picture, decorative frame, custom name effects, and account credentials.', 'user', '<a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-xs font-bold text-zinc-300 hover:text-white transition-all shadow-sm active:scale-95 shrink-0 self-start sm:self-auto" href="' + publicHref('/profile/' + encodeURIComponent(user.username || displayName)) + '"><span>View Public Profile</span></a>') +
@@ -6782,31 +6796,39 @@ function renderSettings() {
 
       function connectionsView() {
         if (!user) return '<div class="space-y-5">' + head('Account Connections', 'Connect anime trackers to synchronize watchlists and taste profiles.', 'link') + signInRequired('Sign in to link AniList or MyAnimeList accounts.') + '</div>';
+        var connections = user.connections || {};
         var rows = [
-          ['AniList', 'https://anilist.co/img/icons/icon.svg', 'https://upload.wikimedia.org/wikipedia/commons/6/61/AniList_logo.svg', !!user.anilist_connected],
-          ['MyAnimeList', 'https://cdn.myanimelist.net/images/favicon.svg', 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/MyAnimeList_favicon.svg/250px-MyAnimeList_favicon.svg.png', !!user.mal_connected]
+          ['AniList', 'anilist', 'https://anilist.co/img/icons/icon.svg', 'https://upload.wikimedia.org/wikipedia/commons/6/61/AniList_logo.svg', connections.anilist],
+          ['MyAnimeList', 'mal', 'https://cdn.myanimelist.net/images/favicon.svg', 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/MyAnimeList_favicon.svg/250px-MyAnimeList_favicon.svg.png', connections.mal]
         ].map(function (r) {
-          var connected = r[3];
-          var action = connected ? '<button type="button" class="rounded-xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 text-xs font-semibold text-red-400 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 active:scale-95" data-action="settings-unlink-tracker"><span>Unlink</span></button>' : '<button type="button" class="rounded-xl bg-white px-3.5 py-1.5 text-xs font-bold text-black hover:bg-zinc-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-white/5 shrink-0 active:scale-95 disabled:opacity-60" data-action="settings-connect-tracker"><span>Connect</span></button>';
-          return '<div class="p-4 rounded-2xl border border-white/[0.06] bg-zinc-900/40 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="h-10 w-10 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0 p-2 overflow-hidden shadow-sm"><img src="' + r[1] + '" alt="' + r[0] + '" class="h-full w-full object-contain" loading="lazy" decoding="async" data-fallback="' + r[2] + '" onerror="this.onerror=null;this.src=this.dataset.fallback"/></div><div class="min-w-0"><span class="text-xs font-bold text-white block truncate">' + r[0] + '</span><div class="flex items-center gap-1.5 mt-0.5"><span class="h-1.5 w-1.5 rounded-full ' + (connected ? 'bg-emerald-400' : 'bg-zinc-500') + '"></span><span class="text-[10px] text-zinc-400">' + (connected ? 'Connected' : 'Not Connected') + '</span></div></div></div>' + action + '</div>';
+          var connection = r[4] || {};
+          var connected = !!connection.connected;
+          var username = typeof connection.username === 'string' && connection.username ? escapeHtml(connection.username) : '';
+          var sync = connected && r[1] === 'anilist' ? '<button type="button" class="rounded-xl border border-white/10 bg-white/[0.05] hover:bg-white/[0.1] px-3 py-1.5 text-xs font-semibold text-zinc-300 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 active:scale-95" data-action="settings-sync-anilist"><span>Sync</span></button>' : '';
+          var action = connected ? sync + '<button type="button" class="rounded-xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 text-xs font-semibold text-red-400 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 active:scale-95" data-action="settings-unlink-tracker" data-provider="' + r[1] + '"><span>Unlink</span></button>' : '<button type="button" class="rounded-xl bg-white px-3.5 py-1.5 text-xs font-bold text-black hover:bg-zinc-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-white/5 shrink-0 active:scale-95 disabled:opacity-60" data-action="settings-connect-tracker" data-provider="' + r[1] + '"><span>Connect</span></button>';
+          return '<div class="p-4 rounded-2xl border border-white/[0.06] bg-zinc-900/40 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="h-10 w-10 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0 p-2 overflow-hidden shadow-sm"><img src="' + r[2] + '" alt="' + r[0] + '" class="h-full w-full object-contain" loading="lazy" decoding="async" data-fallback="' + r[3] + '" onerror="this.onerror=null;this.src=this.dataset.fallback"/></div><div class="min-w-0"><span class="text-xs font-bold text-white block truncate">' + r[0] + '</span><div class="flex items-center gap-1.5 mt-0.5"><span class="h-1.5 w-1.5 rounded-full ' + (connected ? 'bg-emerald-400' : 'bg-zinc-500') + '"></span><span class="text-[10px] text-zinc-400">' + (connected ? 'Connected' + (username ? ' as ' + username : '') : 'Not Connected') + '</span></div></div></div><div class="flex items-center gap-2 flex-wrap justify-end">' + action + '</div></div>';
         }).join('');
         return '<div class="space-y-5">' + head('Account Connections', 'Connect anime trackers to synchronize watchlists and taste profiles.', 'link') + '<div class="space-y-3 font-sans max-w-lg">' + rows + '</div></div>';
       }
 
       function securityView() {
         if (!user) return '<div class="space-y-5">' + head('Password & Security', 'Keep your account safe by updating your password.', 'key') + signInRequired('Sign in to manage password and security credentials.') + '</div>';
-        if (!user.email) {
+        var hasPassword = !!user.hasPassword;
+        var verified = !!user.emailVerified;
+        var providerName = user.connections && user.connections.anilist && user.connections.anilist.connected
+          ? 'AniList'
+          : user.provider === 'google' ? 'Google' : user.provider === 'discord' ? 'Discord' : 'social login';
+        if (!hasPassword) {
           return '<div class="space-y-5">' + head('Password & Security', 'Keep your account safe by updating your password.', 'key') +
-            '<div class="space-y-4 max-w-md font-sans"><div class="rounded-2xl border border-amber-500/20 bg-amber-950/20 p-4 space-y-2"><div class="flex items-center gap-2"><h3 class="text-xs font-bold text-white uppercase tracking-wider">Link Email & Set Password</h3></div><p class="text-[11px] text-zinc-300 leading-relaxed">You are currently authenticated via <strong class="text-white">' + (user.anilist_connected ? 'AniList' : 'social login') + '</strong>. Add an email address and choose a password to enable direct credentials sign-in anytime.</p></div>' +
-            '<form id="kv-settings-credentials-form" class="space-y-3.5"><div class="space-y-1"><label for="link-email" class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Email Address</label><div class="relative"><input id="link-email" name="email" type="email" required placeholder="you@example.com" class="w-full pl-3 pr-3 py-2 rounded-xl border border-white/[0.08] bg-zinc-900/80 text-xs text-white placeholder:text-zinc-600 outline-none focus:border-white transition-all font-sans"/></div></div>' +
+            '<div class="space-y-4 max-w-md font-sans"><div class="rounded-2xl border border-amber-500/20 bg-amber-950/20 p-4 space-y-2"><div class="flex items-center gap-2"><h3 class="text-xs font-bold text-white uppercase tracking-wider">Link Email & Set Password</h3></div><p class="text-[11px] text-zinc-300 leading-relaxed">You are currently authenticated via <strong class="text-white">' + providerName + '</strong>. Add an email address and choose a password to enable direct credentials sign-in anytime.</p></div>' +
+            '<form id="kv-settings-credentials-form" class="space-y-3.5"><div class="space-y-1"><label for="link-email" class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Email Address</label><div class="relative"><input id="link-email" name="email" type="email" required placeholder="you@example.com" value="' + escapeHtml(user.email || '') + '" class="w-full pl-3 pr-3 py-2 rounded-xl border border-white/[0.08] bg-zinc-900/80 text-xs text-white placeholder:text-zinc-600 outline-none focus:border-white transition-all font-sans"/></div></div>' +
             '<div class="space-y-1"><label for="link-password" class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Password (Min 8 characters)</label><div class="relative"><input id="link-password" name="password" minlength="8" required type="password" placeholder="••••••••" class="w-full pl-3 pr-3 py-2 rounded-xl border border-white/[0.08] bg-zinc-900/80 text-xs text-white placeholder:text-zinc-600 outline-none focus:border-white transition-all font-sans"/></div></div>' +
             '<div class="space-y-1"><label for="link-confirm-password" class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Confirm Password</label><div class="relative"><input id="link-confirm-password" name="confirm_password" minlength="8" required type="password" placeholder="••••••••" class="w-full pl-3 pr-3 py-2 rounded-xl border border-white/[0.08] bg-zinc-900/80 text-xs text-white placeholder:text-zinc-600 outline-none focus:border-white transition-all font-sans"/></div></div>' +
             '<button type="submit" class="rounded-xl bg-white px-5 py-2.5 text-xs font-extrabold text-black hover:bg-zinc-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-white/10 active:scale-[0.98] w-full sm:w-auto"><span>Link Email & Set Password</span></button></form></div></div>';
         }
-        var verified = !!user.is_email_verified;
-        var verification = verified ? '' : '<div class="rounded-2xl border border-amber-500/20 bg-amber-950/15 p-4 space-y-3"><div><h3 class="text-xs font-bold text-white uppercase tracking-wider">Verify Your Email</h3><p class="text-[11px] text-zinc-300 mt-0.5 leading-relaxed">Enter the 6-digit code sent to <span class="text-white font-semibold font-mono">' + escapeHtml(user.email) + '</span>.</p></div><form id="kv-settings-verify-form" class="flex flex-col sm:flex-row items-stretch gap-2 font-sans"><input id="verify-security-code" name="verification_code" autocomplete="one-time-code" type="text" placeholder="6-digit code" maxlength="6" class="flex-1 rounded-xl border border-white/[0.08] bg-zinc-900 py-2 px-3 text-xs text-white outline-none focus:border-white text-center tracking-[0.2em] font-mono"/><div class="flex gap-2"><button type="submit" class="rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-zinc-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shrink-0 flex-1 sm:flex-initial"><span>Verify</span></button><button type="button" class="rounded-xl bg-zinc-900 border border-white/10 hover:bg-zinc-800 px-3.5 py-2 text-xs font-bold text-zinc-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shrink-0"><span>Resend</span></button></div></form></div>';
+        var verification = verified || !user.email ? '' : '<div class="rounded-2xl border border-amber-500/20 bg-amber-950/15 p-4 space-y-3"><div><h3 class="text-xs font-bold text-white uppercase tracking-wider">Verify Your Email</h3><p class="text-[11px] text-zinc-300 mt-0.5 leading-relaxed">Enter the 6-digit code sent to <span class="text-white font-semibold font-mono">' + escapeHtml(user.email) + '</span>.</p></div><form id="kv-settings-verify-form" class="flex flex-col sm:flex-row items-stretch gap-2 font-sans"><input id="verify-security-code" name="verification_code" autocomplete="one-time-code" type="text" placeholder="6-digit code" maxlength="6" class="flex-1 rounded-xl border border-white/[0.08] bg-zinc-900 py-2 px-3 text-xs text-white outline-none focus:border-white text-center tracking-[0.2em] font-mono"/><div class="flex gap-2"><button type="submit" class="rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-zinc-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shrink-0 flex-1 sm:flex-initial"><span>Verify</span></button><button type="button" class="rounded-xl bg-zinc-900 border border-white/10 hover:bg-zinc-800 px-3.5 py-2 text-xs font-bold text-zinc-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shrink-0" data-action="settings-resend-verification"><span>Resend</span></button></div></form></div>';
         return '<div class="space-y-5">' + head('Password & Security', 'Keep your account safe by updating your password.', 'key') +
-          '<div class="space-y-5 max-w-md font-sans"><div class="rounded-2xl border border-white/[0.08] bg-zinc-900/40 p-4 space-y-2.5"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Linked Login Credentials</span>' + (verified ? '<span class="text-[9px] font-bold text-emerald-400 flex items-center gap-1">Verified</span>' : '<span class="text-[9px] font-bold text-amber-500 flex items-center gap-1">Unverified</span>') + '</div><div class="flex items-center gap-2 text-xs text-white font-mono bg-zinc-950/60 py-2 px-3 rounded-xl border border-white/[0.06]">' + icon('check', 'h-3.5 w-3.5') + '<span class="truncate">' + escapeHtml(user.email) + '</span></div><p class="text-[10px] text-zinc-400 leading-relaxed">Your account has email and password credentials configured. You can update your password below.</p></div>' + verification +
+          '<div class="space-y-5 max-w-md font-sans"><div class="rounded-2xl border border-white/[0.08] bg-zinc-900/40 p-4 space-y-2.5"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Linked Login Credentials</span>' + (verified ? '<span class="text-[9px] font-bold text-emerald-400 flex items-center gap-1">Verified</span>' : '<span class="text-[9px] font-bold text-amber-500 flex items-center gap-1">Unverified</span>') + '</div><div class="flex items-center gap-2 text-xs text-white font-mono bg-zinc-950/60 py-2 px-3 rounded-xl border border-white/[0.06]">' + icon('check', 'h-3.5 w-3.5') + '<span class="truncate">' + escapeHtml(user.email || 'No email linked') + '</span></div><p class="text-[10px] text-zinc-400 leading-relaxed">Your account has email and password credentials configured. You can update your password below.</p></div>' + verification +
           '<form id="kv-settings-password-form" class="space-y-3.5"><div class="space-y-1"><label for="old-password" class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Current Password</label><input id="old-password" name="old_password" autocomplete="current-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-white/[0.08] bg-zinc-900/80 py-2 px-3 text-xs text-white outline-none focus:border-white transition-all font-sans"/></div>' +
           '<div class="space-y-1"><label for="new-password" class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">New Password (Min 8 chars)</label><input id="new-password" name="new_password" autocomplete="new-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-white/[0.08] bg-zinc-900/80 py-2 px-3 text-xs text-white outline-none focus:border-white transition-all font-sans"/></div>' +
           '<div class="space-y-1"><label for="confirm-password" class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Confirm New Password</label><input id="confirm-password" name="confirm_password" autocomplete="new-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-white/[0.08] bg-zinc-900/80 py-2 px-3 text-xs text-white outline-none focus:border-white transition-all font-sans"/></div>' +
@@ -7486,12 +7508,11 @@ function renderSettings() {
                     (bio ? '<p class="mx-auto sm:mx-0 max-w-xl text-xs leading-6 text-zinc-400 whitespace-pre-line">' + escapeHtml(bio) + '</p>' : '') +
                   '</div></div>' +
                 '<div class="flex flex-wrap items-center justify-center md:justify-end gap-2 shrink-0">' +
-                  (isPublic ? '' : '<a href="' + publicHref('/settings') + '" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('settings', 'h-3.5 w-3.5 text-zinc-400') + '<span>Settings</span></a><a href="' + publicHref('/akun') + '" class="flex items-center gap-1.5 rounded-xl bg-[var(--yz-accent)] hover:brightness-110 text-black px-3.5 py-2 text-xs font-bold transition-colors">' + pIcon('book', 'h-3.5 w-3.5') + '<span>My Library</span></a><button type="button" data-action="logout-user" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('out', 'h-3.5 w-3.5 text-zinc-400') + '<span>Log Out</span></button>') +
+                  (isPublic ? '' : '<a href="' + publicHref('/settings') + '" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('settings', 'h-3.5 w-3.5 text-zinc-400') + '<span>Settings</span></a><button type="button" data-action="logout-user" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('out', 'h-3.5 w-3.5 text-zinc-400') + '<span>Log Out</span></button>') +
                 '</div>' +
               '</div>' +
               '<div class="grid grid-cols-3 divide-x divide-white/[0.07] rounded-2xl border border-white/[0.07] bg-white/[0.025] py-3 text-center tabular-nums"><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + readingTime(readingMinutes) + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Reading Time</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-[var(--yz-accent)]">Lv.' + level + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">0d Streak</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + historyItems.length + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Manga Logged</div></div></div>' +
-              '<div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3.5 sm:p-4 flex flex-col justify-between gap-2.5"><div class="flex items-center justify-between text-xs tabular-nums"><span class="inline-flex items-center gap-2 font-semibold text-white">' + tierBadge + '<span>Level ' + level + '</span></span><span class="font-mono text-zinc-300">' + xpInto + ' / 22 XP</span></div><div class="h-2 w-full rounded-full bg-white/[0.07] overflow-hidden ring-1 ring-inset ring-white/5"><div class="h-full rounded-full bg-gradient-to-r transition-all duration-500 from-zinc-600 to-zinc-400" style="width: ' + xpPercent + '%"></div></div><div class="flex items-center justify-between text-[11px] text-zinc-400 tabular-nums"><span>' + xpPercent + '.0% complete</span><span class="font-medium text-zinc-300">' + (22 - xpInto) + ' XP to Lv.' + (level + 1) + '</span></div></div>' +
-                '<div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3.5 sm:p-4 flex items-center justify-between gap-3 flex-wrap"><div class="space-y-0.5"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">Reactions</span><span class="text-xs text-zinc-400 inline-flex items-center gap-1.5 tabular-nums">' + pIcon('flame', 'size-3.5 text-amber-400') + '<span>Best streak: <strong class="text-white">0d</strong></span></span></div><div class="flex items-center gap-1 flex-wrap">' + reactions + '</div></div></div>' +
+              '<div class="grid grid-cols-1 gap-3"><div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3.5 sm:p-4 flex flex-col justify-between gap-2.5"><div class="flex items-center justify-between text-xs tabular-nums"><span class="inline-flex items-center gap-2 font-semibold text-white">' + tierBadge + '<span>Level ' + level + '</span></span><span class="font-mono text-zinc-300">' + xpInto + ' / 22 XP</span></div><div class="h-2 w-full rounded-full bg-white/[0.07] overflow-hidden ring-1 ring-inset ring-white/5"><div class="h-full rounded-full bg-gradient-to-r transition-all duration-500 from-zinc-600 to-zinc-400" style="width: ' + xpPercent + '%"></div></div><div class="flex items-center justify-between text-[11px] text-zinc-400 tabular-nums"><span>' + xpPercent + '.0% complete</span><span class="font-medium text-zinc-300">' + (22 - xpInto) + ' XP to Lv.' + (level + 1) + '</span></div></div></div>' +
             '</div>' +
           '</section>' +
           '<div class="sticky top-16 z-30 flex items-center"><div class="w-full sm:w-auto inline-flex items-center gap-1 p-1 rounded-2xl border border-white/[0.08] bg-[#0a0c10]/90 backdrop-blur-xl shadow-xl overflow-x-auto scrollbar-none">' + tabHtml + '</div></div>' +
@@ -10790,7 +10811,46 @@ function setBannerDotsActive(index) {
               render();
               return;
             }
-            toast('Fitur ini memerlukan backend ' + siteName() + '.', 'warn');
+            if (form.id === 'kv-settings-credentials-form') {
+              var emailInput = form.querySelector('[name="email"]');
+              var newPasswordInput = form.querySelector('[name="password"]');
+              var credentialsConfirm = form.querySelector('[name="confirm_password"]');
+              var credentialsEmail = emailInput ? emailInput.value.trim() : '';
+              var credentialsPassword = newPasswordInput ? newPasswordInput.value : '';
+              var credentialsConfirmValue = credentialsConfirm ? credentialsConfirm.value : '';
+              if (!credentialsEmail || credentialsPassword.length < 8) { toast('Email valid dan kata sandi minimal 8 karakter diperlukan.', 'warn'); return; }
+              if (credentialsPassword !== credentialsConfirmValue) { toast('Konfirmasi kata sandi tidak sama.', 'warn'); return; }
+              runAccountAction('/api/account/credentials', {
+                email: credentialsEmail,
+                password: credentialsPassword,
+                confirm_password: credentialsConfirmValue
+              }, 'Email dan kata sandi berhasil ditambahkan.', function () { refreshSession(true); });
+              return;
+            }
+            if (form.id === 'kv-settings-verify-form') {
+              var codeInput = form.querySelector('[name="verification_code"]');
+              var verificationCode = codeInput ? codeInput.value.trim() : '';
+              if (!/^\d{6}$/.test(verificationCode)) { toast('Kode verifikasi harus berupa 6 digit angka.', 'warn'); return; }
+              runAccountAction('/api/account/email/verify', { verification_code: verificationCode }, 'Email berhasil diverifikasi.', function () { refreshSession(true); });
+              return;
+            }
+            if (form.id === 'kv-settings-password-form') {
+              var oldPasswordInput = form.querySelector('[name="old_password"]');
+              var passwordInput = form.querySelector('[name="new_password"]');
+              var passwordConfirm = form.querySelector('[name="confirm_password"]');
+              var oldPassword = oldPasswordInput ? oldPasswordInput.value : '';
+              var nextPassword = passwordInput ? passwordInput.value : '';
+              var passwordConfirmValue = passwordConfirm ? passwordConfirm.value : '';
+              if (!oldPassword || nextPassword.length < 8) { toast('Kata sandi lama dan kata sandi baru minimal 8 karakter diperlukan.', 'warn'); return; }
+              if (nextPassword !== passwordConfirmValue) { toast('Konfirmasi kata sandi tidak sama.', 'warn'); return; }
+              runAccountAction('/api/account/password', {
+                old_password: oldPassword,
+                new_password: nextPassword,
+                confirm_password: passwordConfirmValue
+              }, 'Kata sandi berhasil diperbarui.', function () { form.reset(); refreshSession(true); });
+              return;
+            }
+            toast('Formulir ini belum tersedia.', 'warn');
           });
         }
         bindAvatarPicker();
@@ -10875,21 +10935,42 @@ function setBannerDotsActive(index) {
        if (act === 'settings-open-auth') { navigate('/akun'); return; }
        if (act === 'settings-delete-open') { state.settingsDeleteOpen = true; state.settingsDeleteText = ''; render(); return; }
        if (act === 'settings-delete-close') { state.settingsDeleteOpen = false; state.settingsDeleteText = ''; render(); return; }
-       if (act === 'settings-delete-confirm-action') {
-         if (state.settingsDeleteText !== 'DELETE') { toast('Please type DELETE to confirm account deletion.', 'warn'); return; }
-         localStorage.removeItem('kv_session_token');
-         localStorage.removeItem('kv_user_cache');
-         localStorage.removeItem('kv_bookmarks');
-         localStorage.removeItem('kv_history');
-         state.adminToken = '';
-         state.user = null;
-         state.settingsDeleteOpen = false;
-         state.settingsDeleteText = '';
-         navigate('/');
-         toast('Account data removed from this browser.');
-         return;
-       }
-       if (act === 'settings-sync-anilist' || act === 'settings-connect-tracker' || act === 'settings-unlink-tracker') { toast('Koneksi tracker anime tidak tersedia di build ini.', 'warn'); return; }
+        if (act === 'settings-delete-confirm-action') {
+          if (state.settingsDeleteText !== 'DELETE') { toast('Please type DELETE to confirm account deletion.', 'warn'); return; }
+          runAccountAction('/api/account/delete', { confirm: state.settingsDeleteText }, 'Akun berhasil dihapus.', function () {
+            clearSession();
+            try {
+              localStorage.removeItem('kv_user_cache');
+              localStorage.removeItem('kv_bookmarks');
+              localStorage.removeItem('kv_history');
+            } catch (err) {}
+            state.settingsDeleteOpen = false;
+            state.settingsDeleteText = '';
+            navigate('/');
+          });
+          return;
+        }
+        if (act === 'settings-resend-verification') {
+          runAccountAction('/api/account/email/resend', {}, 'Kode verifikasi dikirim ulang.');
+          return;
+        }
+        if (act === 'settings-sync-anilist') {
+          runAccountAction('/api/account/connections/sync', { provider: 'anilist' }, 'AniList berhasil disinkronkan.', function () { refreshSession(true); });
+          return;
+        }
+        if (act === 'settings-connect-tracker') {
+          var connectProvider = el.getAttribute('data-provider') || 'anilist';
+          runAccountAction('/api/account/connections/link-token', { provider: connectProvider, return_to: window.location.origin }, '', function (result) {
+            if (result && result.url) window.location.href = result.url;
+            else toast('Tautan koneksi tidak tersedia.', 'error');
+          });
+          return;
+        }
+        if (act === 'settings-unlink-tracker') {
+          var unlinkProvider = el.getAttribute('data-provider') || 'anilist';
+          runAccountAction('/api/account/connections/unlink', { provider: unlinkProvider }, 'Koneksi ' + unlinkProvider + ' diputus.', function () { refreshSession(true); });
+          return;
+        }
           if (act === 'settings-edit-profile') {
             state.avatarPickerApplied = currentDisplayAvatar('');
            state.avatarPickerDraft = state.avatarPickerApplied;

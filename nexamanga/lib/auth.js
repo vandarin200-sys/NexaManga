@@ -6,6 +6,7 @@ const TOKEN_LIFETIME_SECONDS = 7 * 24 * 60 * 60;
 const SESSION_REFRESH_WINDOW_SECONDS = 24 * 60 * 60;
 const OAUTH_STATE_LIFETIME_SECONDS = 10 * 60;
 const OAUTH_PROVIDERS = Object.freeze(['discord', 'google']);
+const TRACKER_PROVIDERS = Object.freeze(['anilist', 'mal']);
 
 function requiredEnv(name) {
   const value = process.env[name];
@@ -75,7 +76,8 @@ function createSessionToken(user, now = Math.floor(Date.now() / 1000)) {
 
 function verifySessionToken(token, now = Math.floor(Date.now() / 1000)) {
   const claims = verifySignedToken(token, now);
-  if (!claims || typeof claims.sub !== 'string' || !['admin', 'member'].includes(claims.role) ||
+  if (!claims || claims.type !== undefined || typeof claims.sub !== 'string' ||
+      !['admin', 'member'].includes(claims.role) ||
       !claims.user || claims.user.id !== claims.sub) {
     return null;
   }
@@ -102,6 +104,41 @@ function verifyOAuthState(token, now = Math.floor(Date.now() / 1000)) {
   return claims;
 }
 
+function createOAuthLinkState(input, now = Math.floor(Date.now() / 1000)) {
+  if (!input || typeof input.sub !== 'string' || !input.sub ||
+      !TRACKER_PROVIDERS.includes(input.provider) ||
+      typeof input.returnOrigin !== 'string' || !input.returnOrigin ||
+      typeof input.nonce !== 'string' || !input.nonce ||
+      typeof input.codeVerifier !== 'string' || !input.codeVerifier ||
+      typeof input.codeChallenge !== 'string' || !input.codeChallenge) {
+    throw new Error('Data koneksi OAuth tidak valid.');
+  }
+  return createSignedToken({
+    type: 'oauth-link-state',
+    sub: input.sub,
+    provider: input.provider,
+    returnOrigin: input.returnOrigin,
+    nonce: input.nonce,
+    codeVerifier: input.codeVerifier,
+    codeChallenge: input.codeChallenge,
+    exp: now + OAUTH_STATE_LIFETIME_SECONDS
+  });
+}
+
+function verifyOAuthLinkState(token, now = Math.floor(Date.now() / 1000)) {
+  const claims = verifySignedToken(token, now);
+  if (!claims || claims.type !== 'oauth-link-state' ||
+      typeof claims.sub !== 'string' || !claims.sub ||
+      !TRACKER_PROVIDERS.includes(claims.provider) ||
+      typeof claims.returnOrigin !== 'string' || !claims.returnOrigin ||
+      typeof claims.nonce !== 'string' || !claims.nonce ||
+      typeof claims.codeVerifier !== 'string' || !claims.codeVerifier ||
+      typeof claims.codeChallenge !== 'string' || !claims.codeChallenge) {
+    return null;
+  }
+  return claims;
+}
+
 function createAdminToken(now = Math.floor(Date.now() / 1000)) {
   return createSessionToken({
     id: 'legacy-test-admin',
@@ -119,12 +156,16 @@ function verifyAdminToken(token, now = Math.floor(Date.now() / 1000)) {
 
 module.exports = {
   OAUTH_PROVIDERS,
+  OAUTH_STATE_LIFETIME_SECONDS,
   SESSION_REFRESH_WINDOW_SECONDS,
   TOKEN_LIFETIME_SECONDS,
+  TRACKER_PROVIDERS,
   createAdminToken,
+  createOAuthLinkState,
   createOAuthState,
   createSessionToken,
   verifyAdminToken,
+  verifyOAuthLinkState,
   verifyOAuthState,
   verifySessionToken
 };

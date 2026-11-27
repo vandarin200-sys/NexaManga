@@ -3,8 +3,11 @@
 const crypto = require('node:crypto');
 const {
   SESSION_REFRESH_WINDOW_SECONDS,
+  TRACKER_PROVIDERS,
+  createOAuthLinkState,
   createOAuthState,
   createSessionToken,
+  verifyOAuthLinkState,
   verifyOAuthState,
   verifySessionToken
 } = require('../lib/auth');
@@ -14,18 +17,34 @@ const {
   addComment,
   addReport,
   REACTION_KEYS,
+  assertCredentialsAvailable,
+  assertEmailVerificationPending,
+  changeAccountPassword,
+  createEmailVerificationCode,
+  deleteAccount,
   deleteChapter,
   deleteComment,
   deleteManga,
   deleteReport,
   pinComment,
   enrichCommentsWithUsers,
+  hashCredential,
   incrementMangaViews,
+  linkTrackerConnection,
   registerOAuthUser,
+  resendEmailVerification,
+  safeUser,
   saveChapter,
   saveManga,
   saveSettings,
+  setAccountCredentials,
   setReportStatus,
+  syncTrackerConnection,
+  unlinkTrackerConnection,
+  validateEmailAddress,
+  validatePasswordValue,
+  verifyCredential,
+  verifyEmailVerification,
   addChapterReaction,
   addMangaReaction,
   upvoteComment
@@ -228,6 +247,7 @@ async function freshSessionClaims(req) {
         avatar: user.avatar || null,
         provider: user.provider
       },
+      record: user,
       exp: claims.exp
     };
   } catch (error) {
@@ -248,6 +268,144 @@ function sessionClaims(req) {
   const header = req.headers.authorization || '';
   const match = header.match(/^Bearer\s+(.+)$/i);
   return match ? verifySessionToken(match[1]) : null;
+}
+
+async function requireAccount(req) {
+  const rawClaims = sessionClaims(req);
+  const claims = await freshSessionClaims(req);
+  if (!claims || !claims.sub) {
+    throw new HttpError(401, rawClaims
+      ? 'Akun tidak ditemukan atau sudah dihapus. Silakan masuk kembali.'
+      : 'Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.');
+  }
+  return claims;
+}
+
+function emailWebhookUrl() {
+  const value = process.env.EMAIL_VERIFY_WEBHOOK_URL;
+  const message = 'Pengiriman email verifikasi belum dikonfigurasi.';
+  if (typeof value !== 'string' || !value.trim()) throw new HttpError(503, message);
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:' || url.username || url.password) throw new Error('invalid webhook');
+  } catch {
+    throw new HttpError(503, message);
+  }
+  return value;
+}
+
+async function sendVerificationEmail(email, name, code) {
+  const url = emailWebhookUrl();
+  const headers = { 'Content-Type': 'application/json' };
+  if (process.env.EMAIL_WEBHOOK_TOKEN) headers.Authorization = `Bearer ${process.env.EMAIL_WEBHOOK_TOKEN}`;
+  let response;
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ to: email, name, code, type: 'email_verification' })
+    });
+  } catch {
+    throw new HttpError(502, 'Email verifikasi gagal dikirim.');
+  }
+  if (!response.ok) throw new HttpError(502, 'Email verifikasi gagal dikirim.');
+}
+
+function trackerProvider(value) {
+  if (!TRACKER_PROVIDERS.includes(value)) throw new HttpError(400, 'Penyedia koneksi tidak valid.');
+  return value;
+}
+
+function trackerCredentials(provider) {
+  const prefix = provider === 'anilist' ? 'ANILIST' : 'MAL';
+  const clientId = process.env[`${prefix}_CLIENT_ID`];
+  const clientSecret = process.env[`${prefix}_CLIENT_SECRET`];
+  if (!clientId || !clientSecret) throw new HttpError(503, `Koneksi ${provider} belum dikonfigurasi.`);
+  return { clientId, clientSecret };
+}
+
+function trackerRedirectUrl(provider) {
+  return `${apiBaseUrl()}/api/auth/${provider}/link/callback`;
+}
+
+async function exchangeTrackerCode(provider, code, linkState) {
+  const { clientId, clientSecret } = trackerCredentials(provider);
+  const redirectUri = trackerRedirectUrl(provider);
+  let response;
+  if (provider === 'anilist') {
+    response = await fetch('https://anilist.co/api/v2/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        grant_type: 'authorization_code',
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        code
+      })
+    });
+  } else {
+    response = await fetch('https://myanimelist.net/v1/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: clientId,
+        code_verifier: linkState.codeVerifier,
+        code,
+        redirect_uri: redirectUri
+      })
+    });
+  }
+  const result = await response.json().catch(() => null);
+  if (!response.ok || !result || typeof result.access_token !== 'string' || !result.access_token) {
+    throw new HttpError(401, `Koneksi ${provider} gagal diverifikasi.`);
+  }
+  return result.access_token;
+}
+
+function trackerTokenInvalid(response, data) {
+  if (response.status === 401 || response.status === 403) return true;
+  const message = data && typeof data === 'object' ? JSON.stringify(data) : String(data || '');
+  return /invalid[_\s-]?token|token[_\s-]?(expired|invalid)|expired|unauthorized/i.test(message);
+}
+
+async function fetchTrackerIdentity(provider, accessToken, invalidTokenMessage) {
+  let response;
+  let data;
+  if (provider === 'anilist') {
+    response = await fetch('https://graphql.anilist.co', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ query: '{ Viewer { id name avatar { medium } } }' })
+    });
+    data = await response.json().catch(() => null);
+    const viewer = data && data.data && data.data.Viewer;
+    if (!response.ok || !viewer || viewer.id === undefined || viewer.id === null) {
+      if (trackerTokenInvalid(response, data)) throw new HttpError(401, invalidTokenMessage);
+      throw new HttpError(401, `Profil ${provider} tidak dapat diverifikasi.`);
+    }
+    return {
+      providerId: String(viewer.id),
+      username: typeof viewer.name === 'string' && viewer.name ? viewer.name : `AniList ${viewer.id}`
+    };
+  }
+  response = await fetch('https://api.myanimelist.net/v2/users/@me', {
+    headers: { 'Accept': 'application/json', Authorization: `Bearer ${accessToken}` }
+  });
+  data = await response.json().catch(() => null);
+  if (!response.ok || !data || !data.id) {
+    if (trackerTokenInvalid(response, data)) throw new HttpError(401, invalidTokenMessage);
+    throw new HttpError(401, `Profil ${provider} tidak dapat diverifikasi.`);
+  }
+  return {
+    providerId: String(data.id),
+    username: typeof data.name === 'string' && data.name ? data.name : `MyAnimeList ${data.id}`
+  };
 }
 
 async function requireAdmin(req) {
@@ -483,6 +641,57 @@ async function handler(req, res) {
       return redirect(res, `${state.returnOrigin}/?auth_token=${encodeURIComponent(token)}#/akun`);
     }
 
+    const linkRoute = route.match(/^auth\/(anilist|mal)\/link\/(start|callback)$/);
+    if (linkRoute && req.method === 'GET') {
+      const [, provider, action] = linkRoute;
+      const { clientId } = trackerCredentials(provider);
+      const url = new URL(req.url, 'http://localhost');
+      const linkState = verifyOAuthLinkState(action === 'start'
+        ? url.searchParams.get('token')
+        : url.searchParams.get('state'));
+      const stateCookie = getCookie(req, 'nexa_oauth_state');
+      if (!linkState || linkState.provider !== provider || !stateCookie ||
+          linkState.nonce !== stateCookie || !allowedReturnOrigin(linkState.returnOrigin)) {
+        throw new HttpError(400, 'Sesi koneksi tidak valid atau sudah berakhir. Silakan coba lagi.');
+      }
+      if (action === 'start') {
+        setOAuthCookie(res, linkState.nonce, 600);
+        const authorizeUrl = provider === 'anilist'
+          ? new URL('https://anilist.co/api/v2/oauth/authorize')
+          : new URL('https://myanimelist.net/v1/oauth2/authorize');
+        const params = provider === 'anilist'
+          ? {
+            client_id: clientId,
+            redirect_uri: trackerRedirectUrl(provider),
+            response_type: 'code',
+            state: url.searchParams.get('token')
+          }
+          : {
+            client_id: clientId,
+            code_challenge: linkState.codeChallenge,
+            code_challenge_method: 'S256',
+            response_type: 'code',
+            state: url.searchParams.get('token')
+          };
+        authorizeUrl.search = new URLSearchParams(params).toString();
+        return redirect(res, authorizeUrl.toString());
+      }
+
+      setOAuthCookie(res, '', 0);
+      if (url.searchParams.has('error') || !url.searchParams.get('code')) {
+        throw new HttpError(401, `Koneksi ${provider} dibatalkan atau ditolak oleh penyedia akun.`);
+      }
+      const accessToken = await exchangeTrackerCode(provider, url.searchParams.get('code'), linkState);
+      const profile = await fetchTrackerIdentity(provider, accessToken, `Koneksi ${provider} perlu dihubungkan ulang.`);
+      await ensureCatalogInitialized();
+      let account;
+      await updateCatalog((catalog) => {
+        account = linkTrackerConnection(catalog, { userId: linkState.sub, provider, profile: { ...profile, accessToken } });
+      });
+      const token = createSessionToken(account);
+      return redirect(res, `${linkState.returnOrigin}/?auth_token=${encodeURIComponent(token)}#/settings`);
+    }
+
     if (route === 'auth/me' && req.method === 'GET') {
       const rawClaims = sessionClaims(req);
       const claims = await freshSessionClaims(req);
@@ -495,9 +704,136 @@ async function handler(req, res) {
       const refreshedToken = claims.exp - now <= SESSION_REFRESH_WINDOW_SECONDS
         ? createSessionToken({ ...claims.user, id: claims.sub, role: claims.role }, now)
         : null;
-      const payload = { user: claims.user, role: claims.role };
+      const payload = { user: safeUser(claims.record || claims.user), role: claims.role };
       if (refreshedToken) payload.token = refreshedToken;
       return sendJson(res, 200, payload);
+    }
+
+    if (route === 'account/credentials' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      const email = validateEmailAddress(body.email);
+      const password = validatePasswordValue(body.password);
+      if (body.confirm_password !== password) throw new HttpError(400, 'Konfirmasi kata sandi tidak sama.');
+      emailWebhookUrl();
+      const current = await readCatalog();
+      assertCredentialsAvailable(current, claims.sub, email);
+      const secret = hashCredential(password);
+      const verification = createEmailVerificationCode();
+      const name = (claims.record && claims.record.name) || (claims.user && claims.user.name) || 'Pengguna';
+      await sendVerificationEmail(email, name, verification.code);
+      await updateCatalog((catalog) => {
+        setAccountCredentials(catalog, {
+          userId: claims.sub,
+          email,
+          passwordHash: secret.hash,
+          passwordSalt: secret.salt,
+          verification
+        });
+      });
+      return sendJson(res, 200, { ok: true, requiresVerification: true });
+    }
+
+    if (route === 'account/email/resend' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      await readBody(req);
+      emailWebhookUrl();
+      const current = await readCatalog();
+      const account = assertEmailVerificationPending(current, claims.sub);
+      const verification = createEmailVerificationCode();
+      const name = account.name || 'Pengguna';
+      await sendVerificationEmail(account.email, name, verification.code);
+      await updateCatalog((catalog) => {
+        resendEmailVerification(catalog, { userId: claims.sub, verification });
+      });
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (route === 'account/email/verify' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      if (typeof body.verification_code !== 'string' || !/^\d{6}$/.test(body.verification_code)) {
+        throw new HttpError(400, 'Kode verifikasi harus berupa 6 digit angka.');
+      }
+      let result;
+      await updateCatalog((catalog) => {
+        result = verifyEmailVerification(catalog, { userId: claims.sub, code: body.verification_code });
+      });
+      if (!result.ok) throw new HttpError(400, result.error);
+      return sendJson(res, 200, { ok: true, user: result.user });
+    }
+
+    if (route === 'account/password' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      if (typeof body.old_password !== 'string' || !body.old_password) {
+        throw new HttpError(400, 'Kata sandi lama tidak valid.');
+      }
+      const password = validatePasswordValue(body.new_password);
+      if (body.confirm_password !== password) throw new HttpError(400, 'Konfirmasi kata sandi tidak sama.');
+      await updateCatalog((catalog) => {
+        changeAccountPassword(catalog, { userId: claims.sub, oldPassword: body.old_password, newPassword: password });
+      });
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (route === 'account/delete' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      if (body.confirm !== 'DELETE') throw new HttpError(400, 'Konfirmasi harus berisi DELETE.');
+      await updateCatalog((catalog) => { deleteAccount(catalog, { userId: claims.sub }); });
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (route === 'account/connections/link-token' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      const provider = trackerProvider(body.provider);
+      const returnOrigin = allowedReturnOrigin(body.return_to);
+      if (!returnOrigin) throw new HttpError(400, 'Origin Blogger tidak diizinkan untuk koneksi tracker.');
+      trackerCredentials(provider);
+      const codeVerifier = crypto.randomBytes(48).toString('base64url');
+      const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url');
+      const nonce = crypto.randomBytes(32).toString('base64url');
+      const linkState = createOAuthLinkState({
+        sub: claims.sub,
+        provider,
+        returnOrigin,
+        nonce,
+        codeVerifier,
+        codeChallenge
+      });
+      setOAuthCookie(res, nonce, 600);
+      const url = `${apiBaseUrl()}/api/auth/${provider}/link/start?token=${encodeURIComponent(linkState)}`;
+      return sendJson(res, 200, { url });
+    }
+
+    if (route === 'account/connections/unlink' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      const provider = trackerProvider(body.provider);
+      await updateCatalog((catalog) => {
+        unlinkTrackerConnection(catalog, { userId: claims.sub, provider });
+      });
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (route === 'account/connections/sync' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      const provider = trackerProvider(body.provider);
+      const current = await readCatalog();
+      const currentUser = (current.users || []).find((item) => item.id === claims.sub);
+      const connection = currentUser && currentUser.connections && currentUser.connections[provider];
+      if (!connection || typeof connection.accessToken !== 'string' || !connection.accessToken) {
+        throw new HttpError(400, `Koneksi ${provider} belum terhubung.`);
+      }
+      const identity = await fetchTrackerIdentity(provider, connection.accessToken, `Koneksi ${provider} perlu dihubungkan ulang.`);
+      let synced;
+      await updateCatalog((catalog) => {
+        synced = syncTrackerConnection(catalog, { userId: claims.sub, provider, username: identity.username });
+      });
+      return sendJson(res, 200, { ok: true, provider, username: synced.username, syncedAt: synced.syncedAt });
     }
 
     if (route === 'admin/settings' && req.method === 'POST') {

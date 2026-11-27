@@ -64,6 +64,271 @@ function requireText(value, label, maxLength, minLength = 1) {
   return value.trim();
 }
 
+const EMAIL_VERIFICATION_TTL_MS = 10 * 60 * 1000;
+const MAX_VERIFICATION_ATTEMPTS = 5;
+const CONNECTION_PROVIDERS = Object.freeze(['anilist', 'mal']);
+
+function findCatalogUser(catalog, userId) {
+  if (typeof userId !== 'string' || !userId) throw new ValidationError('ID akun tidak valid.');
+  const user = (catalog.users || []).find((item) => item.id === userId);
+  if (!user) throw new ValidationError('Pengguna tidak ditemukan.');
+  return user;
+}
+
+function validateEmailAddress(value) {
+  if (typeof value !== 'string') throw new ValidationError('Format email tidak valid.');
+  const email = value.trim().toLowerCase();
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.includes('..')) {
+    throw new ValidationError('Format email tidak valid.');
+  }
+  return email;
+}
+
+function validatePasswordValue(value) {
+  if (typeof value !== 'string' || value.length < 8 || value.length > 128) {
+    throw new ValidationError('Kata sandi harus berisi 8-128 karakter.');
+  }
+  return value;
+}
+
+function hashCredential(value) {
+  const salt = crypto.randomBytes(16);
+  return {
+    hash: crypto.scryptSync(String(value), salt, 64).toString('hex'),
+    salt: salt.toString('hex')
+  };
+}
+
+function verifyCredential(value, hash, salt) {
+  if (typeof value !== 'string' || value.length > 1024 ||
+      typeof hash !== 'string' || !/^[0-9a-f]{128}$/i.test(hash) ||
+      typeof salt !== 'string' || !/^[0-9a-f]{32}$/i.test(salt)) {
+    return false;
+  }
+  const expected = Buffer.from(hash, 'hex');
+  const actual = crypto.scryptSync(value, Buffer.from(salt, 'hex'), 64);
+  return expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
+}
+
+function createEmailVerificationCode(now = Date.now()) {
+  const code = String(crypto.randomInt(0, 1000000)).padStart(6, '0');
+  const secret = hashCredential(code);
+  return {
+    code,
+    hash: secret.hash,
+    salt: secret.salt,
+    expiresAt: new Date(now + EMAIL_VERIFICATION_TTL_MS).toISOString(),
+    attempts: 0
+  };
+}
+
+function assertCredentialsAvailable(catalog, userId, email) {
+  const user = findCatalogUser(catalog, userId);
+  if (user.passwordHash) throw new ValidationError('Akun ini sudah memiliki kata sandi.');
+  const normalized = validateEmailAddress(email);
+  if ((catalog.users || []).some((item) =>
+    item.id !== userId && typeof item.email === 'string' && item.email.toLowerCase() === normalized)) {
+    throw new ValidationError('Email sudah digunakan oleh akun lain.');
+  }
+  return user;
+}
+
+function safeUser(user) {
+  if (!user) return null;
+  const connections = user.connections && typeof user.connections === 'object' && !Array.isArray(user.connections)
+    ? user.connections
+    : {};
+  const summary = (provider) => {
+    const item = connections[provider];
+    return {
+      connected: Boolean(item && (item.connected === true || typeof item.accessToken === 'string')),
+      username: item && typeof item.username === 'string' ? item.username : null
+    };
+  };
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email || null,
+    avatar: user.avatar || null,
+    provider: user.provider || null,
+    role: user.role || 'member',
+    emailVerified: !!user.emailVerified,
+    hasPassword: !!user.passwordHash,
+    connections: { anilist: summary('anilist'), mal: summary('mal') }
+  };
+}
+
+function setAccountCredentials(catalog, input) {
+  const user = assertCredentialsAvailable(catalog, input.userId, input.email);
+  if (typeof input.passwordHash !== 'string' || typeof input.passwordSalt !== 'string' ||
+      !input.verification || typeof input.verification.hash !== 'string' ||
+      typeof input.verification.salt !== 'string' || typeof input.verification.expiresAt !== 'string') {
+    throw new ValidationError('Data kredensial tidak valid.');
+  }
+  user.email = validateEmailAddress(input.email);
+  user.emailVerified = false;
+  user.passwordHash = input.passwordHash;
+  user.passwordSalt = input.passwordSalt;
+  user.emailVerification = {
+    hash: input.verification.hash,
+    salt: input.verification.salt,
+    expiresAt: input.verification.expiresAt,
+    attempts: 0
+  };
+  return safeUser(user);
+}
+
+function assertEmailVerificationPending(catalog, userId) {
+  const user = findCatalogUser(catalog, userId);
+  if (!user.email) throw new ValidationError('Email belum tersedia pada akun ini.');
+  if (user.emailVerified) throw new ValidationError('Email sudah terverifikasi.');
+  return user;
+}
+
+function resendEmailVerification(catalog, input) {
+  const user = assertEmailVerificationPending(catalog, input.userId);
+  if (!input.verification || typeof input.verification.hash !== 'string' ||
+      typeof input.verification.salt !== 'string' || typeof input.verification.expiresAt !== 'string') {
+    throw new ValidationError('Data verifikasi tidak valid.');
+  }
+  user.emailVerification = {
+    hash: input.verification.hash,
+    salt: input.verification.salt,
+    expiresAt: input.verification.expiresAt,
+    attempts: 0
+  };
+  return safeUser(user);
+}
+
+function verifyEmailVerification(catalog, input) {
+  const user = findCatalogUser(catalog, input.userId);
+  const pending = user.emailVerification;
+  if (!pending || !user.email) {
+    delete user.emailVerification;
+    return { ok: false, error: 'Kode verifikasi tidak ditemukan. Silakan kirim ulang.' };
+  }
+  const attempts = Number.isInteger(pending.attempts) ? pending.attempts : 0;
+  if (attempts >= MAX_VERIFICATION_ATTEMPTS) {
+    delete user.emailVerification;
+    return { ok: false, error: 'Terlalu banyak percobaan. Silakan kirim ulang kode verifikasi.' };
+  }
+  const expiresAt = Date.parse(pending.expiresAt);
+  if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+    delete user.emailVerification;
+    return { ok: false, error: 'Kode verifikasi sudah berakhir. Silakan kirim ulang.' };
+  }
+  if (!verifyCredential(input.code, pending.hash, pending.salt)) {
+    const next = attempts + 1;
+    if (next >= MAX_VERIFICATION_ATTEMPTS) {
+      delete user.emailVerification;
+      return { ok: false, error: 'Kode verifikasi tidak valid. Silakan kirim ulang kode verifikasi.' };
+    }
+    user.emailVerification = { ...pending, attempts: next };
+    return { ok: false, error: `Kode verifikasi tidak valid. Sisa ${MAX_VERIFICATION_ATTEMPTS - next} percobaan.` };
+  }
+  user.emailVerified = true;
+  delete user.emailVerification;
+  return { ok: true, user: safeUser(user) };
+}
+
+function changeAccountPassword(catalog, input) {
+  const user = findCatalogUser(catalog, input.userId);
+  if (!user.passwordHash) {
+    throw new ValidationError('Akun belum memiliki kata sandi. Tambahkan kredensial terlebih dahulu.');
+  }
+  if (!verifyCredential(input.oldPassword, user.passwordHash, user.passwordSalt)) {
+    throw new ValidationError('Kata sandi lama tidak benar.');
+  }
+  const password = validatePasswordValue(input.newPassword);
+  const secret = hashCredential(password);
+  user.passwordHash = secret.hash;
+  user.passwordSalt = secret.salt;
+  return safeUser(user);
+}
+
+function deleteAccount(catalog, input) {
+  const user = findCatalogUser(catalog, input.userId);
+  if (user.role === 'admin') {
+    const adminCount = (catalog.users || []).filter((item) => item.role === 'admin').length;
+    if (adminCount <= 1) throw new ValidationError('Tidak dapat menghapus admin terakhir.');
+  }
+  catalog.users = (catalog.users || []).filter((item) => item.id !== user.id);
+  catalog.comments = (catalog.comments || []).filter((comment) => comment.userId !== user.id);
+  catalog.reports = (catalog.reports || []).filter((report) => report.userId !== user.id);
+  for (const comment of catalog.comments) {
+    if (Array.isArray(comment.upvotes)) {
+      comment.upvotes = comment.upvotes.filter((voterId) => voterId !== user.id);
+    }
+  }
+  for (const key of ['reactions', 'mangaReactions']) {
+    const collection = catalog[key];
+    if (!collection || typeof collection !== 'object' || Array.isArray(collection)) continue;
+    for (const groups of Object.values(collection)) {
+      if (!groups || typeof groups !== 'object' || Array.isArray(groups)) continue;
+      for (const [reaction, voters] of Object.entries(groups)) {
+        if (Array.isArray(voters)) groups[reaction] = voters.filter((voterId) => voterId !== user.id);
+      }
+    }
+  }
+  return { id: user.id };
+}
+
+function validateConnectionProvider(value) {
+  if (!CONNECTION_PROVIDERS.includes(value)) {
+    throw new ValidationError('Penyedia koneksi tidak valid.');
+  }
+  return value;
+}
+
+function linkTrackerConnection(catalog, input) {
+  const provider = validateConnectionProvider(input.provider);
+  const user = findCatalogUser(catalog, input.userId);
+  const profile = input.profile;
+  if (!profile || typeof profile.providerId !== 'string' || !profile.providerId ||
+      typeof profile.username !== 'string' || !profile.username.trim() ||
+      typeof profile.accessToken !== 'string' || !profile.accessToken) {
+    throw new ValidationError('Profil koneksi tidak valid.');
+  }
+  if (!user.connections || typeof user.connections !== 'object' || Array.isArray(user.connections)) {
+    user.connections = {};
+  }
+  user.connections[provider] = {
+    connected: true,
+    providerId: profile.providerId.slice(0, 200),
+    username: profile.username.trim().slice(0, 200),
+    accessToken: profile.accessToken,
+    updatedAt: new Date().toISOString()
+  };
+  return safeUser(user);
+}
+
+function syncTrackerConnection(catalog, input) {
+  const provider = validateConnectionProvider(input.provider);
+  const user = findCatalogUser(catalog, input.userId);
+  const connection = user.connections && typeof user.connections === 'object' && !Array.isArray(user.connections)
+    ? user.connections[provider]
+    : null;
+  if (!connection || typeof connection.accessToken !== 'string' || !connection.accessToken) {
+    throw new ValidationError(`Koneksi ${provider} belum terhubung.`);
+  }
+  if (typeof input.username !== 'string' || !input.username.trim()) {
+    throw new ValidationError('Nama pengguna koneksi tidak valid.');
+  }
+  const syncedAt = new Date().toISOString();
+  connection.username = input.username.trim().slice(0, 200);
+  connection.lastSyncedAt = syncedAt;
+  return { provider, username: connection.username, syncedAt };
+}
+
+function unlinkTrackerConnection(catalog, input) {
+  const provider = validateConnectionProvider(input.provider);
+  const user = findCatalogUser(catalog, input.userId);
+  if (user.connections && typeof user.connections === 'object' && !Array.isArray(user.connections)) {
+    delete user.connections[provider];
+  }
+  return safeUser(user);
+}
+
 function saveManga(catalog, input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new ValidationError('Data manga tidak valid.');
@@ -447,24 +712,41 @@ function deleteReport(catalog, input) {
 module.exports = {
   EMPTY_CATALOG,
   ValidationError,
+  CONNECTION_PROVIDERS,
   addComment,
   addChapterReaction,
   addMangaReaction,
   addReport,
   REACTION_KEYS,
   REPORT_REASONS,
+  assertCredentialsAvailable,
+  assertEmailVerificationPending,
+  changeAccountPassword,
+  createEmailVerificationCode,
+  deleteAccount,
   deleteChapter,
   deleteComment,
   deleteManga,
   deleteReport,
-  pinComment,
   enrichCommentsWithUsers,
+  hashCredential,
   incrementMangaViews,
+  linkTrackerConnection,
+  pinComment,
   registerOAuthUser,
+  resendEmailVerification,
+  safeUser,
   saveChapter,
   saveManga,
   saveSettings,
+  setAccountCredentials,
   setReportStatus,
+  syncTrackerConnection,
+  unlinkTrackerConnection,
   upvoteComment,
-  validateCatalog
+  validateCatalog,
+  validateEmailAddress,
+  validatePasswordValue,
+  verifyCredential,
+  verifyEmailVerification
 };
