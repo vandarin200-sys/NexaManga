@@ -1443,6 +1443,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-reader-frame.vertical .manga-page { display:block; height:auto; }
       body.kv-reader-route .kv-reader-frame.vertical .manga-page img { height:auto; object-fit:contain; }
       body.kv-reader-route .kv-reader-frame.horizontal { display:flex; align-items:center; justify-content:center; height:100vh; height:100svh; }
+      body.kv-reader-route .kv-reader-frame.horizontal.rtl { flex-direction:row-reverse; }
       body.kv-reader-route .kv-reader-frame.horizontal .manga-page { display:none; align-items:center; justify-content:center; height:100vh; height:100svh; }
       body.kv-reader-route .kv-reader-frame.horizontal .manga-page.is-active { display:flex; }
       body.kv-reader-route .manga-page { position:relative; display:block; width:100%; max-width:100%; height:100vh; height:100svh; margin:0 auto; background:var(--kv-reader-bg); }
@@ -1577,6 +1578,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .yz-reader-header-left, body.kv-reader-route .yz-reader-header-right, body.kv-reader-route .yz-reader-footer-side { display:flex; align-items:center; gap:8px; min-width:0; }
       body.kv-reader-route .yz-reader-link { display:inline-flex; align-items:center; gap:6px; color:#d4d4d8; text-decoration:none; font-size:12px; font-weight:700; padding:7px 10px; border-radius:9px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); white-space:nowrap; }
       body.kv-reader-route .yz-reader-link:hover { background:rgba(255,255,255,.1); color:#fff; }
+      body.kv-reader-route .yz-reader-back-icon { gap:0; padding:7px; }
+      body.kv-reader-route .yz-reader-back-icon svg { display:block; width:18px; height:18px; }
       body.kv-reader-route .yz-reader-title { min-width:0; max-width:min(34vw,460px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:800; color:#fff; }
       body.kv-reader-route .yz-reader-icon-btn { width:34px; height:34px; display:grid; place-items:center; border-radius:9px; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.04); color:#d4d4d8; cursor:pointer; }
       body.kv-reader-route .yz-reader-icon-btn:hover { background:rgba(255,255,255,.1); color:#fff; }
@@ -1584,7 +1587,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .yz-reader-icon-btn svg { width:16px; height:16px; }
       body.kv-reader-route .yz-reader-live { width:7px; height:7px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 0 rgba(34,197,94,.55); animation:yzLivePulse 2s infinite; }
       body.kv-reader-route .yz-reader-progress { position:absolute; left:0; right:0; bottom:-1px; height:2px; background:rgba(255,255,255,.08); }
-      body.kv-reader-route .yz-reader-progress span { display:block; width:100%; height:100%; background:linear-gradient(90deg,#22c55e,#a3e635); box-shadow:0 0 12px rgba(34,197,94,.65); transform-origin:left center; transform:scaleX(0); transition:transform var(--dur-base) var(--ease-out); }
+      body.kv-reader-route .yz-reader-progress span { display:block; width:0; height:100%; background:linear-gradient(90deg,#22c55e,#a3e635); box-shadow:0 0 12px rgba(34,197,94,.65); transition:width var(--dur-base) var(--ease-out); }
       body.kv-reader-route .yz-reader-main { min-height:100vh; padding:56px 0 132px; }
       body.kv-reader-route .yz-reader-stack { width:100%; max-width:var(--yz-reader-width,100%); margin:0 auto; display:flex; flex-direction:column; gap:0; }
       body.kv-reader-route .yz-page-shell { position:relative; margin:0; min-height:0; border-radius:0; overflow:hidden; background:var(--kv-reader-bg); display:flex; align-items:center; justify-content:center; animation:yzPageIn var(--dur-slow) var(--ease-out) both; }
@@ -1619,7 +1622,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .yz-reader-speed-row input { flex:1; min-width:0; accent-color:var(--yz-accent); }
       body.kv-reader-route .yz-reader-speed-output { min-width:76px; color:var(--yz-text); font-size:10px; font-weight:700; text-align:right; }
       body.kv-reader-route .yz-scrubber { width:100%; accent-color:#22c55e; cursor:pointer; }
-      body.kv-reader-route .yz-reader-sheet2 { position:fixed; top:64px; right:clamp(12px,2vw,28px); z-index:90; width:min(360px,calc(100vw - 24px)); max-height:calc(100vh - 140px); overflow:auto; border:1px solid rgba(255,255,255,.1); border-radius:16px; background:rgba(10,10,13,.97); box-shadow:0 28px 70px -30px #000; backdrop-filter:blur(18px); animation:yzSheetIn .2s ease both; }
+      body.kv-reader-route .yz-reader-sheet2 { position:fixed; top:auto; right:clamp(12px,2vw,28px); bottom:calc(76px + env(safe-area-inset-bottom,0px)); z-index:90; width:min(360px,calc(100vw - 24px)); max-height:calc(100vh - 120px); overflow:auto; border:1px solid rgba(255,255,255,.1); border-radius:16px; background:rgba(10,10,13,.97); box-shadow:0 28px 70px -30px #000; backdrop-filter:blur(18px); animation:yzSheetIn .2s ease both; }
       body.kv-reader-route .yz-reader-sheet2-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
       body.kv-reader-route .yz-reader-sheet2-head strong { font-size:13px; color:#fff; }
       body.kv-reader-route .yz-reader-sheet2-body { padding:14px 16px 18px; display:flex; flex-direction:column; gap:14px; font-size:11px; color:#a1a1aa; }
@@ -1685,7 +1688,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         body.kv-reader-route .yz-reader-dock-item svg { width:15px; height:15px; }
         body.kv-reader-route .yz-reader-dock-primary { width:36px; min-width:36px; height:36px; }
         body.kv-reader-route .yz-reader-dock-primary svg { width:18px; height:18px; }
-        body.kv-reader-route .yz-reader-settings-sheet { top:auto; bottom:calc(70px + env(safe-area-inset-bottom,0px)); }
+        body.kv-reader-route .yz-reader-sheet2 { top:auto; bottom:calc(70px + env(safe-area-inset-bottom,0px)); max-height:calc(100vh - 100px); }
       }
       @media (prefers-reduced-motion: reduce) {
         :root { --dur-swipe: 180ms; }
@@ -4416,7 +4419,6 @@ function yzSettingRead(key, fallback) {
           width: state.readerWidth,
           zoom: state.readerZoom,
           gap: state.readerGap,
-          background: state.readerBackground,
           speed: state.autoScrollSpeed,
           dir: state.readerDir,
           server: state.readerServer
@@ -4480,7 +4482,6 @@ function yzSettingRead(key, fallback) {
       readerWidth: Number(yzReaderPrefs.width) || 850,
       readerZoom: Number(yzReaderPrefs.zoom) || 100,
       readerGap: typeof yzReaderPrefs.gap === 'number' ? yzReaderPrefs.gap : 0,
-      readerBackground: yzReaderPrefs.background || '#000000',
       readerDir: yzReaderPrefs.dir === 'rtl' ? 'rtl' : 'ltr',
       readerServer: yzReaderPrefs.server || yzReaderServerFromUrl(),
       readerServersOpen: false,
@@ -5325,7 +5326,6 @@ function yzSettingRead(key, fallback) {
       root.setAttribute('data-theme', state.theme);
       root.setAttribute('data-resolved-theme', resolved);
       root.style.colorScheme = resolved;
-      if (!yzReaderPrefs.background) state.readerBackground = resolved === 'dark' ? '#000000' : '#F7F1E6';
       if (persist !== false) localStorage.setItem('kv_theme', state.theme);
       var metaTheme = document.querySelector('meta[name="theme-color"]');
       if (metaTheme) metaTheme.setAttribute('content', state.theme === 'system' ? (resolved === 'dark' ? '#0B0E17' : '#F7F1E6') : (CONFIG.THEME_META[state.theme] || '#F7F1E6'));
@@ -6416,12 +6416,29 @@ function renderCommentSection(manga, chapterId) {
         return value ? String(value).toLowerCase() : 'yor';
       } catch (e) { return 'yor'; }
     }
+    function yzReaderPageStep() { return state.readerMode === 'double' ? 2 : 1; }
+    function yzReaderMaxCursor(total) {
+      var step = yzReaderPageStep();
+      return Math.max(0, Math.floor(Math.max(0, total - 1) / step) * step);
+    }
+    function yzReaderPageIndices(total) {
+      var step = yzReaderPageStep();
+      var cursor = Math.max(0, Math.min(yzReaderMaxCursor(total), state.currentPageIdx));
+      var indices = [];
+      if (state.readerDir === 'rtl') {
+        var lead = Math.max(0, total - 1 - cursor);
+        for (var r = 0; r < step && lead - r >= 0; r++) indices.push(lead - r);
+      } else {
+        for (var f = 0; f < step && cursor + f < total; f++) indices.push(cursor + f);
+      }
+      return indices;
+    }
     function yzReaderGoPage(delta) {
       var chapter = state.data.chapters.filter(function (c) { return c.id === state.params.chapterId; })[0];
       if (!chapter) return;
       var total = (chapter.pages || []).length;
       if (!total) return;
-      state.currentPageIdx = Math.max(0, Math.min(total - 1, state.currentPageIdx + delta));
+      state.currentPageIdx = Math.max(0, Math.min(yzReaderMaxCursor(total), state.currentPageIdx + delta * yzReaderPageStep()));
       render();
     }
     function yzReaderGoChapter(delta) {
@@ -6435,8 +6452,7 @@ function renderCommentSection(manga, chapterId) {
       navigate('#/baca/' + manga.slug + '/' + target.id + '?server=' + encodeURIComponent(state.readerServer || 'yor'));
     }
     function yzReaderBackgroundValue() {
-      var background = String(state.readerBackground || '').toLowerCase();
-      return ['#000000', '#111827', '#f7f1e6', '#ffffff'].indexOf(background) !== -1 ? background : '#000000';
+      return resolvedTheme() === 'dark' ? '#000000' : '#F7F1E6';
     }
     function renderReaderSettingsSheet() {
       var speed = Math.max(0.5, Math.min(10, Number(state.autoScrollSpeed) || 2.5));
@@ -6451,7 +6467,6 @@ function renderCommentSection(manga, chapterId) {
           '<div><div class="yz-reader-settings-label">Tema tampilan</div><div class="yz-seg yz-reader-settings-options">' + themeButtons + '</div></div>' +
           '<div><div class="yz-reader-settings-label">Mode baca</div><div class="yz-seg yz-reader-settings-options"><button type="button" class="' + (state.readerMode === 'vertical' ? 'active' : '') + '" data-action="reader-set-mode" data-mode="vertical">Vertikal</button><button type="button" class="' + (state.readerMode === 'single' ? 'active' : '') + '" data-action="reader-set-mode" data-mode="single">Satu halaman</button><button type="button" class="' + (state.readerMode === 'double' ? 'active' : '') + '" data-action="reader-set-mode" data-mode="double">Dua halaman</button></div></div>' +
           '<div><div class="yz-reader-settings-label">Arah baca</div><div class="yz-seg yz-reader-settings-options"><button type="button" class="' + (state.readerDir === 'ltr' ? 'active' : '') + '" data-action="reader-set-dir" data-dir="ltr">Kiri ke kanan</button><button type="button" class="' + (state.readerDir === 'rtl' ? 'active' : '') + '" data-action="reader-set-dir" data-dir="rtl">Kanan ke kiri</button></div></div>' +
-          '<div><div class="yz-reader-settings-label">Latar halaman</div><div class="yz-reader-settings-options"><button type="button" class="yz-swatch' + (yzReaderBackgroundValue() === '#000000' ? ' active' : '') + '" style="background:#000000" data-action="reader-set-bg" data-bg="#000000" aria-label="Latar hitam" title="Hitam"></button><button type="button" class="yz-swatch' + (yzReaderBackgroundValue() === '#111827' ? ' active' : '') + '" style="background:#111827" data-action="reader-set-bg" data-bg="#111827" aria-label="Latar gelap" title="Gelap"></button><button type="button" class="yz-swatch' + (yzReaderBackgroundValue() === '#f7f1e6' ? ' active' : '') + '" style="background:#F7F1E6" data-action="reader-set-bg" data-bg="#F7F1E6" aria-label="Latar krem" title="Krem"></button><button type="button" class="yz-swatch' + (yzReaderBackgroundValue() === '#ffffff' ? ' active' : '') + '" style="background:#ffffff" data-action="reader-set-bg" data-bg="#ffffff" aria-label="Latar putih" title="Putih"></button></div></div>' +
         '</div></aside>';
     }
     function renderReader() {
@@ -6475,29 +6490,28 @@ function renderCommentSection(manga, chapterId) {
       }
       var pages = chapter.pages || [];
       var pageTotal = pages.length;
-      if (state.currentPageIdx >= pageTotal) state.currentPageIdx = 0;
       var isPaged = state.readerMode !== 'vertical';
-      var isDouble = state.readerMode === 'double';
       var pageWidth = yzReaderPageWidth();
       var frameStyle = '--yz-reader-width:100%;--yz-reader-gap:0px;';
       var pagesHtml = '';
+      var pageIndices = [];
       if (isPaged) {
-        var start = state.currentPageIdx;
-        var count = isDouble ? 2 : 1;
-        if (state.readerDir === 'rtl') {
-          start = Math.max(0, pageTotal - state.currentPageIdx - count);
-        }
-        for (var pIdx = start; pIdx < Math.min(pageTotal, start + count); pIdx++) {
-          pagesHtml += renderReaderPage(pages[pIdx], manga.title, chapter.number, pIdx + 1, true, pageWidth);
-        }
+        if (state.currentPageIdx > yzReaderMaxCursor(pageTotal)) state.currentPageIdx = yzReaderMaxCursor(pageTotal);
+        pageIndices = yzReaderPageIndices(pageTotal);
+        pagesHtml = pageIndices.map(function (pIdx) {
+          return renderReaderPage(pages[pIdx], manga.title, chapter.number, pIdx + 1, true, pageWidth);
+        }).join('');
       } else {
+        if (state.currentPageIdx >= pageTotal) state.currentPageIdx = 0;
         pagesHtml = pages.map(function (p, index) { return renderReaderPage(p, manga.title, chapter.number, index + 1, index < 3, pageWidth); }).join('');
       }
       if (!pagesHtml) {
         pagesHtml = '<div class="yz-reader-empty"><div><strong class="block text-sm text-white">Belum ada halaman</strong><small class="mt-1 block text-xs text-zinc-500">Chapter ini belum memiliki halaman.</small></div></div>';
       }
-      var frame = '<section class="kv-reader-frame yz-reader-stack ' + (isPaged ? 'horizontal' : 'vertical') + '" style="' + frameStyle + '" aria-label="Halaman manga">' + pagesHtml + '</section>';
-      var progress = pageTotal ? Math.round(((state.currentPageIdx + 1) / pageTotal) * 100) : 0;
+      var frameDir = isPaged && state.readerDir === 'rtl' ? ' rtl' : '';
+      var frame = '<section class="kv-reader-frame yz-reader-stack ' + (isPaged ? 'horizontal' + frameDir : 'vertical') + '" style="' + frameStyle + '" aria-label="Halaman manga">' + pagesHtml + '</section>';
+      var readCount = isPaged ? Math.min(pageTotal, state.currentPageIdx + pageIndices.length) : Math.min(pageTotal, state.currentPageIdx + 1);
+      var progress = pageTotal ? Math.round((readCount / pageTotal) * 100) : 0;
       var chQuery = String(state.readerChapterSearch || '').toLowerCase();
       var filteredCh = allCh.filter(function (c) {
         if (!chQuery) return true;
@@ -6506,7 +6520,7 @@ function renderCommentSection(manga, chapterId) {
       var chapterRows = filteredCh.map(function (c) {
         return '<a class="' + (c.id === chapter.id ? 'active' : '') + '" href="' + publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(c.id)) + '">Ch. ' + escapeHtml(c.number) + (c.title ? ' &middot; ' + escapeHtml(c.title) : '') + '</a>';
       }).join('') || '<p class="px-2 py-3 text-zinc-500">Belum ada chapter.</p>';
-      var backIcon = '<svg class="kv-comment-svg" data-yz-back-icon="custom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M20 12H4"/><path d="m11 5-7 7 7 7"/><path d="M20 5v14"/></svg>';
+      var backIcon = '<svg class="kv-comment-svg" data-yz-back-icon="custom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5 3 12l6 7"/><path d="M4 12h8"/><path d="M12 5.5c2.4-.9 4.8-.9 7.2 0v13c-2.4-.9-4.8-.9-7.2 0z"/><path d="M15.6 9.5v5"/></svg>';
       var dockPrevIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
       var dockNextIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
       var listIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
@@ -6519,9 +6533,9 @@ function renderCommentSection(manga, chapterId) {
       var pauseIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
       var isPlaying = !!state.autoScroll;
       var header = '<header class="yz-reader-header"><div class="yz-reader-header-inner">' +
-        '<div class="yz-reader-header-left"><a class="yz-reader-link" data-yz-back="custom" href="' + publicHref('/manga/' + escapeHtml(manga.slug)) + '" aria-label="Kembali ke detail manga">' + backIcon + '<span>Back</span></a><span class="yz-reader-title" title="' + escapeHtml(manga.title) + '">' + escapeHtml(manga.title) + '</span></div>' +
+        '<div class="yz-reader-header-left"><a class="yz-reader-link yz-reader-back-icon" data-yz-back="custom" href="' + publicHref('/manga/' + escapeHtml(manga.slug)) + '" aria-label="Kembali ke detail manga">' + backIcon + '</a><span class="yz-reader-title" title="' + escapeHtml(manga.title) + '">' + escapeHtml(manga.title) + '</span></div>' +
         '<div class="yz-reader-header-right"><button type="button" class="yz-reader-icon-btn" data-action="toggle-fullscreen" aria-label="Fullscreen">' + fullIcon + '</button></div>' +
-      '</div><div class="yz-reader-progress"><span style="transform:scaleX(' + (progress / 100).toFixed(3) + ')"></span></div></header>';
+      '</div><div class="yz-reader-progress"><span style="width:' + progress + '%"></span></div></header>';
       var menuSheet = state.readerMenuOpen ? '<aside class="yz-reader-sheet2" role="dialog" aria-label="Daftar chapter"><div class="yz-reader-sheet2-head"><strong>Chapters</strong><button type="button" class="yz-reader-icon-btn" data-action="close-reader-panels" aria-label="Tutup">&times;</button></div><div class="yz-reader-sheet2-body"><a class="yz-reader-link" href="' + publicHref('/manga/' + escapeHtml(manga.slug)) + '">&#8592; ' + escapeHtml(manga.title) + '</a><input id="kv-reader-chapter-search" class="h-9 w-full rounded-lg border border-white/10 bg-black/60 px-3 text-xs text-white outline-none" type="search" placeholder="Cari chapter..." value="' + escapeHtml(state.readerChapterSearch || '') + '" aria-label="Cari chapter"/><div class="yz-reader-chapter-list2">' + chapterRows + '</div></div></aside>' : '';
       var settingsSheet = state.readerSettingsOpen ? renderReaderSettingsSheet() : '';
       var footer = '<footer class="yz-reader-footer"><div class="yz-reader-footer-inner"><nav class="yz-reader-dock" aria-label="Kontrol pembaca">' +
@@ -6534,7 +6548,7 @@ function renderCommentSection(manga, chapterId) {
           '<button type="button" class="yz-reader-dock-item yz-reader-dock-report" data-action="reader-open-report" aria-label="Laporkan masalah chapter" title="Laporkan masalah chapter">' + flagIcon + '</button>' +
           '<button type="button" class="yz-reader-dock-item yz-reader-dock-comments" data-action="reader-jump-comments" aria-label="Ke komentar" title="Ke komentar">' + commentIcon + '</button>' +
         '</div>' +
-        '<button type="button" class="yz-reader-dock-item" data-action="reader-next-page" aria-label="Halaman berikutnya" title="Halaman berikutnya"' + (state.currentPageIdx >= pageTotal - 1 ? ' disabled' : '') + '>' + dockNextIcon + '</button>' +
+        '<button type="button" class="yz-reader-dock-item" data-action="reader-next-page" aria-label="Halaman berikutnya" title="Halaman berikutnya"' + (state.currentPageIdx >= yzReaderMaxCursor(pageTotal) ? ' disabled' : '') + '>' + dockNextIcon + '</button>' +
       '</nav></div></footer>';
       var scrim = state.readerMenuOpen || state.readerSettingsOpen ? '<div class="fixed inset-0 z-[85] bg-black/60" data-action="close-reader-panels" aria-hidden="true"></div>' : '';
       var readerBackground = yzReaderBackgroundValue();
@@ -11036,7 +11050,6 @@ function setBannerDotsActive(index) {
         render();
       }
       else if (act === 'reader-set-dir') { state.readerDir = el.getAttribute('data-dir') === 'rtl' ? 'rtl' : 'ltr'; yzReaderSavePrefs(); render(); }
-      else if (act === 'reader-set-bg') { state.readerBackground = el.getAttribute('data-bg') || '#000000'; yzReaderSavePrefs(); render(); }
       else if (act === 'toggle-reader-servers') { state.readerServersOpen = !state.readerServersOpen; state.readerSettingsOpen = false; state.readerMenuOpen = false; render(); }
       else if (act === 'reader-select-server') { state.readerServer = el.getAttribute('data-server') || 'yor'; state.readerServersOpen = false; state.readerSettingsOpen = false; state.readerMenuOpen = false; yzReaderSavePrefs(); render(); }
       else if (act === 'scroll-reader-up') { window.scrollBy({ top: -Math.round(window.innerHeight * 0.8), behavior: scrollBehavior() }); }
@@ -11247,8 +11260,8 @@ else if (act === 'admin-tab') { state.adminTab = el.getAttribute('data-tab'); st
       var isPaged = state.readerMode !== 'vertical';
       if (key === 'j' || e.key === 'ArrowDown') { window.scrollBy({ top: 400, behavior: scrollBehavior() }); }
       else if (key === 'k' || e.key === 'ArrowUp') { window.scrollBy({ top: -400, behavior: scrollBehavior() }); }
-      else if (isPaged && (key === 'arrowleft' || e.key === 'ArrowLeft')) { e.preventDefault(); yzReaderGoPage(-1); window.scrollTo(0, 0); }
-      else if (isPaged && (key === 'arrowright' || e.key === ' ')) { e.preventDefault(); yzReaderGoPage(1); window.scrollTo(0, 0); }
+      else if (isPaged && (key === 'arrowleft' || e.key === 'ArrowLeft')) { e.preventDefault(); yzReaderGoPage(state.readerDir === 'rtl' ? 1 : -1); window.scrollTo(0, 0); }
+      else if (isPaged && (key === 'arrowright' || e.key === ' ')) { e.preventDefault(); yzReaderGoPage(state.readerDir === 'rtl' ? -1 : 1); window.scrollTo(0, 0); }
       else if (e.key === '[') { e.preventDefault(); yzReaderGoChapter(-1); }
       else if (e.key === ']') { e.preventDefault(); yzReaderGoChapter(1); }
       else if (key === 'v' || key === 'p') { toggleAutoScroll(); }
