@@ -347,56 +347,84 @@
       background: var(--kv-surface); border: 1px solid var(--kv-border);
       border-radius: 12px; padding: 24px; max-width: 440px; width: 100%;
     }
-    .kv-report-modal { align-items:flex-end; padding:12px; }
+    .kv-report-modal { --rp-line:var(--kv-border); --rp-ink:var(--kv-text); --rp-muted:var(--kv-text-muted); --rp-hot:var(--kv-danger); --rp-accent:var(--kv-accent); align-items:flex-end; padding:10px; }
     .kv-report-modal-box {
-      max-width:520px; max-height:calc(100dvh - 24px); overflow-y:auto;
-      border-radius:20px 20px 12px 12px; padding:0;
-      box-shadow:0 30px 80px -30px rgba(0,0,0,.85);
+      position:relative; overflow:auto; width:100%; max-width:780px; max-height:calc(100dvh - 20px); padding:0;
+      border:1px solid var(--rp-line); border-radius:24px 24px 14px 14px;
+      background:radial-gradient(900px 260px at 100% -10%, color-mix(in srgb,var(--rp-hot) 18%,transparent), transparent 70%), linear-gradient(180deg, var(--kv-surface-2), var(--kv-surface));
+      box-shadow:0 40px 100px -38px rgba(0,0,0,.9), inset 0 1px rgba(255,255,255,.05);
     }
-    .kv-report-head { display:flex; align-items:flex-start; gap:14px; padding:20px 22px 16px; border-bottom:1px solid var(--kv-border); background:var(--kv-surface-2); }
-    .kv-report-head-icon { flex:0 0 auto; width:42px; height:42px; border-radius:14px; display:grid; place-items:center; color:var(--kv-danger); background:var(--kv-surface); border:1px solid var(--kv-border); }
-    .kv-report-head-icon svg { width:20px; height:20px; }
-    .kv-report-head-copy { min-width:0; }
-    .kv-report-head h2 { margin:0; font-size:1rem; line-height:1.25; color:var(--kv-text); }
-    .kv-report-head p { margin:4px 0 0; font-size:.75rem; line-height:1.4; color:var(--kv-text-muted); overflow-wrap:anywhere; }
-    .kv-report-close { margin-left:auto; flex:0 0 auto; width:32px; height:32px; border-radius:10px; border:1px solid var(--kv-border); background:var(--kv-surface); color:var(--kv-text-muted); display:grid; place-items:center; cursor:pointer; transition:background-color .15s ease,color .15s ease; }
-    .kv-report-close:hover { background:var(--kv-surface-2); color:var(--kv-text); }
-    .kv-report-body { padding:18px 22px 22px; }
-    .kv-report-label { display:block; margin-bottom:10px; font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--kv-text-muted); }
-    .kv-report-optional { text-transform:none; letter-spacing:0; font-weight:500; }
-    .kv-report-reasons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    .kv-report-reason {
-      display:flex; align-items:flex-start; gap:10px; width:100%; min-height:60px;
-      padding:11px 12px; border:1px solid var(--kv-border); border-radius:12px;
-      background:var(--kv-surface); color:var(--kv-text); cursor:pointer; text-align:left;
-      font-family:inherit; font-size:.8rem; font-weight:600; line-height:1.3;
-      transition:border-color .15s ease,background-color .15s ease,transform .15s ease;
+    .kv-report-modal-box::before {
+      content:''; position:absolute; inset:0; pointer-events:none; opacity:.24;
+      background-image:linear-gradient(var(--rp-line) 1px,transparent 1px),linear-gradient(90deg,var(--rp-line) 1px,transparent 1px);
+      background-size:32px 32px; -webkit-mask-image:linear-gradient(to bottom,#000,transparent 55%); mask-image:linear-gradient(to bottom,#000,transparent 55%);
     }
-    .kv-report-reason:hover { border-color:var(--kv-accent); background:var(--kv-surface-2); transform:translateY(-1px); }
-    .kv-report-reason.active { border-color:var(--kv-danger); color:var(--kv-danger); background:var(--kv-surface); background:color-mix(in srgb,var(--kv-danger) 10%,var(--kv-surface)); box-shadow:0 0 0 1px color-mix(in srgb,var(--kv-danger) 30%,transparent) inset; }
-    .kv-report-reason .ico { flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:grid; place-items:center; background:var(--kv-surface-2); color:var(--kv-text-muted); }
-    .kv-report-reason .txt { min-width:0; flex:1; }
-    .kv-report-reason .sub { display:block; margin-top:2px; font-size:.68rem; font-weight:500; line-height:1.35; color:var(--kv-text-muted); }
-    .kv-report-reason.active .ico, .kv-report-reason.active .sub { color:var(--kv-danger); }
-    .kv-report-reason .tick { flex:0 0 auto; margin-left:auto; opacity:0; color:var(--kv-danger); }
-    .kv-report-reason.active .tick { opacity:1; }
-    .kv-report-detail-wrap { margin-top:18px; }
-    .kv-report-detail-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+    .kv-report-topline { position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 18px; border-bottom:1px solid var(--rp-line); font-family:var(--kv-font-mono, ui-monospace, monospace); font-size:.62rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--rp-muted); }
+    .kv-report-topline b { color:var(--rp-hot); }
+    .kv-report-close { flex:0 0 auto; width:30px; height:30px; border-radius:50%; border:1px solid var(--rp-line); background:var(--kv-surface); color:var(--rp-muted); display:grid; place-items:center; cursor:pointer; transition:color .15s ease,border-color .15s ease,transform .2s ease; }
+    .kv-report-close:hover { color:var(--rp-ink); border-color:var(--rp-ink); transform:rotate(90deg); }
+    .kv-report-shell { position:relative; display:grid; grid-template-columns:220px minmax(0,1fr); }
+    .kv-report-aside { min-width:0; padding:22px 18px; border-right:1px dashed var(--rp-line); background:color-mix(in srgb,var(--kv-surface) 62%,transparent); }
+    .kv-report-stamp { display:inline-flex; align-items:center; padding:5px 9px; border:1px solid var(--rp-hot); border-radius:6px; color:var(--rp-hot); font-family:var(--kv-font-mono, ui-monospace, monospace); font-size:.62rem; font-weight:800; letter-spacing:.12em; transform:rotate(-2deg); }
+    .kv-report-aside-label { display:block; margin-top:22px; font-size:.6rem; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--rp-muted); }
+    .kv-report-aside-title { display:block; margin-top:8px; font-size:.9rem; font-weight:800; line-height:1.35; color:var(--rp-ink); overflow-wrap:anywhere; }
+    .kv-report-aside-chapter { display:block; margin-top:6px; font-family:var(--kv-font-mono, ui-monospace, monospace); font-size:.72rem; color:var(--rp-hot); }
+    .kv-report-steps { display:grid; gap:10px; margin-top:24px; }
+    .kv-report-step { display:flex; align-items:center; gap:9px; font-size:.68rem; color:var(--rp-muted); }
+    .kv-report-step > span { width:22px; height:22px; border-radius:50%; display:grid; place-items:center; border:1px solid var(--rp-line); font-family:var(--kv-font-mono, ui-monospace, monospace); font-size:.6rem; }
+    .kv-report-step.on { color:var(--rp-ink); }
+    .kv-report-step.on > span { border-color:var(--rp-hot); background:var(--rp-hot); color:#fff; }
+    .kv-report-aside-note { margin:24px 0 0; padding-top:14px; border-top:1px dashed var(--rp-line); font-size:.68rem; line-height:1.5; color:var(--rp-muted); }
+    .kv-report-main { min-width:0; }
+    .kv-report-head { padding:22px 24px 18px; border-bottom:1px solid var(--rp-line); }
+    .kv-report-head h2 { margin:0; font-size:1.3rem; line-height:1.2; letter-spacing:-.02em; color:var(--rp-ink); }
+    .kv-report-head p { margin:8px 0 0; font-size:.74rem; line-height:1.5; color:var(--rp-muted); }
+    .kv-report-body { padding:18px 24px; }
+    .kv-report-label { display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:.62rem; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--rp-muted); }
+    .kv-report-label::before { content:''; width:14px; height:1px; background:var(--rp-hot); }
+    .kv-report-optional { letter-spacing:0; text-transform:none; font-weight:500; }
+    .kv-report-reasons { display:grid; gap:6px; }
+    .kv-report-reason { display:grid; grid-template-columns:28px 34px minmax(0,1fr) 18px; align-items:center; gap:11px; width:100%; min-height:56px; padding:8px 12px; border:1px solid transparent; border-bottom-color:var(--rp-line); border-radius:10px; background:transparent; color:var(--rp-ink); cursor:pointer; text-align:left; font-family:inherit; transition:background-color .15s ease,border-color .15s ease,transform .15s ease; }
+    .kv-report-reason:last-child { border-bottom-color:transparent; }
+    .kv-report-reason:hover { background:color-mix(in srgb,var(--rp-accent) 8%,transparent); transform:translateX(2px); }
+    .kv-report-reason .no { font-family:var(--kv-font-mono, ui-monospace, monospace); font-size:.65rem; font-weight:700; color:var(--rp-muted); }
+    .kv-report-reason .ico { width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:var(--kv-surface-2); border:1px solid var(--rp-line); color:var(--rp-muted); }
+    .kv-report-reason .txt { min-width:0; }
+    .kv-report-reason .name { display:block; font-size:.8rem; font-weight:700; line-height:1.3; }
+    .kv-report-reason .sub { display:block; margin-top:3px; font-size:.68rem; line-height:1.35; color:var(--rp-muted); }
+    .kv-report-reason .tick { width:18px; height:18px; border-radius:50%; border:1px solid var(--rp-line); display:grid; place-items:center; color:transparent; }
+    .kv-report-reason.active { border-color:color-mix(in srgb,var(--rp-hot) 55%,transparent); background:color-mix(in srgb,var(--rp-hot) 9%,transparent); }
+    .kv-report-reason.active .no, .kv-report-reason.active .ico, .kv-report-reason.active .sub { color:var(--rp-hot); }
+    .kv-report-reason.active .tick { border-color:var(--rp-hot); background:var(--rp-hot); color:#fff; }
+    .kv-report-detail-wrap { margin-top:16px; padding:14px; border:1px dashed var(--rp-line); border-radius:12px; background:color-mix(in srgb,var(--kv-surface) 55%,transparent); }
+    .kv-report-detail-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .kv-report-detail-head .kv-report-label { margin:0; }
-    .kv-report-count { font-size:.7rem; color:var(--kv-text-muted); font-variant-numeric:tabular-nums; }
-    .kv-report-detail { width:100%; min-height:96px; resize:vertical; }
-    .kv-report-foot { display:flex; align-items:center; gap:12px; margin-top:18px; padding-top:16px; border-top:1px solid var(--kv-border); }
-    .kv-report-note { display:flex; align-items:center; gap:6px; min-width:0; font-size:.7rem; color:var(--kv-text-muted); }
-    .kv-report-note svg { flex:none; width:14px; height:14px; }
+    .kv-report-count { font-family:var(--kv-font-mono, ui-monospace, monospace); font-size:.66rem; color:var(--rp-muted); font-variant-numeric:tabular-nums; }
+    .kv-report-detail { width:100%; min-height:82px; margin-top:8px; padding:10px 12px; border:1px solid var(--rp-line); border-radius:10px; background:var(--kv-surface); color:var(--rp-ink); font-family:inherit; font-size:.75rem; line-height:1.5; resize:vertical; outline:none; }
+    .kv-report-detail::placeholder { color:var(--rp-muted); opacity:.7; }
+    .kv-report-detail:focus { border-color:var(--rp-hot); box-shadow:0 0 0 3px color-mix(in srgb,var(--rp-hot) 14%,transparent); }
+    .kv-report-foot { display:flex; align-items:center; gap:14px; padding:16px 24px 20px; border-top:1px solid var(--rp-line); }
+    .kv-report-note { display:flex; align-items:center; gap:8px; min-width:0; font-size:.68rem; line-height:1.4; color:var(--rp-muted); }
+    .kv-report-note svg { flex:none; width:14px; height:14px; color:var(--rp-hot); }
     .kv-report-actions { display:flex; gap:8px; margin-left:auto; }
-    .kv-report-actions .kv-btn { min-width:96px; }
+    .kv-report-actions .kv-btn { min-width:92px; }
     @media (min-width:640px) {
-      .kv-report-modal { align-items:center; padding:20px; }
-      .kv-report-modal-box { border-radius:20px; }
+      .kv-report-modal { align-items:center; padding:24px; }
+      .kv-report-modal-box { border-radius:24px; }
+    }
+    @media (max-width:720px) {
+      .kv-report-shell { grid-template-columns:1fr; }
+      .kv-report-aside { display:flex; align-items:center; gap:12px; padding:12px 18px; border-right:0; border-bottom:1px dashed var(--rp-line); }
+      .kv-report-aside-label, .kv-report-steps, .kv-report-aside-note { display:none; }
+      .kv-report-aside-title { margin:0; font-size:.78rem; max-width:70%; }
+      .kv-report-aside-chapter { margin:0; font-size:.66rem; }
     }
     @media (max-width:520px) {
-      .kv-report-reasons { grid-template-columns:1fr; }
-      .kv-report-foot { flex-direction:column; align-items:stretch; }
+      .kv-report-head { padding:18px; }
+      .kv-report-body { padding:14px 18px; }
+      .kv-report-reason { grid-template-columns:22px 30px minmax(0,1fr) 18px; gap:8px; padding:8px; }
+      .kv-report-reason .ico { width:30px; height:30px; }
+      .kv-report-foot { flex-direction:column; align-items:stretch; padding:14px 18px 18px; }
       .kv-report-actions { width:100%; }
       .kv-report-actions .kv-btn { flex:1; }
     }
@@ -5477,7 +5505,7 @@ function trackPageview() {
           compass: '<path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path><circle cx="12" cy="12" r="10"></circle>',
           'book-open': '<path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path>',
           bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c-2-2-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path>',
-          discord: '<path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.0766.0766 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.0777.0777 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286z"></path>',
+          discord: '<path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.0766.0766 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.0777.0777 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"></path>',
           user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
           ellipsis: '<circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>'
         };
@@ -8507,33 +8535,46 @@ function renderAdmin() {
       var ready = !!state.reportReason;
       var closeIcon = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
       var tickIcon = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
-      var reasons = REPORT_REASONS.map(function (r) {
+      var reasons = REPORT_REASONS.map(function (r, i) {
         var active = state.reportReason === r.id;
-        return '<button type="button" class="kv-report-reason' + (active ? ' active' : '') + '" data-action="reader-report-reason" data-reason="' + r.id + '" aria-pressed="' + (active ? 'true' : 'false') + '">' +
+        return '<button type="button" class="kv-report-reason' + (active ? ' active' : '') + '" data-action="reader-report-reason" data-reason="' + r.id + '" role="radio" aria-checked="' + (active ? 'true' : 'false') + '">' +
+          '<span class="no">' + ('0' + (i + 1)).slice(-2) + '</span>' +
           '<span class="ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + r.icon + '</svg></span>' +
-          '<span class="txt">' + escapeHtml(r.label) + '<span class="sub">' + escapeHtml(r.hint) + '</span></span>' +
+          '<span class="txt"><span class="name">' + escapeHtml(r.label) + '</span><span class="sub">' + escapeHtml(r.hint) + '</span></span>' +
           '<span class="tick">' + tickIcon + '</span>' +
         '</button>';
       }).join('');
       return '<div class="kv-modal kv-report-modal" role="dialog" aria-modal="true" aria-labelledby="kv-report-title">' +
         '<div class="kv-report-modal-box">' +
-          '<div class="kv-report-head">' +
-            '<span class="kv-report-head-icon">' + kvIcon('shield') + '</span>' +
-            '<div class="kv-report-head-copy"><h2 id="kv-report-title">Laporkan Chapter</h2><p>' + escapeHtml(label) + '</p></div>' +
-            '<button type="button" class="kv-report-close" data-action="reader-report-close" aria-label="Tutup laporan">' + closeIcon + '</button>' +
-          '</div>' +
-          '<div class="kv-report-body">' +
-            '<span class="kv-report-label">Pilih alasan</span>' +
-            '<div class="kv-report-reasons" role="group" aria-label="Alasan laporan">' + reasons + '</div>' +
-            '<div class="kv-report-detail-wrap">' +
-              '<div class="kv-report-detail-head"><span class="kv-report-label">Detail tambahan <span class="kv-report-optional">(opsional)</span></span><span class="kv-report-count" id="kv-report-count">' + detail.length + '/500</span></div>' +
-              '<textarea class="kv-textarea kv-report-detail" data-report-detail maxlength="500" placeholder="Contoh: halaman 3 tidak terbaca di chapter ini...">' + escapeHtml(detail) + '</textarea>' +
-            '</div>' +
-            '<div class="kv-report-foot">' +
-              '<span class="kv-report-note">' + kvIcon('shield') + '<span>' + (ready ? 'Laporan akan dikirim ke admin.' : 'Pilih alasan untuk melanjutkan.') + '</span></span>' +
-              '<div class="kv-report-actions">' +
-                '<button type="button" class="kv-btn kv-btn-ghost" data-action="reader-report-close">Batal</button>' +
-                '<button type="button" class="kv-btn kv-btn-danger" data-action="reader-report-submit"' + (!ready || state.reportSending ? ' disabled' : '') + '>' + (state.reportSending ? 'Mengirim...' : 'Kirim Laporan') + '</button>' +
+          '<div class="kv-report-topline"><span>Laporan pembaca <b>/ incident desk</b></span><button type="button" class="kv-report-close" data-action="reader-report-close" aria-label="Tutup laporan">' + closeIcon + '</button></div>' +
+          '<div class="kv-report-shell">' +
+            '<aside class="kv-report-aside" aria-label="Ringkasan laporan">' +
+              '<span class="kv-report-stamp">RPT · 01</span>' +
+              '<span class="kv-report-aside-label">Objek laporan</span>' +
+              '<strong class="kv-report-aside-title">' + escapeHtml(label) + '</strong>' +
+              '<span class="kv-report-aside-chapter">/ reader report</span>' +
+              '<div class="kv-report-steps">' +
+                '<span class="kv-report-step on"><span>1</span>Pilih alasan</span>' +
+                '<span class="kv-report-step' + (ready ? ' on' : '') + '"><span>2</span>Tambah detail</span>' +
+              '</div>' +
+              '<p class="kv-report-aside-note">Laporan diteruskan ke admin untuk ditinjau. Sertakan detail agar pemeriksaan lebih cepat.</p>' +
+            '</aside>' +
+            '<div class="kv-report-main">' +
+              '<div class="kv-report-head"><h2 id="kv-report-title">Laporkan Chapter</h2><p>Pilih masalah yang paling sesuai. Kamu bisa menambahkan keterangan singkat setelahnya.</p></div>' +
+              '<div class="kv-report-body">' +
+                '<span class="kv-report-label">Alasan laporan</span>' +
+                '<div class="kv-report-reasons" role="radiogroup" aria-label="Alasan laporan">' + reasons + '</div>' +
+                '<div class="kv-report-detail-wrap">' +
+                  '<div class="kv-report-detail-head"><span class="kv-report-label">Catatan <span class="kv-report-optional">(opsional)</span></span><span class="kv-report-count" id="kv-report-count">' + detail.length + '/500</span></div>' +
+                  '<textarea class="kv-report-detail" data-report-detail maxlength="500" placeholder="Contoh: halaman 3 tidak terbaca di chapter ini...">' + escapeHtml(detail) + '</textarea>' +
+                '</div>' +
+              '</div>' +
+              '<div class="kv-report-foot">' +
+                '<span class="kv-report-note">' + kvIcon('shield') + '<span>' + (ready ? 'Siap dikirim ke admin.' : 'Pilih satu alasan untuk mengaktifkan pengiriman.') + '</span></span>' +
+                '<div class="kv-report-actions">' +
+                  '<button type="button" class="kv-btn kv-btn-ghost" data-action="reader-report-close">Batal</button>' +
+                  '<button type="button" class="kv-btn kv-btn-danger" data-action="reader-report-submit"' + (!ready || state.reportSending ? ' disabled' : '') + '>' + (state.reportSending ? 'Mengirim...' : 'Kirim Laporan') + '</button>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
