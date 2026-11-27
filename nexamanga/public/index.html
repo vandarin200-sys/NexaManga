@@ -4152,6 +4152,12 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       --lb-accent: #5fd0be;
       --lb-on: #06231f;
       --lb-accent-subtle: rgba(95, 208, 190, .14);
+      --lb-medal-1: #f59e0b;
+      --lb-medal-1-soft: rgba(245, 158, 11, .16);
+      --lb-medal-2: #d4d4d8;
+      --lb-medal-2-soft: rgba(212, 212, 216, .12);
+      --lb-medal-3: #b45309;
+      --lb-medal-3-soft: rgba(180, 83, 9, .12);
     }
     html[data-resolved-theme="light"] body.kv-public-route .lb-root {
       --lb-accent: #0b6f66;
@@ -4189,10 +4195,32 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html body.kv-public-route .lb-root .lb-card-hover:hover .lb-surface { border-color: var(--lb-accent) !important; }
     html body.kv-public-route .lb-root .lb-rank-row.is-me { background-color: var(--lb-accent-subtle) !important; }
     html body.kv-public-route .lb-root .lb-rank-row:hover { background-color: var(--yz-surface-2) !important; }
-    html body.kv-public-route .lb-root .lb-podium { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; }
-    html body.kv-public-route .lb-root .lb-podium[data-place="1"] { border-color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-podium { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; box-shadow: 0 10px 30px -10px rgba(0,0,0,.18); }
+    html body.kv-public-route .lb-root .lb-podium[data-place="1"] { background-image: linear-gradient(to bottom, var(--lb-medal-1-soft), var(--yz-surface-1) 48%, var(--yz-bg)) !important; background-color: transparent !important; border-color: var(--lb-medal-1) !important; box-shadow: 0 20px 50px -15px var(--lb-medal-1-soft) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="2"] { background-image: linear-gradient(to bottom, var(--lb-medal-2-soft), var(--yz-surface-1) 48%, var(--yz-bg)) !important; background-color: transparent !important; border-color: var(--lb-medal-2) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="3"] { background-image: linear-gradient(to bottom, var(--lb-medal-3-soft), var(--yz-surface-1) 48%, var(--yz-bg)) !important; background-color: transparent !important; border-color: var(--lb-medal-3) !important; }
     html body.kv-public-route .lb-root .lb-podium-badge { background-color: var(--lb-accent) !important; border-color: var(--lb-accent) !important; color: var(--lb-on) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="1"] .lb-podium-badge { background-image: linear-gradient(to right, #fcd34d, #f59e0b) !important; background-color: transparent !important; border-color: #fbbf24 !important; color: #1c1205 !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="2"] .lb-podium-badge { background-color: var(--lb-medal-2) !important; border-color: var(--lb-medal-2) !important; color: #18181b !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="3"] .lb-podium-badge { background-color: var(--lb-medal-3) !important; border-color: var(--lb-medal-3) !important; color: #fff7ed !important; }
     html body.kv-public-route .lb-root .lb-podium-glow, html body.kv-public-route .lb-root .lb-ambient { background-color: var(--lb-accent-subtle) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="1"] .lb-podium-glow { background-color: var(--lb-medal-1-soft) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="2"] .lb-podium-glow { background-color: var(--lb-medal-2-soft) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="3"] .lb-podium-glow { background-color: var(--lb-medal-3-soft) !important; }
+    html body.kv-public-route .lb-root .lb-rank-num { color: var(--lb-medal-2) !important; opacity: .14; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="1"] .lb-rank-num { color: var(--lb-medal-1) !important; opacity: .16; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="3"] .lb-rank-num { color: var(--lb-medal-3) !important; opacity: .14; }
+    html body.kv-public-route .lb-root .lb-shimmer { background-image: linear-gradient(to right, transparent, rgba(255,255,255,.07), transparent) !important; transform: translateX(-100%); }
+    html body.kv-public-route .lb-root .group:hover .lb-shimmer { transform: translateX(100%); }
+    html body.kv-public-route .lb-root .lb-name { color: var(--yz-text) !important; }
+    html body.kv-public-route .lb-root .group:hover .lb-name { color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-xp-panel { background-color: var(--yz-surface-2) !important; border-color: var(--yz-border) !important; }
+    html body.kv-public-route .lb-root .lb-xp-value { color: var(--yz-text) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="1"] .lb-xp-value { color: var(--lb-medal-1) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="3"] .lb-xp-value { color: var(--lb-medal-3) !important; }
+    html body.kv-public-route .lb-root .lb-comics-poster { background-color: var(--yz-surface-3) !important; border-color: var(--yz-border) !important; box-shadow: 0 18px 36px -22px rgba(0,0,0,.7); }
+    html body.kv-public-route .lb-root .group:hover .lb-comics-poster { border-color: var(--yz-text-tertiary) !important; }
+    html body.kv-public-route .lb-root .lb-view-chip { background-color: var(--yz-surface-2) !important; border-color: var(--yz-border) !important; color: var(--yz-text-secondary) !important; }
     html body.kv-public-route .lb-root .lb-overlay { background-image: linear-gradient(to top, var(--yz-surface-1) 0%, transparent 58%) !important; background-color: transparent !important; opacity: 1; }
     html body.kv-public-route .lb-root .lb-count { color: var(--lb-accent) !important; }
     html body.kv-public-route .lb-root .lb-progress-track { background-color: var(--yz-surface-3) !important; }
@@ -9745,22 +9773,25 @@ function renderAdmin() {
     }
     function lbUserPodium(top) {
       var configs = [
-        { index: 1, rank: 2, place: 2, orderClass: 'order-1', cardHeight: 'pt-6 sm:pt-8 pb-3 sm:pb-5 px-2 sm:px-5', avatarBox: 'w-12 h-12 sm:w-20 sm:h-20', ringClass: 'ring-2 ring-zinc-300/60', numClass: 'text-zinc-200/[0.07]', badgeClass: 'lb-surface-2 lb-ink', xpClass: 'lb-subtle', tierSize: 'xs' },
-        { index: 0, rank: 1, place: 1, orderClass: 'order-2 -mt-3 sm:-mt-6', cardHeight: 'pt-7 sm:pt-10 pb-4 sm:pb-6 px-2.5 sm:px-6', avatarBox: 'w-14 h-14 sm:w-24 sm:h-24', ringClass: 'ring-2 ring-amber-400/80 shadow-[0_0_24px_rgba(251,191,36,0.22)]', numClass: 'text-amber-300/[0.1]', badgeClass: 'lb-podium-badge', xpClass: 'lb-count', tierSize: 'sm' },
-        { index: 2, rank: 3, place: 3, orderClass: 'order-3', cardHeight: 'pt-6 sm:pt-8 pb-3 sm:pb-5 px-2 sm:px-5', avatarBox: 'w-12 h-12 sm:w-20 sm:h-20', ringClass: 'ring-2 ring-amber-700/70', numClass: 'text-amber-600/[0.08]', badgeClass: 'lb-surface-2 lb-ink', xpClass: 'lb-count', tierSize: 'xs' }
+        { index: 1, rank: 2, place: 2, orderClass: 'order-1', cardHeight: 'pt-6 sm:pt-8 pb-3 sm:pb-5 px-2 sm:px-5', avatarBox: 'w-12 h-12 sm:w-20 sm:h-20', ringClass: 'ring-2 ring-zinc-300/60' },
+        { index: 0, rank: 1, place: 1, orderClass: 'order-2 -mt-3 sm:-mt-6', cardHeight: 'pt-7 sm:pt-10 pb-4 sm:pb-6 px-2.5 sm:px-6', avatarBox: 'w-14 h-14 sm:w-24 sm:h-24', ringClass: 'ring-2 ring-amber-400/80 shadow-[0_0_24px_rgba(251,191,36,0.22)]' },
+        { index: 2, rank: 3, place: 3, orderClass: 'order-3', cardHeight: 'pt-6 sm:pt-8 pb-3 sm:pb-5 px-2 sm:px-5', avatarBox: 'w-12 h-12 sm:w-20 sm:h-20', ringClass: 'ring-2 ring-amber-700/70' }
       ];
-      return '<div class="grid grid-cols-3 gap-2 sm:gap-5 items-end">' + configs.map(function (cfg) {
+      return '<div class="grid grid-cols-3 gap-2 sm:gap-5 items-end mb-7 sm:mb-9">' + configs.map(function (cfg) {
         var u = top[cfg.index];
         if (!u) return '';
         return '<a href="' + publicHref('/y/' + encodeURIComponent(u.username)) + '" data-place="' + cfg.place + '" class="lb-podium lb-card-hover group relative flex flex-col items-center text-center rounded-2xl sm:rounded-3xl border overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer ' + cfg.orderClass + ' ' + cfg.cardHeight + '">' +
           '<div class="lb-podium-glow pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-28 h-28 rounded-full blur-2xl"></div>' +
-          '<div class="pointer-events-none select-none absolute -bottom-3 right-2 text-5xl sm:text-7xl font-black italic tracking-tighter ' + cfg.numClass + '">#' + cfg.rank + '</div>' +
-          '<span class="relative z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-extrabold tracking-tight mb-2.5 sm:mb-3.5 border ' + cfg.badgeClass + '">' + lbIcon('crown', 'w-3 h-3 fill-current') + '#<span>' + cfg.rank + '</span></span>' +
+          '<div class="lb-rank-num pointer-events-none select-none absolute -bottom-3 right-2 text-5xl sm:text-7xl font-black italic tracking-tighter">' + cfg.rank + '</div>' +
+          '<div class="lb-shimmer pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-700"></div>' +
+          '<span class="lb-podium-badge relative z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-extrabold tracking-tight mb-2.5 sm:mb-3.5 border">' + (cfg.rank === 1 ? lbIcon('crown', 'w-3 h-3 fill-current') : '') + '<span>#' + cfg.rank + '</span></span>' +
           lbAvatar(u, cfg.avatarBox + ' mb-2 sm:mb-3 shrink-0', cfg.ringClass, true) +
-          '<div class="relative z-10 min-w-0">' + lbStyledName(u, 'lb-ink font-bold text-xs sm:text-base truncate block transition-colors') + '</div>' +
-          '<div class="relative z-10 mt-1.5">' + lbTierBadge(u, cfg.tierSize) + '</div>' +
-          (u.streak_days > 0 ? '<div class="relative z-10 mt-1 hidden sm:inline-flex items-center gap-1 text-[10px] font-medium tabular-nums lb-accent">' + lbFlame(u.streak_days, '') + '</div>' : '') +
-          '<div class="relative z-10 mt-2 text-[11px] sm:text-sm font-bold tabular-nums ' + cfg.xpClass + '">' + lbNum(u.score || u.total_xp) + ' <span class="text-[10px] font-semibold lb-muted">XP</span></div>' +
+          '<div class="relative z-10 w-full min-w-0 px-0.5"><div class="space-y-1"><div>' + lbStyledName(u, 'lb-name font-bold text-xs sm:text-base truncate block transition-colors') + '</div>' +
+          '<div class="flex justify-center">' + lbTierBadge(u, cfg.rank === 1 ? 'sm' : 'xs') + '</div></div></div>' +
+          '<div class="lb-xp-panel relative z-10 mt-2.5 sm:mt-4 w-full rounded-xl border px-2 py-1.5 sm:px-3 sm:py-2">' +
+          '<div class="lb-xp-value text-[11px] sm:text-sm font-bold tabular-nums">' + lbNum(u.score || u.total_xp) + ' <span class="text-[9px] sm:text-[10px] font-semibold opacity-80">XP</span></div>' +
+          (u.streak_days > 0 ? '<div class="hidden sm:inline-flex items-center gap-1 text-[10px] font-medium mt-0.5 tabular-nums lb-accent">' + lbFlame(u.streak_days, '') + '</div>' : '') +
+          '</div>' +
         '</a>';
       }).join('') + '</div>';
     }
@@ -9775,9 +9806,9 @@ function renderAdmin() {
     }
     function lbComicsPodium(top) {
       var configs = [
-        { index: 1, rank: 2, place: 2, label: 'Runner-Up', orderClass: 'order-1', cardHeight: 'pt-5 sm:pt-7 pb-3.5 sm:pb-5 px-2.5 sm:px-4', icon: 'medal' },
-        { index: 0, rank: 1, place: 1, label: 'Juara', orderClass: 'order-2 -mt-3 sm:-mt-6', cardHeight: 'pt-6 sm:pt-9 pb-4 sm:pb-6 px-3 sm:px-5', icon: 'crown' },
-        { index: 2, rank: 3, place: 3, label: 'Peringkat 3', orderClass: 'order-3', cardHeight: 'pt-5 sm:pt-7 pb-3.5 sm:pb-5 px-2.5 sm:px-4', icon: 'medal' }
+        { index: 1, rank: 2, place: 2, label: '#2 Runner-Up', orderClass: 'order-1', cardHeight: 'pt-5 sm:pt-7 pb-3.5 sm:pb-5 px-2.5 sm:px-4', icon: 'medal' },
+        { index: 0, rank: 1, place: 1, label: '#1 Most Read', orderClass: 'order-2 -mt-3 sm:-mt-6', cardHeight: 'pt-6 sm:pt-9 pb-4 sm:pb-6 px-3 sm:px-5', icon: 'crown' },
+        { index: 2, rank: 3, place: 3, label: '#3 Third Place', orderClass: 'order-3', cardHeight: 'pt-5 sm:pt-7 pb-3.5 sm:pb-5 px-2.5 sm:px-4', icon: 'medal' }
       ];
       return '<div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-4xl mx-auto items-end pt-4 sm:pt-6">' + configs.map(function (cfg) {
         var a = top[cfg.index];
@@ -9785,11 +9816,14 @@ function renderAdmin() {
         var title = escapeHtml(a.title);
         return '<a href="' + publicHref('/manga/' + encodeURIComponent(a.slug || a.manga_id)) + '" data-place="' + cfg.place + '" class="lb-podium lb-card-hover group relative flex flex-col rounded-3xl border transition-all duration-300 hover:-translate-y-1.5 cursor-pointer overflow-hidden ' + cfg.orderClass + ' ' + cfg.cardHeight + '">' +
           '<div class="lb-podium-glow pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-32 sm:w-44 h-32 sm:h-44 rounded-full blur-3xl"></div>' +
-          '<div class="flex items-center justify-center mb-2 sm:mb-3 relative z-10"><div class="lb-surface-2 lb-accent inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border text-[9.5px] sm:text-xs font-black uppercase tracking-wider">' + lbIcon(cfg.icon, 'w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current') + '<span>' + cfg.label + '</span></div></div>' +
-          '<div class="relative aspect-[2/3] w-full rounded-xl sm:rounded-2xl overflow-hidden border lb-surface transition-all">' + lbPosterHtml(a, true) +
+          '<div class="lb-shimmer pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-700"></div>' +
+          '<div class="flex items-center justify-center mb-2 sm:mb-3 relative z-10"><div class="lb-podium-badge inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border text-[9.5px] sm:text-xs font-black uppercase tracking-wider">' + lbIcon(cfg.icon, 'w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current') + '<span class="truncate">' + cfg.label + '</span></div></div>' +
+          '<div class="lb-comics-poster relative aspect-[2/3] w-full rounded-xl sm:rounded-2xl overflow-hidden border transition-all">' + lbPosterHtml(a, true) +
           '<div class="lb-overlay absolute inset-0 z-20 pointer-events-none"></div>' +
-          '<div class="lb-podium-badge absolute top-2 left-2 z-20 px-2 sm:px-2.5 py-0.5 rounded-full border text-[10px] sm:text-xs font-black tabular-nums">#' + cfg.rank + '</div></div>' +
-          '<div class="mt-2.5 sm:mt-3 text-center flex-1 flex flex-col justify-between"><h3 class="lb-ink text-xs sm:text-sm font-extrabold line-clamp-2 transition-colors leading-snug">' + title + '</h3>' +
+          '<div class="lb-podium-badge absolute top-2 left-2 z-20 px-2 sm:px-2.5 py-0.5 rounded-full border text-[10px] sm:text-xs font-black tabular-nums">#' + cfg.rank + '</div>' +
+          '<div class="lb-view-chip absolute top-2 right-2 z-20 flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full border text-[9.5px] sm:text-[10.5px] font-semibold tabular-nums">' + lbIcon('flame', 'w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400/25') + '<span>' + lbNum(a.views) + '</span></div>' +
+          '</div>' +
+          '<div class="mt-2.5 sm:mt-3 text-center flex-1 flex flex-col justify-between"><h3 class="lb-name text-xs sm:text-sm font-extrabold line-clamp-2 transition-colors leading-snug">' + title + '</h3>' +
           '<div class="mt-1.5 sm:mt-2 text-[10px] sm:text-xs font-semibold tabular-nums lb-count">' + lbNum(a.views) + ' <span class="lb-muted font-normal">dibaca</span></div></div>' +
         '</a>';
       }).join('') + '</div>';
