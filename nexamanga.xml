@@ -3460,7 +3460,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .yz-sidebar { display: flex; }
     }
     @media (max-width: 767px) {
-      html body.kv-public-route { padding-left: 0; padding-top: 98px; }
+      html body.kv-public-route { padding-left: 0; padding-top: 56px; }
       .yz-mobile-header {
         position: fixed; inset: 0 0 auto 0; z-index: 50; height: 56px;
         display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -9466,6 +9466,7 @@ function renderAdmin() {
         if (u.tier && u.tier.division) tier.division = String(u.tier.division);
         return {
           user_id: String(u.user_id || ''),
+          public_slug: String(u.public_slug || u.publicSlug || ''),
           username: String(u.username || u.name || 'Member'),
           avatar: u.avatar || '',
           score: Number(u.score) || 0,
@@ -9526,7 +9527,7 @@ function renderAdmin() {
       var poster = a.poster
         ? '<img class="relative z-10 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" loading="' + (eager ? 'eager' : 'lazy') + '" decoding="async" src="' + escapeHtml(a.poster) + '" alt="' + title + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';"/>'
         : '';
-      var fallback = '<div class="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-zinc-950"' + (a.poster ? ' style="display:none"' : '') + '>' + lbIcon('gem', 'w-8 h-8 text-zinc-700 mb-1') + '<span class="text-[10px] font-bold text-zinc-600 line-clamp-2">' + title + '</span></div>';
+      var fallback = '<div class="lb-poster-fallback absolute inset-0 flex flex-col items-center justify-center p-3 text-center"' + (a.poster ? ' style="display:none"' : '') + '>' + lbIcon('gem', 'w-8 h-8 mb-1') + '<span class="lb-poster-fallback-title text-[10px] font-bold line-clamp-2">' + title + '</span></div>';
       return poster + fallback;
     }
     function lbUserPodium(top) {
@@ -12227,7 +12228,10 @@ applyYumeAccent();
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-podium[data-place="1"] .lb-podium-badge { background-image: none !important; background-color: var(--lb-accent) !important; border-color: var(--lb-accent) !important; color: var(--lb-on) !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-shimmer { display: none !important; background-image: none !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-overlay { background-image: none !important; background-color: transparent !important; }
-    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-card-title { border: 1px solid var(--yz-border) !important; border-radius: 10px; background-color: rgba(10,12,16,.82) !important; padding: 6px 8px; }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-card-title { border: 1px solid var(--yz-border) !important; border-radius: 10px; background-color: var(--yz-surface-1) !important; padding: 6px 8px; box-shadow: 0 8px 22px -14px rgba(0,0,0,.75); }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-card-title .lb-ink { color: var(--yz-text) !important; }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-poster-fallback { background-color: var(--yz-surface-2) !important; color: var(--yz-text-tertiary) !important; }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-poster-fallback-title { color: var(--yz-text-secondary) !important; }
     @media (prefers-reduced-motion: reduce) { .lb-tier-badge.lb-shine:after, .lb-tier-badge.lb-radiant { animation:none; } }
       </style>
   <!-- LINT.ThenChange(//depot/google3/java/com/google/blogger/b2/layouts/widgets/v2-style.css) -->
