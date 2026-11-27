@@ -62,6 +62,7 @@ const {
   StorageAlreadyInitializedError,
   ensureCatalogInitialized,
   initializeCatalog,
+  migrateLegacyCatalog,
   modifyCatalog,
   readCatalog,
   recordTrack,
@@ -846,11 +847,31 @@ async function handler(req, res) {
 
     if (route === 'admin/storage/init' && req.method === 'POST') {
       await requireAdmin(req);
-      const rowId = await initializeCatalog(EMPTY_CATALOG);
+      let force = false;
+      if (Number(req.headers['content-length'] || 0) > 0 || req.headers['transfer-encoding']) {
+        const body = await readBody(req);
+        force = body.force === true;
+      }
+      const rowId = await initializeCatalog(EMPTY_CATALOG, { allowLegacyOverwrite: force });
       return sendJson(res, 201, {
         rowId,
-        instruction: 'Baris snapshot awal sudah tersimpan di tabel nexamanga_snapshot pada database Neon.'
+        instruction: 'Tabel relasional NexaManga sudah diinisialisasi pada database Neon.'
       });
+    }
+
+    if (route === 'admin/storage/migrate' && req.method === 'POST') {
+      await requireAdmin(req);
+      const result = await migrateLegacyCatalog();
+      if (result.ok) {
+        return sendJson(res, 200, { ok: true, message: 'Data dari nexamanga_snapshot berhasil dipindahkan ke tabel relasional.' });
+      }
+      if (result.reason === 'already-initialized') {
+        return sendJson(res, 200, { ok: true, alreadyInitialized: true, message: 'Database relasional sudah terinisialisasi.' });
+      }
+      if (result.reason === 'invalid-legacy-data') {
+        throw new HttpError(400, 'Data pada nexamanga_snapshot tidak valid sehingga tidak dapat dimigrasikan.');
+      }
+      throw new HttpError(404, 'Tidak ditemukan data lama pada nexamanga_snapshot untuk dimigrasikan.');
     }
 
     if (route === 'manga/view' && req.method === 'POST') {
@@ -1287,6 +1308,7 @@ async function handler(req, res) {
       console.error(error.message);
       return sendJson(res, 502, { error: error.message });
     }
+    if (/MySQL tidak didukung/.test(error.message)) return sendJson(res, 500, { error: error.message });
     if (/Environment variable|TOKEN_SECRET|DATABASE_URL|PUBLIC_API_URL|GOOGLE_CLIENT|DISCORD_CLIENT/.test(error.message)) {
       console.error(error.message);
       return sendJson(res, 500, { error: 'Konfigurasi backend tidak lengkap.' });
