@@ -3919,6 +3919,43 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-reader-route :is(.yz-reader-dock-primary, .yz-seg button.active, .yz-reader-chapter-list2 a.active, .kv-reader-chapter-row.is-active) { background:var(--yz-accent) !important; background-image:none !important; border-color:var(--yz-accent) !important; color:var(--primary-foreground) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-reader-route :is(.yz-reader-title, .yz-reader-sheet2-head strong, .kv-chapter-comment-title, .kv-chapter-comment-form) { color:var(--yz-text) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-reader-route :is(.yz-reader-sheet2, .kv-chapter-comment-form) { background-color:var(--yz-surface-1) !important; border-color:var(--yz-border) !important; }
+    html:is([data-theme], [data-resolved-theme]) body.kv-public-route :is(.lucide-star.lucide-star, svg[data-rating-star][data-rating-star]) { color:#FBBF24 !important; stroke:#FBBF24 !important; fill:#FBBF24 !important; }
+    html:is([data-theme], [data-resolved-theme]) body.kv-public-route svg[data-rating-star][data-rating-fill="empty"][data-rating-fill="empty"],
+    html:is([data-theme], [data-resolved-theme]) body.kv-public-route svg[data-rating-star][data-rating-fill="idle"][data-rating-fill="idle"] { color:#71717A !important; stroke:#71717A !important; fill:transparent !important; }
+    html:is([data-theme], [data-resolved-theme]) body.kv-public-route [data-action="set-my-rating"]:hover svg[data-rating-star][data-rating-fill="idle"] { color:#FBBF24 !important; stroke:#FBBF24 !important; fill:transparent !important; }
+    html:is([data-theme], [data-resolved-theme]) body.kv-public-route [data-rating-wrap][data-rating-wrap] { color:#FBBF24 !important; }
+    html:is([data-theme], [data-resolved-theme]) body.kv-public-route [data-header-avatar="true"][data-header-avatar] { background:#FFFFFF !important; background-color:#FFFFFF !important; border-color:rgba(255,255,255,.15) !important; color:#000000 !important; }
+    html:is([data-theme], [data-resolved-theme]) body.kv-public-route [data-header-avatar="true"][data-header-avatar] img { background:#FFFFFF !important; }
+    html:is([data-theme], [data-resolved-theme]) body.kv-public-route [data-header-avatar="true"][data-header-avatar]:hover { background:#F4F4F5 !important; background-color:#F4F4F5 !important; color:#000000 !important; }
+    .yz-chapter-section { margin-top:32px; padding-top:24px; border-top:1px solid var(--yz-border); font-family:inherit; }
+    .yz-chapter-panel { overflow:hidden; border:1px solid var(--yz-border); border-radius:18px; background:var(--yz-surface-1); box-shadow:0 18px 44px -34px rgba(0,0,0,.85); }
+    .yz-chapter-toolbar { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; padding:16px 18px; border-bottom:1px solid var(--yz-border); background:var(--yz-surface-2); }
+    .yz-chapter-heading { display:flex; align-items:center; gap:10px; min-width:0; }
+    .yz-chapter-heading-icon { flex:0 0 auto; width:34px; height:34px; border-radius:11px; display:grid; place-items:center; background:var(--yz-surface-1); border:1px solid var(--yz-border); color:var(--yz-accent); }
+    .yz-chapter-title { margin:0; font-size:.9rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--yz-text); }
+    .yz-chapter-sub { display:block; margin-top:2px; font-size:.68rem; color:var(--yz-text-tertiary); }
+    .yz-chapter-count { display:inline-flex; align-items:center; padding:3px 9px; border-radius:999px; border:1px solid var(--yz-border); background:var(--yz-surface-1); color:var(--yz-text-secondary); font-size:.68rem; font-weight:700; white-space:nowrap; }
+    .yz-chapter-sort { display:flex; align-items:center; gap:2px; padding:3px; border-radius:11px; border:1px solid var(--yz-border); background:var(--yz-surface-1); }
+    .yz-chapter-sort-btn { display:inline-flex; align-items:center; gap:5px; padding:6px 10px; border:0; border-radius:8px; background:transparent; color:var(--yz-text-tertiary); font-family:inherit; font-size:.68rem; font-weight:800; letter-spacing:.06em; cursor:pointer; transition:background-color .15s ease,color .15s ease; }
+    .yz-chapter-sort-btn:hover { color:var(--yz-text); background:var(--yz-surface-2); }
+    .yz-chapter-sort-btn.active { background:var(--yz-accent); color:var(--primary-foreground); }
+    .yz-chapter-search-wrap { padding:14px 18px 4px; }
+    .yz-chapter-search-box { position:relative; }
+    .yz-chapter-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--yz-text-tertiary); pointer-events:none; }
+    .yz-chapter-search { width:100%; height:40px; border:1px solid var(--yz-border); border-radius:12px; background:var(--yz-surface-1); color:var(--yz-text); padding:0 14px 0 38px; font-family:inherit; font-size:.75rem; outline:none; transition:border-color .15s ease,box-shadow .15s ease; }
+    .yz-chapter-search:focus { border-color:var(--yz-accent); box-shadow:0 0 0 3px var(--yz-accent-subtle); }
+    .yz-chapter-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; padding:14px 18px 18px; }
+    .yz-chapter-item { display:flex; align-items:center; gap:12px; min-width:0; padding:12px; border:1px solid var(--yz-border); border-radius:14px; background:var(--yz-surface-1); color:var(--yz-text); text-decoration:none; transition:border-color .16s ease,background-color .16s ease,transform .16s ease; }
+    .yz-chapter-item:hover { border-color:var(--yz-accent); background:var(--yz-surface-2); transform:translateY(-1px); }
+    .yz-chapter-num { flex:0 0 auto; min-width:42px; height:36px; padding:0 8px; border-radius:10px; display:grid; place-items:center; background:var(--yz-surface-2); border:1px solid var(--yz-border); color:var(--yz-accent); font-family:var(--kv-font-mono, monospace); font-size:.72rem; font-weight:800; }
+    .yz-chapter-info { min-width:0; flex:1; }
+    .yz-chapter-name { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.78rem; font-weight:700; color:var(--yz-text); }
+    .yz-chapter-meta { display:flex; align-items:center; gap:6px; margin-top:4px; font-size:.66rem; color:var(--yz-text-tertiary); }
+    .yz-chapter-group { display:inline-flex; align-items:center; gap:4px; padding:2px 7px; border-radius:999px; border:1px solid var(--yz-border); background:var(--yz-surface-2); color:var(--yz-text-secondary); font-weight:600; }
+    .yz-chapter-arrow { flex:0 0 auto; color:var(--yz-text-tertiary); transition:color .16s ease,transform .16s ease; }
+    .yz-chapter-item:hover .yz-chapter-arrow { color:var(--yz-accent); transform:translateX(2px); }
+    .yz-chapter-empty { grid-column:1/-1; padding:28px 12px; text-align:center; font-size:.75rem; color:var(--yz-text-tertiary); }
+    @media (max-width:640px) { .yz-chapter-list { grid-template-columns:1fr; } }
     @media (hover: none), (pointer: coarse) {
       [class*="hover:scale-"]:hover:not(:active),
       [class*="hover:-translate-"]:hover:not(:active),
@@ -5551,7 +5588,7 @@ function trackPageview() {
         var unread = state.user && typeof getUnreadNotificationCount === 'function' ? getUnreadNotificationCount() : 0;
         var bell = state.user ? '<a href="' + publicHref('/notifikasi') + '" aria-label="Notifikasi" class="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-zinc-300 transition hover:bg-white/15 hover:text-white">' + yzIco('bell', 'h-4 w-4') + (unread ? '<span class="absolute -right-1 -top-1 min-w-[16px] rounded-full bg-[var(--color-accent)] px-1 text-center text-[9px] font-bold leading-4 text-black">' + (unread > 9 ? '9+' : unread) + '</span>' : '') + '</a>' : '';
         var account = state.user
-          ? '<a href="' + publicHref('/akun') + '" aria-label="Akun" class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white text-xs font-black text-black">' + (currentDisplayAvatar() ? '<img src="' + escapeHtml(currentDisplayAvatar()) + '" alt="" class="h-full w-full object-cover"/>' : '<span>' + escapeHtml(String(currentDisplayName()).charAt(0).toUpperCase()) + '</span>') + '</a>'
+          ? '<a href="' + publicHref('/akun') + '" aria-label="Akun" data-header-avatar="true" class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white text-xs font-black text-black">' + (currentDisplayAvatar() ? '<img src="' + escapeHtml(currentDisplayAvatar()) + '" alt="" class="h-full w-full object-cover"/>' : '<span>' + escapeHtml(String(currentDisplayName()).charAt(0).toUpperCase()) + '</span>') + '</a>'
           : '<a href="' + publicHref('/akun') + '" class="inline-flex h-8 items-center rounded-full bg-white px-4 text-xs font-bold text-black hover:bg-zinc-200">Masuk</a>';
         var searchButton = '<button type="button" data-action="toggle-header-search" aria-label="Search" aria-expanded="' + (searchOpen ? 'true' : 'false') + '" class="ml-auto flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-zinc-300 transition hover:bg-white/15 hover:text-white pointer-events-auto">' + yzIco('search', 'h-4 w-4') + '</button>';
         var desktopHeader = '<header class="hidden md:grid fixed top-0 right-0 z-40 h-16 pointer-events-none grid-cols-[1fr_auto_1fr] items-center px-4 lg:px-6 transition-[left] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-visible bg-transparent border-b border-transparent backdrop-blur-none will-change-[left]" style="left: ' + (expanded ? '220px' : '60px') + ';">' +
@@ -6025,15 +6062,15 @@ function renderCommentSection(manga, chapterId) {
         if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
         return String(n);
       }
-      function starSvg(cls) {
-        return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star ' + cls + '" aria-hidden="true"><path d="' + 'm12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z' + '"/></svg>';
+      function starSvg(cls, fillState) {
+        return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star ' + cls + '" data-rating-star="true" data-rating-fill="' + (fillState || 'filled') + '" aria-hidden="true"><path d="' + 'm12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z' + '"/></svg>';
       }
       function stars(rating) {
         var r = Math.max(0, Math.min(10, Number(rating) || 0));
-        var out = '<div class="flex items-center gap-0.5 text-amber-400" title="Average Rating: ' + r.toFixed(1) + ' / 10">';
+        var out = '<div class="flex items-center gap-0.5 text-amber-400" data-rating-wrap="true" title="Average Rating: ' + r.toFixed(1) + ' / 10">';
         for (var i = 1; i <= 5; i++) {
           var fill = Math.max(0, Math.min(100, Math.round(((r - (i - 1) * 2) / 2) * 100)));
-          out += '<div class="relative h-4 w-4 sm:h-4.5 sm:w-4.5 shrink-0">' + starSvg('absolute inset-0 h-full w-full text-amber-400/50 stroke-amber-400 fill-transparent') + (fill > 0 ? '<div class="absolute inset-0 overflow-hidden" style="width: ' + fill + '%;"><div class="absolute inset-0">' + starSvg('h-4 w-4 sm:h-4.5 sm:w-4.5 text-amber-400 fill-amber-400') + '</div></div>' : '') + '</div>';
+          out += '<div class="relative h-4 w-4 sm:h-4.5 sm:w-4.5 shrink-0">' + starSvg('absolute inset-0 h-full w-full text-amber-400/50 stroke-amber-400 fill-transparent', 'empty') + (fill > 0 ? '<div class="absolute inset-0 overflow-hidden" style="width: ' + fill + '%;"><div class="absolute inset-0">' + starSvg('h-4 w-4 sm:h-4.5 sm:w-4.5 text-amber-400 fill-amber-400', 'filled') + '</div></div>' : '') + '</div>';
         }
         return out + '</div>';
       }
@@ -6058,7 +6095,6 @@ function renderCommentSection(manga, chapterId) {
       var releaseYear = manga.releaseYear ? String(manga.releaseYear) : '';
       var followers = compact(manga.followers || manga.views || 0);
       var ratingCount = Number(manga.ratingCount || manga.reviewCount || 0);
-      var myRating = Number((state.myRatings || {})[manga.id] || 0);
       var genres = manga.genres || [];
       var adult = isAdult(manga);
       var blurred = !!state.yzBlurSafe && adult;
@@ -6088,7 +6124,6 @@ function renderCommentSection(manga, chapterId) {
 
       var titleRow = '<div class="space-y-1.5"><div class="flex items-start gap-2.5 flex-wrap"><div class="group flex items-start gap-2 cursor-pointer select-none flex-wrap" title="Tap / click to copy manga title" role="button" tabindex="0"><h1 class="max-w-full break-words text-xl font-black tracking-tight text-white sm:text-2xl lg:text-3xl leading-tight group-hover:text-zinc-200 active:text-zinc-300 transition-colors">' + escapeHtml(yzTitle(manga)) + '</h1><button type="button" data-action="share-manga" class="mt-0.5 flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-800/80 bg-zinc-950/80 text-zinc-400 opacity-70 group-hover:opacity-100 hover:text-white hover:border-zinc-700 transition-all cursor-pointer shadow-sm active:scale-90" title="Copy manga title">' + copyIcon() + '</button></div></div></div>';
       var leftColumn = '<div class="flex flex-col gap-4">' + posterFrame + titleRow + detailMeta + '</div>';
-      var ratingRow = '<div class="flex items-center py-1 text-xs sm:text-sm"><button type="button" data-action="set-my-rating" data-id="' + escapeHtml(manga.id) + '" class="group flex items-center gap-1.5 font-semibold transition-all hover:text-white cursor-pointer select-none" aria-label="Set your personal rating"><span class="text-zinc-400 group-hover:text-zinc-300">Your rating:</span>' + starSvg('h-4 w-4 ' + (myRating ? 'text-amber-400 fill-amber-400' : 'text-zinc-500 group-hover:text-amber-400 transition-colors')) + (myRating ? '<span class="font-bold text-white">' + myRating + '/10</span>' : '') + '</button></div>';
       var readHref = startChapter ? publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(startChapter.id)) : publicHref('/archive');
       var actions = '<div class="flex flex-wrap items-center gap-3 pt-1"><a href="' + readHref + '" data-action="open-reader" data-slug="' + escapeHtml(manga.slug) + '" data-cid="' + escapeHtml(startChapter ? startChapter.id : '') + '" class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-xs font-bold text-black hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl cursor-pointer font-sans">' + yzIco('book', 'h-4 w-4 fill-current') + '<span>Start Reading (Ch. ' + escapeHtml(startChapter ? startChapter.number : 1) + ')</span></a><button type="button" data-action="toggle-bookmark" data-id="' + escapeHtml(manga.id) + '" class="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-3 text-xs font-bold text-zinc-200 shadow-md transition-all hover:bg-zinc-850 hover:border-zinc-700 cursor-pointer">' + yzIco('book', 'h-4 w-4 text-zinc-400') + '<span>' + (isBookmarked ? 'Added to Readlist' : 'Add to Readlist') + '</span>' + chevronDownIcon() + '</button></div>';
       var synopsisExpanded = !!state.synopsisExpanded;
@@ -6097,13 +6132,35 @@ function renderCommentSection(manga, chapterId) {
       var chapterQuery = String(state.chapterSearch || '').toLowerCase();
       var shown = chapters.filter(function (c) { return !chapterQuery || (String(c.number) + ' ' + (c.title || '')).toLowerCase().indexOf(chapterQuery) !== -1; });
       var ascActive = !!state.chapterSortAsc;
-      var sortControl = '<div class="flex items-center rounded-lg bg-zinc-900 border border-zinc-800 p-0.5"><button type="button" data-action="toggle-ch-sort" class="px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center gap-1 ' + (ascActive ? 'bg-white text-black font-bold shadow-sm' : 'text-zinc-400 hover:text-white') + '" title="Ascending Order (1 → End)">' + arrowIcon('up') + '<span>ASC</span></button><button type="button" data-action="toggle-ch-sort" class="px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center gap-1 ' + (ascActive ? 'text-zinc-400 hover:text-white' : 'bg-white text-black font-bold shadow-sm') + '" title="Descending Order (End → 1)">' + arrowIcon('down') + '<span>DSC</span></button></div>';
+      var sortControl = '<div class="yz-chapter-sort" role="group" aria-label="Urutan chapter">' +
+        '<button type="button" data-action="toggle-ch-sort" class="yz-chapter-sort-btn' + (ascActive ? ' active' : '') + '" aria-pressed="' + (ascActive ? 'true' : 'false') + '" title="Ascending Order (1 → End)">' + arrowIcon('up') + '<span>ASC</span></button>' +
+        '<button type="button" data-action="toggle-ch-sort" class="yz-chapter-sort-btn' + (ascActive ? '' : ' active') + '" aria-pressed="' + (ascActive ? 'false' : 'true') + '" title="Descending Order (End → 1)">' + arrowIcon('down') + '<span>DSC</span></button>' +
+      '</div>';
       var chapterHtml = shown.map(function (c) {
         var href = publicHref('/baca/' + escapeHtml(manga.slug) + '/' + escapeHtml(c.id));
-        return '<a href="' + href + '" data-action="open-reader" data-slug="' + escapeHtml(manga.slug) + '" data-cid="' + escapeHtml(c.id) + '" class="group flex items-center justify-between rounded-xl border px-3.5 py-3 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md border-zinc-900/80 bg-zinc-950/40 hover:bg-zinc-900/60 hover:border-zinc-750"><div class="flex items-center gap-3 min-w-0"><span class="text-xs font-bold rounded-lg px-2.5 py-1.5 shrink-0 transition-colors font-mono text-zinc-400 bg-zinc-900 group-hover:text-white group-hover:bg-zinc-800 border border-zinc-800/80">' + escapeHtml(c.number) + '</span><div class="min-w-0"><div class="flex items-center gap-2"><h4 class="line-clamp-1 text-xs font-semibold transition-colors text-zinc-200 group-hover:text-white">Chapter ' + escapeHtml(c.number) + (c.title ? ': ' + escapeHtml(c.title) : '') + '</h4></div><div class="flex items-center gap-2 mt-1 flex-wrap"><span class="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-400 bg-zinc-900/90 border border-zinc-800/60 px-1.5 py-0.5 rounded group-hover:text-zinc-300">' + yzIco('users', 'h-2.5 w-2.5 text-zinc-500') + '<span class="truncate max-w-[130px]">Community</span></span></div></div></div>' + yzIco('chevron', 'h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0 ml-2') + '</a>';
-      }).join('') || '<p class="py-8 text-center text-xs text-zinc-500">Tidak ada chapter yang cocok.</p>';
-      var chaptersSection = '<div class="space-y-4 border-t border-zinc-900 pt-8 font-sans"><div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-900 pb-4 gap-3"><div class="flex items-center gap-2.5 flex-wrap"><h3 class="text-sm font-bold uppercase tracking-wider text-white">Chapters</h3><span class="text-[11px] text-zinc-300 font-bold px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800">' + allChapters.length + ' Chapters</span></div><div class="flex items-center gap-2 flex-wrap">' + sortControl + '</div></div><div class="pt-4"><div class="relative">' + yzIco('search', 'lucide-search pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500') + '<input id="chapter-search" name="chapter_search" type="search" value="' + escapeHtml(state.chapterSearch || '') + '" placeholder="Search chapters by number, title, or translation group..." maxlength="120" class="w-full rounded-xl border border-zinc-900 bg-zinc-950/60 py-2.5 pl-10 pr-9 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-zinc-700 backdrop-blur-md transition-colors"/></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" data-sveltekit-preload-data="tap">' + chapterHtml + '</div></div>';
-      var rightColumn = '<div class="flex flex-col gap-8 min-w-0"><div class="space-y-4">' + ratingRow + actions + synopsis + chaptersSection + '</div></div>';
+        return '<a href="' + href + '" data-action="open-reader" data-slug="' + escapeHtml(manga.slug) + '" data-cid="' + escapeHtml(c.id) + '" class="yz-chapter-item">' +
+          '<span class="yz-chapter-num">' + escapeHtml(c.number) + '</span>' +
+          '<span class="yz-chapter-info">' +
+            '<span class="yz-chapter-name">Chapter ' + escapeHtml(c.number) + (c.title ? ': ' + escapeHtml(c.title) : '') + '</span>' +
+            '<span class="yz-chapter-meta"><span class="yz-chapter-group">' + yzIco('users', 'h-2.5 w-2.5') + '<span>Community</span></span></span>' +
+          '</span>' +
+          yzIco('chevron', 'h-4 w-4 yz-chapter-arrow') +
+        '</a>';
+      }).join('') || '<div class="yz-chapter-empty">Tidak ada chapter yang cocok.</div>';
+      var chaptersSection = '<section class="yz-chapter-section" aria-labelledby="yz-chapter-title">' +
+        '<div class="yz-chapter-panel">' +
+          '<div class="yz-chapter-toolbar">' +
+            '<div class="yz-chapter-heading">' +
+              '<span class="yz-chapter-heading-icon">' + yzIco('book', 'h-4 w-4') + '</span>' +
+              '<div><h3 id="yz-chapter-title" class="yz-chapter-title">Chapters</h3><span class="yz-chapter-sub">Pilih chapter untuk mulai membaca</span></div>' +
+              '<span class="yz-chapter-count">' + allChapters.length + ' Chapters</span>' +
+            '</div>' + sortControl +
+          '</div>' +
+          '<div class="yz-chapter-search-wrap"><div class="yz-chapter-search-box">' + yzIco('search', 'h-3.5 w-3.5 yz-chapter-search-icon') + '<input id="chapter-search" name="chapter_search" type="search" value="' + escapeHtml(state.chapterSearch || '') + '" placeholder="Cari chapter berdasarkan nomor, judul, atau grup..." maxlength="120" class="yz-chapter-search" aria-label="Cari chapter"/></div></div>' +
+          '<div class="yz-chapter-list" data-sveltekit-preload-data="tap">' + chapterHtml + '</div>' +
+        '</div>' +
+      '</section>';
+      var rightColumn = '<div class="flex flex-col gap-8 min-w-0"><div class="space-y-4">' + actions + synopsis + chaptersSection + '</div></div>';
 
       var discussionsBody = state.user
         ? renderCommentSection(manga, null)
