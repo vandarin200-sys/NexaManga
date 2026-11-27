@@ -1488,8 +1488,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .yz-reader-stack { width:100%; max-width:var(--yz-reader-width,100%); margin:0 auto; display:flex; flex-direction:column; gap:0; }
       body.kv-reader-route .yz-page-shell { position:relative; margin:0; min-height:0; border-radius:0; overflow:hidden; background:var(--kv-reader-bg); display:flex; align-items:center; justify-content:center; animation:yzPageIn var(--dur-slow) var(--ease-out) both; }
       body.kv-reader-route .yz-page-shell img, body.kv-reader-route .yz-page-img { display:block; width:100%; height:auto; max-width:none; margin:0; padding:0; border-radius:0; object-fit:contain; background:var(--kv-reader-bg); user-select:auto; pointer-events:auto; -webkit-touch-callout:default; }
-      body.kv-reader-route .yz-page-badge { position:absolute; right:10px; bottom:10px; padding:4px 8px; border-radius:0; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.72); color:#d4d4d8; font-size:10px; font-weight:700; opacity:0; transition:opacity .2s ease; }
-      body.kv-reader-route .yz-page-shell:hover .yz-page-badge { opacity:1; }
       body.kv-reader-route .yz-reader-empty { min-height:300px; display:grid; place-items:center; padding:28px; text-align:center; color:#a1a1aa; }
       body.kv-reader-route .yz-reader-footer { position:fixed; inset:auto 0 0; z-index:80; height:auto; padding:0 12px calc(12px + env(safe-area-inset-bottom,0px)); border:0; background:transparent; backdrop-filter:none; }
       body.kv-reader-route .yz-reader-header, body.kv-reader-route .yz-reader-footer { transition:opacity .2s ease, transform .2s ease; }
@@ -2907,11 +2905,11 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       html[data-theme="anilist"] {
         --background: #0B1622 !important; --foreground: #EDF1F5 !important;
         --card: #151F2E !important; --card-foreground: #EDF1F5 !important;
-        --primary: #3DB4F2 !important; --primary-foreground: #0B1622 !important;
+        --primary: var(--yz-accent) !important; --primary-foreground: #0B1622 !important;
         --secondary: #1B2636 !important; --muted: #1B2636 !important;
         --muted-foreground: #9FADBD !important; --border: #2B3A4A !important;
-        --accent: #3DB4F2 !important; --accent-foreground: #0B1622 !important;
-        --input: #111B29 !important; --ring: #3DB4F2 !important;
+        --accent: var(--yz-accent) !important; --accent-foreground: #0B1622 !important;
+        --input: #111B29 !important; --ring: var(--yz-accent) !important;
         --kv-success: #4CCA51 !important; --kv-warning: #E5A00D !important; --kv-danger: #E85D75 !important;
         color-scheme: dark;
       }
@@ -3646,7 +3644,6 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-reader-chapter-list2 a:hover { background: var(--yz-surface-2) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-comment-action { color: var(--yz-text-muted) !important; }
     html[data-resolved-theme="light"] body.kv-reader-route .yz-comment-action:hover { background: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
-    html[data-resolved-theme="light"] body.kv-reader-route .yz-page-badge { background: rgba(255, 252, 246, .9) !important; border-color: var(--yz-border) !important; color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-public-route :is(.text-white, .text-zinc-100, .text-zinc-200, [class~="text-[#f0f0f5]"]) { color: var(--yz-text) !important; }
     html[data-resolved-theme="light"] body.kv-public-route :is(.text-zinc-300, .text-zinc-350, .text-zinc-400, .text-zinc-500, .text-zinc-600, .text-zinc-750) { color: var(--yz-text-muted) !important; }
     html[data-resolved-theme="light"] body.kv-public-route [class~="placeholder:text-zinc-500"]::placeholder,
@@ -3723,7 +3720,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-theme="anilist"] body.kv-public-route { background: var(--background) !important; color: var(--foreground) !important; }
     html[data-theme="anilist"] body.kv-public-route :is(.yz-header, .yz-bottom-nav, .yz-footer, .kv-public-bottom-nav) { background: #152232 !important; border-color: var(--border) !important; }
     html[data-theme="anilist"] body.kv-public-route :is(.yz-bottom-item, .kv-public-bottom-item, .yz-footer a, .yz-nav-btn, .yz-icon-btn, .yz-search input) { color: var(--muted-foreground) !important; }
-    html[data-theme="anilist"] body.kv-public-route :is(.yz-bottom-item.is-active, .kv-public-bottom-item.active, .yz-nav-btn:hover, .yz-icon-btn:hover, .yz-footer a:hover) { color: var(--primary) !important; background: rgba(61,180,242,.12) !important; }
+    html[data-theme="anilist"] body.kv-public-route :is(.yz-bottom-item.is-active, .kv-public-bottom-item.active, .yz-nav-btn:hover, .yz-icon-btn:hover, .yz-footer a:hover) { color: var(--primary) !important; background: var(--yz-accent-subtle) !important; }
     html[data-theme="anilist"] body.kv-public-route :is(.kv-detail-hero, #manga-library-catalog, [data-settings-root] .rounded-2xl.border) { background-color: var(--card) !important; border-color: var(--border) !important; color: var(--foreground) !important; }
     html[data-theme="anilist"] body.kv-public-route :is([data-settings-root] input, [data-settings-root] textarea, [data-settings-root] select) { background-color: var(--input) !important; color: var(--foreground) !important; border-color: var(--border) !important; }
     html[data-theme="anilist"] body.kv-account-route [data-account-name],
@@ -3788,7 +3785,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] [data-action="hero-dot"][style*="background-color:"] { background-color:var(--primary) !important; }
     html[data-theme="anilist"] body.kv-home-route [data-hero-carousel] .yz-hero-thumb[data-center="true"] { border-color:var(--primary) !important; --tw-ring-color:color-mix(in srgb,var(--primary) 35%,transparent) !important; }
     html[data-theme="anilist"] body.kv-public-route,
-    html[data-theme="anilist"] body.kv-reader-route { --yz-bg:#0B1622; --yz-surface-0:#0B1622; --yz-surface-1:#151F2E; --yz-surface-2:#1B2636; --yz-surface-3:#233247; --yz-border:rgba(159,173,189,.18); --yz-text:#EDF1F5; --yz-text-secondary:#C9D7E3; --yz-text-tertiary:#9FADBD; --yz-accent:#3DB4F2; --yz-accent-hover:#5CC4F7; --yz-accent-rgb:61,180,242; --yz-accent-subtle:rgba(61,180,242,.14); background:var(--yz-bg) !important; color:var(--yz-text) !important; }
+    html[data-theme="anilist"] body.kv-reader-route { --yz-bg:#0B1622; --yz-surface-0:#0B1622; --yz-surface-1:#151F2E; --yz-surface-2:#1B2636; --yz-surface-3:#233247; --yz-border:rgba(159,173,189,.18); --yz-text:#EDF1F5; --yz-text-secondary:#C9D7E3; --yz-text-tertiary:#9FADBD; background:var(--yz-bg) !important; color:var(--yz-text) !important; }
     html[data-theme="anilist"] body.kv-public-route :is(.yz-desktop-rail, .yz-rail-inner, .kv-public-bottom-nav),
     html[data-theme="anilist"] body.kv-public-route header nav { background-color:var(--yz-surface-1) !important; border-color:var(--yz-border) !important; }
     html[data-theme="anilist"] body.kv-public-route .kv-public-bottom-nav { box-shadow:0 12px 32px -22px rgba(0,0,0,.8) !important; }
@@ -6060,10 +6057,10 @@ function renderCommentSection(manga, chapterId) {
           start = Math.max(0, pageTotal - state.currentPageIdx - count);
         }
         for (var pIdx = start; pIdx < Math.min(pageTotal, start + count); pIdx++) {
-          pagesHtml += renderReaderPage(pages[pIdx], manga.title, chapter.number, pIdx + 1, pageTotal, true, pageWidth);
+          pagesHtml += renderReaderPage(pages[pIdx], manga.title, chapter.number, pIdx + 1, true, pageWidth);
         }
       } else {
-        pagesHtml = pages.map(function (p, index) { return renderReaderPage(p, manga.title, chapter.number, index + 1, pageTotal, index < 3, pageWidth); }).join('');
+        pagesHtml = pages.map(function (p, index) { return renderReaderPage(p, manga.title, chapter.number, index + 1, index < 3, pageWidth); }).join('');
       }
       if (!pagesHtml) {
         pagesHtml = '<div class="yz-reader-empty"><div><strong class="block text-sm text-white">Belum ada halaman</strong><small class="mt-1 block text-xs text-zinc-500">Chapter ini belum memiliki halaman.</small></div></div>';
@@ -6124,13 +6121,13 @@ function renderCommentSection(manga, chapterId) {
       '</div>';
     }
 
-    function renderReaderPage(p, title, chNum, pageIndex, pageTotal, eager, width) {
+    function renderReaderPage(p, title, chNum, pageIndex, eager, width) {
       var mediaUrl = yzReaderMediaUrl(p);
       var shellClass = 'yz-page-shell manga-page w-full' + (state.readerDir === 'rtl' ? ' rtl' : '');
       if (!mediaUrl) {
         return '<div class="' + shellClass + ' yz-reader-empty"><div><strong class="block text-sm text-white">Halaman ' + pageIndex + ' belum tersedia</strong><small class="mt-1 block text-xs text-zinc-500">Halaman ini belum memiliki URL media di database.</small></div></div>';
       }
-      return '<figure class="' + shellClass + '" data-page-index="' + pageIndex + '" style="max-width:100%"><div class="manga-page-wrapper flex h-full w-full items-center justify-center"><img class="yz-page-img manga-page-img" src="' + escapeHtml(mediaUrl) + '" alt="' + escapeHtml(title) + ' Chapter ' + escapeHtml(chNum) + ' Page ' + pageIndex + '" loading="' + (eager ? 'eager' : 'lazy') + '" decoding="async" fetchpriority="' + (eager ? 'high' : 'auto') + '" referrerpolicy="no-referrer"/></div><span class="yz-page-badge">Page ' + pageIndex + ' / ' + pageTotal + '</span></figure>';
+      return '<figure class="' + shellClass + '" data-page-index="' + pageIndex + '" style="max-width:100%"><div class="manga-page-wrapper flex h-full w-full items-center justify-center"><img class="yz-page-img manga-page-img" src="' + escapeHtml(mediaUrl) + '" alt="' + escapeHtml(title) + ' Chapter ' + escapeHtml(chNum) + ' Page ' + pageIndex + '" loading="' + (eager ? 'eager' : 'lazy') + '" decoding="async" fetchpriority="' + (eager ? 'high' : 'auto') + '" referrerpolicy="no-referrer"/></div></figure>';
     }
 
     function saveHistory(mangaId, chapterId, chapterNumber) {
