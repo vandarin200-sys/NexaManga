@@ -3748,7 +3748,7 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-home-route { background:var(--background) !important; color:var(--foreground) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-home-route .min-h-screen.bg-zinc-950 { background:var(--background) !important; color:var(--foreground) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-home-route [class*="text-white"] { color:var(--foreground) !important; }
-    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-home-route [class~="text-white/[0.04]"] { color:color-mix(in srgb,var(--foreground) 4%,transparent) !important; }
+    html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-home-route [data-hero-carousel] [class~="text-white/[0.04]"] { color:color-mix(in srgb,var(--foreground) 4%,transparent) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-home-route :is([class~="text-zinc-100"], [class~="text-zinc-200"]) { color:var(--foreground) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-home-route :is([class~="text-zinc-300"], [class~="text-zinc-300/85"], [class~="text-zinc-400"], [class~="text-zinc-500"], [class~="text-zinc-600"]) { color:var(--muted-foreground) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-home-route main [class~="text-red-300"],
