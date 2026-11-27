@@ -4148,30 +4148,54 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     .lb-tier-badge.lb-radiant { animation:lb-tier-rim 2.6s linear infinite; }
     @keyframes lb-tier-sweep { 0%,55% { transform:translateX(-110%); } 80%,100% { transform:translateX(110%); } }
     @keyframes lb-tier-rim { 0%,100% { box-shadow:0 0 8px rgba(255,255,255,.35),0 0 16px rgba(103,232,249,.25); } 50% { box-shadow:0 0 12px rgba(255,255,255,.65),0 0 26px rgba(244,114,182,.4); } }
-    .lb-root { background: var(--yz-bg); color: var(--yz-text); }
-    .lb-root :is(.text-white, .text-zinc-100, .text-zinc-200, .text-zinc-300, [class~="text-[#f0f0f5]"]) { color: var(--yz-text) !important; }
-    .lb-root :is(.text-zinc-400, .text-zinc-500, .text-zinc-600, .text-zinc-700) { color: var(--yz-text-tertiary) !important; }
-    .lb-surface { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; }
-    .lb-surface-2 { background-color: var(--yz-surface-2) !important; border-color: var(--yz-border) !important; }
-    .lb-ink { color: var(--yz-text) !important; }
-    .lb-muted { color: var(--yz-text-tertiary) !important; }
-    .lb-subtle { color: var(--yz-text-secondary) !important; }
-    .lb-accent { color: var(--yz-accent) !important; }
-    .lb-accent-bg { background-color: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; }
-    .lb-root .lb-tab, .lb-root .lb-range { color: var(--yz-text-secondary) !important; }
-    .lb-root .lb-tab:hover:not(.lb-tab-active), .lb-root .lb-range:hover:not(.lb-range-active) { background-color: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
-    .lb-root .lb-tab-active { background-color: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; box-shadow: none !important; }
-    .lb-root .lb-range-active { background-color: var(--yz-accent-subtle) !important; border-color: var(--yz-accent) !important; color: var(--yz-accent) !important; }
-    .lb-root .lb-card-hover:hover { border-color: var(--yz-accent) !important; }
-    .lb-root .lb-rank-row.is-me { background-color: var(--yz-accent-subtle) !important; }
-    .lb-root .lb-rank-row:hover { background-color: var(--yz-surface-2) !important; }
-    .lb-root .lb-podium { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; }
-    .lb-root .lb-podium[data-place="1"] { border-color: var(--yz-accent) !important; }
-    .lb-root .lb-podium-badge { background-color: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; }
-    .lb-root .lb-podium-glow { background-color: var(--yz-accent-subtle) !important; }
-    .lb-root .lb-overlay { background-image: linear-gradient(to top, var(--yz-surface-1) 0%, transparent 58%) !important; background-color: transparent !important; opacity: 1; }
-    .lb-root .lb-count { color: var(--yz-accent) !important; }
-    .lb-root .lb-progress-track { background-color: var(--yz-surface-3) !important; }
+    .lb-root {
+      --lb-accent: #5fd0be;
+      --lb-on: #06231f;
+      --lb-accent-subtle: rgba(95, 208, 190, .14);
+    }
+    html[data-resolved-theme="light"] body.kv-public-route .lb-root {
+      --lb-accent: #0b6f66;
+      --lb-on: #ffffff;
+      --lb-accent-subtle: rgba(11, 111, 102, .12);
+    }
+    .lb-root[data-lb-tab="comics"] {
+      --lb-accent: #ffb37a;
+      --lb-on: #2a1506;
+      --lb-accent-subtle: rgba(255, 179, 122, .14);
+    }
+    html[data-resolved-theme="light"] body.kv-public-route .lb-root[data-lb-tab="comics"] {
+      --lb-accent: #a9501c;
+      --lb-on: #ffffff;
+      --lb-accent-subtle: rgba(169, 80, 28, .12);
+    }
+    html body.kv-public-route .lb-root { background-color: var(--yz-bg) !important; color: var(--yz-text) !important; }
+    html body.kv-public-route .lb-root :is(.text-white, .text-zinc-100, .text-zinc-200, .text-zinc-300, [class~="text-[#f0f0f5]"]) { color: var(--yz-text) !important; }
+    html body.kv-public-route .lb-root :is(.text-zinc-400, .text-zinc-500, .text-zinc-600, .text-zinc-700) { color: var(--yz-text-tertiary) !important; }
+    html body.kv-public-route .lb-root :is([class~="border-white/[0.05]"], [class~="border-white/[0.07]"], [class~="border-white/[0.1]"]) { border-color: var(--yz-border) !important; }
+    html body.kv-public-route .lb-root .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: var(--yz-border) !important; }
+    html body.kv-public-route .lb-root [class~="ring-[#91b8b1]/50"] { --tw-ring-color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-surface { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; }
+    html body.kv-public-route .lb-root .lb-surface-2 { background-color: var(--yz-surface-2) !important; border-color: var(--yz-border) !important; }
+    html body.kv-public-route .lb-root .lb-ink { color: var(--yz-text) !important; }
+    html body.kv-public-route .lb-root .lb-muted { color: var(--yz-text-tertiary) !important; }
+    html body.kv-public-route .lb-root .lb-subtle { color: var(--yz-text-secondary) !important; }
+    html body.kv-public-route .lb-root .lb-accent { color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-accent-bg { background-color: var(--lb-accent) !important; border-color: var(--lb-accent) !important; color: var(--lb-on) !important; }
+    html body.kv-public-route .lb-root .lb-tab, html body.kv-public-route .lb-root .lb-range { color: var(--yz-text-secondary) !important; }
+    html body.kv-public-route .lb-root .lb-tab:hover:not(.lb-tab-active), html body.kv-public-route .lb-root .lb-range:hover:not(.lb-range-active) { background-color: var(--yz-surface-2) !important; color: var(--yz-text) !important; }
+    html body.kv-public-route .lb-root .lb-tab-active { background-color: var(--lb-accent) !important; border-color: var(--lb-accent) !important; color: var(--lb-on) !important; box-shadow: none !important; }
+    html body.kv-public-route .lb-root .lb-range-active { background-color: var(--lb-accent-subtle) !important; border-color: var(--lb-accent) !important; color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-card-hover:hover { border-color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-card-hover:hover .lb-surface { border-color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-rank-row.is-me { background-color: var(--lb-accent-subtle) !important; }
+    html body.kv-public-route .lb-root .lb-rank-row:hover { background-color: var(--yz-surface-2) !important; }
+    html body.kv-public-route .lb-root .lb-podium { background-color: var(--yz-surface-1) !important; border-color: var(--yz-border) !important; }
+    html body.kv-public-route .lb-root .lb-podium[data-place="1"] { border-color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-podium-badge { background-color: var(--lb-accent) !important; border-color: var(--lb-accent) !important; color: var(--lb-on) !important; }
+    html body.kv-public-route .lb-root .lb-podium-glow, html body.kv-public-route .lb-root .lb-ambient { background-color: var(--lb-accent-subtle) !important; }
+    html body.kv-public-route .lb-root .lb-overlay { background-image: linear-gradient(to top, var(--yz-surface-1) 0%, transparent 58%) !important; background-color: transparent !important; opacity: 1; }
+    html body.kv-public-route .lb-root .lb-count { color: var(--lb-accent) !important; }
+    html body.kv-public-route .lb-root .lb-progress-track { background-color: var(--yz-surface-3) !important; }
     @media (prefers-reduced-motion: reduce) { .lb-tier-badge.lb-shine:after, .lb-tier-badge.lb-radiant { animation:none; } }
 </style>
 </head>
@@ -9762,7 +9786,7 @@ function renderAdmin() {
         return '<a href="' + publicHref('/manga/' + encodeURIComponent(a.slug || a.manga_id)) + '" data-place="' + cfg.place + '" class="lb-podium lb-card-hover group relative flex flex-col rounded-3xl border transition-all duration-300 hover:-translate-y-1.5 cursor-pointer overflow-hidden ' + cfg.orderClass + ' ' + cfg.cardHeight + '">' +
           '<div class="lb-podium-glow pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-32 sm:w-44 h-32 sm:h-44 rounded-full blur-3xl"></div>' +
           '<div class="flex items-center justify-center mb-2 sm:mb-3 relative z-10"><div class="lb-surface-2 lb-accent inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border text-[9.5px] sm:text-xs font-black uppercase tracking-wider">' + lbIcon(cfg.icon, 'w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current') + '<span>' + cfg.label + '</span></div></div>' +
-          '<div class="relative aspect-[2/3] w-full rounded-xl sm:rounded-2xl overflow-hidden border lb-surface group-hover:border-[#91b8b1]/30 transition-all">' + lbPosterHtml(a, true) +
+          '<div class="relative aspect-[2/3] w-full rounded-xl sm:rounded-2xl overflow-hidden border lb-surface transition-all">' + lbPosterHtml(a, true) +
           '<div class="lb-overlay absolute inset-0 z-20 pointer-events-none"></div>' +
           '<div class="lb-podium-badge absolute top-2 left-2 z-20 px-2 sm:px-2.5 py-0.5 rounded-full border text-[10px] sm:text-xs font-black tabular-nums">#' + cfg.rank + '</div></div>' +
           '<div class="mt-2.5 sm:mt-3 text-center flex-1 flex flex-col justify-between"><h3 class="lb-ink text-xs sm:text-sm font-extrabold line-clamp-2 transition-colors leading-snug">' + title + '</h3>' +
@@ -9819,8 +9843,8 @@ function renderAdmin() {
         content = lbUserPodium(users.slice(0, 3)) +
           (users.length > 3 ? '<div class="lb-surface rounded-2xl sm:rounded-3xl border overflow-hidden divide-y divide-white/[0.05]">' + users.slice(3).map(lbUserRow).join('') + '</div>' : '');
       }
-      return '<main class="lb-root relative min-h-screen pb-24 sm:pb-16 overflow-x-clip">' +
-        '<div class="pointer-events-none absolute inset-x-0 top-0 h-[420px] overflow-hidden"><div class="lb-podium-glow absolute left-1/2 -top-44 -translate-x-1/2 w-[780px] h-[360px] rounded-full blur-[120px]"></div><div class="absolute left-1/2 -top-24 -translate-x-1/2 w-[420px] h-[220px] rounded-full bg-amber-400/[0.06] blur-[90px]"></div></div>' +
+      return '<main class="lb-root relative min-h-screen pb-24 sm:pb-16 overflow-x-clip" data-lb-tab="' + tab + '">' +
+        '<div class="pointer-events-none absolute inset-x-0 top-0 h-[420px] overflow-hidden"><div class="lb-podium-glow absolute left-1/2 -top-44 -translate-x-1/2 w-[780px] h-[360px] rounded-full blur-[120px]"></div><div class="absolute left-1/2 -top-24 -translate-x-1/2 w-[420px] h-[220px] rounded-full lb-ambient blur-[90px]"></div></div>' +
         '<div class="relative max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24">' +
         '<header class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 mb-7 sm:mb-9"><div class="space-y-2"><div class="lb-surface-2 lb-accent inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-semibold">' + lbIcon('crown', 'w-3.5 h-3.5') + '<span>Hall of Fame</span></div><h1 class="lb-ink text-2xl sm:text-4xl font-extrabold tracking-tight">' + escapeHtml(siteLabel()) + ' Rankings</h1><p class="lb-muted text-xs sm:text-sm max-w-lg leading-relaxed">Pembaca rajin menanjak lewat streak baca dan kontribusi komunitas, serta komik paling banyak dibaca pada periode ini.</p></div>' +
         '<div class="flex flex-col sm:flex-row sm:items-center gap-2.5"><div class="lb-surface inline-flex items-center p-1 rounded-2xl border">' +
