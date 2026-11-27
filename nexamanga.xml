@@ -1991,6 +1991,34 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
        .kv-admin-chapter-card-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
        .kv-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--kv-border); border-top-color: var(--kv-accent); border-radius: 50%; animation: kv-spin .7s linear infinite; }
        @keyframes kv-spin { to { transform: rotate(360deg); } }
+        .kv-boot { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; background: var(--kv-bg); color: var(--kv-text-muted); transition: opacity var(--dur-slow) var(--ease-out); }
+        .kv-boot.is-done { opacity: 0; pointer-events: none; }
+        .kv-boot__inner { display: grid; justify-items: center; gap: 16px; }
+        .kv-boot__stack { position: relative; width: 62px; height: 82px; opacity: 0; animation: kvBootReveal var(--dur-base) var(--ease-out) both; animation-delay: var(--dur-fast); }
+        .kv-boot__sheet { position: absolute; inset: 0; border: 1px solid var(--kv-border); border-radius: 8px; background: var(--kv-surface); box-shadow: 0 14px 30px -22px rgba(0, 0, 0, .55); }
+        .kv-boot__sheet::before, .kv-boot__sheet::after { content: ''; position: absolute; left: 11px; right: 11px; height: 4px; border-radius: 999px; background: var(--kv-border); opacity: .6; }
+        .kv-boot__sheet::before { top: 17px; }
+        .kv-boot__sheet::after { top: 29px; right: 22px; }
+        .kv-boot__sheet--back { animation: kvBootPageBack calc(var(--dur-slow) * 6) var(--ease-in-out) infinite; }
+        .kv-boot__sheet--mid { animation: kvBootPageMid calc(var(--dur-slow) * 6) var(--ease-in-out) infinite; animation-delay: calc(var(--dur-slow)); }
+        .kv-boot__sheet--front { overflow: hidden; animation: kvBootPageFront calc(var(--dur-slow) * 6) var(--ease-in-out) infinite; animation-delay: calc(var(--dur-slow) * 2); }
+        .kv-boot__ink { position: absolute; top: 0; bottom: 0; width: 42%; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kv-accent) 32%, transparent), transparent); animation: kvBootInk calc(var(--dur-slow) * 5) linear infinite; }
+        .kv-boot__label { font-family: var(--kv-font-mono); font-size: 10px; font-weight: 600; letter-spacing: .24em; opacity: 0; animation: kvBootLabel var(--dur-base) var(--ease-out) both; animation-delay: calc(var(--dur-fast) + 30ms); }
+        @keyframes kvBootReveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes kvBootPageBack { 0%, 100% { transform: translate(-6px, 6px) rotate(-6deg); opacity: .45; } 50% { transform: translate(-6px, 0) rotate(-3deg); opacity: .85; } }
+        @keyframes kvBootPageMid { 0%, 100% { transform: translate(0, 3px) rotate(-2deg); opacity: .65; } 50% { transform: translate(0, -2px) rotate(1deg); opacity: 1; } }
+        @keyframes kvBootPageFront { 0%, 100% { transform: translate(4px, 0) rotate(2deg); opacity: .9; } 50% { transform: translate(4px, -5px) rotate(4deg); opacity: 1; } }
+        @keyframes kvBootInk { from { transform: translateX(-120%); } to { transform: translateX(260%); } }
+        @keyframes kvBootLabel { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @media (prefers-reduced-motion: reduce) {
+          .kv-boot__stack, .kv-boot__label { animation-delay: 0ms; }
+          .kv-boot__sheet--back, .kv-boot__sheet--mid, .kv-boot__sheet--front { animation: none; }
+          .kv-boot__sheet--back { transform: translate(-6px, 6px) rotate(-6deg); opacity: .6; }
+          .kv-boot__sheet--mid { transform: translate(0, 3px) rotate(-2deg); opacity: .8; }
+          .kv-boot__sheet--front { transform: translate(4px, 0) rotate(2deg); opacity: 1; }
+          .kv-boot__ink { animation: none; opacity: .6; }
+        }
+
        .kv-upload-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; z-index: 9999; }
        .kv-upload-box { background: var(--kv-surface); border: 1px solid var(--kv-border); border-radius: 12px; padding: 24px 28px; min-width: 320px; max-width: 90vw; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,.4); }
        .kv-upload-title { font-weight: 700; font-size: 1.1rem; color: var(--kv-text); margin-bottom: 6px; }
@@ -3851,6 +3879,17 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
 <body>
   <!-- Root Container untuk Aplikasi SPA NexaManga di Blogger -->
   <div id='kv-app'/>
+  <div class='kv-boot' id='kv-boot' role='status' aria-live='polite' aria-label='Menyusun arsip'>
+    <div class='kv-boot__inner'>
+      <div class='kv-boot__stack' aria-hidden='true'>
+        <span class='kv-boot__sheet kv-boot__sheet--back'></span>
+        <span class='kv-boot__sheet kv-boot__sheet--mid'></span>
+        <span class='kv-boot__sheet kv-boot__sheet--front'><span class='kv-boot__ink'></span></span>
+      </div>
+      <div class='kv-boot__label'>MENYUSUN ARSIP</div>
+    </div>
+  </div>
+  <noscript><style type='text/css'>.kv-boot{display:none}</style></noscript>
 
   <script type='text/javascript'>
   //<![CDATA[
@@ -4118,9 +4157,10 @@ function yzSettingRead(key, fallback) {
 
         /* Data dimuat dari: backend API -> snapshot cache */
         data: readCachedCatalog(),
-       loading: false,
+       loading: true,
        error: null,
        sessionNotice: '',
+
        catalogNotice: '',
       search: '',
       filterGenres: [],
@@ -8760,6 +8800,19 @@ function renderAdmin() {
       '</main>';
     }
 
+      var bootDismissed = false;
+      function dismissBoot() {
+        if (bootDismissed || state.loading) return;
+        var boot = document.getElementById('kv-boot');
+        bootDismissed = true;
+        if (!boot) return;
+        var finish = function () { if (boot.parentNode) boot.parentNode.removeChild(boot); };
+        boot.addEventListener('transitionend', function (e) {
+          if (e.target === boot && e.propertyName === 'opacity') finish();
+        }, { once: true });
+        boot.classList.add('is-done');
+      }
+
       function render() {
         var app = document.getElementById('kv-app');
         if (!app) return;
@@ -8829,6 +8882,7 @@ function renderAdmin() {
         window.scrollTo(0, renderScrollY);
         bindEvents();
         state.heroAnimDir = '';
+        dismissBoot();
       }
 
 function setBannerDotsActive(index) {
