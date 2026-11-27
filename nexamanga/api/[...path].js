@@ -83,7 +83,20 @@ class HttpError extends Error {
 }
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
+const CHAPTER_DOWNLOAD_MAX_PAGES = 200;
+const CHAPTER_DOWNLOAD_MAX_BYTES = 80 * 1024 * 1024;
 const rateLimits = new Map();
+const CRC32_TABLE = (() => {
+  const table = new Uint32Array(256);
+  for (let index = 0; index < 256; index += 1) {
+    let value = index;
+    for (let bit = 0; bit < 8; bit += 1) {
+      value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+    }
+    table[index] = value >>> 0;
+  }
+  return table;
+})();
 
 function requestIp(req) {
   const forwarded = String(req.headers['x-forwarded-for'] || '');
@@ -601,6 +614,159 @@ function mediaFileId(value) {
   return match ? match[1] : '';
 }
 
+function crc32(bytes) {
+  let value = 0xffffffff;
+  for (const byte of bytes) {
+    value = CRC32_TABLE[(value ^ byte) & 0xff] ^ (value >>> 8);
+  }
+  return (value ^ 0xffffffff) >>> 0;
+}
+
+function zipTimestamps(date) {
+  const time = ((date.getHours() & 31) << 11) | ((date.getMinutes() & 63) << 5) | ((date.getSeconds() / 2) & 31);
+  const day = (((date.getFullYear() - 1980) & 127) << 9) | (((date.getMonth() + 1) & 15) << 5) | (date.getDate() & 31);
+  return { time: time & 0xffff, day: day & 0xffff };
+}
+
+function zipStore(files) {
+  const stamps = zipTimestamps(new Date());
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+  let centralSize = 0;
+  for (const file of files) {
+    const name = Buffer.from(file.name, 'utf8');
+    const data = file.data;
+    const checksum = crc32(data);
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(0, 6);
+    local.writeUInt16LE(0, 8);
+    local.writeUInt16LE(stamps.time, 10);
+    local.writeUInt16LE(stamps.day, 12);
+    local.writeUInt32LE(checksum, 14);
+    local.writeUInt32LE(data.length, 18);
+    local.writeUInt32LE(data.length, 22);
+    local.writeUInt16LE(name.length, 26);
+    local.writeUInt16LE(0, 28);
+    localParts.push(local, name, data);
+    const central = Buffer.alloc(46);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(20, 4);
+    central.writeUInt16LE(20, 6);
+    central.writeUInt16LE(0, 8);
+    central.writeUInt16LE(0, 10);
+    central.writeUInt16LE(stamps.time, 12);
+    central.writeUInt16LE(stamps.day, 14);
+    central.writeUInt32LE(checksum, 16);
+    central.writeUInt32LE(data.length, 20);
+    central.writeUInt32LE(data.length, 24);
+    central.writeUInt16LE(name.length, 28);
+    central.writeUInt16LE(0, 30);
+    central.writeUInt16LE(0, 32);
+    central.writeUInt16LE(0, 34);
+    central.writeUInt16LE(0, 36);
+    central.writeUInt32LE(0, 38);
+    central.writeUInt32LE(offset, 42);
+    centralParts.push(central, name);
+    offset += local.length + name.length + data.length;
+  }
+  for (const part of centralParts) centralSize += part.length;
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(0, 4);
+  end.writeUInt16LE(0, 6);
+  end.writeUInt16LE(files.length, 8);
+  end.writeUInt16LE(files.length, 10);
+  end.writeUInt32LE(centralSize, 12);
+  end.writeUInt32LE(offset, 16);
+  end.writeUInt16LE(0, 20);
+  return Buffer.concat([...localParts, ...centralParts, end]);
+}
+
+function chapterImageExtension(filePath, mimeType) {
+  const source = String(filePath || '');
+  const match = source.match(/\.([A-Za-z0-9]+)(?:[?#].*)?$/);
+  const extension = match ? match[1].toLowerCase() : '';
+  if (extension === 'jpeg') return '.jpg';
+  if (['jpg', 'png', 'webp', 'gif'].includes(extension)) return '.' + extension;
+  const mime = String(mimeType || '').toLowerCase();
+  if (mime.includes('png')) return '.png';
+  if (mime.includes('webp')) return '.webp';
+  if (mime.includes('gif')) return '.gif';
+  return '.jpg';
+}
+
+async function fetchChapterImageUrl(value) {
+  let parsed;
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new HttpError(422, 'URL gambar chapter tidak valid.');
+  }
+  if (parsed.protocol !== 'https:') throw new HttpError(422, 'URL gambar chapter harus HTTPS.');
+  const host = parsed.hostname.toLowerCase();
+  const allowed = host === 'blogger.googleusercontent.com' || host === 'lh3.googleusercontent.com' || host.endsWith('.blogspot.com');
+  if (!allowed) throw new HttpError(400, 'Host gambar chapter tidak diizinkan.');
+  const response = await fetch(parsed.href, { headers: { 'User-Agent': 'NexaManga/1.0' } });
+  if (!response.ok) throw new HttpError(502, 'Gagal mengambil gambar chapter.');
+  const length = Number(response.headers.get('content-length') || 0);
+  if (length > MAX_MEDIA_BYTES) throw new HttpError(413, 'Ukuran gambar chapter melebihi batas.');
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length > MAX_MEDIA_BYTES) throw new HttpError(413, 'Ukuran gambar chapter melebihi batas.');
+  return bytes;
+}
+
+async function chapterPageImage(page) {
+  const fileId = typeof page.telegramFileId === 'string' ? page.telegramFileId.trim() : '';
+  const bloggerUrl = typeof page.bloggerUrl === 'string' ? page.bloggerUrl.trim() : '';
+  const proxyId = mediaFileId(bloggerUrl);
+  if (fileId || proxyId) {
+    const media = await getMedia(fileId || proxyId);
+    return { bytes: media.bytes, filePath: media.filePath };
+  }
+  if (!bloggerUrl) throw new HttpError(422, 'Sebagian halaman tidak memiliki sumber gambar.');
+  return { bytes: await fetchChapterImageUrl(bloggerUrl), filePath: bloggerUrl };
+}
+
+function chapterDownloadName(manga, chapter) {
+  const title = String((manga && manga.title) || 'NexaManga')
+    .replace(/[^\w.-]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 60) || 'NexaManga';
+  const number = String((chapter && chapter.number) || '0').replace(/[^\w.-]+/g, '_');
+  return title + '_Ch' + number;
+}
+
+async function buildChapterDownload(chapter) {
+  const pages = Array.isArray(chapter.pages) ? chapter.pages : [];
+  if (!pages.length) throw new HttpError(404, 'Chapter ini belum memiliki halaman.');
+  if (pages.length > CHAPTER_DOWNLOAD_MAX_PAGES) throw new HttpError(413, 'Chapter terlalu banyak halaman untuk diunduh.');
+  const files = [];
+  let total = 0;
+  for (let index = 0; index < pages.length; index += 1) {
+    const page = pages[index];
+    if (!page || typeof page !== 'object') throw new HttpError(422, 'Data halaman chapter tidak valid.');
+    let image;
+    try {
+      image = await chapterPageImage(page);
+    } catch (error) {
+      if (error instanceof HttpError || error instanceof TelegramError) throw error;
+      throw new HttpError(502, 'Gagal menyiapkan gambar chapter.');
+    }
+    const mimeType = mediaContentType(image.filePath, image.bytes);
+    if (!mimeType) throw new HttpError(415, 'Format gambar chapter tidak didukung.');
+    total += image.bytes.length;
+    if (total > CHAPTER_DOWNLOAD_MAX_BYTES) throw new HttpError(413, 'Ukuran chapter terlalu besar untuk diunduh.');
+    files.push({
+      name: String(index + 1).padStart(3, '0') + chapterImageExtension(image.filePath, mimeType),
+      data: image.bytes
+    });
+  }
+  return zipStore(files);
+}
+
 const LANDING_HTML = '<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>NexaManga Vercel Backend</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:40px 20px;background:#0f172a;color:#e2e8f0}.card{max-width:640px;margin:0 auto;background:#1e293b;border-radius:12px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,.3)}h1{margin:0 0 8px;font-size:1.6rem}p{line-height:1.6;color:#cbd5e1}a{color:#38bdf8}code{background:#0f172a;padding:2px 6px;border-radius:4px}.status{display:inline-block;margin-top:16px;padding:8px 12px;background:#16a34a;color:#fff;border-radius:6px;text-decoration:none}</style></head><body><div class="card"><h1>NexaManga Vercel Backend</h1><p>Backend serverless untuk tema Blogger NexaManga. API tersedia di <code>/api/*</code>.</p><p>Periksa status layanan:</p><a class="status" href="/api/health">Cek Health</a></div></body></html>';
 
 async function handler(req, res) {
@@ -1051,6 +1217,27 @@ async function handler(req, res) {
       }, { pageviews: 0, visitors: 0, visits: 0 });
       const avg = totals.visits ? (totals.pageviews / totals.visits) : 0;
       return sendJson(res, 200, { from, to, totals: { pageviews: totals.pageviews, visitors: totals.visitors, visits: totals.visits, average: Number(avg.toFixed(1)) }, daily: rows });
+    }
+
+    if (route === 'chapter/download' && req.method === 'POST') {
+      enforceRateLimit(req, 'chapter-download', 12);
+      await requireAccount(req);
+      const body = await readBody(req);
+      const chapterId = typeof body.chapterId === 'string' ? body.chapterId.trim().slice(0, 100) : '';
+      const mangaId = typeof body.mangaId === 'string' ? body.mangaId.trim().slice(0, 100) : '';
+      if (!chapterId || !mangaId) throw new HttpError(400, 'Chapter tidak valid.');
+      const catalog = await readCatalog();
+      const manga = (catalog.manga || []).find((item) => item.id === mangaId);
+      const chapter = (catalog.chapters || []).find((item) => item.id === chapterId && item.mangaId === mangaId);
+      if (!chapter || !manga) throw new HttpError(404, 'Chapter tidak ditemukan.');
+      const archive = await buildChapterDownload(chapter);
+      const fileName = chapterDownloadName(manga, chapter) + '.cbz';
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+      res.setHeader('Content-Length', archive.length);
+      res.setHeader('Cache-Control', 'no-store');
+      return res.end(archive);
     }
 
     if (route === 'chapter/reaction' && req.method === 'POST') {
