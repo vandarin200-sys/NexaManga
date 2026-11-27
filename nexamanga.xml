@@ -14,7 +14,7 @@
   <meta content='Archive Manga' name='twitter:title'/>
   <meta content='Arsip manga berbahasa Indonesia.' name='twitter:description'/>
   <meta content='#F7F1E6' name='theme-color'/>
-  <script>(function(){try{var v=localStorage.getItem(&#39;kv_theme&#39;)||&#39;system&#39;;if(v===&#39;mecha&#39;){v=&#39;emerald&#39;;try{localStorage.setItem(&#39;kv_theme&#39;,v)}catch(e){}}var ids=[&#39;system&#39;,&#39;light&#39;,&#39;anilist&#39;,&#39;catppuccin&#39;,&#39;emerald&#39;,&#39;dark&#39;];if(ids.indexOf(v)&lt;0)v=&#39;system&#39;;var dark=v===&#39;dark&#39;||v===&#39;anilist&#39;||v===&#39;catppuccin&#39;||v===&#39;emerald&#39;||(v===&#39;system&#39;&amp;&amp;window.matchMedia&amp;&amp;window.matchMedia(&#39;(prefers-color-scheme: dark)&#39;).matches);var r=document.documentElement;r.classList.toggle(&#39;dark&#39;,dark);r.setAttribute(&#39;data-theme&#39;,v);r.setAttribute(&#39;data-resolved-theme&#39;,dark?&#39;dark&#39;:&#39;light&#39;);r.style.colorScheme=dark?&#39;dark&#39;:&#39;light&#39;;var c={light:&#39;#F7F1E6&#39;,dark:&#39;#0B0E17&#39;,anilist:&#39;#0B1622&#39;,catppuccin:&#39;#1E1E2E&#39;,emerald:&#39;#06110D&#39;};var m=document.querySelector(&#39;meta[name=&quot;theme-color&quot;]&#39;);if(m)m.setAttribute(&#39;content&#39;,v===&#39;system&#39;?(dark?&#39;#0B0E17&#39;:&#39;#F7F1E6&#39;):(c[v]||&#39;#F7F1E6&#39;));}catch(e){}})();</script>
+  <script>(function(){try{var v=localStorage.getItem(&#39;kv_theme&#39;)||&#39;system&#39;;if(v===&#39;mecha&#39;){v=&#39;emerald&#39;;try{localStorage.setItem(&#39;kv_theme&#39;,v)}catch(e){}}var ids=[&#39;system&#39;,&#39;light&#39;,&#39;anilist&#39;,&#39;catppuccin&#39;,&#39;emerald&#39;,&#39;dark&#39;];if(ids.indexOf(v)&lt;0)v=&#39;system&#39;;var dark=v===&#39;dark&#39;||v===&#39;anilist&#39;||v===&#39;catppuccin&#39;||v===&#39;emerald&#39;||(v===&#39;system&#39;&amp;&amp;window.matchMedia&amp;&amp;window.matchMedia(&#39;(prefers-color-scheme: dark)&#39;).matches);var r=document.documentElement;r.classList.toggle(&#39;dark&#39;,dark);r.setAttribute(&#39;data-theme&#39;,v);r.setAttribute(&#39;data-resolved-theme&#39;,dark?&#39;dark&#39;:&#39;light&#39;);r.style.colorScheme=dark?&#39;dark&#39;:&#39;light&#39;;var c={light:&#39;#F7F1E6&#39;,dark:&#39;#0B0E17&#39;,anilist:&#39;#0B1622&#39;,catppuccin:&#39;#1E1E2E&#39;,emerald:&#39;#07120E&#39;};var m=document.querySelector(&#39;meta[name=&quot;theme-color&quot;]&#39;);if(m)m.setAttribute(&#39;content&#39;,v===&#39;system&#39;?(dark?&#39;#0B0E17&#39;:&#39;#F7F1E6&#39;):(c[v]||&#39;#F7F1E6&#39;));}catch(e){}})();</script>
 
   <!-- =========================================================================
        NexaManga Blogger XML Theme
@@ -2925,14 +2925,14 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
         color-scheme: dark;
       }
       html[data-theme="emerald"] {
-        --background: #06110D !important; --foreground: #D7F5E7 !important;
-        --card: #0C1F18 !important; --card-foreground: #D7F5E7 !important;
+        --background: #07120E !important; --foreground: #E3F4EA !important;
+        --card: #0E211A !important; --card-foreground: #E3F4EA !important;
         --primary: var(--yz-accent) !important; --primary-foreground: #04120C !important;
-        --secondary: #123026 !important; --muted: #123026 !important;
-        --muted-foreground: #8FBFAA !important; --border: #1F4738 !important;
+        --secondary: #163227 !important; --muted: #163227 !important;
+        --muted-foreground: #9FC4B0 !important; --border: #2A4D3E !important;
         --accent: var(--yz-accent) !important; --accent-foreground: #04120C !important;
-        --input: #0C1F18 !important; --ring: var(--yz-accent) !important;
-        --kv-success: #34D399 !important; --kv-warning: #FBBF24 !important; --kv-danger: #FB7185 !important;
+        --input: #0E211A !important; --ring: var(--yz-accent) !important;
+        --kv-success: #34D399 !important; --kv-warning: #F5C76B !important; --kv-danger: #FB7185 !important;
         color-scheme: dark;
       }
       html[data-theme="anilist"] *, html[data-theme="catppuccin"] *, html[data-theme="emerald"] * {
@@ -3792,6 +3792,8 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html[data-theme="emerald"] body.kv-reader-route { --yz-bg:var(--background); --yz-surface-0:var(--background); --yz-surface-1:var(--card); --yz-surface-2:var(--secondary); --yz-surface-3:var(--muted); --yz-border:var(--border); --yz-text:var(--foreground); --yz-text-secondary:var(--muted-foreground); --yz-text-tertiary:var(--muted-foreground); background:var(--yz-bg) !important; color:var(--yz-text) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-public-route :is(.yz-desktop-rail, .yz-rail-inner, .kv-public-bottom-nav),
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-public-route header nav { background-color:var(--yz-surface-1) !important; border-color:var(--yz-border) !important; }
+    html[data-theme="emerald"] body.kv-public-route :is(header, .yz-header) { background: transparent !important; background-color: transparent !important; border-color: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+    html[data-theme="emerald"] body.kv-public-route header nav { background-color: transparent !important; border-color: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-public-route .kv-public-bottom-nav { box-shadow:0 12px 32px -22px rgba(0,0,0,.8) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-public-route :is([data-yz-more-menu], [data-header-results], .yz-theme-menu, .yz-theme-menu-inline) { background:var(--yz-surface-1) !important; border-color:var(--yz-border) !important; color:var(--yz-text) !important; }
     html:is([data-theme="anilist"], [data-theme="catppuccin"], [data-theme="emerald"]) body.kv-public-route :is(.yz-rail-link, .kv-public-bottom-item, [data-action="toggle-header-theme"], [data-action="toggle-header-search"], [aria-label="Notifikasi"]) { color:var(--yz-text-secondary) !important; }
@@ -4076,7 +4078,7 @@ function yzBtnClass(primary) {
       API_BASE_URL: 'https://nexamanga-nexamanga.vercel.app',
       DEFAULT_THEME: 'system',
       THEME_IDS: ['system', 'light', 'anilist', 'catppuccin', 'emerald', 'dark'],
-      THEME_META: { light: '#F7F1E6', dark: '#0B0E17', anilist: '#0B1622', catppuccin: '#1E1E2E', emerald: '#06110D' },
+      THEME_META: { light: '#F7F1E6', dark: '#0B0E17', anilist: '#0B1622', catppuccin: '#1E1E2E', emerald: '#07120E' },
       ITEMS_PER_PAGE: 8,
        CONTACT_EMAIL: '' /* Diisi dari Pengaturan Admin */
     };
