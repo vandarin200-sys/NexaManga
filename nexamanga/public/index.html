@@ -4474,6 +4474,12 @@ function yzSettingRead(key, fallback) {
        profileReaction: '',
        leaderboardTab: 'users',
        leaderboardRange: 'week',
+       leaderboardData: null,
+       leaderboardLoading: false,
+       leaderboardError: null,
+       userProgress: null,
+       userProgressLoaded: false,
+       userProgressLoading: false,
       yzSidebarExpanded: false,
       heroCount: 0,
       heroTrackPosition: 1,
@@ -4622,6 +4628,8 @@ function yzSettingRead(key, fallback) {
       state.user = null;
       state.adminToken = '';
       state.usersCache = undefined;
+      state.userProgress = null;
+      state.userProgressLoaded = false;
       localStorage.removeItem('kv_session_token');
       localStorage.removeItem('kv_session_cache_v1');
     }
@@ -5662,6 +5670,67 @@ function trackPageview() {
         state.sessionNotice = 'Profil akun ditampilkan dari cache karena sesi tidak dapat diverifikasi saat ini.';
         if (!quietly || hadNotice) render();
       });
+    }
+
+    var leaderboardRequestId = 0;
+    function loadLeaderboard() {
+      if (!CONFIG.API_BASE_URL) return Promise.resolve(null);
+      var key = state.leaderboardTab + ':' + state.leaderboardRange;
+      if (state.leaderboardLoading && state.leaderboardKey === key) return Promise.resolve(null);
+      var requestId = ++leaderboardRequestId;
+      state.leaderboardKey = key;
+      state.leaderboardLoading = true;
+      state.leaderboardError = null;
+      render();
+      var url = CONFIG.API_BASE_URL + '/api/leaderboard?range=' + encodeURIComponent(state.leaderboardRange) + '&type=' + encodeURIComponent(state.leaderboardTab) + '&limit=50';
+      return fetch(url, { headers: state.adminToken ? { Authorization: 'Bearer ' + state.adminToken } : {} })
+        .then(parseApiResponse)
+        .then(function (json) {
+          if (requestId !== leaderboardRequestId) return null;
+          state.leaderboardData = json;
+          state.leaderboardLoading = false;
+          render();
+          return json;
+        })
+        .catch(function (err) {
+          if (requestId !== leaderboardRequestId) return null;
+          state.leaderboardLoading = false;
+          state.leaderboardData = null;
+          state.leaderboardError = err && err.message ? err.message : 'Gagal memuat leaderboard.';
+          render();
+          return null;
+        });
+    }
+
+    var userProgressRequestId = 0;
+    function loadUserProgress() {
+      if (!CONFIG.API_BASE_URL || !state.user || state.userProgressLoaded) return Promise.resolve(null);
+      var requestId = ++userProgressRequestId;
+      state.userProgressLoading = true;
+      render();
+      var name = String(state.user.name || state.user.username || 'member');
+      var headers = state.adminToken ? { Authorization: 'Bearer ' + state.adminToken } : {};
+      return fetch(CONFIG.API_BASE_URL + '/api/user/' + encodeURIComponent(name) + '/xp', { headers: headers })
+        .then(function (res) {
+          if (res.status === 404) return null;
+          return parseApiResponse(res);
+        })
+        .then(function (json) {
+          if (requestId !== userProgressRequestId) return null;
+          state.userProgress = json || null;
+          state.userProgressLoaded = true;
+          state.userProgressLoading = false;
+          render();
+          return json;
+        })
+        .catch(function () {
+          if (requestId !== userProgressRequestId) return null;
+          state.userProgress = null;
+          state.userProgressLoaded = true;
+          state.userProgressLoading = false;
+          render();
+          return null;
+        });
     }
 
     function initializeAuth() {
@@ -7443,7 +7512,7 @@ function renderSettings() {
       var bannerGradientCss = profileBannerGradientCss(bannerGradient);
       var bio = yzSettingRead('yume_profile_bio', '');
       var username = slugify(displayName);
-      var tierRank = 'Novice III';
+      var tierRank = '';
       var favManga = state.data.manga.filter(function (m) { return state.bookmarks.indexOf(m.id) !== -1; });
       var historyItems = state.history.map(function (h) {
         var m = state.data.manga.filter(function (x) { return x.id === h.mangaId; })[0];
@@ -7453,10 +7522,15 @@ function renderSettings() {
       var readingMinutes = historyItems.length * 12 + favManga.length * 3;
       var ratingPool = favManga.concat(historyItems.map(function (item) { return item.manga; })).filter(function (m) { return Number(m.rating) > 0; });
       var meanScore = ratingPool.length ? (ratingPool.reduce(function (sum, m) { return sum + Number(m.rating || 0); }, 0) / ratingPool.length).toFixed(1) : '—';
-      var xp = historyItems.length * 8 + favManga.length * 4 + ownComments.length * 2;
-      var level = 1 + Math.floor(xp / 22);
-      var xpInto = xp % 22;
-      var xpPercent = Math.round((xpInto / 22) * 100);
+      var progress = state.userProgress && state.userProgress.user_id === user.id ? state.userProgress : null;
+      var xp = progress ? Number(progress.total_xp) || 0 : historyItems.length * 8 + favManga.length * 4 + ownComments.length * 2;
+      var level = progress ? Number(progress.level) || 1 : 1 + Math.floor(xp / 220);
+      var levelCost = progress ? Number(progress.level_cost) || 220 : 220;
+      var xpInto = progress ? Number(progress.xp_into_level) || 0 : xp % 220;
+      var xpPercent = progress ? Number(progress.percent) || 0 : Math.round((xpInto / levelCost) * 100);
+      var streakDays = progress ? Number(progress.streak_days) || 0 : 0;
+      if (progress && progress.tier) tierRank = progress.tier.name + (progress.tier.division ? ' ' + progress.tier.division : '');
+      else tierRank = 'Novice III';
       var unreadNotifications = typeof getUnreadNotificationCount === 'function' ? getUnreadNotificationCount() : 0;
       var roleLabel = user.role === 'admin' ? 'Administrator' : 'Pembaca';
 
@@ -7499,7 +7573,7 @@ function renderSettings() {
       '</div>';
       var libraryView = '<div class="grid gap-4 md:grid-cols-2 pt-1"><section class="' + yzCardClass() + '"><div class="flex items-center justify-between"><h2 class="text-sm font-black text-white">Lanjutkan Membaca</h2><span class="text-[10px] text-zinc-500">' + historyItems.length + ' judul</span></div><div class="mt-4 space-y-3">' + historyHtml + '</div></section><section class="' + yzCardClass() + '"><div class="flex items-center justify-between"><h2 class="text-sm font-black text-white">Bookmark</h2><a class="text-[11px] text-zinc-500 hover:text-white" href="' + publicHref('/archive') + '">Jelajahi &rarr;</a></div><div class="mt-4">' + bookmarkHtml + '</div></section></div>';
       var communityView = '<div class="' + yzCardClass() + ' space-y-3 pt-1"><div class="flex items-center justify-between"><h2 class="text-sm font-black text-white">Diskusi Komunitas</h2><span class="text-[10px] text-zinc-500">' + ownComments.length + ' komentar</span></div>' + recentCommentsHtml + '</div>';
-      var badgeView = '<div class="grid gap-3 md:grid-cols-2 pt-1"><section class="' + yzCardClass() + '"><div class="flex items-center justify-between"><span class="inline-flex items-center gap-2 font-semibold text-white">' + tierBadge + '<span>Level ' + level + '</span></span><span class="font-mono text-zinc-300">' + xpInto + ' / 22 XP</span></div><div class="mt-3 h-2 w-full rounded-full bg-white/[0.07] overflow-hidden ring-1 ring-inset ring-white/5"><div class="h-full rounded-full bg-gradient-to-r transition-all duration-500 from-zinc-600 to-zinc-400" style="width: ' + xpPercent + '%"></div></div><div class="mt-2 flex items-center justify-between text-[11px] text-zinc-400 tabular-nums"><span>' + xpPercent + '.0% complete</span><span class="font-medium text-zinc-300">' + (22 - xpInto) + ' XP to Lv.' + (level + 1) + '</span></div></section><section class="' + yzCardClass() + '"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">Reactions</span><div class="mt-2 flex items-center gap-1 flex-wrap">' + reactions + '</div></section></div>';
+      var badgeView = '<div class="grid gap-3 md:grid-cols-2 pt-1"><section class="' + yzCardClass() + '"><div class="flex items-center justify-between"><span class="inline-flex items-center gap-2 font-semibold text-white">' + tierBadge + '<span>Level ' + level + '</span></span><span class="font-mono text-zinc-300">' + xpInto + ' / ' + levelCost + ' XP</span></div><div class="mt-3 h-2 w-full rounded-full bg-white/[0.07] overflow-hidden ring-1 ring-inset ring-white/5"><div class="h-full rounded-full bg-gradient-to-r transition-all duration-500 from-zinc-600 to-zinc-400" style="width: ' + xpPercent + '%"></div></div><div class="mt-2 flex items-center justify-between text-[11px] text-zinc-400 tabular-nums"><span>' + xpPercent + '.0% complete</span><span class="font-medium text-zinc-300">' + (levelCost - xpInto) + ' XP to Lv.' + (level + 1) + '</span></div></section><section class="' + yzCardClass() + '"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">Reactions</span><div class="mt-2 flex items-center gap-1 flex-wrap">' + reactions + '</div></section></div>';
       var tabs = [
         ['overview', 'Overview', 'activity'],
         ['library', 'Library', 'tv'],
@@ -7533,8 +7607,8 @@ function renderSettings() {
                   (isPublic ? '' : '<a href="' + publicHref('/settings') + '" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('settings', 'h-3.5 w-3.5 text-zinc-400') + '<span>Settings</span></a><button type="button" data-action="logout-user" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('out', 'h-3.5 w-3.5 text-zinc-400') + '<span>Log Out</span></button>') +
                 '</div>' +
               '</div>' +
-              '<div class="grid grid-cols-3 divide-x divide-white/[0.07] rounded-2xl border border-white/[0.07] bg-white/[0.025] py-3 text-center tabular-nums"><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + readingTime(readingMinutes) + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Reading Time</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-[var(--yz-accent)]">Lv.' + level + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">0d Streak</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + historyItems.length + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Manga Logged</div></div></div>' +
-              '<div class="grid grid-cols-1 gap-3"><div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3.5 sm:p-4 flex flex-col justify-between gap-2.5"><div class="flex items-center justify-between text-xs tabular-nums"><span class="inline-flex items-center gap-2 font-semibold text-white">' + tierBadge + '<span>Level ' + level + '</span></span><span class="font-mono text-zinc-300">' + xpInto + ' / 22 XP</span></div><div class="h-2 w-full rounded-full bg-white/[0.07] overflow-hidden ring-1 ring-inset ring-white/5"><div class="h-full rounded-full bg-gradient-to-r transition-all duration-500 from-zinc-600 to-zinc-400" style="width: ' + xpPercent + '%"></div></div><div class="flex items-center justify-between text-[11px] text-zinc-400 tabular-nums"><span>' + xpPercent + '.0% complete</span><span class="font-medium text-zinc-300">' + (22 - xpInto) + ' XP to Lv.' + (level + 1) + '</span></div></div></div>' +
+              '<div class="grid grid-cols-3 divide-x divide-white/[0.07] rounded-2xl border border-white/[0.07] bg-white/[0.025] py-3 text-center tabular-nums"><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + readingTime(readingMinutes) + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Reading Time</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-[var(--yz-accent)]">Lv.' + level + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">' + streakDays + 'd Streak</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + historyItems.length + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Manga Logged</div></div></div>' +
+              '<div class="grid grid-cols-1 gap-3"><div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3.5 sm:p-4 flex flex-col justify-between gap-2.5"><div class="flex items-center justify-between text-xs tabular-nums"><span class="inline-flex items-center gap-2 font-semibold text-white">' + tierBadge + '<span>Level ' + level + '</span></span><span class="font-mono text-zinc-300">' + xpInto + ' / ' + levelCost + ' XP</span></div><div class="h-2 w-full rounded-full bg-white/[0.07] overflow-hidden ring-1 ring-inset ring-white/5"><div class="h-full rounded-full bg-gradient-to-r transition-all duration-500 from-zinc-600 to-zinc-400" style="width: ' + xpPercent + '%"></div></div><div class="flex items-center justify-between text-[11px] text-zinc-400 tabular-nums"><span>' + xpPercent + '.0% complete</span><span class="font-medium text-zinc-300">' + (levelCost - xpInto) + ' XP to Lv.' + (level + 1) + '</span></div></div></div>' +
             '</div>' +
           '</section>' +
           '<div class="sticky top-16 z-30 flex items-center"><div class="w-full sm:w-auto inline-flex items-center gap-1 p-1 rounded-2xl border border-white/[0.08] bg-[#0a0c10]/90 backdrop-blur-xl shadow-xl overflow-x-auto scrollbar-none">' + tabHtml + '</div></div>' +
@@ -9541,73 +9615,39 @@ function renderAdmin() {
       return tier;
     }
     function lbUsers() {
-      var factor = { day: 0.72, week: 1, month: 1.12, all: 1.35 }[state.leaderboardRange || 'week'] || 1;
-      var byKey = {};
-      (state.data.comments || []).forEach(function (c) {
-        if (!c || c.status === 'rejected') return;
-        var name = String(c.authorName || 'Member');
-        var key = String(c.userId || name).toLowerCase();
-        if (!byKey[key]) byKey[key] = { username: name, avatar: c.authorAvatar || '', count: 0, upvotes: 0, recent: '' };
-        byKey[key].count += 1;
-        byKey[key].upvotes += Number(c.upvoteCount) || 0;
-        if (String(c.createdAt || '') > byKey[key].recent) byKey[key].recent = String(c.createdAt || '');
-        byKey['name:' + name.toLowerCase()] = byKey[key];
-      });
-      var names = [];
-      if (state.user && typeof currentDisplayName === 'function') names.push(String(currentDisplayName(state.user.name) || state.user.username || 'Member'));
-      Object.keys(byKey).forEach(function (key) {
-        if (key.indexOf('name:') !== 0) names.push(byKey[key].username);
-      });
-      [
-        'KazeReader', 'MochiPanel', 'SoraScroller', 'RinChapter', 'Hoshino', 'AoiFrames', 'MikaPages', 'YukiSensei',
-        'RenManga', 'NekoPanelist', 'HaruReader', 'MeiChapters', 'KuonWatch', 'SuzukaScan', 'IoriPages', 'TobiArchive',
-        'AiraNight', 'JinSleeve', 'LunaPanel', 'RyoReads', 'YumeFan', 'KiraFrames', 'NaoArchive', 'HinaBinge',
-        'SenaTome', 'RinOnAir', 'MioWeekly', 'KuroPanel', 'AyaStreak', 'TomaReads', 'SoraBinge', 'NagiPages',
-        'EliChapter', 'ReiWatch', 'FuyuPanel', 'KanonX', 'ItsukiRead', 'MiyuStreak', 'DaikiPanel', 'ChikaScan',
-        'YukiNight', 'HikariX', 'SubaruRead', 'Natsumi', 'KaitoPanel', 'AoiStreak', 'MahoPages', 'TsukiReads',
-        'RenjiWatch', 'SakuraPanel'
-      ].forEach(function (name) { names.push(name); });
-      var unique = [];
-      var seen = {};
-      names.forEach(function (value) {
-        var name = String(value || '').trim();
-        var key = name.toLowerCase();
-        if (name && !seen[key]) { seen[key] = 1; unique.push(name); }
-      });
-      return unique.slice(0, 50).map(function (username) {
-        var key = username.toLowerCase();
-        var actual = byKey['name:' + key] || byKey[key] || { avatar: '', count: 0, upvotes: 0 };
-        var seed = lbHash(username);
-        var base = 1400 + (seed % 26000) + actual.count * 220 + actual.upvotes * 65;
-        var score = Math.round(base * factor);
-        var level = Math.max(1, Math.min(100, Math.floor(score / 360) + 1));
+      var source = state.leaderboardData && Array.isArray(state.leaderboardData.users) ? state.leaderboardData.users : [];
+      return source.map(function (u) {
+        var level = Math.max(1, Number(u.level) || 1);
+        var tier = lbTier(level);
+        if (u.tier && u.tier.division) tier.division = String(u.tier.division);
         return {
-          username: username,
-          avatar: actual.avatar || '',
-          score: score,
-          total_xp: score,
+          user_id: String(u.user_id || ''),
+          username: String(u.username || u.name || 'Member'),
+          avatar: u.avatar || '',
+          score: Number(u.score) || 0,
+          total_xp: Number(u.total_xp) || 0,
           level: level,
-          percent: Math.round(((score % 360) / 360) * 100),
-          tier: lbTier(level),
-          streak_days: 1 + (seed % 26),
-          isMe: !!(state.user && key === String((typeof currentDisplayName === 'function' ? currentDisplayName(state.user.name) : state.user.name) || state.user.username || '').toLowerCase())
+          xp_into_level: Number(u.xp_into_level) || 0,
+          level_cost: Number(u.level_cost) || 220,
+          percent: Number(u.percent) || 0,
+          tier: tier,
+          streak_days: Math.max(0, Number(u.streak_days) || 0),
+          isMe: !!(state.user && u.user_id && u.user_id === state.user.id)
         };
-      }).sort(function (a, b) { return b.score - a.score; }).map(function (u, i) { u.rank = i + 1; return u; });
+      }).sort(function (a, b) { return b.score - a.score || b.total_xp - a.total_xp; }).map(function (u, i) { u.rank = i + 1; return u; });
     }
     function lbAnime() {
-      var rankFactor = { day: 1 / 30, week: 1, month: 4, all: 8 }[state.leaderboardRange || 'week'] || 1;
-      return (state.data.manga || []).map(function (m) {
-        var raw = Number(m.views || m.followers || 0);
-        var views = Math.max(1, Math.round(raw * rankFactor));
+      var source = state.leaderboardData && Array.isArray(state.leaderboardData.anime) ? state.leaderboardData.anime : [];
+      return source.map(function (a) {
         return {
-          anime_id: m.id || m.slug || '',
-          title: yzTitle(m),
-          poster: m.coverBloggerUrl || '',
-          views: views,
-          all_time_views: Number(m.allTimeViews || m.all_time_views || raw),
-          rank: 0
+          anime_id: String(a.anime_id || ''),
+          title: String(a.title || 'Anime'),
+          poster: a.poster || a.tmdb_poster || '',
+          views: Math.max(0, Number(a.views) || 0),
+          all_time_views: Math.max(0, Number(a.all_time_views) || Number(a.views) || 0),
+          rank: Math.max(1, Number(a.rank) || 0)
         };
-      }).sort(function (a, b) { return b.views - a.views; }).slice(0, 50).map(function (a, i) { a.rank = i + 1; return a; });
+      }).sort(function (a, b) { return b.views - a.views; }).map(function (a, i) { a.rank = i + 1; return a; });
     }
     function lbAvatar(u, box, ring, eager) {
       var initial = escapeHtml(String(u.username || '?').charAt(0).toUpperCase());
@@ -9730,7 +9770,11 @@ function renderAdmin() {
       var range = state.leaderboardRange || 'week';
       var me = users.filter(function (u) { return u.isMe; })[0] || null;
       var content = '';
-      if (tab === 'anime') {
+      if (state.leaderboardError) {
+        content = '<div class="rounded-3xl border border-white/[0.08] bg-[#0b0d11] py-20 px-6 text-center space-y-3">' + lbIcon('trophy', 'w-10 h-10 text-zinc-700 mx-auto') + '<h2 class="text-base font-bold text-white">Leaderboard Belum Tersedia</h2><p class="text-xs sm:text-sm text-zinc-400 max-w-sm mx-auto">' + escapeHtml(state.leaderboardError) + '</p><button type="button" data-action="leaderboard-retry" class="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl bg-[#91b8b1] text-black text-xs font-bold hover:bg-[#a3c7c0] transition-colors">' + lbIcon('sparkles', 'w-3.5 h-3.5') + '<span>Coba Lagi</span></button></div>';
+      } else if (state.leaderboardLoading && !state.leaderboardData) {
+        content = '<div class="rounded-3xl border border-white/[0.08] bg-[#0b0d11] py-20 px-6 text-center"><div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-[#91b8b1]"></div><p class="mt-4 text-xs sm:text-sm text-zinc-400">Memuat peringkat dari database...</p></div>';
+      } else if (tab === 'anime') {
         if (anime.length < 3) content = lbEmpty('anime');
         else {
           var rest = anime.slice(3);
@@ -9861,6 +9905,8 @@ function renderAdmin() {
           document.body.classList.toggle('kv-public-route', state.route !== 'reader' && state.route !== 'admin');
           applyTheme(false);
         }
+        if (state.route === 'info' && state.params && state.params.page === 'leaderboard' && !state.leaderboardData && !state.leaderboardLoading) loadLeaderboard();
+        if ((state.route === 'account' || state.route === 'profile') && state.user && !state.userProgressLoaded && !state.userProgressLoading) loadUserProgress();
         finalizeHeroTrack(document.querySelector('[data-hero-track]'));
         var bodyHtml = '';
         if (state.loading) {
@@ -11201,7 +11247,8 @@ function setBannerDotsActive(index) {
         var lbTabUrl = new URL(window.location.href);
         lbTabUrl.searchParams.set('type', state.leaderboardTab);
         window.history.replaceState(null, '', lbTabUrl.pathname + lbTabUrl.search + lbTabUrl.hash);
-        render();
+        state.leaderboardData = null;
+        loadLeaderboard();
         return;
       }
       if (act === 'leaderboard-range') {
@@ -11210,7 +11257,13 @@ function setBannerDotsActive(index) {
         var lbRangeUrl = new URL(window.location.href);
         lbRangeUrl.searchParams.set('range', state.leaderboardRange);
         window.history.replaceState(null, '', lbRangeUrl.pathname + lbRangeUrl.search + lbRangeUrl.hash);
-        render();
+        state.leaderboardData = null;
+        loadLeaderboard();
+        return;
+      }
+      if (act === 'leaderboard-retry') {
+        state.leaderboardData = null;
+        loadLeaderboard();
         return;
       }
         if (act === 'hero-prev') { markHeroInteraction(); var heroStep = heroAdvance(state.activeIndex, 'prev', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }

@@ -17,7 +17,9 @@ const { randomUUID } = require('node:crypto');
 
   const db = require('../lib/db');
   const marker = `smoke-${randomUUID()}`;
+  const accountId = `usr-${marker}`;
   let inserted = false;
+  let accountInserted = false;
 
   try {
     console.log('1. migrateLegacyCatalog...');
@@ -63,6 +65,42 @@ const { randomUUID } = require('node:crypto');
     assert(!after.manga.some((item) => item.id === marker), 'Manga uji tidak terhapus.');
     console.log('   ok');
 
+    console.log('6. mencatat progres XP uji...');
+    await db.modifyCatalog((catalog) => {
+      catalog.users.push({
+        id: accountId,
+        provider: 'google',
+        providerId: marker,
+        name: 'Smoke XP',
+        role: 'member',
+        createdAt: new Date().toISOString()
+      });
+    });
+    accountInserted = true;
+    const awarded = await db.awardXp({
+      userId: accountId,
+      username: 'Smoke XP',
+      name: 'Smoke XP',
+      activity: 'welcome',
+      refKey: accountId,
+      amount: 25
+    });
+    assert(awarded && awarded.total_xp === 25, 'XP uji tidak tercatat.');
+    const duplicate = await db.awardXp({
+      userId: accountId,
+      username: 'Smoke XP',
+      name: 'Smoke XP',
+      activity: 'welcome',
+      refKey: accountId,
+      amount: 25
+    });
+    assert(duplicate === null, 'XP duplikat seharusnya diabaikan.');
+    const board = await db.readLeaderboard('all', 50);
+    assert(board.some((item) => item.user_id === accountId && item.score === 25), 'Leaderboard XP tidak mengembalikan progres uji.');
+    const profile = await db.readUserProgress('smokexp');
+    assert(profile && profile.user_id === accountId && profile.total_xp === 25, 'Profil XP tidak ditemukan.');
+    console.log('   ok');
+
     console.log('Smoke test database relasional lulus.');
   } finally {
     if (inserted) {
@@ -72,6 +110,15 @@ const { randomUUID } = require('node:crypto');
         });
       } catch (error) {
         console.error('Gagal membersihkan manga uji:', error.message);
+      }
+    }
+    if (accountInserted) {
+      try {
+        await db.modifyCatalog((catalog) => {
+          catalog.users = catalog.users.filter((item) => item.id !== accountId);
+        });
+      } catch (error) {
+        console.error('Gagal membersihkan akun uji:', error.message);
       }
     }
   }

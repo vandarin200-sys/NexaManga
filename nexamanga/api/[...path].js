@@ -60,11 +60,14 @@ const {
   CatalogNotInitializedError,
   ConcurrentUpdateError,
   StorageAlreadyInitializedError,
+  awardXp,
   ensureCatalogInitialized,
   initializeCatalog,
   migrateLegacyCatalog,
   modifyCatalog,
   readCatalog,
+  readLeaderboard,
+  readUserProgress,
   recordTrack,
   readAnalytics
 } = require('../lib/db');
@@ -541,6 +544,24 @@ async function updateCatalog(change) {
   return modifyCatalog(change);
 }
 
+async function awardProgress(claims, activity, refKey, amount) {
+  if (!claims || !claims.sub) return null;
+  try {
+    return await awardXp({
+      userId: claims.sub,
+      username: claims.user && claims.user.name ? claims.user.name : '',
+      name: claims.user && claims.user.name ? claims.user.name : 'Member',
+      avatar: claims.user && claims.user.avatar ? claims.user.avatar : null,
+      activity,
+      refKey,
+      amount
+    });
+  } catch (error) {
+    console.error('[progress] gagal mencatat XP:', error && error.message ? error.message : error);
+    return null;
+  }
+}
+
 function decodeUpload(dataUrl) {
   if (typeof dataUrl !== 'string') throw new HttpError(400, 'Data gambar tidak valid.');
   const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/);
@@ -638,6 +659,12 @@ async function handler(req, res) {
       await ensureCatalogInitialized();
       let user;
       await updateCatalog((catalog) => { user = registerOAuthUser(catalog, identity); });
+      await awardProgress(
+        { sub: user.id, user: { name: user.name, avatar: user.avatar } },
+        'welcome',
+        user.id,
+        25
+      );
       const token = createSessionToken(user);
       return redirect(res, `${state.returnOrigin}/?auth_token=${encodeURIComponent(token)}#/akun`);
     }
@@ -708,6 +735,20 @@ async function handler(req, res) {
       const payload = { user: safeUser(claims.record || claims.user), role: claims.role };
       if (refreshedToken) payload.token = refreshedToken;
       return sendJson(res, 200, payload);
+    }
+
+    const progressRoute = route.match(/^user\/([^/]+)\/xp$/);
+    if (progressRoute && req.method === 'GET') {
+      let username;
+      try {
+        username = decodeURIComponent(progressRoute[1]);
+      } catch {
+        throw new HttpError(400, 'Username tidak valid.');
+      }
+      if (!username || username.length > 100) throw new HttpError(400, 'Username tidak valid.');
+      const progress = await readUserProgress(username);
+      if (!progress) throw new HttpError(404, 'Progres pengguna tidak ditemukan.');
+      return sendJson(res, 200, progress);
     }
 
     if (route === 'account/credentials' && req.method === 'POST') {
@@ -879,8 +920,10 @@ async function handler(req, res) {
       const body = await readBody(req);
       const id = typeof body.id === 'string' ? body.id : (typeof body.slug === 'string' ? body.slug : '');
       if (!id) throw new HttpError(400, 'ID atau slug manga tidak valid.');
+      const claims = sessionClaims(req);
       let updated;
       await updateCatalog((catalog) => { updated = incrementMangaViews(catalog, id); });
+      await awardProgress(claims, 'manga_view', `${updated.id}:${new Date().toISOString().slice(0, 10)}`, 3);
       return sendJson(res, 200, { ok: true, views: updated.views });
     }
 
@@ -991,18 +1034,26 @@ async function handler(req, res) {
     if (route === 'chapter/reaction' && req.method === 'POST') {
       enforceRateLimit(req, 'chapter-reaction', 120);
       const body = await readBody(req);
-      const key = requestViewerKey(req, await freshSessionClaims(req));
+      const claims = await freshSessionClaims(req);
+      const key = requestViewerKey(req, claims);
       let result;
       await updateCatalog((catalog) => { result = addChapterReaction(catalog, { ...body, voterId: key }); });
+      if (result && result.userVote) {
+        await awardProgress(claims, 'reaction', `chapter:${body.chapterId}`, 2);
+      }
       return sendJson(res, 200, result);
     }
 
     if (route === 'manga/reaction' && req.method === 'POST') {
       enforceRateLimit(req, 'manga-reaction', 120);
       const body = await readBody(req);
-      const key = requestViewerKey(req, await freshSessionClaims(req));
+      const claims = await freshSessionClaims(req);
+      const key = requestViewerKey(req, claims);
       let result;
       await updateCatalog((catalog) => { result = addMangaReaction(catalog, { ...body, voterId: key }); });
+      if (result && result.userVote) {
+        await awardProgress(claims, 'reaction', `manga:${body.mangaId}`, 2);
+      }
       return sendJson(res, 200, result);
     }
 
@@ -1025,6 +1076,47 @@ async function handler(req, res) {
       const fileId = await saveMedia(body.fileName || 'comment.jpg', mimeType, bytes);
       const url = `${apiBaseUrl()}/api/media/${encodeURIComponent(fileId)}`;
       return sendJson(res, 201, { url });
+    }
+
+    if (route === 'leaderboard' && req.method === 'GET') {
+      const url = new URL(req.url, 'http://localhost');
+      const requestedType = url.searchParams.get('type');
+      const resolvedType = requestedType === 'anime' ? 'anime'
+        : requestedType === 'users' ? 'users'
+          : requestedType === 'both' ? 'both' : 'users';
+      const range = ['day', 'week', 'month', 'all'].includes(url.searchParams.get('range'))
+        ? url.searchParams.get('range')
+        : 'week';
+      const limit = Math.max(1, Math.min(50, Number(url.searchParams.get('limit')) || 50));
+      const users = resolvedType === 'anime' ? [] : await readLeaderboard(range, limit);
+      let anime = [];
+      if (resolvedType !== 'users') {
+        let catalog;
+        try {
+          catalog = await readCatalog();
+        } catch (error) {
+          if (!(error instanceof CatalogNotInitializedError)) throw error;
+          catalog = { manga: [] };
+        }
+        const factor = { day: 1 / 30, week: 1, month: 4, all: 8 }[range] || 1;
+        anime = (catalog.manga || []).map((manga) => {
+          const raw = Number(manga.views || manga.followers || 0);
+          return {
+            anime_id: manga.id || manga.slug || '',
+            title: manga.title || '',
+            poster: manga.coverBloggerUrl || manga.coverUrl || '',
+            tmdb_poster: manga.tmdbPoster || '',
+            backdrop: manga.backdrop || '',
+            views: Math.max(1, Math.round(raw * factor)),
+            all_time_views: Number(manga.allTimeViews || manga.all_time_views || raw),
+            rank: 0
+          };
+        }).sort((a, b) => b.views - a.views).slice(0, limit).map((item, index) => {
+          item.rank = index + 1;
+          return item;
+        });
+      }
+      return sendJson(res, 200, { range, type: resolvedType, page: 1, limit, users, anime });
     }
 
     if (route === 'catalog' && req.method === 'GET') {
@@ -1126,11 +1218,28 @@ async function handler(req, res) {
       if (!['pending', 'approved', 'rejected'].includes(body.status)) {
         throw new HttpError(400, 'Status komentar harus pending, approved, atau rejected.');
       }
+      let approved = null;
       await updateCatalog((catalog) => {
         const comment = catalog.comments.find((item) => item.id === body.id);
         if (!comment) throw new HttpError(404, 'Komentar tidak ditemukan.');
         comment.status = body.status;
+        if (body.status === 'approved' && comment.userId) approved = comment;
       });
+      if (approved) {
+        try {
+          await awardXp({
+            userId: approved.userId,
+            username: approved.authorName || 'Member',
+            name: approved.authorName || 'Member',
+            avatar: approved.authorAvatar || null,
+            activity: 'comment_approved',
+            refKey: approved.id,
+            amount: 25
+          });
+        } catch (error) {
+          console.error('[progress] gagal mencatat XP persetujuan komentar:', error && error.message ? error.message : error);
+        }
+      }
       return sendJson(res, 200, { ok: true });
     }
 

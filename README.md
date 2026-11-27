@@ -1,15 +1,16 @@
 # NexaManga backend (Vercel + Neon, gambar di Telegram)
 
-Backend serverless untuk tema Blogger `nexamanga.xml`. Katalog, chapter, komentar, data akun, role, reaksi, dan pengaturan disimpan di PostgreSQL Neon; Vercel menjalankan API dan menyimpan secrets sebagai environment variables. Gambar chapter dan thumbnail tetap disimpan di Telegram dan ditayangkan lewat endpoint proxy Vercel.
+Backend serverless untuk tema Blogger `nexamanga.xml`. Katalog, chapter, komentar, data akun, role, reaksi, progres XP/level/streak, dan pengaturan disimpan di PostgreSQL Neon; Vercel menjalankan API dan menyimpan secrets sebagai environment variables. Gambar chapter dan thumbnail tetap disimpan di Telegram dan ditayangkan lewat endpoint proxy Vercel.
 
 ## Isi penyimpanan
 
-- Katalog, chapter, komentar, akun, kredensial, koneksi tracker, reaksi, laporan, dan pengaturan: tabel relasional PostgreSQL Neon (`nexamanga_manga`, `nexamanga_chapters`, `nexamanga_comments`, `nexamanga_accounts`, dan lainnya). Skema dibuat otomatis pada request pertama.
+- Katalog, chapter, komentar, akun, kredensial, koneksi tracker, reaksi, laporan, progres XP/level/streak, dan pengaturan: tabel relasional PostgreSQL Neon (`nexamanga_manga`, `nexamanga_chapters`, `nexamanga_comments`, `nexamanga_accounts`, `nexamanga_user_progress`, dan lainnya). Skema dibuat otomatis pada request pertama.
 - Penulisan memakai transaksi dan kolom `revision` pada `nexamanga_catalog_state`, sehingga perubahan paralel tidak saling menimpa diam-diam; request yang kalah bersaing mendapat respons `409` dan bisa mencoba lagi.
 - Data lama pada `nexamanga_snapshot` dipindahkan otomatis atau lewat endpoint migrasi admin. Tabel lama sengaja dibiarkan sebagai cadangan sampai kamu yakin migrasi berhasil.
 - Gambar chapter dan gambar komentar: dokumen pada channel database Telegram (hanya file gambar, bukan katalog).
 - Token bot, connection string Neon, OAuth client secret, dan signing secret: hanya di environment Vercel.
 - Bookmark, riwayat, dan preferensi tema: masih di `localStorage` browser.
+- Progres pembaca: XP dicatat sekali per aksi unik (`welcome`, komentar yang disetujui, pembukaan manga per hari, reaksi). Level naik setiap 220 XP; streak dihitung dari tanggal aktivitas terakhir. `GET /api/leaderboard` dan `GET /api/user/:username/xp` menyajikan data ini dari database.
 
 Jangan menyimpan atau mengunggah materi yang tidak kamu miliki izinnya.
 
@@ -30,7 +31,8 @@ nexamanga_reports                            laporan
 nexamanga_accounts / nexamanga_account_credentials / nexamanga_account_connections
                                              akun, kata sandi, verifikasi email, koneksi tracker
 nexamanga_chapter_reactions / nexamanga_manga_reactions
-                                             reaksi pembaca
+                                              reaksi pembaca
+nexamanga_user_progress / nexamanga_xp_events progres XP, level, streak, dan riwayat aksi
 nexamanga_settings                           pengaturan situs
 nexamanga_analytics_days / nexamanga_analytics_visitors
                                              statistik kunjungan
@@ -40,7 +42,7 @@ nexamanga_users                              view akun untuk query SQL biasa
 Daftar akun dapat ditanyakan seperti tabel biasa:
 
 ```sql
-SELECT * FROM nexamanga_users ORDER BY created_at;
+SELECT id, name, xp, level, streak_days FROM nexamanga_users ORDER BY xp DESC;
 ```
 
 Jika database masih memakai `nexamanga_snapshot`, backend memindahkan isinya saat katalog dibaca atau saat endpoint migrasi admin dipanggil. Tabel lama tidak dihapus otomatis. Hanya PostgreSQL/Neon yang didukung; `DATABASE_URL` MySQL atau `DB_DRIVER=mysql` ditolak dengan pesan yang jelas.
@@ -145,7 +147,7 @@ cd nexamanga
 npm test
 ```
 
-Smoke adapter database terhadap database uji PostgreSQL/Neon yang kosong (tidak memakai `DATABASE_URL` produksi):
+Smoke adapter database terhadap database uji PostgreSQL/Neon yang kosong (tidak memakai `DATABASE_URL` produksi); mencakup katalog dan pencatatan XP idempoten:
 
 ```powershell
 $env:SMOKE_DATABASE_URL = "postgresql://user:password@host/dbname?sslmode=require"
