@@ -340,6 +340,20 @@ function ensureSchema() {
         created_at timestamptz NOT NULL DEFAULT now(),
         UNIQUE (user_id, activity, ref_key)
       )`;
+      await db`CREATE TABLE IF NOT EXISTS nexamanga_manga_view_events (
+        id bigserial PRIMARY KEY,
+        manga_id text NOT NULL REFERENCES nexamanga_manga(id) ON DELETE CASCADE,
+        viewer_key text NOT NULL,
+        day date NOT NULL DEFAULT CURRENT_DATE,
+        created_at timestamptz NOT NULL DEFAULT now(),
+        UNIQUE (manga_id, viewer_key, day)
+      )`;
+      await db`INSERT INTO nexamanga_user_progress (user_id, username, name, avatar)
+        SELECT a.id,
+          COALESCE(NULLIF(regexp_replace(lower(COALESCE(NULLIF(a.name, ''), 'member')), '[^a-z0-9_]', '', 'g'), ''), 'member'),
+          a.name, a.avatar
+        FROM nexamanga_accounts a
+        ON CONFLICT (user_id) DO NOTHING`;
       await db`CREATE TABLE IF NOT EXISTS nexamanga_chapter_reactions (
         chapter_id text NOT NULL REFERENCES nexamanga_chapters(id) ON DELETE CASCADE,
         voter_id text NOT NULL,
@@ -379,6 +393,8 @@ function ensureSchema() {
       await db`CREATE INDEX IF NOT EXISTS nexamanga_user_progress_xp_idx ON nexamanga_user_progress (xp DESC)`;
       await db`CREATE INDEX IF NOT EXISTS nexamanga_user_progress_username_idx ON nexamanga_user_progress (username)`;
       await db`CREATE INDEX IF NOT EXISTS nexamanga_xp_events_created_idx ON nexamanga_xp_events (created_at DESC)`;
+      await db`CREATE INDEX IF NOT EXISTS nexamanga_manga_view_events_manga_created_idx ON nexamanga_manga_view_events (manga_id, created_at DESC)`;
+      await db`CREATE INDEX IF NOT EXISTS nexamanga_manga_view_events_created_idx ON nexamanga_manga_view_events (created_at DESC)`;
       await db`CREATE OR REPLACE VIEW nexamanga_users AS
         SELECT a.id, a.name, a.email, a.avatar, a.provider, a.role,
           a.created_at::text AS created_at,
@@ -1268,6 +1284,69 @@ async function readUserProgress(identifier) {
   return row ? serializeProgress(row) : null;
 }
 
+async function recordMangaView(identifier, viewerKey) {
+  await ensureSchema();
+  const db = executor();
+  const key = String(viewerKey || 'anon').slice(0, 100) || 'anon';
+  const lookupRows = await db`SELECT id, views FROM nexamanga_manga WHERE id = ${identifier} OR slug = ${identifier} LIMIT 1`;
+  const manga = firstRow(lookupRows);
+  if (!manga) return { recorded: false, reason: 'not-found', mangaId: '', views: 0 };
+  const insertedRows = await db`INSERT INTO nexamanga_manga_view_events (manga_id, viewer_key)
+    VALUES (${manga.id}, ${key})
+    ON CONFLICT (manga_id, viewer_key, day) DO NOTHING
+    RETURNING id`;
+  return {
+    recorded: rows(insertedRows).length > 0,
+    reason: rows(insertedRows).length ? 'recorded' : 'duplicate',
+    mangaId: manga.id,
+    views: numberValue(manga.views)
+  };
+}
+
+async function readMangaLeaderboard(range = 'week', limit = 50) {
+  await ensureSchema();
+  const db = executor();
+  const safeRange = ['day', 'week', 'month', 'all'].includes(range) ? range : 'week';
+  const safeLimit = Math.max(1, Math.min(50, Math.floor(numberValue(limit, 50))));
+  if (safeRange === 'all') {
+    const result = await db`SELECT m.id, m.slug, m.title,
+        COALESCE(m.extra->>'poster', m.extra->>'tmdb_poster', m.extra->>'coverUrl', m.cover_blogger_url, '') AS poster,
+        m.views AS views, m.views AS all_time_views
+      FROM nexamanga_manga m
+      WHERE m.views > 0
+      ORDER BY m.views DESC, m.id ASC
+      LIMIT ${safeLimit}`;
+    return rows(result).map((row, index) => ({
+      manga_id: String(row.id || ''),
+      slug: String(row.slug || ''),
+      title: String(row.title || ''),
+      poster: String(row.poster || ''),
+      views: numberValue(row.views),
+      all_time_views: numberValue(row.all_time_views),
+      rank: index + 1
+    }));
+  }
+  const since = rangeSince(safeRange);
+  const result = await db`SELECT m.id, m.slug, m.title,
+      COALESCE(m.extra->>'poster', m.extra->>'tmdb_poster', m.extra->>'coverUrl', m.cover_blogger_url, '') AS poster,
+      COUNT(e.id) AS views, m.views AS all_time_views
+    FROM nexamanga_manga m
+    JOIN nexamanga_manga_view_events e ON e.manga_id = m.id AND e.created_at >= ${since}
+    GROUP BY m.id, m.slug, m.title, m.extra, m.cover_blogger_url, m.views
+    HAVING COUNT(e.id) > 0
+    ORDER BY views DESC, all_time_views DESC, m.id ASC
+    LIMIT ${safeLimit}`;
+  return rows(result).map((row, index) => ({
+    manga_id: String(row.id || ''),
+    slug: String(row.slug || ''),
+    title: String(row.title || ''),
+    poster: String(row.poster || ''),
+    views: numberValue(row.views),
+    all_time_views: numberValue(row.all_time_views),
+    rank: index + 1
+  }));
+}
+
 module.exports = {
   CatalogNotInitializedError,
   ConcurrentUpdateError,
@@ -1279,7 +1358,9 @@ module.exports = {
   modifyCatalog,
   readCatalog,
   readLeaderboard,
+  readMangaLeaderboard,
   readUserProgress,
+  recordMangaView,
   recordTrack,
   readAnalytics,
   migrateLegacyCatalog

@@ -10,7 +10,7 @@ Backend serverless untuk tema Blogger `nexamanga.xml`. Katalog, chapter, komenta
 - Gambar chapter dan gambar komentar: dokumen pada channel database Telegram (hanya file gambar, bukan katalog).
 - Token bot, connection string Neon, OAuth client secret, dan signing secret: hanya di environment Vercel.
 - Bookmark, riwayat, dan preferensi tema: masih di `localStorage` browser.
-- Progres pembaca: XP dicatat sekali per aksi unik (`welcome`, komentar yang disetujui, pembukaan manga per hari, reaksi). Level naik setiap 220 XP; streak dihitung dari tanggal aktivitas terakhir. `GET /api/leaderboard` dan `GET /api/user/:username/xp` menyajikan data ini dari database.
+- Progres pembaca: XP dicatat sekali per aksi unik (`welcome`, komentar yang disetujui, pembukaan manga per hari, reaksi). Level naik setiap 220 XP; streak dihitung dari tanggal aktivitas terakhir. `GET /api/leaderboard` dan `GET /api/user/:username/xp` menyajikan data ini dari database. Peringkat komik memakai event `nexamanga_manga_view_events` yang nyata per pengunjung per hari; periode `all` memakai total view katalog yang tersimpan.
 
 Jangan menyimpan atau mengunggah materi yang tidak kamu miliki izinnya.
 
@@ -33,6 +33,7 @@ nexamanga_accounts / nexamanga_account_credentials / nexamanga_account_connectio
 nexamanga_chapter_reactions / nexamanga_manga_reactions
                                               reaksi pembaca
 nexamanga_user_progress / nexamanga_xp_events progres XP, level, streak, dan riwayat aksi
+nexamanga_manga_view_events                 event baca komik per pengunjung per hari
 nexamanga_settings                           pengaturan situs
 nexamanga_analytics_days / nexamanga_analytics_visitors
                                              statistik kunjungan
@@ -129,6 +130,9 @@ Lalu unggah XML itu melalui **Blogger → Tema → Edit HTML**. Endpoint `/api/h
 - `POST /api/chapter/reaction`, `POST /api/manga/reaction` — reaksi (`fire`, `shock`, `cry`, `laugh`, `angry`); toggle. Identitas pemilih ditentukan backend dari sesi atau sidik jari anonim; `voterId` dari klien diabaikan.
 - `POST /api/comment` — kirim komentar berstatus `pending` sampai disetujui admin. `chapterId` opsional; isi untuk komentar di halaman chapter. Balasan mewarisi chapter induk. Komentar tanpa sesi ditampilkan sebagai `Pengunjung`.
 - `POST /api/comment/upvote` — suka komentar; identitas pemilih juga ditentukan backend.
+- `POST /api/manga/view` — catat event baca komik (maksimal satu per manga per pengunjung per hari), menaikkan total view katalog, dan memberi XP `manga_view` hanya untuk event baru.
+- `GET /api/leaderboard?range=day|week|month|all&type=users|comics|both&limit=50` — peringkat pembaca dari XP dan peringkat komik dari event baca; `type=anime` diterima sebagai alias lama `comics`. Respons memakai kunci `users` dan `comics`.
+- `GET /api/user/:username/xp` — level, XP, tier, dan streak satu pembaca dari database.
 - `POST /api/admin/save-manga`, `/api/admin/save-chapter`
 - `POST /api/admin/delete-manga`, `/api/admin/delete-chapter`
 - `POST /api/admin/delete-comment`, `/api/admin/comment-status`, `/api/admin/pin-comment` — hapus, moderasi status, atau sematkan komentar (admin).

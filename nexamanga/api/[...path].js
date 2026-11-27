@@ -67,7 +67,9 @@ const {
   modifyCatalog,
   readCatalog,
   readLeaderboard,
+  readMangaLeaderboard,
   readUserProgress,
+  recordMangaView,
   recordTrack,
   readAnalytics
 } = require('../lib/db');
@@ -921,10 +923,16 @@ async function handler(req, res) {
       const id = typeof body.id === 'string' ? body.id : (typeof body.slug === 'string' ? body.slug : '');
       if (!id) throw new HttpError(400, 'ID atau slug manga tidak valid.');
       const claims = sessionClaims(req);
+      const view = await recordMangaView(id, requestViewerKey(req, claims));
+      if (view.reason === 'duplicate') {
+        return sendJson(res, 200, { ok: true, views: view.views, duplicate: true });
+      }
       let updated;
-      await updateCatalog((catalog) => { updated = incrementMangaViews(catalog, id); });
-      await awardProgress(claims, 'manga_view', `${updated.id}:${new Date().toISOString().slice(0, 10)}`, 3);
-      return sendJson(res, 200, { ok: true, views: updated.views });
+      await updateCatalog((catalog) => { updated = incrementMangaViews(catalog, view.mangaId || id); });
+      if (view.recorded) {
+        await awardProgress(claims, 'manga_view', `${updated.id}:${new Date().toISOString().slice(0, 10)}`, 3);
+      }
+      return sendJson(res, 200, { ok: true, views: updated.views, tracked: view.recorded });
     }
 
     if (route === 'mangadex/manga' && req.method === 'GET') {
@@ -1081,42 +1089,16 @@ async function handler(req, res) {
     if (route === 'leaderboard' && req.method === 'GET') {
       const url = new URL(req.url, 'http://localhost');
       const requestedType = url.searchParams.get('type');
-      const resolvedType = requestedType === 'anime' ? 'anime'
+      const resolvedType = requestedType === 'comics' || requestedType === 'anime' ? 'comics'
         : requestedType === 'users' ? 'users'
           : requestedType === 'both' ? 'both' : 'users';
       const range = ['day', 'week', 'month', 'all'].includes(url.searchParams.get('range'))
         ? url.searchParams.get('range')
         : 'week';
       const limit = Math.max(1, Math.min(50, Number(url.searchParams.get('limit')) || 50));
-      const users = resolvedType === 'anime' ? [] : await readLeaderboard(range, limit);
-      let anime = [];
-      if (resolvedType !== 'users') {
-        let catalog;
-        try {
-          catalog = await readCatalog();
-        } catch (error) {
-          if (!(error instanceof CatalogNotInitializedError)) throw error;
-          catalog = { manga: [] };
-        }
-        const factor = { day: 1 / 30, week: 1, month: 4, all: 8 }[range] || 1;
-        anime = (catalog.manga || []).map((manga) => {
-          const raw = Number(manga.views || manga.followers || 0);
-          return {
-            anime_id: manga.id || manga.slug || '',
-            title: manga.title || '',
-            poster: manga.coverBloggerUrl || manga.coverUrl || '',
-            tmdb_poster: manga.tmdbPoster || '',
-            backdrop: manga.backdrop || '',
-            views: Math.max(1, Math.round(raw * factor)),
-            all_time_views: Number(manga.allTimeViews || manga.all_time_views || raw),
-            rank: 0
-          };
-        }).sort((a, b) => b.views - a.views).slice(0, limit).map((item, index) => {
-          item.rank = index + 1;
-          return item;
-        });
-      }
-      return sendJson(res, 200, { range, type: resolvedType, page: 1, limit, users, anime });
+      const users = resolvedType === 'comics' ? [] : await readLeaderboard(range, limit);
+      const comics = resolvedType === 'users' ? [] : await readMangaLeaderboard(range, limit);
+      return sendJson(res, 200, { range, type: resolvedType, page: 1, limit, users, comics });
     }
 
     if (route === 'catalog' && req.method === 'GET') {

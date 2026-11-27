@@ -56,7 +56,16 @@ const { randomUUID } = require('node:crypto');
     assert(catalog.manga.some((item) => item.id === marker), 'Manga uji tidak ditemukan.');
     console.log('   ok');
 
-    console.log('5. modifyCatalog membersihkan manga uji...');
+    console.log('5. mencatat event baca komik uji...');
+    const firstView = await db.recordMangaView(marker, `viewer-${marker}`);
+    assert(firstView.recorded && firstView.mangaId === marker, 'Event baca komik tidak tercatat.');
+    const repeatView = await db.recordMangaView(marker, `viewer-${marker}`);
+    assert(!repeatView.recorded && repeatView.reason === 'duplicate', 'Event baca duplikat seharusnya diabaikan.');
+    const comicBoard = await db.readMangaLeaderboard('week', 50);
+    assert(comicBoard.some((item) => item.manga_id === marker && item.views >= 1), 'Leaderboard komik tidak mengembalikan event uji.');
+    console.log('   ok');
+
+    console.log('6. modifyCatalog membersihkan manga uji...');
     await db.modifyCatalog((draft) => {
       draft.manga = draft.manga.filter((item) => item.id !== marker);
     });
@@ -65,7 +74,7 @@ const { randomUUID } = require('node:crypto');
     assert(!after.manga.some((item) => item.id === marker), 'Manga uji tidak terhapus.');
     console.log('   ok');
 
-    console.log('6. mencatat progres XP uji...');
+    console.log('7. mencatat progres XP uji...');
     await db.modifyCatalog((catalog) => {
       catalog.users.push({
         id: accountId,
