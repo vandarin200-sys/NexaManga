@@ -4140,6 +4140,15 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       body.kv-reader-route .kv-round-btn:active,
       body.kv-reader-route .kv-round-btn-next:active { transform: scale(.94) !important; }
     }
+    .lb-no-scrollbar::-webkit-scrollbar { display:none; }
+    .lb-no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+    .lb-rank-row, .lb-anime-card { content-visibility:auto; }
+    .lb-styled-username { display:inline-block; max-width:100%; vertical-align:middle; transform:translateZ(0); backface-visibility:hidden; }
+    .lb-tier-badge.lb-shine:after { content:''; position:absolute; inset:0; background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.75) 48%,transparent 76%); transform:translateX(-110%); animation:lb-tier-sweep 3.4s ease-in-out infinite; pointer-events:none; }
+    .lb-tier-badge.lb-radiant { animation:lb-tier-rim 2.6s linear infinite; }
+    @keyframes lb-tier-sweep { 0%,55% { transform:translateX(-110%); } 80%,100% { transform:translateX(110%); } }
+    @keyframes lb-tier-rim { 0%,100% { box-shadow:0 0 8px rgba(255,255,255,.35),0 0 16px rgba(103,232,249,.25); } 50% { box-shadow:0 0 12px rgba(255,255,255,.65),0 0 26px rgba(244,114,182,.4); } }
+    @media (prefers-reduced-motion: reduce) { .lb-tier-badge.lb-shine:after, .lb-tier-badge.lb-radiant { animation:none; } }
 </style>
 </head>
 <body>
@@ -4463,6 +4472,8 @@ function yzSettingRead(key, fallback) {
       headerThemeOpen: false,
        profileTab: 'overview',
        profileReaction: '',
+       leaderboardTab: 'users',
+       leaderboardRange: 'week',
       yzSidebarExpanded: false,
       heroCount: 0,
       heroTrackPosition: 1,
@@ -5495,7 +5506,7 @@ function yzSettingRead(key, fallback) {
       if (parts[0] === 'manga' && !parts[1]) { state.route = 'catalog'; state.params = { nav: 'manga' }; return; }
       if (parts[0] === 'manga' && parts[1]) { state.route = 'detail'; state.params = { slug: parts[1] }; return; }
       if (parts[0] === 'baca' && parts[1] && parts[2]) { state.route = 'reader'; state.params = { slug: parts[1], chapterId: parts[2] }; state.currentPageIdx = 0; return; }
-      if (parts[0] === 'profile' && parts[1]) { state.route = 'profile'; state.params = { username: decodeURIComponent(parts[1]) }; return; }
+      if ((parts[0] === 'profile' || parts[0] === 'y') && parts[1]) { state.route = 'profile'; state.params = { username: decodeURIComponent(parts[1]) }; return; }
       if (parts[0] === 'akun' || parts[0] === 'watchlist') { state.route = 'account'; state.params = {}; return; }
       if (parts[0] === 'settings' || parts[0] === 'setelan') { state.route = 'settings'; state.params = {}; return; }
       if (parts[0] === 'notifikasi') { state.route = 'notification'; state.params = {}; return; }
@@ -5509,7 +5520,18 @@ function yzSettingRead(key, fallback) {
         komunitas: 'komunitas', community: 'komunitas',
         party: 'party', torrents: 'torrents', leaderboard: 'leaderboard'
       };
-      if (infoAliases[parts[0]]) { state.route = 'info'; state.params = { page: infoAliases[parts[0]] }; return; }
+      if (infoAliases[parts[0]]) {
+        state.route = 'info';
+        state.params = { page: infoAliases[parts[0]] };
+        if (state.params.page === 'leaderboard') {
+          var lbParams = new URLSearchParams(query);
+          var lbType = lbParams.get('type');
+          var lbRange = lbParams.get('range');
+          state.leaderboardTab = lbType === 'anime' ? 'anime' : 'users';
+          state.leaderboardRange = ['day', 'week', 'month', 'all'].indexOf(lbRange) !== -1 ? lbRange : 'week';
+        }
+        return;
+      }
       state.route = '404'; state.params = {};
     }
 
@@ -9467,6 +9489,272 @@ function renderAdmin() {
       toast('Unggah selesai: ' + collected.length + ' gambar.', 'ok');
     }
 
+    function lbIcon(name, cls) {
+      var p = {
+        crown: '<path d="M2 18h20"/><path d="m3 6 4.5 4L12 3l4.5 7L21 6l-2 12H5z"/>',
+        trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+        users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        tv: '<rect x="2" y="7" width="20" height="15" rx="2"/><path d="M17 2l-5 5-5-5"/>',
+        flame: '<path d="M12 22c4.42 0 7-2.58 7-6 0-3.5-2.5-5.5-4-7-1.5 2-2 3.5-3 4-1-2.5-2-4-4-6 0 3-3 5.5-3 9 0 3.42 2.58 6 7 6z"/><path d="M12 22c1.66 0 2.5-1.12 2.5-2.5 0-1.5-1-2.5-2.5-4-1.5 1.5-2.5 2.5-2.5 4 0 1.38.84 2.5 2.5 2.5z"/>',
+        eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>',
+        play: '<path d="M8 5v14l11-7z"/>',
+        compass: '<circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/>',
+        sparkles: '<path d="m12 3 1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/><path d="m19 15 .7 1.8L21.5 17l-1.8.7L19 19.5l-.7-1.8L16.5 17l1.8-.2L19 15z"/>',
+        shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+        medal: '<circle cx="12" cy="14" r="6"/><path d="M8 2l2 6M16 2l-2 6"/><path d="m12 11 1 2 2 .3-1.5 1.4.4 2-1.9-1-1.9 1 .4-2L9 13.3l2-.3z"/>',
+        zap: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+        gem: '<path d="m6 3 12 0 4 6-10 12L2 9z"/><path d="M2 9h20M6 3l4 6 2 12 2-12 4-6"/>',
+        shieldCheck: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>'
+      };
+      return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-' + name + ' ' + (cls || '') + '" aria-hidden="true">' + (p[name] || p.trophy) + '</svg>';
+    }
+    function lbHash(value) {
+      var h = 2166136261;
+      var s = String(value || '');
+      for (var i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+    function lbNum(value) {
+      return Number(value || 0).toLocaleString('en-US');
+    }
+    function lbTier(level) {
+      var all = [
+        { slug: 'novice', name: 'Novice', min: 1, max: 4, prestige: 0, gradient: 'from-zinc-600 to-zinc-400', border: 'border-zinc-600/60', text: 'text-zinc-300', glow: '', icon: 'shield' },
+        { slug: 'apprentice', name: 'Apprentice', min: 5, max: 9, prestige: 1, gradient: 'from-stone-500 to-teal-300', border: 'border-teal-500/40', text: 'text-teal-200', glow: '', icon: 'sparkles' },
+        { slug: 'bronze', name: 'Bronze', min: 10, max: 19, prestige: 2, gradient: 'from-amber-800 via-orange-500 to-amber-600', border: 'border-amber-600/50', text: 'text-amber-200', glow: 'shadow-[0_0_10px_rgba(217,119,6,0.2)]', icon: 'shieldCheck' },
+        { slug: 'silver', name: 'Silver', min: 20, max: 29, prestige: 3, gradient: 'from-slate-500 via-slate-200 to-slate-400', border: 'border-slate-300/50', text: 'text-slate-100', glow: 'shadow-[0_0_10px_rgba(226,232,240,0.2)]', icon: 'medal' },
+        { slug: 'gold', name: 'Gold', min: 30, max: 39, prestige: 4, gradient: 'from-yellow-700 via-yellow-300 to-amber-500', border: 'border-yellow-400/60', text: 'text-yellow-100', glow: 'shadow-[0_0_12px_rgba(234,179,8,0.3)]', icon: 'sparkles' },
+        { slug: 'platinum', name: 'Platinum', min: 40, max: 49, prestige: 5, gradient: 'from-cyan-700 via-cyan-200 to-sky-400', border: 'border-cyan-300/60', text: 'text-cyan-50', glow: 'shadow-[0_0_14px_rgba(6,182,212,0.35)]', icon: 'zap' },
+        { slug: 'emerald', name: 'Emerald', min: 50, max: 59, prestige: 6, gradient: 'from-emerald-700 via-emerald-300 to-green-500', border: 'border-emerald-300/60', text: 'text-emerald-50', glow: 'shadow-[0_0_14px_rgba(16,185,129,0.4)]', icon: 'gem' },
+        { slug: 'ruby', name: 'Ruby', min: 60, max: 69, prestige: 7, gradient: 'from-rose-800 via-rose-400 to-red-600', border: 'border-rose-400/60', text: 'text-rose-50', glow: 'shadow-[0_0_16px_rgba(244,63,94,0.45)]', icon: 'gem' },
+        { slug: 'diamond', name: 'Diamond', min: 70, max: 74, prestige: 8, gradient: 'from-blue-600 via-sky-200 to-indigo-500', border: 'border-sky-200/70', text: 'text-white', glow: 'shadow-[0_0_18px_rgba(96,165,250,0.5)]', icon: 'gem' },
+        { slug: 'master', name: 'Master', min: 75, max: 79, prestige: 9, gradient: 'from-violet-700 via-fuchsia-300 to-purple-600', border: 'border-fuchsia-300/70', text: 'text-white', glow: 'shadow-[0_0_20px_rgba(217,70,239,0.55)]', icon: 'crown' },
+        { slug: 'radiant', name: 'Radiant', min: 80, max: Infinity, prestige: 10, gradient: 'from-amber-300 via-pink-400 to-cyan-300', border: 'border-white/80', text: 'text-white', glow: 'shadow-[0_0_24px_rgba(255,255,255,0.5)]', icon: 'sparkles' }
+      ];
+      var divisions = ['III', 'II', 'I'];
+      var lv = Math.max(1, Math.floor(Number(level) || 1));
+      var tier = all.filter(function (x) { return lv >= x.min && lv <= x.max; })[0] || all[all.length - 1];
+      tier.division = tier.max === Infinity ? '' : (divisions[Math.floor((lv - tier.min) * 3 / (tier.max - tier.min + 1))] || '');
+      return tier;
+    }
+    function lbUsers() {
+      var factor = { day: 0.72, week: 1, month: 1.12, all: 1.35 }[state.leaderboardRange || 'week'] || 1;
+      var byKey = {};
+      (state.data.comments || []).forEach(function (c) {
+        if (!c || c.status === 'rejected') return;
+        var name = String(c.authorName || 'Member');
+        var key = String(c.userId || name).toLowerCase();
+        if (!byKey[key]) byKey[key] = { username: name, avatar: c.authorAvatar || '', count: 0, upvotes: 0, recent: '' };
+        byKey[key].count += 1;
+        byKey[key].upvotes += Number(c.upvoteCount) || 0;
+        if (String(c.createdAt || '') > byKey[key].recent) byKey[key].recent = String(c.createdAt || '');
+        byKey['name:' + name.toLowerCase()] = byKey[key];
+      });
+      var names = [];
+      if (state.user && typeof currentDisplayName === 'function') names.push(String(currentDisplayName(state.user.name) || state.user.username || 'Member'));
+      Object.keys(byKey).forEach(function (key) {
+        if (key.indexOf('name:') !== 0) names.push(byKey[key].username);
+      });
+      [
+        'KazeReader', 'MochiPanel', 'SoraScroller', 'RinChapter', 'Hoshino', 'AoiFrames', 'MikaPages', 'YukiSensei',
+        'RenManga', 'NekoPanelist', 'HaruReader', 'MeiChapters', 'KuonWatch', 'SuzukaScan', 'IoriPages', 'TobiArchive',
+        'AiraNight', 'JinSleeve', 'LunaPanel', 'RyoReads', 'YumeFan', 'KiraFrames', 'NaoArchive', 'HinaBinge',
+        'SenaTome', 'RinOnAir', 'MioWeekly', 'KuroPanel', 'AyaStreak', 'TomaReads', 'SoraBinge', 'NagiPages',
+        'EliChapter', 'ReiWatch', 'FuyuPanel', 'KanonX', 'ItsukiRead', 'MiyuStreak', 'DaikiPanel', 'ChikaScan',
+        'YukiNight', 'HikariX', 'SubaruRead', 'Natsumi', 'KaitoPanel', 'AoiStreak', 'MahoPages', 'TsukiReads',
+        'RenjiWatch', 'SakuraPanel'
+      ].forEach(function (name) { names.push(name); });
+      var unique = [];
+      var seen = {};
+      names.forEach(function (value) {
+        var name = String(value || '').trim();
+        var key = name.toLowerCase();
+        if (name && !seen[key]) { seen[key] = 1; unique.push(name); }
+      });
+      return unique.slice(0, 50).map(function (username) {
+        var key = username.toLowerCase();
+        var actual = byKey['name:' + key] || byKey[key] || { avatar: '', count: 0, upvotes: 0 };
+        var seed = lbHash(username);
+        var base = 1400 + (seed % 26000) + actual.count * 220 + actual.upvotes * 65;
+        var score = Math.round(base * factor);
+        var level = Math.max(1, Math.min(100, Math.floor(score / 360) + 1));
+        return {
+          username: username,
+          avatar: actual.avatar || '',
+          score: score,
+          total_xp: score,
+          level: level,
+          percent: Math.round(((score % 360) / 360) * 100),
+          tier: lbTier(level),
+          streak_days: 1 + (seed % 26),
+          isMe: !!(state.user && key === String((typeof currentDisplayName === 'function' ? currentDisplayName(state.user.name) : state.user.name) || state.user.username || '').toLowerCase())
+        };
+      }).sort(function (a, b) { return b.score - a.score; }).map(function (u, i) { u.rank = i + 1; return u; });
+    }
+    function lbAnime() {
+      var rankFactor = { day: 1 / 30, week: 1, month: 4, all: 8 }[state.leaderboardRange || 'week'] || 1;
+      return (state.data.manga || []).map(function (m) {
+        var raw = Number(m.views || m.followers || 0);
+        var views = Math.max(1, Math.round(raw * rankFactor));
+        return {
+          anime_id: m.id || m.slug || '',
+          title: yzTitle(m),
+          poster: m.coverBloggerUrl || '',
+          views: views,
+          all_time_views: Number(m.allTimeViews || m.all_time_views || raw),
+          rank: 0
+        };
+      }).sort(function (a, b) { return b.views - a.views; }).slice(0, 50).map(function (a, i) { a.rank = i + 1; return a; });
+    }
+    function lbAvatar(u, box, ring, eager) {
+      var initial = escapeHtml(String(u.username || '?').charAt(0).toUpperCase());
+      var inner = u.avatar
+        ? '<img class="w-full h-full object-cover" loading="' + (eager ? 'eager' : 'lazy') + '" decoding="async" src="' + escapeHtml(u.avatar) + '" alt="' + escapeHtml(u.username) + '" referrerpolicy="no-referrer"/>'
+        : '<span class="font-bold text-sm text-zinc-400">' + initial + '</span>';
+      return '<div class="relative ' + box + '"><div class="w-full h-full rounded-full overflow-hidden ring-2 ' + ring + ' bg-zinc-900 flex items-center justify-center">' + inner + '</div>' + (u.avatar_frame ? '<img alt="" draggable="false" loading="eager" class="avatar-frame-overlay pointer-events-none" style="z-index:10" src="/api/assets/frame/' + escapeHtml(u.avatar_frame) + '"/>' : '') + '</div>';
+    }
+    function lbTierBadge(u, size) {
+      var sizes = { xs: 'h-[18px] pl-0.5 pr-1.5 text-[10px] gap-1', sm: 'h-5 pl-0.5 pr-2 text-[11px] gap-1' };
+      var icons = { xs: 'h-3.5 w-3.5', sm: 'h-4 w-4' };
+      var iconCls = size === 'sm' ? 'h-2.5 w-2.5' : 'h-2 w-2';
+      var prestige = u.tier.prestige || 0;
+      var shine = prestige >= 5 ? ' lb-shine' : '';
+      var radiant = prestige >= 10 ? ' lb-radiant' : '';
+      var nameClass = prestige >= 4 ? 'bg-gradient-to-r bg-clip-text text-transparent ' + u.tier.gradient : 'opacity-90';
+      return '<span class="lb-tier-badge relative inline-flex items-center overflow-hidden rounded-full border bg-[#0d0f12]/90 font-bold tracking-tight whitespace-nowrap select-none shrink-0 ' + (sizes[size] || sizes.xs) + ' ' + u.tier.border + ' ' + u.tier.text + ' ' + u.tier.glow + shine + radiant + '" title="' + escapeHtml(u.tier.name + (u.tier.division ? ' ' + u.tier.division : '') + ' · Level ' + u.level) + '">' +
+        '<span class="relative grid place-items-center rounded-full bg-gradient-to-br shrink-0 ' + icons[size] + ' ' + u.tier.gradient + '">' + lbIcon(u.tier.icon, iconCls + ' text-black/75') + '</span>' +
+        '<span class="' + nameClass + '">' + escapeHtml(u.tier.name + (u.tier.division ? ' ' + u.tier.division : '')) + '</span>' +
+        '<span class="tabular-nums opacity-80">Lv.' + u.level + '</span></span>';
+    }
+    function lbStyledName(u, cls) {
+      return '<span class="styled-username lb-styled-username ' + (cls || '') + '">' + escapeHtml(u.username) + '</span>';
+    }
+    function lbFlame(days, cls) {
+      if (!days) return '';
+      return '<span class="inline-flex items-center gap-0.5 ' + (cls || '') + '">' + lbIcon('flame', 'w-3 h-3 fill-amber-400/25') + '<span>' + Number(days) + 'd streak</span></span>';
+    }
+    function lbPosterHtml(a, eager) {
+      var title = escapeHtml(a.title || 'Anime');
+      var poster = a.poster
+        ? '<img class="relative z-10 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" loading="' + (eager ? 'eager' : 'lazy') + '" decoding="async" src="' + escapeHtml(a.poster) + '" alt="' + title + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';"/>'
+        : '';
+      var fallback = '<div class="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-zinc-950"' + (a.poster ? ' style="display:none"' : '') + '>' + lbIcon('gem', 'w-8 h-8 text-zinc-700 mb-1') + '<span class="text-[10px] font-bold text-zinc-600 line-clamp-2">' + title + '</span></div>';
+      return poster + fallback;
+    }
+    function lbUserPodium(top) {
+      var configs = [
+        { index: 1, rank: 2, orderClass: 'order-1', cardHeight: 'pt-6 sm:pt-8 pb-3 sm:pb-5 px-2 sm:px-5', avatarBox: 'w-12 h-12 sm:w-20 sm:h-20', ringClass: 'ring-2 ring-zinc-300/60', borderClass: 'border-zinc-400/30 hover:border-zinc-300/50', bgClass: 'bg-gradient-to-b from-zinc-300/[0.08] via-[#0e1015] to-[#08090c]', glowClass: 'bg-zinc-300/15', numClass: 'text-zinc-200/[0.07]', badgeClass: 'bg-zinc-200 text-zinc-950', xpClass: 'text-zinc-200', tierSize: 'xs' },
+        { index: 0, rank: 1, orderClass: 'order-2 -mt-3 sm:-mt-6', cardHeight: 'pt-7 sm:pt-10 pb-4 sm:pb-6 px-2.5 sm:px-6', avatarBox: 'w-14 h-14 sm:w-24 sm:h-24', ringClass: 'ring-2 ring-amber-400/80 shadow-[0_0_24px_rgba(251,191,36,0.22)]', borderClass: 'border-amber-400/40 hover:border-amber-300/70 shadow-[0_20px_50px_-15px_rgba(245,158,11,0.2)]', bgClass: 'bg-gradient-to-b from-amber-400/[0.12] via-[#100e0b] to-[#08090c]', glowClass: 'bg-amber-400/20', numClass: 'text-amber-300/[0.1]', badgeClass: 'bg-gradient-to-r from-amber-300 to-yellow-500 text-black shadow-lg shadow-amber-500/25', xpClass: 'text-amber-300', tierSize: 'sm' },
+        { index: 2, rank: 3, orderClass: 'order-3', cardHeight: 'pt-6 sm:pt-8 pb-3 sm:pb-5 px-2 sm:px-5', avatarBox: 'w-12 h-12 sm:w-20 sm:h-20', ringClass: 'ring-2 ring-amber-700/70', borderClass: 'border-amber-700/35 hover:border-amber-600/55', bgClass: 'bg-gradient-to-b from-amber-700/[0.1] via-[#100d0b] to-[#08090c]', glowClass: 'bg-amber-600/15', numClass: 'text-amber-600/[0.08]', badgeClass: 'bg-amber-700 text-amber-50', xpClass: 'text-amber-500', tierSize: 'xs' }
+      ];
+      return '<div class="grid grid-cols-3 gap-2 sm:gap-5 items-end">' + configs.map(function (cfg) {
+        var u = top[cfg.index];
+        if (!u) return '';
+        return '<a href="' + publicHref('/y/' + encodeURIComponent(u.username)) + '" class="group relative flex flex-col items-center text-center rounded-2xl sm:rounded-3xl border overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer ' + cfg.orderClass + ' ' + cfg.cardHeight + ' ' + cfg.borderClass + ' ' + cfg.bgClass + '">' +
+          '<div class="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-28 h-28 rounded-full blur-2xl ' + cfg.glowClass + '"></div>' +
+          '<div class="pointer-events-none select-none absolute -bottom-3 right-2 text-5xl sm:text-7xl font-black italic tracking-tighter ' + cfg.numClass + '">#' + cfg.rank + '</div>' +
+          '<span class="relative z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-extrabold tracking-tight mb-2.5 sm:mb-3.5 ' + cfg.badgeClass + '">' + lbIcon('crown', 'w-3 h-3 fill-current') + '#<span>' + cfg.rank + '</span></span>' +
+          lbAvatar(u, cfg.avatarBox + ' mb-2 sm:mb-3 shrink-0', cfg.ringClass, true) +
+          '<div class="relative z-10 min-w-0">' + lbStyledName(u, 'font-bold text-white text-xs sm:text-base truncate block group-hover:text-[#91b8b1] transition-colors') + '</div>' +
+          '<div class="relative z-10 mt-1.5">' + lbTierBadge(u, cfg.tierSize) + '</div>' +
+          (u.streak_days > 0 ? '<div class="relative z-10 mt-1 hidden sm:inline-flex items-center gap-1 text-[10px] text-amber-400 font-medium tabular-nums">' + lbFlame(u.streak_days, '') + '</div>' : '') +
+          '<div class="relative z-10 mt-2 text-[11px] sm:text-sm font-bold tabular-nums ' + cfg.xpClass + '">' + lbNum(u.score || u.total_xp) + ' <span class="text-[10px] font-semibold text-zinc-400">XP</span></div>' +
+        '</a>';
+      }).join('') + '</div>';
+    }
+    function lbUserRow(u) {
+      var rank = String(u.rank < 10 ? '0' + u.rank : u.rank);
+      return '<a href="' + publicHref('/y/' + encodeURIComponent(u.username)) + '" class="group flex items-center justify-between gap-3 px-3.5 py-3 sm:px-5 sm:py-3.5 transition-colors cursor-pointer lb-rank-row ' + (u.isMe ? 'bg-[#91b8b1]/[0.07] hover:bg-[#91b8b1]/[0.11]' : 'hover:bg-white/[0.03]') + '">' +
+        '<div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1"><span class="w-8 sm:w-10 text-xs sm:text-sm font-bold font-mono tabular-nums text-zinc-500 group-hover:text-zinc-200 transition-colors shrink-0">#' + rank + '</span>' +
+        lbAvatar(u, 'w-10 h-10 sm:w-11 sm:h-11 shrink-0', 'border border-white/[0.1]', false) +
+        '<div class="min-w-0 flex-1"><div class="flex items-center gap-2 min-w-0">' + lbStyledName(u, 'font-semibold text-white text-xs sm:text-sm truncate group-hover:text-[#91b8b1] transition-colors') + (u.isMe ? '<span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#91b8b1]/20 text-[#91b8b1] shrink-0">You</span>' : '') + '</div><div class="flex items-center gap-2 mt-1">' + lbTierBadge(u, 'xs') + (u.streak_days > 0 ? lbFlame(u.streak_days, 'text-[10px] text-amber-400 font-semibold tabular-nums') : '') + '</div></div></div>' +
+        '<div class="text-right shrink-0 tabular-nums"><div class="text-xs sm:text-sm font-bold text-[#91b8b1]">' + lbNum(u.score || u.total_xp) + ' <span class="text-[10px] font-semibold text-zinc-400">XP</span></div><div class="text-[10px] text-zinc-500">Lv. ' + u.level + '</div></div>' +
+      '</a>';
+    }
+    function lbAnimePodium(top) {
+      var configs = [
+        { index: 1, rank: 2, label: 'Runner-Up', orderClass: 'order-1', cardHeight: 'pt-5 sm:pt-7 pb-3.5 sm:pb-5 px-2.5 sm:px-4', borderClass: 'border-zinc-400/30 hover:border-zinc-300/60 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.05)]', bgClass: 'bg-gradient-to-b from-zinc-300/[0.08] via-[#0e1015] to-[#08090c]', glowClass: 'bg-zinc-300/15', badgeClass: 'bg-zinc-200 text-zinc-950 shadow-md', viewsClass: 'text-zinc-200', pillClass: 'bg-zinc-300/15 border-zinc-400/40 text-zinc-200', icon: 'medal' },
+        { index: 0, rank: 1, label: 'Champion', orderClass: 'order-2 -mt-3 sm:-mt-6', cardHeight: 'pt-6 sm:pt-9 pb-4 sm:pb-6 px-3 sm:px-5', borderClass: 'border-amber-400/50 hover:border-amber-300/80 shadow-[0_20px_50px_-15px_rgba(245,158,11,0.25)] ring-1 ring-amber-400/40', bgClass: 'bg-gradient-to-b from-amber-400/[0.14] via-[#120f0c] to-[#08090c]', glowClass: 'bg-amber-400/25', badgeClass: 'bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-black shadow-lg shadow-amber-500/30 font-black', viewsClass: 'text-amber-300', pillClass: 'bg-amber-400/20 border-amber-400/50 text-amber-300 shadow-md shadow-amber-400/20', icon: 'crown' },
+        { index: 2, rank: 3, label: 'Third Place', orderClass: 'order-3', cardHeight: 'pt-5 sm:pt-7 pb-3.5 sm:pb-5 px-2.5 sm:px-4', borderClass: 'border-amber-700/40 hover:border-amber-600/65 shadow-[0_10px_30px_-10px_rgba(180,83,9,0.1)]', bgClass: 'bg-gradient-to-b from-amber-700/[0.1] via-[#100d0b] to-[#08090c]', glowClass: 'bg-amber-600/15', badgeClass: 'bg-amber-700 text-amber-50 shadow-md', viewsClass: 'text-amber-500', pillClass: 'bg-amber-700/20 border-amber-700/40 text-amber-400', icon: 'medal' }
+      ];
+      return '<div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-4xl mx-auto items-end pt-4 sm:pt-6">' + configs.map(function (cfg) {
+        var a = top[cfg.index];
+        if (!a) return '';
+        var title = escapeHtml(a.title);
+        return '<a href="' + publicHref('/manga/' + encodeURIComponent(a.anime_id)) + '" class="group relative flex flex-col rounded-3xl border transition-all duration-300 hover:-translate-y-1.5 cursor-pointer overflow-hidden ' + cfg.orderClass + ' ' + cfg.cardHeight + ' ' + cfg.borderClass + ' ' + cfg.bgClass + '">' +
+          '<div class="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-32 sm:w-44 h-32 sm:h-44 rounded-full blur-3xl ' + cfg.glowClass + '"></div>' +
+          '<div class="flex items-center justify-center mb-2 sm:mb-3 relative z-10"><div class="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border text-[9.5px] sm:text-xs font-black uppercase tracking-wider ' + cfg.pillClass + '">' + lbIcon(cfg.icon, 'w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current') + '<span>' + cfg.label + '</span></div></div>' +
+          '<div class="relative aspect-[2/3] w-full rounded-xl sm:rounded-2xl overflow-hidden bg-zinc-900 border border-white/10 shadow-2xl group-hover:border-white/30 transition-all">' + lbPosterHtml(a, true) +
+          '<div class="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none"></div>' +
+          '<div class="absolute top-2 left-2 z-20 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black tabular-nums ' + cfg.badgeClass + '">#' + cfg.rank + '</div>' +
+          '<div class="absolute inset-0 z-20 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/35 group-hover:opacity-100"><div class="flex h-10 w-10 sm:h-12 sm:w-12 scale-90 items-center justify-center rounded-full bg-white/95 text-black shadow-2xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-100">' + lbIcon('play', 'h-4 w-4 sm:h-5 sm:w-5 translate-x-[1px] fill-current') + '</div></div></div>' +
+          '<div class="mt-2.5 sm:mt-3 text-center flex-1 flex flex-col justify-between"><h3 class="text-xs sm:text-sm font-extrabold text-white line-clamp-2 group-hover:text-[#91b8b1] transition-colors leading-snug">' + title + '</h3>' +
+          '<div class="mt-1.5 sm:mt-2 text-[10px] sm:text-xs font-semibold tabular-nums ' + cfg.viewsClass + '">' + lbNum(a.views) + ' <span class="text-zinc-500 font-normal">views</span></div></div>' +
+        '</a>';
+      }).join('') + '</div>';
+    }
+    function lbAnimeCard(a) {
+      var rankCls = a.rank <= 3 ? 'bg-gradient-to-r from-amber-300 to-yellow-500 text-black' : (a.rank <= 10 ? 'bg-[#91b8b1]/20 border border-[#91b8b1]/40 text-[#91b8b1] backdrop-blur-md' : 'bg-black/80 border border-white/15 text-zinc-300 backdrop-blur-md');
+      return '<a href="' + publicHref('/manga/' + encodeURIComponent(a.anime_id)) + '" class="lb-anime-card group relative flex flex-col rounded-2xl border border-white/[0.08] hover:border-[#91b8b1]/50 bg-[#0b0d11] overflow-hidden transition-all duration-300 hover:-translate-y-1.5 cursor-pointer shadow-lg hover:shadow-[#91b8b1]/10">' +
+        '<div class="relative aspect-[2/3] w-full bg-zinc-900 overflow-hidden">' + lbPosterHtml(a, false) +
+        '<div class="absolute inset-0 z-20 bg-gradient-to-t from-[#0b0d11] via-[#0b0d11]/75 via-35% to-transparent pointer-events-none"></div>' +
+        '<div class="absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full text-[10.5px] font-extrabold tabular-nums shadow-lg ' + rankCls + '">#' + a.rank + '</div>' +
+        '<div class="absolute top-2 right-2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-semibold text-zinc-200 tabular-nums">' + lbIcon('eye', 'w-3 h-3') + '<span>' + lbNum(a.views) + '</span></div>' +
+        '<div class="absolute inset-0 z-20 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/30 group-hover:opacity-100 pointer-events-none"><div class="flex h-10 w-10 scale-90 items-center justify-center rounded-full bg-white/95 text-black shadow-xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-100">' + lbIcon('play', 'h-4 w-4 translate-x-[1px] fill-current') + '</div></div>' +
+        '<div class="absolute bottom-2.5 inset-x-3 z-20 pointer-events-none"><h3 class="text-xs sm:text-sm font-bold text-white line-clamp-2 group-hover:text-[#91b8b1] transition-colors leading-snug">' + escapeHtml(a.title) + '</h3></div></div>' +
+        '<div class="px-3 py-2 border-t border-white/[0.06] bg-black/40 flex items-center justify-between text-[10.5px] text-zinc-400 tabular-nums"><span class="flex items-center gap-1"><span class="text-zinc-500">All-time:</span> <span class="font-semibold text-zinc-300">' + lbNum(a.all_time_views) + '</span></span><span class="flex items-center gap-1 text-[#91b8b1]">' + lbIcon('flame', 'w-3 h-3 fill-amber-400/25') + '<span>' + lbNum(a.views) + '</span></span></div>' +
+      '</a>';
+    }
+    function lbEmpty(kind) {
+      if (kind === 'anime') {
+        return '<div class="rounded-3xl border border-white/[0.08] bg-[#0b0d11] py-20 px-6 text-center space-y-3">' + lbIcon('gem', 'w-10 h-10 text-zinc-700 mx-auto') + '<h2 class="text-base font-bold text-white">No Anime Views Yet</h2><p class="text-xs sm:text-sm text-zinc-400 max-w-sm mx-auto">No series view counts have been recorded for this period yet.</p></div>';
+      }
+      return '<div class="rounded-3xl border border-white/[0.08] bg-[#0b0d11] py-20 px-6 text-center space-y-3">' + lbIcon('trophy', 'w-10 h-10 text-zinc-700 mx-auto') + '<h2 class="text-base font-bold text-white">No Rankings Yet</h2><p class="text-xs sm:text-sm text-zinc-400 max-w-sm mx-auto">No watch activity recorded for this timeframe yet. Start watching episodes to claim the top pedestal.</p><a href="' + publicHref('/catalog') + '" class="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl bg-[#91b8b1] text-black text-xs font-bold hover:bg-[#a3c7c0] transition-colors">' + lbIcon('compass', 'w-3.5 h-3.5') + '<span>Explore Anime</span></a></div>';
+    }
+    function lbStandingCard(u) {
+      return '<a href="' + publicHref('/y/' + encodeURIComponent(u.username)) + '" class="group relative mb-7 rounded-2xl border border-[#91b8b1]/25 hover:border-[#91b8b1]/55 bg-[#0b0d11] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 overflow-hidden transition-all cursor-pointer">' +
+        '<div class="pointer-events-none absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-[#91b8b1]/[0.08] to-transparent"></div>' +
+        '<div class="relative flex items-center gap-3.5 min-w-0">' + lbAvatar(u, 'w-12 h-12 sm:w-14 sm:h-14 shrink-0', 'ring-2 ring-[#91b8b1]/50', true) +
+        '<div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#91b8b1]/15 text-[#91b8b1] border border-[#91b8b1]/25">' + (u.rank ? 'Rank #' + u.rank : 'Your Standing') + '</span>' + lbStyledName(u, 'font-bold text-white text-sm sm:text-base truncate group-hover:text-[#91b8b1] transition-colors') + lbTierBadge(u, 'xs') + '</div><div class="flex items-center gap-3 text-xs text-zinc-400 mt-1.5 tabular-nums"><span class="text-[#91b8b1] font-semibold">' + lbNum(u.score) + ' XP</span><span class="text-zinc-600">&middot;</span>' + lbFlame(u.streak_days, 'text-amber-400 font-semibold') + '</div></div></div>' +
+        '<div class="relative w-full sm:w-64 space-y-1.5 shrink-0"><div class="flex items-center justify-between text-[11px] text-zinc-400 tabular-nums"><span>Level ' + u.level + '</span><span class="font-semibold text-white">' + u.percent + '%</span></div><div class="w-full h-2 rounded-full bg-white/[0.07] overflow-hidden ring-1 ring-inset ring-white/5"><div class="h-full bg-gradient-to-r rounded-full transition-all duration-500 ' + u.tier.gradient + '" style="width:' + u.percent + '%"></div></div></div>' +
+      '</a>';
+    }
+    function renderLeaderboard() {
+      var users = lbUsers();
+      var anime = lbAnime();
+      var tab = state.leaderboardTab === 'anime' ? 'anime' : 'users';
+      var ranges = [{ id: 'day', label: 'Daily' }, { id: 'week', label: 'Weekly' }, { id: 'month', label: 'Monthly' }, { id: 'all', label: 'All Time' }];
+      var range = state.leaderboardRange || 'week';
+      var me = users.filter(function (u) { return u.isMe; })[0] || null;
+      var content = '';
+      if (tab === 'anime') {
+        if (anime.length < 3) content = lbEmpty('anime');
+        else {
+          var rest = anime.slice(3);
+          content = lbAnimePodium(anime.slice(0, 3)) +
+            (rest.length ? '<div class="space-y-3 pt-6"><div class="flex items-center justify-between px-1"><div class="flex items-center gap-2">' + lbIcon('tv', 'w-4 h-4 text-[#91b8b1]') + '<h2 class="text-xs sm:text-sm font-extrabold tracking-wider uppercase text-zinc-300">Top Charts Ranking <span class="text-zinc-500 font-normal">(#4 &ndash; #' + anime.length + ')</span></h2></div><span class="text-[11px] sm:text-xs text-zinc-500 font-medium tabular-nums">' + rest.length + ' Series</span></div><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">' + rest.map(lbAnimeCard).join('') + '</div></div>' : '');
+        }
+      } else if (!users.length) content = lbEmpty('watchers');
+      else {
+        content = lbUserPodium(users.slice(0, 3)) +
+          (users.length > 3 ? '<div class="rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0a0c10] overflow-hidden divide-y divide-white/[0.05]">' + users.slice(3).map(lbUserRow).join('') + '</div>' : '');
+      }
+      return '<main class="relative min-h-screen bg-[#060709] text-zinc-100 pb-24 sm:pb-16 overflow-x-clip">' +
+        '<div class="pointer-events-none absolute inset-x-0 top-0 h-[420px] overflow-hidden"><div class="absolute left-1/2 -top-44 -translate-x-1/2 w-[780px] h-[360px] rounded-full bg-[#91b8b1]/[0.1] blur-[120px]"></div><div class="absolute left-1/2 -top-24 -translate-x-1/2 w-[420px] h-[220px] rounded-full bg-amber-400/[0.06] blur-[90px]"></div></div>' +
+        '<div class="relative max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24">' +
+        '<header class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 mb-7 sm:mb-9"><div class="space-y-2"><div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-semibold text-[#91b8b1]">' + lbIcon('crown', 'w-3.5 h-3.5 text-amber-400') + '<span>Hall of Fame</span></div><h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">YumeZone Rankings</h1><p class="text-xs sm:text-sm text-zinc-400 max-w-lg leading-relaxed">Dedicated watchers climbing through watch streaks and community milestones, alongside the season&apos;s most viewed series.</p></div>' +
+        '<div class="flex flex-col sm:flex-row sm:items-center gap-2.5"><div class="inline-flex items-center p-1 rounded-2xl bg-[#0d0f14] border border-white/[0.08] shadow-inner">' +
+        '<button type="button" data-action="leaderboard-tab" data-tab="users" class="flex items-center justify-center gap-1.5 flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer touch-manipulation ' + (tab === 'users' ? 'bg-white text-black shadow-sm' : 'text-zinc-400 hover:text-white') + '">' + lbIcon('users', 'h-4 w-4') + '<span>Top Watchers</span></button>' +
+        '<button type="button" data-action="leaderboard-tab" data-tab="anime" class="flex items-center justify-center gap-1.5 flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer touch-manipulation ' + (tab === 'anime' ? 'bg-white text-black shadow-sm' : 'text-zinc-400 hover:text-white') + '">' + lbIcon('tv', 'h-4 w-4') + '<span>Top Anime</span></button></div>' +
+        '<div class="inline-flex items-center p-1 rounded-2xl bg-[#0d0f14] border border-white/[0.08] overflow-x-auto lb-no-scrollbar">' + ranges.map(function (r) {
+          return '<button type="button" data-action="leaderboard-range" data-range="' + r.id + '" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer touch-manipulation ' + (range === r.id ? 'bg-[#91b8b1]/15 text-[#91b8b1] border border-[#91b8b1]/35' : 'text-zinc-400 hover:text-white border border-transparent') + '">' + r.label + '</button>';
+        }).join('') + '</div></div></header>' +
+        (me && tab === 'users' ? lbStandingCard(me) : '') + content +
+        '</div></main>';
+    }
                     function renderInfo() {
       var p = state.params.page;
       var about = siteSetting('aboutContent', siteLabel() + ' adalah katalog manga ringan dengan archive dan media tersimpan di Telegram melalui backend Vercel.');
@@ -9517,11 +9805,7 @@ function renderAdmin() {
         yzCardBlock('Kebijakan', '<p>Gunakan sumber resmi dan hormati hak cipta pencipta manga.</p>', 'file'),
         yzCardBlock('Baca online', '<p>Semua chapter dapat dibaca langsung melalui reader NexaManga.</p>', 'book')
       ]);
-      pages.leaderboard = yzStaticPage('Leaderboard', 'trophy', 'Peringkat manga paling populer berdasarkan jumlah pembaca dan bookmark.', [
-        yzCardBlock('Top manga', state.data.manga.slice().sort(function (a, b) { return (b.views || b.followers || 0) - (a.views || a.followers || 0); }).slice(0, 12).map(function (m, i) {
-          return '<a class="flex items-center justify-between rounded-lg border border-zinc-900 bg-black/40 px-3 py-2 hover:text-white" href="' + publicHref('/manga/' + escapeHtml(m.slug)) + '"><span>' + (i + 1) + '. ' + escapeHtml(yzTitle(m)) + '</span><span class="text-[10px] text-zinc-500">' + (m.views || m.followers || 0) + '</span></a>';
-        }).join('') || '<p>Belum ada data manga.</p>', 'trophy')
-      ]);
+      pages.leaderboard = renderLeaderboard();
       var legalIntro = '<main class="mx-auto min-h-screen max-w-4xl px-4 pt-24 sm:pt-28 md:pt-32 pb-16 sm:px-6">' +
         '<h1 class="text-2xl font-bold tracking-tight text-white sm:text-3xl flex items-center gap-2.5">' + yzIco('shield', 'h-6 w-6 text-[var(--color-accent)]') + '<span>Terms &amp; Privacy</span></h1>' +
         '<p class="mt-4 text-xs text-zinc-400">Sederhana, transparan, dan ramah pengguna. Berikut layanan dan perlindungan privasi di NexaManga.</p>' +
@@ -10912,6 +11196,23 @@ function setBannerDotsActive(index) {
       var el = e.target.closest('[data-action]');
       if (!el) { if (closeMore) render(); return; }
       var act = el.getAttribute('data-action');
+      if (act === 'leaderboard-tab') {
+        state.leaderboardTab = el.getAttribute('data-tab') === 'anime' ? 'anime' : 'users';
+        var lbTabUrl = new URL(window.location.href);
+        lbTabUrl.searchParams.set('type', state.leaderboardTab);
+        window.history.replaceState(null, '', lbTabUrl.pathname + lbTabUrl.search + lbTabUrl.hash);
+        render();
+        return;
+      }
+      if (act === 'leaderboard-range') {
+        var lbNextRange = el.getAttribute('data-range') || 'week';
+        state.leaderboardRange = ['day', 'week', 'month', 'all'].indexOf(lbNextRange) !== -1 ? lbNextRange : 'week';
+        var lbRangeUrl = new URL(window.location.href);
+        lbRangeUrl.searchParams.set('range', state.leaderboardRange);
+        window.history.replaceState(null, '', lbRangeUrl.pathname + lbRangeUrl.search + lbRangeUrl.hash);
+        render();
+        return;
+      }
         if (act === 'hero-prev') { markHeroInteraction(); var heroStep = heroAdvance(state.activeIndex, 'prev', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }
       if (act === 'hero-next') { markHeroInteraction(); heroStep = heroAdvance(state.activeIndex, 'next', state.heroCount, 1); setHeroSlide(heroStep.index, heroStep.direction); return; }
       if (act === 'hero-dot' || act === 'hero-thumb') { markHeroInteraction(); setHeroSlide(Number(el.getAttribute('data-index')) || 0); return; }
