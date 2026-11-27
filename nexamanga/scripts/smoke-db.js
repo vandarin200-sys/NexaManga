@@ -5,6 +5,7 @@
 
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
+const { publicSlugFor } = require('../lib/progress');
 
 (async () => {
   const databaseUrl = process.env.SMOKE_DATABASE_URL;
@@ -18,6 +19,7 @@ const { randomUUID } = require('node:crypto');
   const db = require('../lib/db');
   const marker = `smoke-${randomUUID()}`;
   const accountId = `usr-${marker}`;
+  const publicSlug = publicSlugFor(accountId);
   let inserted = false;
   let accountInserted = false;
 
@@ -78,6 +80,7 @@ const { randomUUID } = require('node:crypto');
     await db.modifyCatalog((catalog) => {
       catalog.users.push({
         id: accountId,
+        publicSlug,
         provider: 'google',
         providerId: marker,
         name: 'Smoke XP',
@@ -105,9 +108,12 @@ const { randomUUID } = require('node:crypto');
     });
     assert(duplicate === null, 'XP duplikat seharusnya diabaikan.');
     const board = await db.readLeaderboard('all', 50);
-    assert(board.some((item) => item.user_id === accountId && item.score === 25), 'Leaderboard XP tidak mengembalikan progres uji.');
+    assert(board.some((item) => item.user_id === accountId && item.score === 25 && item.public_slug === publicSlug), 'Leaderboard XP tidak mengembalikan progres uji.');
     const profile = await db.readUserProgress('smokexp');
     assert(profile && profile.user_id === accountId && profile.total_xp === 25, 'Profil XP tidak ditemukan.');
+    const publicProfile = await db.readPublicProfile(publicSlug);
+    assert(publicProfile && publicProfile.slug === publicSlug && publicProfile.progress.total_xp === 25, 'Profil publik tidak ditemukan.');
+    assert(await db.readPublicProfile('zzzzzzzz') === null, 'Slug profil publik tidak valid seharusnya tidak ditemukan.');
     console.log('   ok');
 
     console.log('Smoke test database relasional lulus.');

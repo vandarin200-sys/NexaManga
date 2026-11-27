@@ -68,6 +68,7 @@ const {
   readCatalog,
   readLeaderboard,
   readMangaLeaderboard,
+  readPublicProfile,
   readUserProgress,
   recordMangaView,
   recordTrack,
@@ -737,6 +738,19 @@ async function handler(req, res) {
       const payload = { user: safeUser(claims.record || claims.user), role: claims.role };
       if (refreshedToken) payload.token = refreshedToken;
       return sendJson(res, 200, payload);
+    }
+
+    const publicProfileRoute = route.match(/^profile\/([^/]+)$/);
+    if (publicProfileRoute && req.method === 'GET') {
+      let slug;
+      try {
+        slug = decodeURIComponent(publicProfileRoute[1]);
+      } catch {
+        throw new HttpError(400, 'Slug profil tidak valid.');
+      }
+      const profile = await readPublicProfile(slug);
+      if (!profile) throw new HttpError(404, 'Profil publik tidak ditemukan.');
+      return sendJson(res, 200, profile);
     }
 
     const progressRoute = route.match(/^user\/([^/]+)\/xp$/);

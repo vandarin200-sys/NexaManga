@@ -3,7 +3,15 @@
 const { neon } = require('@neondatabase/serverless');
 const { EMPTY_CATALOG, validateCatalog } = require('./catalog');
 const { config } = require('./env');
-const { XP_ACTIVITIES, normalizeUsername, progressFromXp, rangeSince, serializeProgress } = require('./progress');
+const {
+  XP_ACTIVITIES,
+  normalizePublicSlug,
+  normalizeUsername,
+  progressFromXp,
+  rangeSince,
+  serializeProgress,
+  uniquePublicSlug
+} = require('./progress');
 
 const MAX_SNAPSHOT_BYTES = 50 * 1024 * 1024;
 const CAS_MAX_ATTEMPTS = 5;
@@ -293,11 +301,21 @@ function ensureSchema() {
         email text,
         avatar text,
         role text NOT NULL DEFAULT 'member',
+        public_slug text,
         created_at timestamptz NOT NULL,
         email_verified boolean NOT NULL DEFAULT false,
         extra jsonb NOT NULL DEFAULT '{}'::jsonb,
         UNIQUE (provider, provider_id)
       )`;
+      await db`ALTER TABLE nexamanga_accounts ADD COLUMN IF NOT EXISTS public_slug text`;
+      await db`CREATE UNIQUE INDEX IF NOT EXISTS nexamanga_accounts_public_slug_idx ON nexamanga_accounts (public_slug)`;
+      const existingSlugs = new Set(rows(await db`SELECT public_slug FROM nexamanga_accounts WHERE public_slug IS NOT NULL AND public_slug <> ''`).map((row) => String(row.public_slug)));
+      const missingSlugRows = rows(await db`SELECT id FROM nexamanga_accounts WHERE public_slug IS NULL OR public_slug = '' ORDER BY id`);
+      for (const row of missingSlugRows) {
+        const slug = uniquePublicSlug(String(row.id), existingSlugs);
+        const updated = rows(await db`UPDATE nexamanga_accounts SET public_slug = ${slug} WHERE id = ${row.id} AND (public_slug IS NULL OR public_slug = '') RETURNING public_slug`);
+        if (updated.length) existingSlugs.add(slug);
+      }
       await db`DROP INDEX IF EXISTS nexamanga_accounts_email_lower_idx`;
       await db`CREATE TABLE IF NOT EXISTS nexamanga_account_credentials (
         account_id text PRIMARY KEY REFERENCES nexamanga_accounts(id) ON DELETE CASCADE,
@@ -396,7 +414,7 @@ function ensureSchema() {
       await db`CREATE INDEX IF NOT EXISTS nexamanga_manga_view_events_manga_created_idx ON nexamanga_manga_view_events (manga_id, created_at DESC)`;
       await db`CREATE INDEX IF NOT EXISTS nexamanga_manga_view_events_created_idx ON nexamanga_manga_view_events (created_at DESC)`;
       await db`CREATE OR REPLACE VIEW nexamanga_users AS
-        SELECT a.id, a.name, a.email, a.avatar, a.provider, a.role,
+        SELECT a.id, a.public_slug, a.name, a.email, a.avatar, a.provider, a.role,
           a.created_at::text AS created_at,
           COALESCE(p.xp, 0) AS xp,
           COALESCE(p.level, 1) AS level,
@@ -502,7 +520,7 @@ const REPORT_KEYS = [
   'userId', 'reporterKey', 'createdAt', 'status'
 ];
 const USER_KEYS = [
-  'id', 'provider', 'providerId', 'name', 'email', 'avatar', 'role', 'createdAt',
+  'id', 'publicSlug', 'provider', 'providerId', 'name', 'email', 'avatar', 'role', 'createdAt',
   'emailVerified', 'passwordHash', 'passwordSalt', 'emailVerification', 'connections'
 ];
 const CONNECTION_KEYS = [
@@ -662,6 +680,7 @@ function assembleCatalog(results) {
     const user = {
       ...extra,
       id: row.id,
+      publicSlug: row.public_slug || null,
       provider: row.provider,
       providerId: row.provider_id,
       name: row.name,
@@ -752,7 +771,7 @@ const INSERT_COLUMN_TYPES = {
   nexamanga_comments: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'date', 'text', 'boolean', 'jsonb'],
   nexamanga_comment_upvotes: ['text', 'text'],
   nexamanga_reports: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'timestamptz', 'text', 'jsonb'],
-  nexamanga_accounts: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'timestamptz', 'boolean', 'jsonb'],
+  nexamanga_accounts: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'timestamptz', 'boolean', 'jsonb'],
   nexamanga_account_credentials: ['text', 'text', 'text', 'text', 'text', 'timestamptz', 'integer'],
   nexamanga_account_connections: ['text', 'text', 'boolean', 'text', 'text', 'text', 'timestamptz', 'timestamptz', 'jsonb'],
   nexamanga_chapter_reactions: ['text', 'text', 'text'],
@@ -905,6 +924,7 @@ function replaceCatalog(tx, catalog, revision, initialized) {
   for (const item of catalog.users || []) {
     accountRows.push([
       textValue(item.id),
+      item.publicSlug === undefined ? null : textValue(item.publicSlug, null),
       textValue(item.provider),
       textValue(item.providerId),
       textValue(item.name),
@@ -984,7 +1004,7 @@ function replaceCatalog(tx, catalog, revision, initialized) {
     ['nexamanga_comments', ['id', 'manga_id', 'chapter_id', 'parent_id', 'reply_to', 'image_url', 'user_id', 'author_key', 'author_name', 'author_avatar', 'content', 'created_at', 'status', 'pinned', 'extra'], commentRows],
     ['nexamanga_comment_upvotes', ['comment_id', 'voter_id'], upvoteRows],
     ['nexamanga_reports', ['id', 'manga_id', 'chapter_id', 'manga_title', 'chapter_number', 'reason', 'detail', 'user_id', 'reporter_key', 'created_at', 'status', 'extra'], reportRows],
-    ['nexamanga_accounts', ['id', 'provider', 'provider_id', 'name', 'email', 'avatar', 'role', 'created_at', 'email_verified', 'extra'], accountRows],
+    ['nexamanga_accounts', ['id', 'public_slug', 'provider', 'provider_id', 'name', 'email', 'avatar', 'role', 'created_at', 'email_verified', 'extra'], accountRows],
     ['nexamanga_account_credentials', ['account_id', 'password_hash', 'password_salt', 'verification_hash', 'verification_salt', 'verification_expires_at', 'verification_attempts'], credentialRows],
     ['nexamanga_account_connections', ['account_id', 'provider', 'connected', 'provider_id', 'username', 'access_token', 'updated_at', 'last_synced_at', 'extra'], connectionRows],
     ['nexamanga_chapter_reactions', ['chapter_id', 'voter_id', 'reaction'], chapterReactionRows],
@@ -1258,13 +1278,14 @@ async function readLeaderboard(range = 'week', limit = 50) {
   const db = executor();
   const since = rangeSince(['day', 'week', 'month', 'all'].includes(range) ? range : 'week');
   const safeLimit = Math.max(1, Math.min(50, Math.floor(numberValue(limit, 50))));
-  const result = await db`SELECT p.user_id, p.username, p.name, p.avatar,
+  const result = await db`SELECT p.user_id, p.username, p.name, p.avatar, a.public_slug,
       p.xp AS total_xp, p.streak_days,
       COALESCE(SUM(e.amount), 0) AS score
     FROM nexamanga_user_progress p
+    LEFT JOIN nexamanga_accounts a ON a.id = p.user_id
     LEFT JOIN nexamanga_xp_events e
       ON e.user_id = p.user_id AND e.created_at >= ${since}
-    GROUP BY p.user_id, p.username, p.name, p.avatar, p.xp, p.streak_days
+    GROUP BY p.user_id, p.username, p.name, p.avatar, a.public_slug, p.xp, p.streak_days
     ORDER BY score DESC, p.xp DESC, p.user_id ASC
     LIMIT ${safeLimit}`;
   return rows(result).map((row, index) => serializeProgress(row, index + 1, numberValue(row.score)));
@@ -1275,10 +1296,12 @@ async function readUserProgress(identifier) {
   const db = executor();
   const raw = typeof identifier === 'string' ? identifier : '';
   const username = normalizeUsername(raw);
-  const result = await db`SELECT user_id, username, name, avatar, xp AS total_xp, streak_days
-    FROM nexamanga_user_progress
-    WHERE username = ${username} OR user_id = ${raw}
-    ORDER BY xp DESC, updated_at DESC
+  const result = await db`SELECT p.user_id, p.username, p.name, p.avatar, a.public_slug,
+      p.xp AS total_xp, p.streak_days
+    FROM nexamanga_user_progress p
+    LEFT JOIN nexamanga_accounts a ON a.id = p.user_id
+    WHERE p.username = ${username} OR p.user_id = ${raw}
+    ORDER BY p.xp DESC, p.updated_at DESC
     LIMIT 1`;
   const row = firstRow(result);
   return row ? serializeProgress(row) : null;
@@ -1347,6 +1370,49 @@ async function readMangaLeaderboard(range = 'week', limit = 50) {
   }));
 }
 
+async function readPublicProfile(slug) {
+  await ensureSchema();
+  const normalized = normalizePublicSlug(slug);
+  if (!normalized) return null;
+  const db = executor();
+  const result = await db`SELECT a.id, a.public_slug, a.name, a.avatar, a.role, a.created_at,
+      COALESCE(p.xp, 0) AS total_xp, COALESCE(p.streak_days, 0) AS streak_days
+    FROM nexamanga_accounts a
+    LEFT JOIN nexamanga_user_progress p ON p.user_id = a.id
+    WHERE a.public_slug = ${normalized}
+    LIMIT 1`;
+  const row = firstRow(result);
+  if (!row) return null;
+  const totalXp = Math.max(0, Math.floor(numberValue(row.total_xp)));
+  const commentsResult = await db`SELECT c.id, c.manga_id, m.slug AS manga_slug, m.title AS manga_title,
+      c.content, c.created_at
+    FROM nexamanga_comments c
+    LEFT JOIN nexamanga_manga m ON m.id = c.manga_id
+    WHERE c.user_id = ${row.id} AND c.status = 'approved'
+    ORDER BY c.created_at DESC, c.id DESC
+    LIMIT 4`;
+  return {
+    slug: String(row.public_slug),
+    username: normalizeUsername(row.name),
+    name: String(row.name || ''),
+    avatar: row.avatar ? String(row.avatar) : null,
+    role: String(row.role || 'member'),
+    created_at: timestampString(row.created_at),
+    progress: Object.assign({
+      total_xp: totalXp,
+      streak_days: Math.max(0, Math.floor(numberValue(row.streak_days)))
+    }, progressFromXp(totalXp)),
+    comments: rows(commentsResult).map((comment) => ({
+      id: String(comment.id || ''),
+      manga_id: String(comment.manga_id || ''),
+      manga_slug: String(comment.manga_slug || ''),
+      manga_title: String(comment.manga_title || 'Diskusi Manga'),
+      content: String(comment.content || ''),
+      created_at: timestampString(comment.created_at)
+    }))
+  };
+}
+
 module.exports = {
   CatalogNotInitializedError,
   ConcurrentUpdateError,
@@ -1359,6 +1425,7 @@ module.exports = {
   readCatalog,
   readLeaderboard,
   readMangaLeaderboard,
+  readPublicProfile,
   readUserProgress,
   recordMangaView,
   recordTrack,

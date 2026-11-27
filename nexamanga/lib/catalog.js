@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('node:crypto');
+const { uniquePublicSlug } = require('./progress');
 
 const EMPTY_CATALOG = Object.freeze({ manga: [], chapters: [], comments: [], reports: [], users: [] });
 
@@ -43,8 +44,11 @@ function registerOAuthUser(catalog, identity) {
   if (existing) return existing;
 
   const hasAdmin = catalog.users.some((existingUser) => existingUser.role === 'admin');
+  const id = `usr-${crypto.randomUUID()}`;
+  const usedSlugs = new Set(catalog.users.map((item) => item.publicSlug).filter(Boolean));
   const user = {
-    id: `usr-${crypto.randomUUID()}`,
+    id,
+    publicSlug: uniquePublicSlug(id, usedSlugs),
     provider: identity.provider,
     providerId: identity.providerId,
     name: identity.name.trim().slice(0, 100),
@@ -147,6 +151,7 @@ function safeUser(user) {
   };
   return {
     id: user.id,
+    publicSlug: user.publicSlug || null,
     name: user.name,
     email: user.email || null,
     avatar: user.avatar || null,

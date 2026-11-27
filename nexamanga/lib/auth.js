@@ -65,6 +65,7 @@ function createSessionToken(user, now = Math.floor(Date.now() / 1000)) {
     role: user.role,
     user: {
       id: user.id,
+      publicSlug: user.publicSlug || null,
       name: user.name,
       email: user.email,
       avatar: user.avatar,

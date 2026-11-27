@@ -4051,6 +4051,10 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       var value = String(path || '/');
       return value;
     }
+    function publicProfileHref(user) {
+      var slug = user && (user.public_slug || user.publicSlug);
+      return slug ? publicHref('/profile/' + encodeURIComponent(slug)) : publicHref('/akun');
+    }
     function canAccessAdmin() {
       return !!(state.adminToken && state.user && state.user.role === 'admin');
     }
@@ -4148,7 +4152,8 @@ function yzBtnClass(primary) {
         download: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
         menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
         chevron: '<path d="m9 18 6-6-6-6"/>',
-        shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15 21 21"/><path d="M4 4 9 9"/>'
+        shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15 21 21"/><path d="M4 4 9 9"/>',
+        copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'
       };
       return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-' + name + ' ' + (cls || 'h-4 w-4') + '" aria-hidden="true">' + (p[name] || p.grid) + '</svg>';
     }
@@ -4336,10 +4341,14 @@ function yzSettingRead(key, fallback) {
        profileReaction: '',
        leaderboardTab: 'users',
        leaderboardRange: 'week',
-       leaderboardData: null,
-       leaderboardLoading: false,
-       leaderboardError: null,
-       userProgress: null,
+        leaderboardData: null,
+        leaderboardLoading: false,
+        leaderboardError: null,
+        publicProfile: null,
+        publicProfileSlug: '',
+        publicProfileLoading: false,
+        publicProfileError: null,
+        userProgress: null,
        userProgressLoaded: false,
        userProgressLoading: false,
       yzSidebarExpanded: false,
@@ -5358,12 +5367,15 @@ function yzSettingRead(key, fallback) {
         window.history.replaceState(null, '', cleanUrl);
       }
       var parts = routePath.split('?')[0].split('/').filter(Boolean);
+      var routeQuery = legacyRoute
+        ? (routePath.indexOf('?') === -1 ? '' : routePath.slice(routePath.indexOf('?') + 1))
+        : window.location.search.replace(/^\?/, '');
       if (parts.length === 0 || parts[0] === 'home') { state.route = 'home'; state.params = {}; return; }
-      if (parts[0] === 'catalog' || parts[0] === 'archive' || parts[0] === 'search') { state.route = 'catalog'; state.params = { nav: 'browse' }; return; }
+      if (parts[0] === 'catalog' || parts[0] === 'archive' || parts[0] === 'search') { state.route = 'catalog'; state.params = { nav: 'browse', mangaId: new URLSearchParams(routeQuery).get('mangaId') || '' }; return; }
       if (parts[0] === 'manga' && !parts[1]) { state.route = 'catalog'; state.params = { nav: 'manga' }; return; }
       if (parts[0] === 'manga' && parts[1]) { state.route = 'detail'; state.params = { slug: parts[1] }; return; }
       if (parts[0] === 'baca' && parts[1] && parts[2]) { state.route = 'reader'; state.params = { slug: parts[1], chapterId: parts[2] }; state.currentPageIdx = 0; return; }
-      if ((parts[0] === 'profile' || parts[0] === 'y') && parts[1]) { state.route = 'profile'; state.params = { username: decodeURIComponent(parts[1]) }; return; }
+      if (parts[0] === 'profile' && parts[1]) { state.route = 'profile'; state.params = { slug: decodeURIComponent(parts[1]) }; return; }
       if (parts[0] === 'akun' || parts[0] === 'watchlist') { state.route = 'account'; state.params = {}; return; }
       if (parts[0] === 'settings' || parts[0] === 'setelan') { state.route = 'settings'; state.params = {}; return; }
       if (parts[0] === 'notifikasi') { state.route = 'notification'; state.params = {}; return; }
@@ -5546,6 +5558,34 @@ function trackPageview() {
           state.leaderboardLoading = false;
           state.leaderboardData = null;
           state.leaderboardError = err && err.message ? err.message : 'Gagal memuat leaderboard.';
+          render();
+          return null;
+        });
+    }
+
+    var publicProfileRequestId = 0;
+    function loadPublicProfile(slug) {
+      if (!CONFIG.API_BASE_URL || !slug) return Promise.resolve(null);
+      var requestId = ++publicProfileRequestId;
+      state.publicProfileSlug = slug;
+      state.publicProfile = null;
+      state.publicProfileLoading = true;
+      state.publicProfileError = null;
+      render();
+      return fetch(CONFIG.API_BASE_URL + '/api/profile/' + encodeURIComponent(slug), { headers: state.adminToken ? { Authorization: 'Bearer ' + state.adminToken } : {} })
+        .then(parseApiResponse)
+        .then(function (json) {
+          if (requestId !== publicProfileRequestId) return null;
+          state.publicProfile = json || null;
+          state.publicProfileLoading = false;
+          render();
+          return json;
+        })
+        .catch(function (err) {
+          if (requestId !== publicProfileRequestId) return null;
+          state.publicProfile = null;
+          state.publicProfileLoading = false;
+          state.publicProfileError = err && err.message ? err.message : 'Gagal memuat profil publik.';
           render();
           return null;
         });
@@ -6727,7 +6767,7 @@ function renderSettings() {
         var synced = !!(user.connections && user.connections.anilist && user.connections.anilist.connected);
         var badges = synced ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-[#3db4f2]/40 bg-[#3db4f2]/10 text-[#3db4f2]"><span class="h-1.5 w-1.5 rounded-full bg-[#3db4f2]"></span> AniList Synced</span>' : '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-zinc-400">Direct Account</span>';
         var emailValue = user.email ? '<span class="text-zinc-300 font-mono truncate text-xs">' + escapeHtml(user.email) + '</span>' : '<span class="text-zinc-500 italic text-[11px]">No email linked</span>';
-        return '<div class="space-y-6 font-sans">' + head('Profile & Customization', 'Customize your avatar picture, decorative frame, custom name effects, and account credentials.', 'user', '<a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-xs font-bold text-zinc-300 hover:text-white transition-all shadow-sm active:scale-95 shrink-0 self-start sm:self-auto" href="' + publicHref('/profile/' + encodeURIComponent(user.username || displayName)) + '"><span>View Public Profile</span></a>') +
+        return '<div class="space-y-6 font-sans">' + head('Profile & Customization', 'Customize your avatar picture, decorative frame, custom name effects, and account credentials.', 'user', '<a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-xs font-bold text-zinc-300 hover:text-white transition-all shadow-sm active:scale-95 shrink-0 self-start sm:self-auto" href="' + publicProfileHref(user) + '"><span>View Public Profile</span></a>') +
           '<div class="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/40 p-4 sm:p-6 shadow-xl"><div class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left"><div class="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0"><div class="h-full w-full rounded-full bg-zinc-900 border-2 border-white/15 flex items-center justify-center text-xl font-black text-white overflow-hidden shadow-2xl">' + avatar + '</div></div><div class="space-y-2 min-w-0 flex-1"><div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">' + badges + '</div><p class="text-xs text-zinc-400 leading-relaxed max-w-md">This preview displays how your avatar, decorative frame, and styled username appear across ' + escapeHtml(siteName()) + ' watch parties and community discussions.</p></div></div></div>' +
           '<div class="space-y-3"><div class="flex items-center justify-between"><h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Profile Appearance & Styling</h3><span class="text-[10px] font-medium text-zinc-500">Live customization studio</span></div>' +
           '<div class="rounded-2xl border border-white/[0.08] bg-zinc-900/50 hover:bg-zinc-900/70 p-4 flex flex-col justify-between gap-4 transition-all duration-150"><div class="space-y-2"><div class="flex items-center justify-between"><div class="h-9 w-9 rounded-xl bg-[#3db4f2]/10 border border-[#3db4f2]/20 flex items-center justify-center text-[#3db4f2]">' + icon('user', 'h-4 w-4') + '</div><span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-white/5 border border-white/10 text-zinc-400">' + (synced ? 'AniList' : 'Custom') + '</span></div><div><h4 class="text-xs font-bold text-white uppercase tracking-wider">Avatar Picture</h4><p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Upload a photo, pick your favorite anime character, or sync your AniList avatar.</p></div></div><button type="button" class="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-white/5 active:scale-95" data-action="settings-edit-profile"><span>Change Avatar</span></button></div>' +
@@ -7340,19 +7380,13 @@ function renderSettings() {
         return Math.floor(minutes / 60) + 'h ' + (minutes % 60) + 'm';
       }
 
-      var isPublic = state.route === 'profile';
-      var routeName = slugify(state.params && state.params.username);
-      var selfName = slugify(currentDisplayName(state.user ? state.user.name : 'Member'));
       if (!state.user) {
         var guestLogo = siteLogo();
         var brandMedia = guestLogo ? '<img src="' + escapeHtml(guestLogo) + '" alt="Logo ' + escapeHtml(siteLabel()) + '" class="mx-auto max-h-12 w-auto object-contain"/>' : '<span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-xl font-black text-black">' + kvIcon('book') + '</span>';
         return '<div class="mx-auto flex min-h-[70vh] max-w-xl items-center px-4 py-12"><section class="' + yzCardClass() + ' w-full" aria-label="Halaman masuk ' + escapeHtml(siteLabel()) + '"><div class="text-center">' + brandMedia + '<span class="mt-5 block text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--yz-accent)]">Akses akun &middot; ' + escapeHtml(siteLabel()) + '</span><h1 class="mt-2 text-2xl font-black text-white">Masuk ke perpustakaanmu</h1><p class="mt-2 text-xs leading-6 text-zinc-500">Sinkronkan bookmark, riwayat baca, dan preferensi pembaca.</p><div class="mt-6 space-y-2">' + renderOAuthButtons() + '</div><p class="mt-5 text-[10px] leading-5 text-zinc-600"><strong>Tanpa kata sandi.</strong> Identitas dikelola oleh Google atau Discord; ' + escapeHtml(siteLabel()) + ' hanya menyimpan profil lokal kamu.</p></div></section></div>';
       }
-      if (isPublic && routeName !== selfName) {
-        return '<main class="mx-auto max-w-3xl px-4 pt-24 text-center"><div class="' + yzCardClass() + '"><h1 class="text-xl font-black text-white">Profil tidak tersedia</h1><p class="mt-2 text-xs text-zinc-500">Pengguna @' + escapeHtml(String(state.params.username || '')) + ' belum memiliki profil publik di ' + escapeHtml(siteLabel()) + '.</p><a class="' + yzBtnClass(true) + ' mt-5" href="' + publicHref('/akun') + '">Kembali ke Akun</a></div></main>';
-      }
-
       var user = state.user;
+      var publicSlug = String(user.publicSlug || user.public_slug || '');
       var override = profileOverride();
       var displayName = String(override.name || user.name || 'Member');
       var displayAvatar = override.avatar || user.avatar || '';
@@ -7385,8 +7419,8 @@ function renderSettings() {
       var roleLabel = user.role === 'admin' ? 'Administrator' : 'Pembaca';
 
       var tierBadge = '<span class="tier-badge relative inline-flex items-center overflow-hidden rounded-full border bg-[#0d0f12]/90 font-bold tracking-tight whitespace-nowrap select-none shrink-0 h-5 pl-0.5 pr-2 text-[11px] gap-1 border-zinc-600/60 text-zinc-300" title="' + escapeHtml(tierRank + ' · Level ' + level) + '"><span class="relative grid place-items-center rounded-full bg-gradient-to-br shrink-0 h-4 w-4 from-zinc-600 to-zinc-400">' + pIcon('shield', 'h-2.5 w-2.5 text-black/75') + '</span><span class="opacity-90">' + escapeHtml(tierRank) + '</span><span class="tabular-nums opacity-80">Lv.' + level + '</span></span>';
-      var avatar = '<div class="relative shrink-0"><div data-profile-avatar class="relative h-24 w-24 sm:h-28 sm:w-28 rounded-full overflow-hidden bg-[#0a0c10] ring-4 ring-[#0a0c10] shadow-2xl flex items-center justify-center text-2xl font-extrabold text-white">' + (displayAvatar ? '<img src="' + escapeHtml(displayAvatar) + '" alt="' + escapeHtml(displayName) + '" class="h-full w-full object-cover" referrerpolicy="no-referrer"/>' : escapeHtml(displayName.charAt(0).toUpperCase())) + '</div>' + (isPublic ? '' : '<button type="button" data-action="toggle-edit-profile" class="absolute -bottom-1 -right-1 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-[#13161c] border border-white/20 text-white shadow-xl transition-transform hover:scale-105 active:scale-95 cursor-pointer touch-manipulation" title="Ubah tampilan profil" aria-label="Ubah tampilan profil">' + pIcon('pencil', 'h-3.5 w-3.5') + '</button></div></div>');
-      var vanityButton = '<button type="button" data-action="profile-copy-vanity" class="inline-flex items-center gap-1 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] px-2.5 py-0.5 text-[11px] font-medium text-zinc-300 transition-colors cursor-pointer touch-manipulation" title="Salin URL profil"><span>y/' + escapeHtml(username) + '</span>' + pIcon('copy', 'h-2.5 w-2.5 text-zinc-500') + '</button>';
+      var avatar = '<div class="relative shrink-0"><div data-profile-avatar class="relative h-24 w-24 sm:h-28 sm:w-28 rounded-full overflow-hidden bg-[#0a0c10] ring-4 ring-[#0a0c10] shadow-2xl flex items-center justify-center text-2xl font-extrabold text-white">' + (displayAvatar ? '<img src="' + escapeHtml(displayAvatar) + '" alt="' + escapeHtml(displayName) + '" class="h-full w-full object-cover" referrerpolicy="no-referrer"/>' : escapeHtml(displayName.charAt(0).toUpperCase())) + '</div>' + '<button type="button" data-action="toggle-edit-profile" class="absolute -bottom-1 -right-1 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-[#13161c] border border-white/20 text-white shadow-xl transition-transform hover:scale-105 active:scale-95 cursor-pointer touch-manipulation" title="Ubah tampilan profil" aria-label="Ubah tampilan profil">' + pIcon('pencil', 'h-3.5 w-3.5') + '</button></div></div>';
+      var vanityButton = publicSlug ? '<button type="button" data-action="profile-copy-vanity" class="inline-flex items-center gap-1 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] px-2.5 py-0.5 text-[11px] font-medium text-zinc-300 transition-colors cursor-pointer touch-manipulation" title="Salin URL profil"><span>profile/' + escapeHtml(publicSlug) + '</span>' + pIcon('copy', 'h-2.5 w-2.5 text-zinc-500') + '</button>' : '';
 
       var reactions = [['like', '👍', 'Suka'], ['heart', '❤️', 'Cinta'], ['laugh', '😂', 'Lucu'], ['wow', '😮', 'Kaget'], ['cry', '😭', 'Sedih'], ['fire', '🔥', 'Panas']].map(function (r) {
         var active = state.profileReaction === r[0];
@@ -7444,7 +7478,7 @@ function renderSettings() {
             '<div data-profile-banner class="relative h-36 sm:h-52 md:h-64 w-full overflow-hidden" style="background-image:' + bannerGradientCss + '">' +
               (displayBackground ? '<img class="absolute inset-0 h-full w-full object-cover opacity-70" src="' + escapeHtml(displayBackground) + '" alt="" referrerpolicy="no-referrer"/>' : '<div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 30%, rgba(145,184,177,.16), transparent 55%)"></div>') +
               '<div class="absolute inset-x-0 top-0 h-20 pointer-events-none" style="background-image:linear-gradient(to bottom, rgba(0,0,0,.75) 0%, rgba(0,0,0,.25) 55%, transparent 100%)"></div><div class="absolute inset-x-0 bottom-0 h-32 sm:h-40 pointer-events-none" style="background-image:linear-gradient(to top, #0a0c10 0%, rgba(10,12,16,.65) 55%, transparent 100%)"></div>' +
-              (isPublic ? '' : '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects"><span style="color:#91b8b1">' + pIcon('sparkles', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">Effects</span></button></div>') +
+              '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects"><span style="color:#91b8b1">' + pIcon('sparkles', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">Effects</span></button></div>' +
             '</div>' +
             '<div class="relative z-10 px-4 sm:px-7 pb-5 sm:pb-7 -mt-12 sm:-mt-16 space-y-5">' +
               '<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5">' +
@@ -7454,7 +7488,7 @@ function renderSettings() {
                     (bio ? '<p class="mx-auto sm:mx-0 max-w-xl text-xs leading-6 text-zinc-400 whitespace-pre-line">' + escapeHtml(bio) + '</p>' : '') +
                   '</div></div>' +
                 '<div class="flex flex-wrap items-center justify-center md:justify-end gap-2 shrink-0">' +
-                  (isPublic ? '' : '<a href="' + publicHref('/settings') + '" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('settings', 'h-3.5 w-3.5 text-zinc-400') + '<span>Settings</span></a><button type="button" data-action="logout-user" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('out', 'h-3.5 w-3.5 text-zinc-400') + '<span>Log Out</span></button>') +
+                  '<a href="' + publicHref('/settings') + '" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('settings', 'h-3.5 w-3.5 text-zinc-400') + '<span>Settings</span></a><button type="button" data-action="logout-user" class="flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 px-3.5 py-2 text-xs font-semibold transition-colors">' + pIcon('out', 'h-3.5 w-3.5 text-zinc-400') + '<span>Log Out</span></button>' +
                 '</div>' +
               '</div>' +
               '<div class="grid grid-cols-3 divide-x divide-white/[0.07] rounded-2xl border border-white/[0.07] bg-white/[0.025] py-3 text-center tabular-nums"><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + readingTime(readingMinutes) + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Reading Time</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-[var(--yz-accent)]">Lv.' + level + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">' + streakDays + 'd Streak</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + historyItems.length + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Manga Logged</div></div></div>' +
@@ -7464,7 +7498,70 @@ function renderSettings() {
           '<div class="sticky top-16 z-30 flex items-center"><div class="w-full sm:w-auto inline-flex items-center gap-1 p-1 rounded-2xl border border-white/[0.08] bg-[#0a0c10]/90 backdrop-blur-xl shadow-xl overflow-x-auto scrollbar-none">' + tabHtml + '</div></div>' +
           activeView +
         '</div></main>' +
-      '</div>' + (state.avatarPickerOpen && !isPublic ? renderAvatarPicker(pickerAvatar, displayName) : '') + (state.profileEffectsOpen && !isPublic ? renderProfileEffects() : '');
+      '</div>' + (state.avatarPickerOpen ? renderAvatarPicker(pickerAvatar, displayName) : '') + (state.profileEffectsOpen ? renderProfileEffects() : '');
+    }
+
+    function renderPublicProfile() {
+      var slug = String((state.params && state.params.slug) || '');
+      var shell = function (inner) {
+        return '<main class="mx-auto min-h-[70vh] max-w-3xl px-4 pt-24 pb-16"><section class="' + yzCardClass() + ' p-6 sm:p-8">' + inner + '</section></main>';
+      };
+      if (!CONFIG.API_BASE_URL) {
+        return shell('<h1 class="text-xl font-black text-white">Profil publik belum tersedia</h1><p class="mt-2 text-xs text-zinc-500">Backend NexaManga belum terhubung.</p>');
+      }
+      if (state.publicProfileLoading || (!state.publicProfile && !state.publicProfileError && state.publicProfileSlug === slug)) {
+        return shell('<div class="text-center"><div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-white"></div><p class="mt-3 text-xs text-zinc-500">Memuat profil publik...</p></div>');
+      }
+      if (state.publicProfileError) {
+        return shell('<div class="text-center"><h1 class="text-xl font-black text-white">Profil tidak tersedia</h1><p class="mt-2 text-xs text-zinc-500">' + escapeHtml(state.publicProfileError) + '</p><button type="button" data-action="public-profile-retry" class="' + yzBtnClass(true) + ' mt-5">Coba Lagi</button><div class="mt-4"><a class="text-xs text-zinc-400 hover:text-white" href="' + publicHref('/leaderboard') + '">Kembali ke Leaderboard</a></div></div>');
+      }
+      var profile = state.publicProfile;
+      if (!profile || profile.slug !== slug) {
+        return shell('<div class="text-center"><p class="text-xs text-zinc-500">Memuat profil publik...</p></div>');
+      }
+      var progress = profile.progress || {};
+      var totalXp = Math.max(0, Math.floor(Number(progress.total_xp) || 0));
+      var level = Math.max(1, Math.floor(Number(progress.level) || 1));
+      var levelCost = Math.max(1, Math.floor(Number(progress.level_cost) || 220));
+      var xpInto = Math.max(0, Math.floor(Number(progress.xp_into_level) || 0));
+      var xpPercent = Math.max(0, Math.min(100, Math.floor(Number(progress.percent) || 0)));
+      var streakDays = Math.max(0, Math.floor(Number(progress.streak_days) || 0));
+      var tier = progress.tier || {};
+      var tierRank = String(tier.name || 'Novice') + (tier.division ? ' ' + tier.division : '');
+      var displayName = String(profile.name || 'Member');
+      var initial = escapeHtml(displayName.charAt(0).toUpperCase() || 'M');
+      var avatarHtml = profile.avatar
+        ? '<img src="' + escapeHtml(profile.avatar) + '" alt="' + escapeHtml(displayName) + '" class="h-full w-full object-cover" referrerpolicy="no-referrer"/>'
+        : initial;
+      var comments = Array.isArray(profile.comments) ? profile.comments : [];
+      var commentsHtml = comments.length ? comments.map(function (comment) {
+        var href = comment.manga_slug ? publicHref('/manga/' + encodeURIComponent(comment.manga_slug)) : publicHref('/catalog');
+        var text = String(comment.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 240);
+        return '<article class="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4"><a href="' + escapeHtml(href) + '" class="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-[var(--yz-accent)]">' + yzIco('book', 'h-3.5 w-3.5') + '<span>' + escapeHtml(comment.manga_title || 'Diskusi Manga') + '</span></a><p class="mt-2 text-xs leading-6 text-zinc-400">' + escapeHtml(text) + '</p><p class="mt-2 text-[10px] text-zinc-600">' + escapeHtml(String(comment.created_at || '').slice(0, 10)) + '</p></article>';
+      }).join('') : '<p class="py-8 text-center text-xs text-zinc-500">Belum ada komentar publik.</p>';
+      return '<div class="relative min-h-screen bg-[#060709] text-zinc-200 overflow-x-clip pb-20 sm:pb-12 font-sans">' +
+        '<div class="pointer-events-none fixed inset-x-0 top-0 h-[320px] overflow-hidden"><div class="absolute left-1/2 -top-44 -translate-x-1/2 h-[300px] w-[720px] rounded-full bg-[var(--yz-accent)]/[0.08] blur-[120px]"></div></div>' +
+        '<main class="relative mx-auto max-w-5xl w-full px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24">' +
+          '<section class="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0a0c10] shadow-2xl">' +
+            '<div class="relative h-32 sm:h-48 w-full overflow-hidden" style="background-image:radial-gradient(circle at 30% 30%, rgba(145,184,177,.16), transparent 55%)"><div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a0c10] to-transparent"></div></div>' +
+            '<div class="relative z-10 -mt-12 px-4 pb-5 sm:-mt-16 sm:px-7 sm:pb-7">' +
+              '<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">' +
+                '<div class="flex items-center gap-4"><div class="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-full bg-[#11141a] text-2xl font-extrabold text-white ring-4 ring-[#0a0c10] sm:h-28 sm:w-28">' + avatarHtml + '</div>' +
+                  '<div class="min-w-0"><h1 class="truncate text-xl sm:text-3xl font-extrabold tracking-tight text-white">' + escapeHtml(displayName) + '</h1>' +
+                    '<div class="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-zinc-400"><span class="font-semibold text-zinc-300">@' + escapeHtml(profile.username || 'member') + '</span><span>&middot;</span><span>profile/' + escapeHtml(profile.slug) + '</span><button type="button" data-action="public-profile-copy" class="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold text-zinc-300 transition-colors hover:bg-white/[0.09] cursor-pointer" aria-label="Salin URL profil">' + yzIco('copy', 'h-3 w-3') + '</button></div>' +
+                    '<div class="mt-2 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-500"><span class="inline-flex items-center gap-1 rounded-full border border-zinc-600/60 bg-zinc-800/60 px-2 py-0.5 font-bold text-zinc-300">' + yzIco('shield', 'h-3 w-3') + escapeHtml(tierRank) + ' &middot; Lv.' + level + '</span><span>' + escapeHtml(profile.role || 'member') + '</span><span>&middot;</span><span>' + escapeHtml(String(profile.created_at || '').slice(0, 10) || '—') + '</span></div>' +
+                  '</div></div>' +
+                '<a href="' + publicHref('/leaderboard') + '" class="' + yzBtnClass(false) + ' shrink-0">Lihat Leaderboard</a>' +
+              '</div>' +
+              '<div class="mt-5 grid grid-cols-3 divide-x divide-white/[0.07] rounded-2xl border border-white/[0.07] bg-white/[0.025] py-3 text-center tabular-nums"><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + totalXp.toLocaleString('id-ID') + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Total XP</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-[var(--yz-accent)]">Lv.' + level + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">' + streakDays + 'd Streak</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + comments.length + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Komentar</div></div></div>' +
+              '<div class="mt-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3.5"><div class="flex items-center justify-between text-xs"><span class="font-semibold text-white">' + escapeHtml(tierRank) + '</span><span class="font-mono text-zinc-300">' + xpInto + ' / ' + levelCost + ' XP</span></div><div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/[0.07]"><div class="h-full rounded-full bg-gradient-to-r from-zinc-600 to-zinc-400" style="width:' + xpPercent + '%"></div></div></div>' +
+            '</div>' +
+          '</section>' +
+          '<section class="' + yzCardClass() + ' mt-5 space-y-3">' +
+            '<div class="flex items-center justify-between"><h2 class="text-sm font-black text-white">Komentar Publik</h2><span class="text-[10px] text-zinc-500">' + comments.length + ' terbaru</span></div>' + commentsHtml +
+          '</section>' +
+        '</main>' +
+      '</div>';
     }
 
     function renderOAuthButtons() {
@@ -9441,7 +9538,7 @@ function renderAdmin() {
       return '<div class="grid grid-cols-3 gap-2 sm:gap-5 items-end mb-7 sm:mb-9">' + configs.map(function (cfg) {
         var u = top[cfg.index];
         if (!u) return '';
-        return '<a href="' + publicHref('/y/' + encodeURIComponent(u.username)) + '" data-place="' + cfg.place + '" class="lb-podium lb-card-hover group relative flex flex-col items-center text-center rounded-2xl sm:rounded-3xl border overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer ' + cfg.orderClass + ' ' + cfg.cardHeight + '">' +
+        return '<a href="' + publicProfileHref(u) + '" data-place="' + cfg.place + '" class="lb-podium lb-card-hover group relative flex flex-col items-center text-center rounded-2xl sm:rounded-3xl border overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer ' + cfg.orderClass + ' ' + cfg.cardHeight + '">' +
           '<div class="lb-podium-glow pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-28 h-28 rounded-full blur-2xl"></div>' +
           '<div class="lb-rank-num pointer-events-none select-none absolute -bottom-3 right-2 text-5xl sm:text-7xl font-black italic tracking-tighter">' + cfg.rank + '</div>' +
           '<div class="lb-shimmer pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-700"></div>' +
@@ -9458,7 +9555,7 @@ function renderAdmin() {
     }
     function lbUserRow(u) {
       var rank = String(u.rank < 10 ? '0' + u.rank : u.rank);
-      return '<a href="' + publicHref('/y/' + encodeURIComponent(u.username)) + '" class="lb-rank-row group flex items-center justify-between gap-3 px-3.5 py-3 sm:px-5 sm:py-3.5 transition-colors cursor-pointer ' + (u.isMe ? 'is-me' : '') + '">' +
+      return '<a href="' + publicProfileHref(u) + '" class="lb-rank-row group flex items-center justify-between gap-3 px-3.5 py-3 sm:px-5 sm:py-3.5 transition-colors cursor-pointer ' + (u.isMe ? 'is-me' : '') + '">' +
         '<div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1"><span class="w-8 sm:w-10 text-xs sm:text-sm font-bold font-mono tabular-nums lb-muted group-hover:lb-accent transition-colors shrink-0">#' + rank + '</span>' +
         lbAvatar(u, 'w-10 h-10 sm:w-11 sm:h-11 shrink-0', 'border border-white/[0.1]', false) +
         '<div class="min-w-0 flex-1"><div class="flex items-center gap-2 min-w-0">' + lbStyledName(u, 'lb-ink font-semibold text-xs sm:text-sm truncate transition-colors') + (u.isMe ? '<span class="lb-accent-bg text-[9px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0">Kamu</span>' : '') + '</div><div class="flex items-center gap-2 mt-1">' + lbTierBadge(u, 'xs') + (u.streak_days > 0 ? lbFlame(u.streak_days, 'text-[10px] font-semibold tabular-nums lb-accent') : '') + '</div></div></div>' +
@@ -9507,7 +9604,7 @@ function renderAdmin() {
       return '<div class="lb-surface rounded-3xl border py-20 px-6 text-center space-y-3">' + lbIcon('trophy', 'w-10 h-10 lb-accent mx-auto') + '<h2 class="lb-ink text-base font-bold">Belum Ada Peringkat</h2><p class="lb-muted text-xs sm:text-sm max-w-sm mx-auto">Belum ada aktivitas baca pada periode ini. Mulai baca dan kumpulkan XP untuk naik peringkat.</p><a href="' + publicHref('/catalog') + '" class="lb-accent-bg inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors">' + lbIcon('compass', 'w-3.5 h-3.5') + '<span>Jelajahi Komik</span></a></div>';
     }
     function lbStandingCard(u) {
-      return '<a href="' + publicHref('/y/' + encodeURIComponent(u.username)) + '" class="lb-surface lb-card-hover group relative mb-7 rounded-2xl border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 overflow-hidden transition-all cursor-pointer">' +
+      return '<a href="' + publicProfileHref(u) + '" class="lb-surface lb-card-hover group relative mb-7 rounded-2xl border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 overflow-hidden transition-all cursor-pointer">' +
         '<div class="lb-podium-glow pointer-events-none absolute inset-y-0 left-0 w-48 blur-2xl"></div>' +
         '<div class="relative flex items-center gap-3.5 min-w-0">' + lbAvatar(u, 'w-12 h-12 sm:w-14 sm:h-14 shrink-0', 'ring-2 ring-[#91b8b1]/50', true) +
         '<div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><span class="lb-accent-bg text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border">' + (u.rank ? 'Rank #' + u.rank : 'Peringkatmu') + '</span>' + lbStyledName(u, 'lb-ink font-bold text-sm sm:text-base truncate transition-colors') + lbTierBadge(u, 'xs') + '</div><div class="flex items-center gap-3 text-xs lb-muted mt-1.5 tabular-nums"><span class="lb-accent font-semibold">' + lbNum(u.score) + ' XP</span><span>&middot;</span>' + lbFlame(u.streak_days, 'lb-accent font-semibold') + '</div></div></div>' +
@@ -9658,7 +9755,8 @@ function renderAdmin() {
           applyTheme(false);
         }
         if (state.route === 'info' && state.params && state.params.page === 'leaderboard' && !state.leaderboardData && !state.leaderboardLoading) loadLeaderboard();
-        if ((state.route === 'account' || state.route === 'profile') && state.user && !state.userProgressLoaded && !state.userProgressLoading) loadUserProgress();
+        if (state.route === 'profile' && state.params && state.params.slug && state.publicProfileSlug !== state.params.slug) loadPublicProfile(state.params.slug);
+        if (state.route === 'account' && state.user && !state.userProgressLoaded && !state.userProgressLoading) loadUserProgress();
         finalizeHeroTrack(document.querySelector('[data-hero-track]'));
         var bodyHtml = '';
         if (state.loading) {
@@ -9671,7 +9769,8 @@ function renderAdmin() {
           else if (state.route === 'catalog') bodyHtml = renderCatalog();
           else if (state.route === 'detail') bodyHtml = renderDetail();
           else if (state.route === 'reader') bodyHtml = renderReader();
-          else if (state.route === 'account' || state.route === 'profile') bodyHtml = renderAccount();
+          else if (state.route === 'profile') bodyHtml = renderPublicProfile();
+          else if (state.route === 'account') bodyHtml = renderAccount();
           else if (state.route === 'settings') bodyHtml = renderSettings();
           else if (state.route === 'notification') bodyHtml = renderNotifications();
           else if (state.route === 'admin') bodyHtml = renderAdmin();
@@ -11086,7 +11185,9 @@ function setBannerDotsActive(index) {
           toast('Avatar dipilih.', 'ok');
           return;
         }
-        if (act === 'profile-copy-vanity') { var vanityName = String(currentDisplayName(state.user ? state.user.name : 'member')).toLowerCase().replace(/[^a-z0-9_]+/g, '').replace(/^_+|_+$/g, '') || 'member'; var vanity = 'y/' + vanityName; try { navigator.clipboard.writeText(vanity); } catch (err) {} toast('URL profil disalin: ' + vanity, 'ok'); return; }
+        if (act === 'profile-copy-vanity') { var ownSlug = String((state.user && (state.user.publicSlug || state.user.public_slug)) || ''); if (!ownSlug) { toast('Slug profil belum tersedia.', 'warn'); return; } var vanity = 'profile/' + ownSlug; try { navigator.clipboard.writeText(publicHref('/profile/' + ownSlug)); } catch (err) {} toast('URL profil disalin: ' + vanity, 'ok'); return; }
+        if (act === 'public-profile-copy') { var publicSlugValue = String((state.publicProfile && state.publicProfile.slug) || ''); if (publicSlugValue) { try { navigator.clipboard.writeText(publicHref('/profile/' + publicSlugValue)); } catch (err) {} toast('URL profil disalin: profile/' + publicSlugValue, 'ok'); } return; }
+        if (act === 'public-profile-retry') { state.publicProfileSlug = ''; state.publicProfileError = null; loadPublicProfile(String((state.params && state.params.slug) || '')); return; }
         if (act === 'profile-effects') {
           state.profileEffectsDraft = profileBannerGradient();
           state.profileEffectsOpen = true;
@@ -12122,6 +12223,9 @@ applyYumeAccent();
     html body.kv-public-route .lb-root .lb-overlay { background-image: linear-gradient(to top, var(--yz-surface-1) 0%, transparent 58%) !important; background-color: transparent !important; opacity: 1; }
     html body.kv-public-route .lb-root .lb-count { color: var(--lb-accent) !important; }
     html body.kv-public-route .lb-root .lb-progress-track { background-color: var(--yz-surface-3) !important; }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-podium { background-image: none !important; background-color: var(--yz-surface-1) !important; }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-podium[data-place="1"] .lb-podium-badge { background-image: none !important; background-color: var(--lb-accent) !important; border-color: var(--lb-accent) !important; color: var(--lb-on) !important; }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-shimmer { display: none !important; background-image: none !important; }
     @media (prefers-reduced-motion: reduce) { .lb-tier-badge.lb-shine:after, .lb-tier-badge.lb-radiant { animation:none; } }
       </style>
   <!-- LINT.ThenChange(//depot/google3/java/com/google/blogger/b2/layouts/widgets/v2-style.css) -->

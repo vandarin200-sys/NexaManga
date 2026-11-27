@@ -1,5 +1,7 @@
 'use strict';
 
+const crypto = require('node:crypto');
+
 const LEVEL_STEP = 220;
 const MAX_LEVEL = 100;
 const XP_ACTIVITIES = Object.freeze(['welcome', 'comment_approved', 'manga_view', 'reaction']);
@@ -17,6 +19,9 @@ const TIERS = Object.freeze([
   { slug: 'radiant', name: 'Radiant', min: 80, max: Infinity, prestige: 10 }
 ]);
 const DIVISIONS = Object.freeze(['III', 'II', 'I']);
+const PUBLIC_SLUG_LENGTH = 8;
+const PUBLIC_SLUG_LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const PUBLIC_SLUG_ALPHABET = PUBLIC_SLUG_LETTERS + '0123456789';
 
 function numberValue(value, fallback = 0) {
   const number = Number(value);
@@ -28,6 +33,39 @@ function normalizeUsername(value) {
     .toLowerCase()
     .replace(/[^a-z0-9_]+/g, '')
     .replace(/^_+|_+$/g, '') || 'member';
+}
+
+function publicSlugFor(accountId, attempt = 0) {
+  const id = String(accountId || '');
+  if (!id) return '';
+  const key = process.env.TOKEN_SECRET || process.env.PUBLIC_PROFILE_SECRET || 'nexamanga-public-profile';
+  const digest = crypto.createHmac('sha256', key).update(`${id}:${attempt}`).digest();
+  let value = BigInt(`0x${digest.toString('hex')}`);
+  const alphabetSize = BigInt(PUBLIC_SLUG_ALPHABET.length);
+  const lettersSize = BigInt(PUBLIC_SLUG_LETTERS.length);
+  const chars = [];
+  for (let index = 0; index < PUBLIC_SLUG_LENGTH; index += 1) {
+    chars.push(PUBLIC_SLUG_ALPHABET[Number(value % alphabetSize)]);
+    value /= alphabetSize;
+  }
+  if (!PUBLIC_SLUG_LETTERS.includes(chars[0])) {
+    chars[0] = PUBLIC_SLUG_LETTERS[Number(value % lettersSize)];
+  }
+  return chars.join('');
+}
+
+function normalizePublicSlug(value) {
+  const text = String(value || '');
+  return /^[A-Za-z0-9]{8}$/.test(text) ? text : '';
+}
+
+function uniquePublicSlug(accountId, used) {
+  const seen = used instanceof Set ? used : new Set(Array.isArray(used) ? used : []);
+  for (let attempt = 0; attempt < 1000; attempt += 1) {
+    const slug = publicSlugFor(accountId, attempt);
+    if (slug && !seen.has(slug)) return slug;
+  }
+  throw new Error('Tidak dapat membuat slug profil publik yang unik.');
 }
 
 function levelFromXp(xp) {
@@ -81,6 +119,7 @@ function serializeProgress(row, rank = null, score = null) {
   return Object.assign({
     rank: rank === null ? null : Math.max(1, Math.floor(numberValue(rank, 1))),
     user_id: String(row.user_id || ''),
+    public_slug: normalizePublicSlug(row.public_slug || row.publicSlug),
     username: String(row.username || normalizeUsername(row.name)),
     name: String(row.name || ''),
     avatar: row.avatar ? String(row.avatar) : null,
@@ -97,9 +136,12 @@ module.exports = {
   MAX_LEVEL,
   XP_ACTIVITIES,
   levelFromXp,
+  normalizePublicSlug,
   normalizeUsername,
   progressFromXp,
+  publicSlugFor,
   rangeSince,
   serializeProgress,
-  tierForLevel
+  tierForLevel,
+  uniquePublicSlug
 };
