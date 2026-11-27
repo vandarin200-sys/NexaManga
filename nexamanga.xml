@@ -4441,7 +4441,8 @@ function yzSettingRead(key, fallback) {
         imageTargetForm: null,
         commentImageIndex: 0,
         commentImageMap: {},
-        viewedChapters: {}
+        viewedChapters: {},
+        viewedMangaDetail: {}
       };
 
     function readCachedCatalog() {
@@ -6223,6 +6224,16 @@ function renderCommentSection(manga, chapterId) {
         function renderDetail() {
       var manga = (state.data.manga || []).filter(function (m) { return m.slug === state.params.slug; })[0];
       if (!manga) return render404();
+      if (!state.viewedMangaDetail) state.viewedMangaDetail = {};
+      if (!state.viewedMangaDetail[manga.id]) {
+        state.viewedMangaDetail[manga.id] = true;
+        if (CONFIG.API_BASE_URL) {
+          apiPublicWrite('/api/manga/view', { id: manga.id }).then(function (res) {
+            var viewedManga = (state.data.manga || []).filter(function (m) { return m.id === manga.id; })[0];
+            if (viewedManga && typeof res.views === 'number') viewedManga.views = res.views;
+          }).catch(function () {});
+        }
+      }
 
       function compact(n) {
         n = Number(n) || 0;
@@ -9485,7 +9496,7 @@ function renderAdmin() {
     }
     function lbEmpty(kind) {
       if (kind === 'comics') {
-        return '<div class="lb-surface rounded-3xl border py-20 px-6 text-center space-y-3">' + lbIcon('gem', 'w-10 h-10 lb-accent mx-auto') + '<h2 class="lb-ink text-base font-bold">Belum Ada Data Komik</h2><p class="lb-muted text-xs sm:text-sm max-w-sm mx-auto">Belum ada komik yang dibaca pada periode ini. Baca manga untuk mengisi peringkat.</p></div>';
+        return '<div class="lb-surface rounded-3xl border py-20 px-6 text-center space-y-3">' + lbIcon('gem', 'w-10 h-10 lb-accent mx-auto') + '<h2 class="lb-ink text-base font-bold">Belum Ada Data Komik</h2><p class="lb-muted text-xs sm:text-sm max-w-sm mx-auto">Belum ada komik yang dibaca pada periode ini. Buka detail atau chapter manga untuk mengisi peringkat.</p></div>';
       }
       return '<div class="lb-surface rounded-3xl border py-20 px-6 text-center space-y-3">' + lbIcon('trophy', 'w-10 h-10 lb-accent mx-auto') + '<h2 class="lb-ink text-base font-bold">Belum Ada Peringkat</h2><p class="lb-muted text-xs sm:text-sm max-w-sm mx-auto">Belum ada aktivitas baca pada periode ini. Mulai baca dan kumpulkan XP untuk naik peringkat.</p><a href="' + publicHref('/catalog') + '" class="lb-accent-bg inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors">' + lbIcon('compass', 'w-3.5 h-3.5') + '<span>Jelajahi Komik</span></a></div>';
     }
@@ -12023,7 +12034,7 @@ applyYumeAccent();
   }
     .lb-no-scrollbar::-webkit-scrollbar { display:none; }
     .lb-no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
-    .lb-rank-row, .lb-comics-card { content-visibility:auto; }
+    .lb-rank-row, .lb-comics-card { contain: layout paint; }
     .lb-styled-username { display:inline-block; max-width:100%; vertical-align:middle; transform:translateZ(0); backface-visibility:hidden; }
     .lb-tier-badge.lb-shine:after { content:''; position:absolute; inset:0; background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.75) 48%,transparent 76%); transform:translateX(-110%); animation:lb-tier-sweep 3.4s ease-in-out infinite; pointer-events:none; }
     .lb-tier-badge.lb-radiant { animation:lb-tier-rim 2.6s linear infinite; }
@@ -12050,7 +12061,7 @@ applyYumeAccent();
     .lb-root .lb-podium[data-place="1"] { border-color: var(--yz-accent) !important; }
     .lb-root .lb-podium-badge { background-color: var(--yz-accent) !important; border-color: var(--yz-accent) !important; color: var(--yz-bg) !important; }
     .lb-root .lb-podium-glow { background-color: var(--yz-accent-subtle) !important; }
-    .lb-root .lb-overlay { background-image: none !important; background-color: var(--yz-surface-1) !important; opacity: .65; }
+    .lb-root .lb-overlay { background-image: linear-gradient(to top, var(--yz-surface-1) 0%, transparent 58%) !important; background-color: transparent !important; opacity: 1; }
     .lb-root .lb-count { color: var(--yz-accent) !important; }
     .lb-root .lb-progress-track { background-color: var(--yz-surface-3) !important; }
     @media (prefers-reduced-motion: reduce) { .lb-tier-badge.lb-shine:after, .lb-tier-badge.lb-radiant { animation:none; } }
