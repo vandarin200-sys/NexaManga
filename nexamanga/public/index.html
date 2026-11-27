@@ -5927,7 +5927,7 @@ function trackPageview() {
         function navIcon(name, cls) {
           return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-' + name + ' h-4.5 w-4.5 shrink-0 ' + (cls || '') + '" aria-hidden="true">' + svgs[name] + '</svg>';
         }
-        var labelCls = 'yz-nav-label block w-full select-none overflow-hidden truncate whitespace-nowrap text-center text-[10px] font-semibold leading-none tracking-wide mt-1';
+        var labelCls = 'yz-nav-label block w-full select-none overflow-hidden truncate whitespace-nowrap text-center text-[10px] font-semibold leading-none tracking-wide mt-0.5';
         var items = [
           { path: '/home', label: 'Home', icon: 'house', active: state.route === 'home' },
           { path: '/search', label: 'Archive', icon: 'compass', active: state.route === 'catalog' || state.route === 'detail' },
@@ -5935,7 +5935,7 @@ function trackPageview() {
           { path: '/notifikasi', label: 'Notifikasi', icon: 'bell', active: state.route === 'notification' }
         ];
         var navHtml = items.map(function (n) {
-          return '<a href="' + publicHref(n.path) + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 transition-colors duration-150 ' + (n.active ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"' + (n.active ? ' aria-current="page"' : '') + ' aria-label="' + escapeHtml(n.label) + '"><span class="yz-nav-icon flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon(n.icon, n.active ? 'drop-shadow-[0_0_6px_rgba(var(--color-accent-rgb,145,184,177),0.55)]' : '') + '</span><span class="' + labelCls + '">' + escapeHtml(n.label) + '</span></a>';
+          return '<a href="' + publicHref(n.path) + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1 transition-colors duration-150 ' + (n.active ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"' + (n.active ? ' aria-current="page"' : '') + ' aria-label="' + escapeHtml(n.label) + '"><span class="yz-nav-icon flex h-7 w-7 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon(n.icon, n.active ? 'drop-shadow-[0_0_6px_rgba(var(--color-accent-rgb,145,184,177),0.55)]' : '') + '</span><span class="' + labelCls + '">' + escapeHtml(n.label) + '</span></a>';
         }).join('');
         var moreOpen = !!state.yzMoreOpen;
         var moreActive = moreOpen || state.route === 'settings' || state.route === 'info';
@@ -5954,8 +5954,8 @@ function trackPageview() {
             '</div>'
           : '';
         return moreSheet + '<div class="pointer-events-none fixed bottom-0 left-0 right-0 z-50 md:hidden" style="padding: 0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);">' +
-          '<nav class="yz-bottom-nav pointer-events-auto mx-auto grid w-full max-w-lg grid-cols-5 justify-items-center border border-white/[0.08] px-2.5 py-2 backdrop-blur-2xl" data-yz-bottom-nav aria-label="Navigasi bawah">' + navHtml +
-            '<button type="button" data-action="toggle-yz-more" aria-label="More" aria-expanded="' + (moreOpen ? 'true' : 'false') + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-1.5 transition-colors duration-150 ' + (moreActive ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"><span class="yz-nav-icon flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon('ellipsis') + '</span><span class="' + labelCls + '">More</span></button>' +
+          '<nav class="yz-bottom-nav pointer-events-auto mx-auto grid w-full max-w-lg grid-cols-5 justify-items-center border border-white/[0.08] px-2.5 py-1.5 backdrop-blur-2xl" data-yz-bottom-nav aria-label="Navigasi bawah">' + navHtml +
+            '<button type="button" data-action="toggle-yz-more" aria-label="More" aria-expanded="' + (moreOpen ? 'true' : 'false') + '" class="group flex w-full max-w-[76px] flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-1 transition-colors duration-150 ' + (moreActive ? 'bg-white/10 text-[var(--color-accent,#91b8b1)]' : 'text-zinc-400 hover:bg-white/5 hover:text-white') + '"><span class="yz-nav-icon flex h-7 w-7 items-center justify-center rounded-full transition-transform duration-150 group-active:scale-90">' + navIcon('ellipsis') + '</span><span class="' + labelCls + '">More</span></button>' +
           '</nav>' +
         '</div>';
       }
@@ -6016,8 +6016,8 @@ function trackPageview() {
         ];
         var navHtml = navItems.map(function (n) { return sideLink(n[0], n[1], n[2], n[3]); }).join('');
         var brandLabel = escapeHtml(siteName() || 'NexaManga');
-        var desktopBrand = publicBrandHtml('h-10 w-auto max-w-[190px] rounded-xl object-contain', 'hidden lg:inline font-black uppercase tracking-[0.12em] text-white', 'Home');
-        var mobileBrand = publicBrandHtml('h-9 w-auto max-w-[130px] rounded-xl object-contain', 'ml-1 whitespace-nowrap font-black uppercase tracking-[0.1em] text-white', 'Home');
+        var desktopBrand = publicBrandHtml('h-12 w-auto max-w-[220px] rounded-xl object-contain', 'hidden lg:inline text-sm lg:text-base font-black uppercase tracking-[0.12em] text-white', 'Home');
+        var mobileBrand = publicBrandHtml('h-10 w-auto max-w-[150px] rounded-xl object-contain', 'ml-1 whitespace-nowrap text-sm font-black uppercase tracking-[0.1em] text-white', 'Home');
         var mobileBrandClass = String(brandMode()) === 'name-only' ? 'flex min-w-0 items-center' : 'flex min-w-0 items-center';
         var discordSvg = '<svg class="h-4 w-4 shrink-0 fill-current text-[#5865F2] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.0777.0777 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"></path></svg>';
         var discordLink = '<div class="relative w-full"><a class="yz-rail-link yz-rail-discord w-full gap-0.5 pr-2" href="' + escapeHtml(discordUrl() || 'https://discord.gg/VPNSMcG6jM') + '" target="_blank" rel="noopener noreferrer" aria-label="Discord Community"><span class="yz-rail-icon">' + discordSvg + '</span><span class="min-w-0 flex-1 truncate whitespace-nowrap text-left text-xs font-semibold tracking-[0.01em] transition-opacity duration-150 ' + labelVis + '">Discord</span><span class="mr-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[#8b95ff] transition-opacity duration-150 ' + labelVis + '">Join</span></a></div>';
@@ -6068,7 +6068,7 @@ function trackPageview() {
         '</a>';
         return '<footer class="kv-public-footer border-t border-[var(--color-border)] bg-[var(--color-surface-0)]">' +
           '<div class="flex w-full flex-col items-center gap-6 px-4 py-10 sm:flex-row sm:justify-between lg:px-8">' +
-            '<div class="flex flex-col items-center gap-3 sm:items-start"><div class="flex items-center gap-3">' + publicBrandHtml('h-8 w-auto max-w-[120px] rounded-lg object-contain sm:h-10 sm:max-w-[170px] lg:h-12 lg:max-w-[210px]', 'text-base font-black tracking-wide text-white sm:text-lg lg:text-xl', 'site') + discordMark + '</div>' + (siteTagline() ? '<p class="text-[11px] text-zinc-500">' + escapeHtml(siteTagline()) + '</p>' : '') + '</div>' +
+            '<div class="flex flex-col items-center gap-3 sm:items-start"><div class="flex items-center gap-3">' + publicBrandHtml('h-10 w-auto max-w-[150px] rounded-lg object-contain sm:h-12 sm:max-w-[200px] lg:h-14 lg:max-w-[250px]', 'text-lg font-black tracking-wide text-white sm:text-xl lg:text-2xl', 'site') + discordMark + '</div>' + (siteTagline() ? '<p class="text-[11px] text-zinc-500">' + escapeHtml(siteTagline()) + '</p>' : '') + '</div>' +
             '<nav class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2" aria-label="Tautan informasi">' + links + '</nav>' +
           '</div>' +
         '</footer>';
