@@ -12,10 +12,12 @@ const {
   EMPTY_CATALOG,
   ValidationError,
   addComment,
+  addReport,
   REACTION_KEYS,
   deleteChapter,
   deleteComment,
   deleteManga,
+  deleteReport,
   pinComment,
   enrichCommentsWithUsers,
   incrementMangaViews,
@@ -23,6 +25,7 @@ const {
   saveChapter,
   saveManga,
   saveSettings,
+  setReportStatus,
   addChapterReaction,
   addMangaReaction,
   upvoteComment
@@ -126,6 +129,7 @@ function sanitizeCatalog(catalog, viewerKey, claims, showAllComments) {
       (!claims && viewerKey && comment.authorKey === viewerKey))
     .map((comment) => sanitizeComment(comment, viewerKey));
   delete output.users;
+  delete output.reports;
   return output;
 }
 
@@ -672,7 +676,7 @@ async function handler(req, res) {
         catalog = await readCatalog();
       } catch (error) {
         if (!(error instanceof CatalogNotInitializedError)) throw error;
-        catalog = { manga: [], chapters: [], comments: [], users: [] };
+        catalog = { manga: [], chapters: [], comments: [], reports: [], users: [] };
       }
       enrichCommentsWithUsers(catalog);
       const claims = await freshSessionClaims(req);
@@ -703,6 +707,21 @@ async function handler(req, res) {
       let created;
       await updateCatalog((catalog) => { created = addComment(catalog, body); });
       return sendJson(res, 201, { comment: sanitizeComment(created, key) });
+    }
+
+    if (route === 'report' && req.method === 'POST') {
+      enforceRateLimit(req, 'report', 5);
+      const body = await readBody(req);
+      const rawClaims = sessionClaims(req);
+      const claims = await freshSessionClaims(req);
+      if (rawClaims && !claims) {
+        throw new HttpError(401, 'Akun tidak ditemukan atau sudah dihapus. Silakan masuk kembali.');
+      }
+      body.reporterKey = requestViewerKey(req, claims);
+      body.userId = claims ? claims.sub : null;
+      let created;
+      await updateCatalog((catalog) => { created = addReport(catalog, body); });
+      return sendJson(res, 201, { ok: true, id: created.id });
     }
 
     if (route === 'admin/save-manga' && req.method === 'POST') {
@@ -755,6 +774,27 @@ async function handler(req, res) {
         if (!comment) throw new HttpError(404, 'Komentar tidak ditemukan.');
         comment.status = body.status;
       });
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (route === 'admin/reports' && req.method === 'GET') {
+      await requireAdmin(req);
+      const catalog = await readCatalog();
+      return sendJson(res, 200, { reports: catalog.reports || [] });
+    }
+
+    if (route === 'admin/report-status' && req.method === 'POST') {
+      await requireAdmin(req);
+      const body = await readBody(req);
+      await updateCatalog((catalog) => setReportStatus(catalog, body));
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (route === 'admin/delete-report' && req.method === 'POST') {
+      await requireAdmin(req);
+      const body = await readBody(req);
+      if (typeof body.id !== 'string' || !body.id) throw new HttpError(400, 'ID laporan tidak valid.');
+      await updateCatalog((catalog) => deleteReport(catalog, body));
       return sendJson(res, 200, { ok: true });
     }
 

@@ -2,7 +2,7 @@
 
 const crypto = require('node:crypto');
 
-const EMPTY_CATALOG = Object.freeze({ manga: [], chapters: [], comments: [], users: [] });
+const EMPTY_CATALOG = Object.freeze({ manga: [], chapters: [], comments: [], reports: [], users: [] });
 
 class ValidationError extends Error {
   constructor(message) {
@@ -19,6 +19,10 @@ function validateCatalog(catalog) {
     if (!Array.isArray(catalog[key])) {
       throw new Error(`Penyimpanan katalog tidak memiliki daftar ${key} yang valid.`);
     }
+  }
+  if (catalog.reports === undefined) catalog.reports = [];
+  if (!Array.isArray(catalog.reports)) {
+    throw new Error('Penyimpanan katalog tidak memiliki daftar reports yang valid.');
   }
   if (catalog.users === undefined) catalog.users = [];
   if (!Array.isArray(catalog.users)) {
@@ -372,16 +376,87 @@ function upvoteComment(catalog, input) {
   else comment.upvotes.splice(index, 1);
   return comment;
 }
+
+const REPORT_REASONS = Object.freeze([
+  'gambar-rusak',
+  'chapter-salah',
+  'konten-tidak-sesuai',
+  'tautan-tidak-berfungsi',
+  'lainnya'
+]);
+
+function addReport(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data laporan tidak valid.');
+  }
+  const mangaId = requireText(input.mangaId, 'ID manga', 100);
+  const chapterId = requireText(input.chapterId, 'ID chapter', 100);
+  const manga = catalog.manga.find((item) => item.id === mangaId);
+  if (!manga) throw new ValidationError('Manga tidak ditemukan.');
+  const chapter = catalog.chapters.find((item) => item.id === chapterId);
+  if (!chapter || chapter.mangaId !== mangaId) throw new ValidationError('Chapter tidak ditemukan.');
+  const reason = requireText(input.reason, 'Alasan laporan', 40);
+  if (!REPORT_REASONS.includes(reason)) throw new ValidationError('Alasan laporan tidak dikenali.');
+  const detail = typeof input.detail === 'string' && input.detail.trim()
+    ? input.detail.trim().slice(0, 500)
+    : '';
+  const userId = typeof input.userId === 'string' && input.userId ? input.userId : null;
+  const report = {
+    id: `r-${crypto.randomUUID()}`,
+    mangaId,
+    chapterId,
+    mangaTitle: String(manga.title || '').slice(0, 200),
+    chapterNumber: String(chapter.number || '').slice(0, 40),
+    reason,
+    detail,
+    userId,
+    reporterKey: userId ? null : (typeof input.reporterKey === 'string' && input.reporterKey ? input.reporterKey.slice(0, 100) : null),
+    createdAt: new Date().toISOString(),
+    status: 'open'
+  };
+  catalog.reports.unshift(report);
+  return report;
+}
+
+function setReportStatus(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data laporan tidak valid.');
+  }
+  const id = requireText(input.id, 'ID laporan', 100);
+  const status = requireText(input.status, 'Status laporan', 20);
+  if (!['open', 'resolved', 'dismissed'].includes(status)) {
+    throw new ValidationError('Status laporan tidak dikenali.');
+  }
+  const report = catalog.reports.find((item) => item.id === id);
+  if (!report) throw new ValidationError('Laporan tidak ditemukan.');
+  report.status = status;
+  return report;
+}
+
+function deleteReport(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data laporan tidak valid.');
+  }
+  const id = requireText(input.id, 'ID laporan', 100);
+  const index = catalog.reports.findIndex((item) => item.id === id);
+  if (index === -1) throw new ValidationError('Laporan tidak ditemukan.');
+  catalog.reports.splice(index, 1);
+  return { id };
+}
+
 module.exports = {
   EMPTY_CATALOG,
   ValidationError,
   addComment,
   addChapterReaction,
   addMangaReaction,
+  addReport,
   REACTION_KEYS,
+  REPORT_REASONS,
   deleteChapter,
   deleteComment,
   deleteManga,
+  deleteReport,
   pinComment,
   enrichCommentsWithUsers,
   incrementMangaViews,
@@ -389,6 +464,7 @@ module.exports = {
   saveChapter,
   saveManga,
   saveSettings,
+  setReportStatus,
   upvoteComment,
   validateCatalog
 };
