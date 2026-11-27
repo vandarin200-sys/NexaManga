@@ -414,11 +414,12 @@ function ensureSchema() {
       await db`CREATE INDEX IF NOT EXISTS nexamanga_manga_view_events_manga_created_idx ON nexamanga_manga_view_events (manga_id, created_at DESC)`;
       await db`CREATE INDEX IF NOT EXISTS nexamanga_manga_view_events_created_idx ON nexamanga_manga_view_events (created_at DESC)`;
       await db`CREATE OR REPLACE VIEW nexamanga_users AS
-        SELECT a.id, a.public_slug, a.name, a.email, a.avatar, a.provider, a.role,
+        SELECT a.id, a.name, a.email, a.avatar, a.provider, a.role,
           a.created_at::text AS created_at,
           COALESCE(p.xp, 0) AS xp,
           COALESCE(p.level, 1) AS level,
-          COALESCE(p.streak_days, 0) AS streak_days
+          COALESCE(p.streak_days, 0) AS streak_days,
+          a.public_slug
         FROM nexamanga_accounts a
         LEFT JOIN nexamanga_user_progress p ON p.user_id = a.id`;
     })().catch((error) => {
