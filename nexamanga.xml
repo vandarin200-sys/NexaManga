@@ -347,10 +347,59 @@
       background: var(--kv-surface); border: 1px solid var(--kv-border);
       border-radius: 12px; padding: 24px; max-width: 440px; width: 100%;
     }
-    .kv-report-reasons { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:8px; margin:14px 0; }
-    .kv-report-reason { text-align:left; justify-content:flex-start; }
-    .kv-report-reason.active { border-color:var(--kv-danger); color:var(--kv-danger); background:rgba(239,68,68,.1); }
-    .kv-report-detail { width:100%; resize:vertical; min-height:84px; }
+    .kv-report-modal { align-items:flex-end; padding:12px; }
+    .kv-report-modal-box {
+      max-width:520px; max-height:calc(100dvh - 24px); overflow-y:auto;
+      border-radius:20px 20px 12px 12px; padding:0;
+      box-shadow:0 30px 80px -30px rgba(0,0,0,.85);
+    }
+    .kv-report-head { display:flex; align-items:flex-start; gap:14px; padding:20px 22px 16px; border-bottom:1px solid var(--kv-border); background:var(--kv-surface-2); }
+    .kv-report-head-icon { flex:0 0 auto; width:42px; height:42px; border-radius:14px; display:grid; place-items:center; color:var(--kv-danger); background:var(--kv-surface); border:1px solid var(--kv-border); }
+    .kv-report-head-icon svg { width:20px; height:20px; }
+    .kv-report-head-copy { min-width:0; }
+    .kv-report-head h2 { margin:0; font-size:1rem; line-height:1.25; color:var(--kv-text); }
+    .kv-report-head p { margin:4px 0 0; font-size:.75rem; line-height:1.4; color:var(--kv-text-muted); overflow-wrap:anywhere; }
+    .kv-report-close { margin-left:auto; flex:0 0 auto; width:32px; height:32px; border-radius:10px; border:1px solid var(--kv-border); background:var(--kv-surface); color:var(--kv-text-muted); display:grid; place-items:center; cursor:pointer; transition:background-color .15s ease,color .15s ease; }
+    .kv-report-close:hover { background:var(--kv-surface-2); color:var(--kv-text); }
+    .kv-report-body { padding:18px 22px 22px; }
+    .kv-report-label { display:block; margin-bottom:10px; font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--kv-text-muted); }
+    .kv-report-optional { text-transform:none; letter-spacing:0; font-weight:500; }
+    .kv-report-reasons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .kv-report-reason {
+      display:flex; align-items:flex-start; gap:10px; width:100%; min-height:60px;
+      padding:11px 12px; border:1px solid var(--kv-border); border-radius:12px;
+      background:var(--kv-surface); color:var(--kv-text); cursor:pointer; text-align:left;
+      font-family:inherit; font-size:.8rem; font-weight:600; line-height:1.3;
+      transition:border-color .15s ease,background-color .15s ease,transform .15s ease;
+    }
+    .kv-report-reason:hover { border-color:var(--kv-accent); background:var(--kv-surface-2); transform:translateY(-1px); }
+    .kv-report-reason.active { border-color:var(--kv-danger); color:var(--kv-danger); background:var(--kv-surface); background:color-mix(in srgb,var(--kv-danger) 10%,var(--kv-surface)); box-shadow:0 0 0 1px color-mix(in srgb,var(--kv-danger) 30%,transparent) inset; }
+    .kv-report-reason .ico { flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:grid; place-items:center; background:var(--kv-surface-2); color:var(--kv-text-muted); }
+    .kv-report-reason .txt { min-width:0; flex:1; }
+    .kv-report-reason .sub { display:block; margin-top:2px; font-size:.68rem; font-weight:500; line-height:1.35; color:var(--kv-text-muted); }
+    .kv-report-reason.active .ico, .kv-report-reason.active .sub { color:var(--kv-danger); }
+    .kv-report-reason .tick { flex:0 0 auto; margin-left:auto; opacity:0; color:var(--kv-danger); }
+    .kv-report-reason.active .tick { opacity:1; }
+    .kv-report-detail-wrap { margin-top:18px; }
+    .kv-report-detail-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+    .kv-report-detail-head .kv-report-label { margin:0; }
+    .kv-report-count { font-size:.7rem; color:var(--kv-text-muted); font-variant-numeric:tabular-nums; }
+    .kv-report-detail { width:100%; min-height:96px; resize:vertical; }
+    .kv-report-foot { display:flex; align-items:center; gap:12px; margin-top:18px; padding-top:16px; border-top:1px solid var(--kv-border); }
+    .kv-report-note { display:flex; align-items:center; gap:6px; min-width:0; font-size:.7rem; color:var(--kv-text-muted); }
+    .kv-report-note svg { flex:none; width:14px; height:14px; }
+    .kv-report-actions { display:flex; gap:8px; margin-left:auto; }
+    .kv-report-actions .kv-btn { min-width:96px; }
+    @media (min-width:640px) {
+      .kv-report-modal { align-items:center; padding:20px; }
+      .kv-report-modal-box { border-radius:20px; }
+    }
+    @media (max-width:520px) {
+      .kv-report-reasons { grid-template-columns:1fr; }
+      .kv-report-foot { flex-direction:column; align-items:stretch; }
+      .kv-report-actions { width:100%; }
+      .kv-report-actions .kv-btn { flex:1; }
+    }
     .kv-card { border-radius: 14px; }
     .kv-card:hover { box-shadow: 0 14px 34px -14px rgba(138, 90, 43, 0.4); }
     .kv-btn-primary { background: linear-gradient(135deg, var(--kv-accent), var(--kv-neon)); }
@@ -4965,11 +5014,11 @@ function yzSettingRead(key, fallback) {
     ];
 
     var REPORT_REASONS = [
-      { id: 'gambar-rusak', label: 'Gambar rusak / tidak terbaca' },
-      { id: 'chapter-salah', label: 'Chapter salah atau duplikat' },
-      { id: 'konten-tidak-sesuai', label: 'Konten tidak sesuai' },
-      { id: 'tautan-tidak-berfungsi', label: 'Tautan tidak berfungsi' },
-      { id: 'lainnya', label: 'Lainnya' }
+      { id: 'gambar-rusak', label: 'Gambar rusak / tidak terbaca', hint: 'Panel gagal dimuat atau sulit dibaca', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>' },
+      { id: 'chapter-salah', label: 'Chapter salah atau duplikat', hint: 'Nomor atau judul tidak sesuai', icon: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>' },
+      { id: 'konten-tidak-sesuai', label: 'Konten tidak sesuai', hint: 'Melanggar pedoman atau tidak pantas', icon: '<path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>' },
+      { id: 'tautan-tidak-berfungsi', label: 'Tautan tidak berfungsi', hint: 'Link tidak bisa dibuka', icon: '<path d="m2 2 20 20"/><path d="M9.9 4.5a5 5 0 0 1 7.1 0l1 1a5 5 0 0 1 0 7.1l-1.4 1.4"/><path d="M14.1 19.5a5 5 0 0 1-7.1 0l-1-1a5 5 0 0 1 0-7.1l1.4-1.4"/>' },
+      { id: 'lainnya', label: 'Lainnya', hint: 'Jelaskan detail masalahnya', icon: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>' }
     ];
 
     function reportReasonLabel(id) {
@@ -8397,21 +8446,39 @@ function renderAdmin() {
       var target = readerReportTarget();
       var label = target.manga ? target.manga.title : 'Chapter ini';
       if (target.chapter) label += ' · Ch. ' + target.chapter.number;
+      var detail = state.reportDetail || '';
+      var ready = !!state.reportReason;
+      var closeIcon = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+      var tickIcon = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
       var reasons = REPORT_REASONS.map(function (r) {
         var active = state.reportReason === r.id;
-        return '<button type="button" class="kv-btn kv-btn-ghost kv-report-reason' + (active ? ' active' : '') + '" data-action="reader-report-reason" data-reason="' + r.id + '" aria-pressed="' + (active ? 'true' : 'false') + '">' + escapeHtml(r.label) + '</button>';
+        return '<button type="button" class="kv-report-reason' + (active ? ' active' : '') + '" data-action="reader-report-reason" data-reason="' + r.id + '" aria-pressed="' + (active ? 'true' : 'false') + '">' +
+          '<span class="ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + r.icon + '</svg></span>' +
+          '<span class="txt">' + escapeHtml(r.label) + '<span class="sub">' + escapeHtml(r.hint) + '</span></span>' +
+          '<span class="tick">' + tickIcon + '</span>' +
+        '</button>';
       }).join('');
-      return '<div class="kv-modal" role="dialog" aria-modal="true" aria-labelledby="kv-report-title">' +
-        '<div class="kv-modal-box">' +
-          '<h2 id="kv-report-title" class="kv-section-title" style="margin:0 0 8px;">Laporkan Chapter</h2>' +
-          '<p style="margin:0;color:var(--kv-text-muted);font-size:0.8125rem;">' + escapeHtml(label) + '</p>' +
-          '<div class="kv-report-reasons" role="group" aria-label="Alasan laporan">' + reasons + '</div>' +
-          '<label style="display:block;font-size:0.75rem;font-weight:700;color:var(--kv-text-muted);">Detail (opsional)' +
-            '<textarea class="kv-textarea kv-report-detail" data-report-detail maxlength="500" placeholder="Jelaskan masalahnya agar lebih mudah ditindaklanjuti..." style="margin-top:6px;">' + escapeHtml(state.reportDetail || '') + '</textarea>' +
-          '</label>' +
-          '<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">' +
-            '<button type="button" class="kv-btn kv-btn-ghost" data-action="reader-report-close">Batal</button>' +
-            '<button type="button" class="kv-btn kv-btn-danger" data-action="reader-report-submit"' + (!state.reportReason || state.reportSending ? ' disabled' : '') + '>' + (state.reportSending ? 'Mengirim...' : 'Kirim Laporan') + '</button>' +
+      return '<div class="kv-modal kv-report-modal" role="dialog" aria-modal="true" aria-labelledby="kv-report-title">' +
+        '<div class="kv-report-modal-box">' +
+          '<div class="kv-report-head">' +
+            '<span class="kv-report-head-icon">' + kvIcon('shield') + '</span>' +
+            '<div class="kv-report-head-copy"><h2 id="kv-report-title">Laporkan Chapter</h2><p>' + escapeHtml(label) + '</p></div>' +
+            '<button type="button" class="kv-report-close" data-action="reader-report-close" aria-label="Tutup laporan">' + closeIcon + '</button>' +
+          '</div>' +
+          '<div class="kv-report-body">' +
+            '<span class="kv-report-label">Pilih alasan</span>' +
+            '<div class="kv-report-reasons" role="group" aria-label="Alasan laporan">' + reasons + '</div>' +
+            '<div class="kv-report-detail-wrap">' +
+              '<div class="kv-report-detail-head"><span class="kv-report-label">Detail tambahan <span class="kv-report-optional">(opsional)</span></span><span class="kv-report-count" id="kv-report-count">' + detail.length + '/500</span></div>' +
+              '<textarea class="kv-textarea kv-report-detail" data-report-detail maxlength="500" placeholder="Contoh: halaman 3 tidak terbaca di chapter ini...">' + escapeHtml(detail) + '</textarea>' +
+            '</div>' +
+            '<div class="kv-report-foot">' +
+              '<span class="kv-report-note">' + kvIcon('shield') + '<span>' + (ready ? 'Laporan akan dikirim ke admin.' : 'Pilih alasan untuk melanjutkan.') + '</span></span>' +
+              '<div class="kv-report-actions">' +
+                '<button type="button" class="kv-btn kv-btn-ghost" data-action="reader-report-close">Batal</button>' +
+                '<button type="button" class="kv-btn kv-btn-danger" data-action="reader-report-submit"' + (!ready || state.reportSending ? ' disabled' : '') + '>' + (state.reportSending ? 'Mengirim...' : 'Kirim Laporan') + '</button>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -10212,6 +10279,8 @@ function setBannerDotsActive(index) {
             var el = e.target && e.target.closest ? e.target.closest('[data-report-detail]') : null;
             if (!el) return;
             state.reportDetail = el.value;
+            var count = document.getElementById('kv-report-count');
+            if (count) count.textContent = el.value.length + '/500';
           });
           document.addEventListener('submit', function (e) {
             var form = e.target;
