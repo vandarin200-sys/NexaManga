@@ -9593,7 +9593,7 @@ function renderAdmin() {
         '<div class="lb-overlay absolute inset-0 z-20 pointer-events-none"></div>' +
         '<div class="' + rankCls + ' absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full text-[10.5px] font-extrabold tabular-nums">#' + a.rank + '</div>' +
         '<div class="lb-surface-2 border lb-accent absolute top-2 right-2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold tabular-nums">' + lbIcon('eye', 'w-3 h-3') + '<span>' + lbNum(a.views) + '</span></div>' +
-        '<div class="absolute bottom-2.5 inset-x-3 z-20 pointer-events-none"><h3 class="lb-ink text-xs sm:text-sm font-bold line-clamp-2 leading-snug">' + escapeHtml(a.title) + '</h3></div></div>' +
+        '<div class="lb-card-title absolute bottom-2.5 inset-x-3 z-20 pointer-events-none"><h3 class="lb-ink text-xs sm:text-sm font-bold line-clamp-2 leading-snug">' + escapeHtml(a.title) + '</h3></div></div>' +
         '<div class="lb-surface-2 border-t px-3 py-2 flex items-center justify-between text-[10.5px] tabular-nums"><span class="flex items-center gap-1"><span class="lb-muted">Total:</span> <span class="lb-subtle font-semibold">' + lbNum(a.all_time_views) + '</span></span><span class="flex items-center gap-1 lb-accent">' + lbIcon('flame', 'w-3 h-3 fill-amber-400/25') + '<span>' + lbNum(a.views) + '</span></span></div>' +
       '</a>';
     }
@@ -12226,6 +12226,8 @@ applyYumeAccent();
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-podium { background-image: none !important; background-color: var(--yz-surface-1) !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-podium[data-place="1"] .lb-podium-badge { background-image: none !important; background-color: var(--lb-accent) !important; border-color: var(--lb-accent) !important; color: var(--lb-on) !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-shimmer { display: none !important; background-image: none !important; }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-overlay { background-image: none !important; background-color: transparent !important; }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-card-title { border: 1px solid var(--yz-border) !important; border-radius: 10px; background-color: rgba(10,12,16,.82) !important; padding: 6px 8px; }
     @media (prefers-reduced-motion: reduce) { .lb-tier-badge.lb-shine:after, .lb-tier-badge.lb-radiant { animation:none; } }
       </style>
   <!-- LINT.ThenChange(//depot/google3/java/com/google/blogger/b2/layouts/widgets/v2-style.css) -->
