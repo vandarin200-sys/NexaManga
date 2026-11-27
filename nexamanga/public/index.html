@@ -334,6 +334,28 @@
       background: var(--kv-surface); border: 1px solid var(--kv-border);
       border-radius: 12px; padding: 24px; max-width: 440px; width: 100%;
     }
+    .kv-banner-modal .kv-modal-box { max-width: 460px; padding: 0; overflow: hidden; border-radius: 20px; box-shadow: 0 28px 80px -30px rgba(0,0,0,.85); }
+    .kv-banner-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:18px 20px 14px; border-bottom:1px solid var(--kv-border); }
+    .kv-banner-eyebrow { display:block; font-size:.6rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--kv-accent); }
+    .kv-banner-head h2 { margin:5px 0 0; font-size:1rem; line-height:1.25; color:var(--kv-text); }
+    .kv-banner-head p { margin:6px 0 0; font-size:.7rem; line-height:1.5; color:var(--kv-text-muted); }
+    .kv-banner-close { flex:none; width:30px; height:30px; border-radius:50%; border:1px solid var(--kv-border); background:transparent; color:var(--kv-text-muted); display:grid; place-items:center; cursor:pointer; }
+    .kv-banner-close:hover { color:var(--kv-text); border-color:var(--kv-text-muted); }
+    .kv-banner-body { padding:18px 20px; }
+    .kv-banner-preview { height:92px; border-radius:14px; border:1px solid var(--kv-border); box-shadow:inset 0 1px rgba(255,255,255,.05); }
+    .kv-banner-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:16px; }
+    .kv-banner-field { display:flex; align-items:center; gap:8px; min-width:0; padding:8px 10px; border:1px solid var(--kv-border); border-radius:12px; background:var(--kv-surface-2); }
+    .kv-banner-field input { width:34px; height:34px; flex:none; padding:0; border:0; background:transparent; cursor:pointer; }
+    .kv-banner-field input::-webkit-color-swatch-wrapper { padding:0; }
+    .kv-banner-field input::-webkit-color-swatch { border:1px solid var(--kv-border); border-radius:9px; }
+    .kv-banner-field input::-moz-color-swatch { border:1px solid var(--kv-border); border-radius:9px; }
+    .kv-banner-field span { min-width:0; }
+    .kv-banner-field b { display:block; font-size:.6rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--kv-text-muted); }
+    .kv-banner-field code { display:block; margin-top:2px; font-size:.68rem; color:var(--kv-text); font-family:inherit; }
+    .kv-banner-foot { display:flex; align-items:center; gap:8px; padding:14px 20px 18px; border-top:1px solid var(--kv-border); }
+    .kv-banner-reset { margin-right:auto; color:var(--kv-text-muted); font-size:.7rem; font-weight:600; background:transparent; border:0; cursor:pointer; }
+    .kv-banner-reset:hover { color:var(--kv-text); text-decoration:underline; }
+    @media (max-width:520px) { .kv-banner-fields { grid-template-columns:1fr; } .kv-banner-foot { flex-wrap:wrap; } .kv-banner-reset { width:100%; text-align:left; margin:0 0 4px; } }
     .kv-report-modal { --rp-line:var(--kv-border); --rp-ink:var(--kv-text); --rp-muted:var(--kv-text-muted); --rp-hot:var(--kv-danger); --rp-accent:var(--kv-accent); align-items:flex-end; padding:10px; }
     .kv-report-modal-box {
       position:relative; overflow:auto; width:100%; max-width:780px; max-height:calc(100dvh - 20px); padding:0;
@@ -4535,6 +4557,8 @@ function yzSettingRead(key, fallback) {
         avatarPickerTab: 'characters',
         avatarPickerDraft: '',
         avatarPickerApplied: '',
+        profileEffectsOpen: false,
+        profileEffectsDraft: null,
         replyingTo: null,
         imageTargetForm: null,
         commentImageIndex: 0,
@@ -4955,6 +4979,26 @@ function yzSettingRead(key, fallback) {
         var o = profileOverride();
         if (o.background) return o.background;
         return fallback || null;
+      }
+
+      var PROFILE_BANNER_DEFAULT = { from: '#101319', via: '#151a22', to: '#0a0c10' };
+
+      function normalizeProfileBannerGradient(value) {
+        var source = value && typeof value === 'object' ? value : {};
+        return {
+          from: /^#[0-9a-fA-F]{6}$/.test(source.from || '') ? source.from : PROFILE_BANNER_DEFAULT.from,
+          via: /^#[0-9a-fA-F]{6}$/.test(source.via || '') ? source.via : PROFILE_BANNER_DEFAULT.via,
+          to: /^#[0-9a-fA-F]{6}$/.test(source.to || '') ? source.to : PROFILE_BANNER_DEFAULT.to
+        };
+      }
+
+      function profileBannerGradient() {
+        return normalizeProfileBannerGradient(profileOverride().bannerGradient);
+      }
+
+      function profileBannerGradientCss(gradient) {
+        var g = normalizeProfileBannerGradient(gradient);
+        return 'linear-gradient(135deg, ' + g.from + ' 0%, ' + g.via + ' 50%, ' + g.to + ' 100%)';
       }
 
       function replaceImageTokens(content) {
@@ -7223,6 +7267,63 @@ function renderSettings() {
         '</div>' +
       '</div>';
     }
+
+    function bindProfileEffects() {
+      if (window.__profileEffectsBound) return;
+      window.__profileEffectsBound = true;
+      document.addEventListener('keydown', function (e) {
+        if (!state.profileEffectsOpen) return;
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          state.profileEffectsOpen = false;
+          state.profileEffectsDraft = null;
+          render();
+          return;
+        }
+        if (e.key !== 'Tab') return;
+        var dialog = document.querySelector('[data-banner-dialog]');
+        if (!dialog) return;
+        var focusables = Array.prototype.slice.call(dialog.querySelectorAll('button:not([disabled]), input:not([disabled])')).filter(function (node) {
+          return node.getClientRects && node.getClientRects().length > 0;
+        });
+        if (!focusables.length) return;
+        var first = focusables[0];
+        var last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+      document.addEventListener('input', function (e) {
+        var input = e.target && e.target.closest ? e.target.closest('[data-banner-color]') : null;
+        if (!input || !state.profileEffectsOpen) return;
+        var key = input.getAttribute('data-banner-color');
+        if (['from', 'via', 'to'].indexOf(key) === -1) return;
+        if (!state.profileEffectsDraft) state.profileEffectsDraft = profileBannerGradient();
+        state.profileEffectsDraft[key] = input.value;
+        var value = document.querySelector('[data-banner-value="' + key + '"]');
+        if (value) value.textContent = input.value;
+        var css = profileBannerGradientCss(state.profileEffectsDraft);
+        var preview = document.querySelector('[data-banner-preview]');
+        if (preview) preview.style.backgroundImage = css;
+        var banner = document.querySelector('[data-profile-banner]');
+        if (banner) banner.style.backgroundImage = css;
+      });
+    }
+
+    function renderProfileEffects() {
+      var draft = normalizeProfileBannerGradient(state.profileEffectsDraft || profileBannerGradient());
+      var labels = [['from', 'Awal'], ['via', 'Tengah'], ['to', 'Akhir']];
+      var fields = labels.map(function (f) {
+        return '<label class="kv-banner-field"><input type="color" data-banner-color="' + f[0] + '" value="' + draft[f[0]] + '" aria-label="Warna ' + f[1] + '"/><span><b>' + f[1] + '</b><code data-banner-value="' + f[0] + '">' + draft[f[0]] + '</code></span></label>';
+      }).join('');
+      return '<div class="kv-modal kv-banner-modal" role="dialog" aria-modal="true" aria-labelledby="kv-banner-title" data-banner-backdrop>' +
+        '<div class="kv-modal-box kv-banner-box" data-banner-dialog tabindex="-1">' +
+          '<div class="kv-banner-head"><div><span class="kv-banner-eyebrow">Profile effects / banner</span><h2 id="kv-banner-title">Edit warna banner profil</h2><p>Tiga warna ini dipakai di semua mode tema, termasuk mode terang dan gelap.</p></div><button type="button" class="kv-banner-close" data-action="profile-effects-cancel" aria-label="Tutup editor warna">&times;</button></div>' +
+          '<div class="kv-banner-body"><div class="kv-banner-preview" data-banner-preview style="background-image:' + profileBannerGradientCss(draft) + '"></div><div class="kv-banner-fields">' + fields + '</div></div>' +
+          '<div class="kv-banner-foot"><button type="button" class="kv-banner-reset" data-action="profile-effects-reset">Gunakan warna bawaan</button><button type="button" class="kv-btn kv-btn-ghost" data-action="profile-effects-cancel">Batal</button><button type="button" class="kv-btn kv-btn-primary" data-action="profile-effects-save">Simpan warna</button></div>' +
+        '</div>' +
+      '</div>';
+    }
+
     function renderAccount() {
       function pIcon(name, cls) {
         var p = {
@@ -7280,6 +7381,8 @@ function renderSettings() {
       var displayAvatar = override.avatar || user.avatar || '';
       var pickerAvatar = state.avatarPickerApplied || displayAvatar;
       var displayBackground = currentDisplayBackground('');
+      var bannerGradient = profileBannerGradient();
+      var bannerGradientCss = profileBannerGradientCss(bannerGradient);
       var bio = yzSettingRead('yume_profile_bio', '');
       var username = slugify(displayName);
       var tierRank = 'Novice III';
@@ -7356,10 +7459,10 @@ function renderSettings() {
         '<div class="pointer-events-none fixed inset-x-0 top-0 h-[380px] overflow-hidden"><div class="absolute left-1/2 -top-44 -translate-x-1/2 w-[780px] h-[340px] rounded-full bg-[var(--yz-accent)]/[0.08] blur-[120px]"></div></div>' +
         '<main class="relative mx-auto max-w-6xl w-full px-3.5 sm:px-6 lg:px-8 pt-16 sm:pt-20 flex flex-col justify-between font-sans text-zinc-300"><div class="space-y-5 sm:space-y-6 flex-grow">' +
           '<section class="relative rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0a0c10] shadow-2xl overflow-hidden">' +
-            '<div class="relative h-36 sm:h-52 md:h-64 w-full overflow-hidden bg-gradient-to-br from-[#101319] via-[#151a22] to-[#0a0c10]">' +
-              (displayBackground ? '<img class="absolute inset-0 h-full w-full object-cover opacity-70" src="' + escapeHtml(displayBackground) + '" alt="" referrerpolicy="no-referrer"/>' : '<div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(145,184,177,0.16),transparent_55%)]"></div>') +
-              '<div class="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/75 via-black/25 to-transparent pointer-events-none"></div><div class="absolute inset-x-0 bottom-0 h-32 sm:h-40 bg-gradient-to-t from-[#0a0c10] via-[#0a0c10]/65 to-transparent pointer-events-none"></div>' +
-              (isPublic ? '' : '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects">' + pIcon('sparkles', 'h-3.5 w-3.5 text-[var(--yz-accent)]') + '<span class="hidden sm:inline">Effects</span></button></div>') +
+            '<div data-profile-banner class="relative h-36 sm:h-52 md:h-64 w-full overflow-hidden" style="background-image:' + bannerGradientCss + '">' +
+              (displayBackground ? '<img class="absolute inset-0 h-full w-full object-cover opacity-70" src="' + escapeHtml(displayBackground) + '" alt="" referrerpolicy="no-referrer"/>' : '<div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 30%, rgba(145,184,177,.16), transparent 55%)"></div>') +
+              '<div class="absolute inset-x-0 top-0 h-20 pointer-events-none" style="background-image:linear-gradient(to bottom, rgba(0,0,0,.75) 0%, rgba(0,0,0,.25) 55%, transparent 100%)"></div><div class="absolute inset-x-0 bottom-0 h-32 sm:h-40 pointer-events-none" style="background-image:linear-gradient(to top, #0a0c10 0%, rgba(10,12,16,.65) 55%, transparent 100%)"></div>' +
+              (isPublic ? '' : '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects"><span style="color:#91b8b1">' + pIcon('sparkles', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">Effects</span></button></div>') +
             '</div>' +
             '<div class="relative z-10 px-4 sm:px-7 pb-5 sm:pb-7 -mt-12 sm:-mt-16 space-y-5">' +
               '<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5">' +
@@ -7380,7 +7483,7 @@ function renderSettings() {
           '<div class="sticky top-16 z-30 flex items-center"><div class="w-full sm:w-auto inline-flex items-center gap-1 p-1 rounded-2xl border border-white/[0.08] bg-[#0a0c10]/90 backdrop-blur-xl shadow-xl overflow-x-auto scrollbar-none">' + tabHtml + '</div></div>' +
           activeView +
         '</div></main>' +
-      '</div>' + (state.avatarPickerOpen && !isPublic ? renderAvatarPicker(pickerAvatar, displayName) : '');
+      '</div>' + (state.avatarPickerOpen && !isPublic ? renderAvatarPicker(pickerAvatar, displayName) : '') + (state.profileEffectsOpen && !isPublic ? renderProfileEffects() : '');
     }
 
     function renderOAuthButtons() {
@@ -10677,11 +10780,18 @@ function setBannerDotsActive(index) {
           });
         }
         bindAvatarPicker();
-     }
+        bindProfileEffects();
+      }
 
-     document.addEventListener('click', function (e) {
-      if (e.target && e.target.closest && e.target.closest('[data-action="toggle-yz-blur"]')) { e.preventDefault(); return; }
-      var routeLink = e.target.closest('a[href^="/"], a[href^="#/"]');
+
+      document.addEventListener('click', function (e) {
+       if (e.target && e.target.closest && e.target.closest('[data-action="toggle-yz-blur"]')) { e.preventDefault(); return; }
+       var bannerBackdrop = e.target && e.target.closest ? e.target.closest('[data-banner-backdrop]') : null;
+       if (bannerBackdrop && e.target === bannerBackdrop && state.profileEffectsOpen) { e.preventDefault(); state.profileEffectsOpen = false; state.profileEffectsDraft = null; render(); return; }
+       var insideBannerDialog = e.target && e.target.closest ? e.target.closest('[data-banner-dialog]') : null;
+       if (insideBannerDialog && !e.target.closest('[data-action]')) return;
+       var routeLink = e.target.closest('a[href^="/"], a[href^="#/"]');
+
       if (!routeLink || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
       navigate(routeLink.getAttribute('href'));
@@ -10797,7 +10907,41 @@ function setBannerDotsActive(index) {
           return;
         }
         if (act === 'profile-copy-vanity') { var vanityName = String(currentDisplayName(state.user ? state.user.name : 'member')).toLowerCase().replace(/[^a-z0-9_]+/g, '').replace(/^_+|_+$/g, '') || 'member'; var vanity = 'y/' + vanityName; try { navigator.clipboard.writeText(vanity); } catch (err) {} toast('URL profil disalin: ' + vanity, 'ok'); return; }
-        if (act === 'profile-effects') { toast('Efek profil akan segera hadir.', 'info'); return; }
+        if (act === 'profile-effects') {
+          state.profileEffectsDraft = profileBannerGradient();
+          state.profileEffectsOpen = true;
+          render();
+          setTimeout(function () { var dialog = document.querySelector('[data-banner-dialog]'); if (dialog) dialog.focus(); }, 0);
+          return;
+        }
+        if (act === 'profile-effects-cancel') { state.profileEffectsOpen = false; state.profileEffectsDraft = null; render(); return; }
+        if (act === 'profile-effects-reset') {
+          state.profileEffectsDraft = normalizeProfileBannerGradient(null);
+          ['from', 'via', 'to'].forEach(function (key) {
+            var input = document.querySelector('[data-banner-color="' + key + '"]');
+            if (input) input.value = state.profileEffectsDraft[key];
+            var value = document.querySelector('[data-banner-value="' + key + '"]');
+            if (value) value.textContent = state.profileEffectsDraft[key];
+          });
+          var resetCss = profileBannerGradientCss(state.profileEffectsDraft);
+          var resetPreview = document.querySelector('[data-banner-preview]');
+          if (resetPreview) resetPreview.style.backgroundImage = resetCss;
+          var resetBanner = document.querySelector('[data-profile-banner]');
+          if (resetBanner) resetBanner.style.backgroundImage = resetCss;
+          return;
+        }
+        if (act === 'profile-effects-save') {
+          var bannerUserId = state.user && state.user.id;
+          if (!bannerUserId) { toast('Masuk terlebih dahulu untuk menyimpan warna banner.', 'warn'); return; }
+          var bannerOverride = profileOverride();
+          bannerOverride.bannerGradient = normalizeProfileBannerGradient(state.profileEffectsDraft || profileBannerGradient());
+          try { localStorage.setItem('kv_profile_override_v2_' + bannerUserId, JSON.stringify(bannerOverride)); } catch (err) { toast('Gagal menyimpan warna banner di browser.', 'warn'); return; }
+          state.profileEffectsOpen = false;
+          state.profileEffectsDraft = null;
+          render();
+          toast('Warna banner profil disimpan.', 'ok');
+          return;
+        }
 
        if (act === 'toggle-yz-more') { state.yzMoreOpen = !state.yzMoreOpen; render(); return; }
       if (act === 'toggle-yz-sidebar') { state.yzSidebarExpanded = !state.yzSidebarExpanded; render(); return; }
