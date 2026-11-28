@@ -39,6 +39,12 @@
 @keyframes pefx-pulse { from { transform:scale(.82); opacity:.45; } to { transform:scale(1.08); opacity:1; } }
 @keyframes pefx-grid { from { background-position:0 0; } to { background-position:0 24px; } }
 .pe-overlay { position:absolute; inset:0; z-index:20; overflow:hidden; border-radius:inherit; pointer-events:none; user-select:none; }
+.pe-overlay--public { z-index:25; }
+.pe-overlay--public::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 8%,color-mix(in srgb,var(--fx-a) 28%,transparent),transparent 62%),linear-gradient(180deg,color-mix(in srgb,var(--fx-b) 20%,transparent),transparent 46%); mix-blend-mode:screen; }
+.pe-overlay--public .pe-layer--a { opacity:.58; animation-name:pe-layer-a-public; }
+.pe-overlay--public .pe-layer--b { opacity:.42; animation-name:pe-layer-b-public; }
+@keyframes pe-layer-a-public { from { transform:scale(1) translate3d(-1%,0,0); opacity:.42; } to { transform:scale(1.08) translate3d(1%,1%,0); opacity:.72; } }
+@keyframes pe-layer-b-public { 0% { transform:scale(1.03) translate3d(0,0,0); opacity:.28; } 50% { transform:scale(1.1) translate3d(1%,-1%,0); opacity:.5; } 100% { transform:scale(1.03) translate3d(0,0,0); opacity:.28; } }
 .pe-layer { position:absolute; inset:0; height:100%; width:100%; object-fit:cover; object-position:top; pointer-events:none; user-select:none; will-change:transform,opacity; transition:opacity .3s ease; mix-blend-mode:screen; }
 .pe-layer--a { z-index:100; opacity:.42; animation:pe-layer-a 9s ease-in-out infinite alternate; }
 .pe-layer--b { z-index:101; opacity:.26; animation:pe-layer-b 6s linear infinite; }

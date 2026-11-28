@@ -5440,10 +5440,10 @@ function yzSettingRead(key, fallback) {
         return '<span class="pefx pefx--' + effect.kind + (extraClass ? ' ' + extraClass : '') + '" style="' + profileEffectVars(effect) + '" aria-hidden="true"></span>';
       }
 
-      function renderProfileEffectOverlay(effect) {
+      function renderProfileEffectOverlay(effect, extraClass) {
         if (!effect) return '';
         var vars = profileEffectVars(effect);
-        return '<div data-profile-effect-overlay class="pe-overlay pointer-events-none select-none absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl z-20" role="presentation">' +
+        return '<div data-profile-effect-overlay class="pe-overlay' + (extraClass ? ' ' + extraClass : '') + ' pointer-events-none select-none absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl z-20" style="' + vars + '" role="presentation">' +
           '<span class="pefx pefx--' + effect.kind + ' pe-layer pe-layer--a" style="' + vars + '" aria-hidden="true"></span>' +
           '<span class="pefx pefx--' + effect.kind + ' pe-layer pe-layer--b" style="' + vars + '" aria-hidden="true"></span>' +
         '</div>';
@@ -8401,8 +8401,8 @@ function renderSettings() {
       return '<div class="pf-root font-sans text-zinc-200">' +
         '<div class="pf-ambient" aria-hidden="true"></div>' +
         '<main class="relative mx-auto max-w-5xl w-full px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-20 sm:pb-12">' +
+          renderProfileEffectOverlay(publicEffect, 'pe-overlay--public') +
           '<section class="pf-hero pf-d1">' +
-            renderProfileEffectOverlay(publicEffect) +
             '<div class="pf-hero__banner" style="background-image:' + bannerCss + '" role="img" aria-label="Banner profil ' + escapeHtml(displayName) + '">' +
               '<span class="pf-hero__stamp" aria-hidden="true">NEXA / READER FILE</span>' +
               '<span class="pf-hero__sigil" aria-hidden="true">' + initial + '</span>' +
