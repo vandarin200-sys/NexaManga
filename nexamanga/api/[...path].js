@@ -39,6 +39,7 @@ const {
   saveSettings,
   setAccountCredentials,
   setProfileBanner,
+  setProfileEffect,
   setReportStatus,
   syncTrackerConnection,
   unlinkTrackerConnection,
@@ -1536,6 +1537,17 @@ async function handler(req, res) {
       let user = null;
       await updateCatalog((catalog) => {
         user = setProfileBanner(catalog, { userId: claims.sub, bannerUrl: payload.bannerUrl === undefined ? null : payload.bannerUrl });
+      });
+      return sendJson(res, 200, { ok: true, user });
+    }
+
+    if (route === 'profile/effect' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      const payload = body && typeof body === 'object' && !Array.isArray(body) ? body : {};
+      let user = null;
+      await updateCatalog((catalog) => {
+        user = setProfileEffect(catalog, { userId: claims.sub, effectId: payload.effectId === undefined ? null : payload.effectId });
       });
       return sendJson(res, 200, { ok: true, user });
     }

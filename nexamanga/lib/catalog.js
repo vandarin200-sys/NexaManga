@@ -4,6 +4,12 @@ const crypto = require('node:crypto');
 const { uniquePublicSlug } = require('./progress');
 
 const EMPTY_CATALOG = Object.freeze({ manga: [], chapters: [], comments: [], reports: [], users: [] });
+const PROFILE_EFFECT_IDS = new Set([
+  'aurora-drift', 'ember-rain', 'meteor-shower', 'starfall', 'mist-veil', 'solar-flare',
+  'ink-bloom', 'tide-pulse', 'comet-trail', 'signal-noise', 'moon-halo', 'grid-runner',
+  'boreal-wave', 'cinder-glow', 'neon-drizzle', 'dust-twinkle', 'peach-fog', 'prism-burst',
+  'violet-bloom', 'sonar-ring', 'dust-comet', 'static-bloom', 'aurora-ring', 'midnight-grid'
+]);
 
 class ValidationError extends Error {
   constructor(message) {
@@ -156,6 +162,7 @@ function safeUser(user) {
     email: user.email || null,
     avatar: user.avatar || null,
     bannerUrl: user.profileBannerUrl || null,
+    effectId: user.profileEffectId || null,
     provider: user.provider || null,
     role: user.role || 'member',
     emailVerified: !!user.emailVerified,
@@ -181,6 +188,26 @@ function setProfileBanner(catalog, input) {
     if (!bannerUrl) bannerUrl = null;
   }
   user.profileBannerUrl = bannerUrl;
+  return safeUser(user);
+}
+
+function setProfileEffect(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data efek profil tidak valid.');
+  }
+  const user = findCatalogUser(catalog, input.userId);
+  let effectId = null;
+  if (input.effectId !== null && input.effectId !== undefined) {
+    if (typeof input.effectId !== 'string' || input.effectId.length > 64) {
+      throw new ValidationError('ID efek profil tidak valid.');
+    }
+    effectId = input.effectId.trim();
+    if (effectId && !PROFILE_EFFECT_IDS.has(effectId)) {
+      throw new ValidationError('Efek profil tidak dikenal.');
+    }
+    if (!effectId) effectId = null;
+  }
+  user.profileEffectId = effectId;
   return safeUser(user);
 }
 
@@ -767,6 +794,7 @@ module.exports = {
   saveSettings,
   setAccountCredentials,
   setProfileBanner,
+  setProfileEffect,
   setReportStatus,
   syncTrackerConnection,
   unlinkTrackerConnection,

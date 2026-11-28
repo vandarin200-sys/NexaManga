@@ -311,6 +311,7 @@ function ensureSchema() {
       )`;
       await db`ALTER TABLE nexamanga_accounts ADD COLUMN IF NOT EXISTS public_slug text`;
       await db`ALTER TABLE nexamanga_accounts ADD COLUMN IF NOT EXISTS profile_banner_url text`;
+      await db`ALTER TABLE nexamanga_accounts ADD COLUMN IF NOT EXISTS profile_effect_id text`;
       await db`CREATE UNIQUE INDEX IF NOT EXISTS nexamanga_accounts_public_slug_idx ON nexamanga_accounts (public_slug)`;
       const existingSlugs = new Set(rows(await db`SELECT public_slug FROM nexamanga_accounts WHERE public_slug IS NOT NULL AND public_slug <> ''`).map((row) => String(row.public_slug)));
       const missingSlugRows = rows(await db`SELECT id FROM nexamanga_accounts WHERE public_slug IS NULL OR public_slug = '' ORDER BY id`);
@@ -524,7 +525,7 @@ const REPORT_KEYS = [
   'userId', 'reporterKey', 'createdAt', 'status'
 ];
 const USER_KEYS = [
-  'id', 'publicSlug', 'provider', 'providerId', 'name', 'email', 'avatar', 'profileBannerUrl', 'role', 'createdAt',
+  'id', 'publicSlug', 'provider', 'providerId', 'name', 'email', 'avatar', 'profileBannerUrl', 'profileEffectId', 'role', 'createdAt',
   'emailVerified', 'passwordHash', 'passwordSalt', 'emailVerification', 'connections'
 ];
 const CONNECTION_KEYS = [
@@ -691,6 +692,7 @@ function assembleCatalog(results) {
       email: row.email,
       avatar: row.avatar,
       profileBannerUrl: row.profile_banner_url || null,
+      profileEffectId: row.profile_effect_id || null,
       role: row.role,
       createdAt: timestampString(row.created_at),
       emailVerified: Boolean(row.email_verified)
@@ -936,6 +938,7 @@ function replaceCatalog(tx, catalog, revision, initialized) {
       item.email === undefined ? null : textValue(item.email, null),
       item.avatar === undefined ? null : textValue(item.avatar, null),
       item.profileBannerUrl === undefined ? null : textValue(item.profileBannerUrl, null),
+      item.profileEffectId === undefined ? null : textValue(item.profileEffectId, null),
       textValue(item.role, 'member'),
       timestampString(item.createdAt) || new Date().toISOString(),
       Boolean(item.emailVerified),
@@ -1010,7 +1013,7 @@ function replaceCatalog(tx, catalog, revision, initialized) {
     ['nexamanga_comments', ['id', 'manga_id', 'chapter_id', 'parent_id', 'reply_to', 'image_url', 'user_id', 'author_key', 'author_name', 'author_avatar', 'content', 'created_at', 'status', 'pinned', 'extra'], commentRows],
     ['nexamanga_comment_upvotes', ['comment_id', 'voter_id'], upvoteRows],
     ['nexamanga_reports', ['id', 'manga_id', 'chapter_id', 'manga_title', 'chapter_number', 'reason', 'detail', 'user_id', 'reporter_key', 'created_at', 'status', 'extra'], reportRows],
-    ['nexamanga_accounts', ['id', 'public_slug', 'provider', 'provider_id', 'name', 'email', 'avatar', 'profile_banner_url', 'role', 'created_at', 'email_verified', 'extra'], accountRows],
+    ['nexamanga_accounts', ['id', 'public_slug', 'provider', 'provider_id', 'name', 'email', 'avatar', 'profile_banner_url', 'profile_effect_id', 'role', 'created_at', 'email_verified', 'extra'], accountRows],
     ['nexamanga_account_credentials', ['account_id', 'password_hash', 'password_salt', 'verification_hash', 'verification_salt', 'verification_expires_at', 'verification_attempts'], credentialRows],
     ['nexamanga_account_connections', ['account_id', 'provider', 'connected', 'provider_id', 'username', 'access_token', 'updated_at', 'last_synced_at', 'extra'], connectionRows],
     ['nexamanga_chapter_reactions', ['chapter_id', 'voter_id', 'reaction'], chapterReactionRows],
@@ -1367,7 +1370,7 @@ async function readPublicProfile(slug) {
   const normalized = normalizePublicSlug(slug);
   if (!normalized) return null;
   const db = executor();
-  const result = await db`SELECT a.id, a.public_slug, a.name, a.avatar, a.profile_banner_url, a.role, a.created_at,
+  const result = await db`SELECT a.id, a.public_slug, a.name, a.avatar, a.profile_banner_url, a.profile_effect_id, a.role, a.created_at,
       COALESCE(p.xp, 0) AS total_xp, COALESCE(p.streak_days, 0) AS streak_days
     FROM nexamanga_accounts a
     LEFT JOIN nexamanga_user_progress p ON p.user_id = a.id
@@ -1389,6 +1392,7 @@ async function readPublicProfile(slug) {
     name: String(row.name || ''),
     avatar: row.avatar ? String(row.avatar) : null,
     bannerUrl: row.profile_banner_url ? String(row.profile_banner_url) : null,
+    effectId: row.profile_effect_id ? String(row.profile_effect_id) : null,
     role: String(row.role || 'member'),
     created_at: timestampString(row.created_at),
     progress: Object.assign({

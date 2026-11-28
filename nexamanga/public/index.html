@@ -8233,7 +8233,7 @@ function renderSettings() {
       var bannerGradient = profileBannerGradient();
       var bannerGradientCss = profileBannerGradientCss(bannerGradient);
       var bannerCss = profileBannerCss();
-      var equippedEffect = profileEffectById(override.bannerEffect);
+      var equippedEffect = profileEffectById((state.user && (state.user.effectId || state.user.profileEffect)) || override.bannerEffect);
       var bio = yzSettingRead('yume_profile_bio', '');
       var username = slugify(displayName);
       var tierRank = '';
@@ -12384,7 +12384,7 @@ function setBannerDotsActive(index) {
         }
         if (act === 'profile-effects') {
           state.profileEffectsDraft = profileBannerGradient();
-          state.profileEffectsSelected = normalizeProfileEffectId(profileOverride().bannerEffect);
+          state.profileEffectsSelected = normalizeProfileEffectId((state.user && (state.user.effectId || state.user.profileEffect)) || profileOverride().bannerEffect);
           state.profileEffectsTab = 'effects';
           state.profileEffectsQuery = '';
           state.profileEffectsLimit = 12;
@@ -12401,31 +12401,35 @@ function setBannerDotsActive(index) {
           if (!effectUserId) { toast('Masuk terlebih dahulu untuk memasang efek.', 'warn'); return; }
           var effectId = normalizeProfileEffectId(state.profileEffectsSelected);
           if (!effectId) { toast('Pilih efek terlebih dahulu.', 'warn'); return; }
-          var effectOverride = profileOverride();
-          effectOverride.bannerEffect = effectId;
-          try { localStorage.setItem('kv_profile_override_v2_' + effectUserId, JSON.stringify(effectOverride)); } catch (err) { toast('Gagal menyimpan efek di browser.', 'warn'); return; }
-          state.profileEffectsOpen = false;
-          state.profileEffectsDraft = null;
-          state.profileEffectsSelected = '';
-          state.profileEffectsQuery = '';
-          state.profileEffectsLimit = 12;
-          render();
-          toast('Efek banner profil dipasang.', 'ok');
+          runAccountAction('/api/profile/effect', { effectId: effectId }, 'Efek profil dipasang.', function (result) {
+            if (result && result.user) state.user = Object.assign({}, state.user, result.user);
+            var effectOverride = profileOverride();
+            effectOverride.bannerEffect = effectId;
+            try { localStorage.setItem('kv_profile_override_v2_' + effectUserId, JSON.stringify(effectOverride)); } catch (err) {}
+            state.profileEffectsOpen = false;
+            state.profileEffectsDraft = null;
+            state.profileEffectsSelected = '';
+            state.profileEffectsQuery = '';
+            state.profileEffectsLimit = 12;
+            render();
+          });
           return;
         }
         if (act === 'profile-effects-clear') {
           var clearUserId = state.user && state.user.id;
           if (!clearUserId) { toast('Masuk terlebih dahulu untuk menghapus efek.', 'warn'); return; }
-          var clearOverride = profileOverride();
-          delete clearOverride.bannerEffect;
-          try { localStorage.setItem('kv_profile_override_v2_' + clearUserId, JSON.stringify(clearOverride)); } catch (err) { toast('Gagal menyimpan efek di browser.', 'warn'); return; }
-          state.profileEffectsOpen = false;
-          state.profileEffectsDraft = null;
-          state.profileEffectsSelected = '';
-          state.profileEffectsQuery = '';
-          state.profileEffectsLimit = 12;
-          render();
-          toast('Overlay efek dihapus.', 'ok');
+          runAccountAction('/api/profile/effect', { effectId: null }, 'Overlay efek dihapus.', function (result) {
+            if (result && result.user) state.user = Object.assign({}, state.user, result.user);
+            var clearOverride = profileOverride();
+            delete clearOverride.bannerEffect;
+            try { localStorage.setItem('kv_profile_override_v2_' + clearUserId, JSON.stringify(clearOverride)); } catch (err) {}
+            state.profileEffectsOpen = false;
+            state.profileEffectsDraft = null;
+            state.profileEffectsSelected = '';
+            state.profileEffectsQuery = '';
+            state.profileEffectsLimit = 12;
+            render();
+          });
           return;
         }
         if (act === 'profile-effects-cancel') { state.profileEffectsOpen = false; state.profileEffectsDraft = null; state.profileEffectsSelected = ''; state.profileEffectsQuery = ''; state.profileEffectsLimit = 12; render(); return; }
