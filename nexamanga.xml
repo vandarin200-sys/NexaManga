@@ -2547,16 +2547,34 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top #kv-manga-form .kv-toolbar-wysi button:hover { border-color: var(--ad-amber); background: var(--ad-amber-soft); color: var(--ad-amber); }
       .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field .kv-wysi-textarea { min-height: 172px; resize: vertical; border-radius: 0 0 2px 2px !important; line-height: 1.65; }
       .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover {
-        height: 112px; margin-bottom: 12px; overflow: hidden;
+        height: 148px; margin-bottom: 12px; overflow: hidden;
         border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-panel);
       }
-      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover img,
-      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover > div { width: 100%; height: 100%; object-fit: cover; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover img {
+        width: 100% !important; height: 100% !important; max-width: 100%;
+        object-fit: contain !important; display: block;
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover > div { width: 100%; height: 100%; }
       .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover-empty {
-        display: grid; place-items: center; height: 100%;
+        display: grid; place-items: center; height: 100%; padding: 10px;
         font-family: 'JetBrains Mono', monospace; font-size: .6rem;
         letter-spacing: .1em; text-transform: uppercase; color: var(--ad-dim);
       }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover-empty[hidden] { display: none; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-menu { position: relative; flex: 0 0 auto; min-width: 0; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-native-select {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+        clip: rect(0 0 0 0); white-space: nowrap; border: 0; opacity: 0; pointer-events: none;
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-menu .kv-user-role-panel { top: calc(100% + 6px); bottom: auto; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-menu .kv-user-role-btn { min-height: 38px; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-menu .kv-mf-select-dot { width: 7px; height: 7px; border-radius: 2px; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-dot.manga,
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-dot.tamat { background: var(--ad-amber); box-shadow: 0 0 0 3px var(--ad-amber-soft); }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-dot.manhwa,
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-dot.ongoing { background: var(--ad-teal); box-shadow: 0 0 0 3px var(--ad-teal-soft); }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-dot.manhua,
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-select-dot.hiatus { background: var(--ad-muted); box-shadow: 0 0 0 3px var(--ad-raised); }
       .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-flags {
         display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 0 18px 16px;
       }
@@ -8454,6 +8472,91 @@ function renderAdmin() {
       '</div>';
     }
 
+    function mfSelectOptions(field) {
+      if (field === 'type') return [
+        { value: 'Manga', mark: 'M', label: 'Manga', desc: 'Format komik Jepang.' },
+        { value: 'Manhwa', mark: 'H', label: 'Manhwa', desc: 'Format komik Korea.' },
+        { value: 'Manhua', mark: 'C', label: 'Manhua', desc: 'Format komik Tiongkok.' }
+      ];
+      return [
+        { value: 'Ongoing', mark: 'O', label: 'Ongoing', desc: 'Serial masih berlanjut.' },
+        { value: 'Tamat', mark: 'T', label: 'Tamat', desc: 'Serial sudah selesai.' },
+        { value: 'Hiatus', mark: 'H', label: 'Hiatus', desc: 'Istirahat sementara.' }
+      ];
+    }
+    function mfSelectOption(field, value) {
+      var options = mfSelectOptions(field);
+      return options.filter(function (opt) { return opt.value === value; })[0] || options[0];
+    }
+    function mfSelectHtml(field, value) {
+      var options = mfSelectOptions(field);
+      var current = mfSelectOption(field, value);
+      var label = field === 'type' ? 'Tipe manga' : 'Status serial';
+      var optionHtml = options.map(function (opt) {
+        var active = opt.value === current.value;
+        return '<button type="button" class="kv-user-role-option' + (active ? ' is-active' : '') + '" role="option" aria-selected="' + (active ? 'true' : 'false') + '" data-action="mf-set-select" data-field="' + field + '" data-value="' + opt.value + '">' +
+          '<span class="kv-user-role-option-mark" aria-hidden="true">' + opt.mark + '</span>' +
+          '<span class="kv-user-role-option-body"><strong>' + opt.label + '</strong><small>' + opt.desc + '</small></span>' +
+          '<span class="kv-user-role-option-check" aria-hidden="true">' + (active ? '✓' : '') + '</span>' +
+        '</button>';
+      }).join('');
+      var nativeHtml = options.map(function (opt) {
+        return '<option value="' + opt.value + '"' + (opt.value === current.value ? ' selected' : '') + '>' + opt.label + '</option>';
+      }).join('');
+      return '<div class="kv-user-role-menu kv-mf-select-menu" id="kv-mf-' + field + '-menu">' +
+        '<button type="button" class="kv-user-role-btn" id="kv-mf-' + field + '-btn" data-action="mf-toggle-select" data-field="' + field + '" aria-haspopup="listbox" aria-expanded="false" aria-label="' + label + '">' +
+          '<span class="kv-user-role-btn-dot kv-mf-select-dot ' + current.value.toLowerCase() + '" id="kv-mf-' + field + '-dot" aria-hidden="true"></span>' +
+          '<span class="kv-user-role-btn-label" id="kv-mf-' + field + '-label">' + current.label + '</span>' +
+          '<span class="kv-user-role-caret" aria-hidden="true">▾</span>' +
+        '</button>' +
+        '<div class="kv-user-role-panel" id="kv-mf-' + field + '-panel" data-field="' + field + '" role="listbox" aria-label="' + label + '" hidden>' +
+          '<div class="kv-user-role-panel-head"><span>' + label + '</span><span id="kv-mf-' + field + '-value">' + current.value + '</span></div>' +
+          optionHtml +
+        '</div>' +
+        '<select class="kv-select kv-mf-native-select" name="' + field + '" aria-label="' + label + '">' + nativeHtml + '</select>' +
+      '</div>';
+    }
+    function setMfSelectPanel(field, open) {
+      var btn = document.getElementById('kv-mf-' + field + '-btn');
+      var panel = document.getElementById('kv-mf-' + field + '-panel');
+      if (!btn || !panel) return;
+      if (open) {
+        ['type', 'status'].forEach(function (name) {
+          if (name === field) return;
+          var otherBtn = document.getElementById('kv-mf-' + name + '-btn');
+          var otherPanel = document.getElementById('kv-mf-' + name + '-panel');
+          if (otherBtn && otherPanel) {
+            otherPanel.hidden = true;
+            otherBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    function applyMfSelectChoice(field, value) {
+      var opt = mfSelectOption(field, value);
+      var menu = document.getElementById('kv-mf-' + field + '-menu');
+      var select = menu ? menu.querySelector('select[name="' + field + '"]') : null;
+      var label = document.getElementById('kv-mf-' + field + '-label');
+      var current = document.getElementById('kv-mf-' + field + '-value');
+      var dot = document.getElementById('kv-mf-' + field + '-dot');
+      var panel = document.getElementById('kv-mf-' + field + '-panel');
+      if (select) select.value = opt.value;
+      if (label) label.textContent = opt.label;
+      if (current) current.textContent = opt.value;
+      if (dot) dot.className = 'kv-user-role-btn-dot kv-mf-select-dot ' + opt.value.toLowerCase();
+      if (panel) {
+        Array.prototype.forEach.call(panel.querySelectorAll('[data-action="mf-set-select"]'), function (btn) {
+          var active = btn.getAttribute('data-value') === opt.value;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
+          var check = btn.querySelector('.kv-user-role-option-check');
+          if (check) check.textContent = active ? '✓' : '';
+        });
+      }
+      setMfSelectPanel(field, false);
+    }
     function renderAdminMangaForm() {
       var f = state.adminForm;
       var cover = f.coverBloggerUrl
@@ -8498,8 +8601,8 @@ function renderAdmin() {
                 '<label class="kv-mf-field kv-mf-field--wide">Genre <span class="kv-mf-hint">pisahkan dengan koma</span><input class="kv-input" name="genres" value="' + escapeHtml(f.genresText || '') + '" placeholder="Aksi, Fantasi"/></label>' +
                 '<label class="kv-mf-field">Tahun Rilis<input class="kv-input kv-mono" name="releaseYear" type="number" min="1900" max="2100" step="1" value="' + escapeHtml(f.releaseYear || '') + '" placeholder="2024"/></label>' +
                 '<label class="kv-mf-field">Rating 0-10<input class="kv-input kv-mono" name="rating" type="number" step="0.1" min="0" max="10" value="' + (f.rating !== '' && f.rating != null ? f.rating : '') + '"/></label>' +
-                '<label class="kv-mf-field">Tipe<select class="kv-select" name="type">' + ['Manga', 'Manhwa', 'Manhua'].map(function (t) { return '<option value="' + t + '"' + (f.type === t ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label>' +
-                '<label class="kv-mf-field">Status<select class="kv-select" name="status">' + ['Ongoing', 'Tamat', 'Hiatus'].map(function (s) { return '<option value="' + s + '"' + (f.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select></label>' +
+                '<label class="kv-mf-field">Tipe' + mfSelectHtml('type', f.type) + '</label>' +
+                '<label class="kv-mf-field">Status' + mfSelectHtml('status', f.status) + '</label>' +
               '</div>' +
             '</section>' +
           '</aside>' +
@@ -11223,6 +11326,12 @@ function setBannerDotsActive(index) {
       if (!trafficPoint && !e.target.closest('.kv-traffic-tooltip')) hideTrafficTooltip();
       var insideBrandMenu = e.target && e.target.closest ? e.target.closest('.kv-brand-mode-menu') : null;
       if (!insideBrandMenu) setBrandModePanel(false);
+      var insideMfSelect = e.target && e.target.closest ? e.target.closest('.kv-mf-select-menu') : null;
+      if (!insideMfSelect) {
+        Array.prototype.forEach.call(document.querySelectorAll('.kv-mf-select-menu .kv-user-role-panel:not([hidden])'), function (panel) {
+          setMfSelectPanel(panel.getAttribute('data-field'), false);
+        });
+      }
       var insideMore = e.target && e.target.closest ? (e.target.closest('[data-yz-more-menu]') || e.target.closest('[data-action="toggle-yz-more"]')) : null;
       var closeMore = !!state.yzMoreOpen && !insideMore;
       if (closeMore) state.yzMoreOpen = false;
@@ -11573,6 +11682,12 @@ function setBannerDotsActive(index) {
           setBrandModePanel(brandPanel ? brandPanel.hidden : false);
         }
         else if (act === 'admin-set-brand-mode') { applyBrandModeChoice(el.getAttribute('data-value')); }
+        else if (act === 'mf-toggle-select') {
+          var mfField = el.getAttribute('data-field');
+          var mfPanel = document.getElementById('kv-mf-' + mfField + '-panel');
+          setMfSelectPanel(mfField, mfPanel ? mfPanel.hidden : false);
+        }
+        else if (act === 'mf-set-select') { applyMfSelectChoice(el.getAttribute('data-field'), el.getAttribute('data-value')); }
         else if (act === 'admin-comment-filter') { state.commentFilter = el.getAttribute('data-filter'); render(); }
         else if (act === 'admin-open-leaderboard') { state.adminTab = 'leaderboard'; state.adminDrawerOpen = false; render(); }
         else if (act === 'md-toggle-lang') { setMdLangMenu(!state.mdLangMenuOpen); }
@@ -12386,7 +12501,7 @@ applyYumeAccent();
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-podium[data-place="1"] .lb-podium-badge { background-image: none !important; background-color: var(--lb-accent) !important; border-color: var(--lb-accent) !important; color: var(--lb-on) !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-shimmer { display: none !important; background-image: none !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-overlay { background-image: none !important; background-color: transparent !important; }
-    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-card-title { border: 1px solid var(--yz-border) !important; border-radius: 10px; background-color: var(--yz-surface-1) !important; padding: 6px 8px; box-shadow: 0 8px 22px -14px rgba(0,0,0,.75); }
+    html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-card-title { border: 0 !important; background-color: var(--yz-surface-1) !important; padding: 6px 8px; box-shadow: none !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-card-title .lb-ink { color: var(--yz-text) !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-poster-fallback { background-color: var(--yz-surface-2) !important; color: var(--yz-text-tertiary) !important; }
     html body.kv-public-route .lb-root[data-lb-tab="comics"] .lb-poster-fallback-title { color: var(--yz-text-secondary) !important; }
