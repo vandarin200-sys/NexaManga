@@ -3706,6 +3706,35 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
     html body.kv-public-route .kv-filter-drawer, html body.kv-public-route .kv-filter-drawer-backdrop { background: var(--yz-surface-1); color: var(--yz-text); }
     html body.kv-public-route .kv-filter-drawer-chip { background: var(--yz-surface-2); color: var(--yz-text-secondary); border: 1px solid var(--yz-border); border-radius: 999px; }
     html body.kv-public-route .kv-filter-drawer-chip.is-active { background: var(--yz-accent); color: #000; }
+    html body.kv-public-route .kv-arc-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+    html body.kv-public-route .kv-arc-select { position: relative; flex: 1 1 150px; min-width: 0; }
+    html body.kv-public-route .kv-arc-select-btn { width: 100%; min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 8px 11px; border: 1px solid var(--yz-border); border-radius: 10px; background: var(--yz-surface-1); color: var(--yz-text); cursor: pointer; text-align: left; transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease; }
+    html body.kv-public-route .kv-arc-select-btn:hover, html body.kv-public-route .kv-arc-select-btn[aria-expanded="true"] { border-color: var(--yz-accent); background: var(--yz-surface-2); }
+    html body.kv-public-route .kv-arc-select-btn[aria-expanded="true"] { box-shadow: 0 0 0 3px var(--yz-accent-subtle); }
+    html body.kv-public-route .kv-arc-select-btn:focus-visible, html body.kv-public-route .kv-arc-option:focus-visible { outline: 2px solid var(--yz-accent); outline-offset: 2px; }
+    html body.kv-public-route .kv-arc-select-mark { width: 28px; height: 28px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid var(--yz-border); border-radius: 8px; background: var(--yz-surface-2); color: var(--yz-accent); font-size: .72rem; font-weight: 800; }
+    html body.kv-public-route .kv-arc-select-copy { min-width: 0; flex: 1; display: grid; gap: 1px; }
+    html body.kv-public-route .kv-arc-select-label { color: var(--yz-text-tertiary); font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    html body.kv-public-route .kv-arc-select-value { overflow: hidden; color: var(--yz-text); font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    html body.kv-public-route .kv-arc-select-caret { flex: 0 0 auto; color: var(--yz-text-tertiary); font-size: .72rem; transition: transform .15s ease, color .15s ease; }
+    html body.kv-public-route .kv-arc-select-btn[aria-expanded="true"] .kv-arc-select-caret { color: var(--yz-accent); transform: rotate(180deg); }
+    html body.kv-public-route .kv-arc-select-panel { position: absolute; z-index: 50; top: calc(100% + 6px); left: 0; width: max(100%, 240px); max-height: 300px; overflow-y: auto; overscroll-behavior: contain; padding: 6px; border: 1px solid var(--yz-border); border-radius: 12px; background: var(--yz-surface-1); box-shadow: 0 18px 48px -24px rgba(0,0,0,.85); animation: kvArcIn .14s ease; }
+    html body.kv-public-route .kv-arc-select:last-child .kv-arc-select-panel { left: auto; right: 0; }
+    html body.kv-public-route .kv-arc-select-panel-head { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 5px; padding: 5px 8px 7px; border-bottom: 1px solid var(--yz-border); color: var(--yz-text-tertiary); font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    html body.kv-public-route .kv-arc-select-panel-head span:last-child { color: var(--yz-accent); }
+    html body.kv-public-route .kv-arc-option { width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--yz-text); cursor: pointer; text-align: left; }
+    html body.kv-public-route .kv-arc-option:hover { background: var(--yz-surface-2); border-color: var(--yz-border); }
+    html body.kv-public-route .kv-arc-option.is-active { background: var(--yz-accent-subtle); border-color: var(--yz-accent); }
+    html body.kv-public-route .kv-arc-option-mark { width: 26px; height: 26px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid var(--yz-border); border-radius: 7px; background: var(--yz-surface-2); color: var(--yz-text-tertiary); font-size: .7rem; font-weight: 800; }
+    html body.kv-public-route .kv-arc-option.is-active .kv-arc-option-mark { border-color: var(--yz-accent); background: var(--yz-accent-subtle); color: var(--yz-accent); }
+    html body.kv-public-route .kv-arc-option-body { min-width: 0; flex: 1; display: grid; gap: 2px; }
+    html body.kv-public-route .kv-arc-option-body strong { overflow: hidden; color: var(--yz-text); font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    html body.kv-public-route .kv-arc-option-body small { color: var(--yz-text-tertiary); font-size: 10px; line-height: 1.3; }
+    html body.kv-public-route .kv-arc-option-check { width: 14px; flex: 0 0 auto; color: var(--yz-accent); font-size: .8rem; text-align: center; }
+    html body.kv-public-route .kv-arc-native { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+    @keyframes kvArcIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { html body.kv-public-route .kv-arc-select-panel { animation: none; } }
+    @media (max-width: 560px) { html body.kv-public-route .kv-arc-select { flex-basis: 100%; } html body.kv-public-route .kv-arc-select-panel { width: 100%; } }
     html body.kv-public-route .kv-detail-page { padding-top: 18px; }
     html body.kv-public-route .kv-detail-breadcrumb ol { color: var(--yz-text-tertiary); }
     html body.kv-public-route .kv-detail-breadcrumb a:hover { color: var(--yz-accent); }
@@ -4277,6 +4306,7 @@ function yzBtnClass(primary) {
         menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
         chevron: '<path d="m9 18 6-6-6-6"/>',
         shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15 21 21"/><path d="M4 4 9 9"/>',
+        sliders: '<line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/>',
         copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'
       };
       return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-' + name + ' ' + (cls || 'h-4 w-4') + '" aria-hidden="true">' + (p[name] || p.grid) + '</svg>';
@@ -6204,6 +6234,104 @@ function renderFilterDrawer(allGenres, typeOptions, statusOptions) {
           '</div>';
       }
 
+      var arcFilterSelectDefs = {
+        type: {
+          label: 'Format',
+          filter: 'type',
+          options: [
+            { value: 'Semua', mark: 'A', label: 'Semua format', desc: 'Tampilkan semua tipe manga' },
+            { value: 'Manga', mark: 'M', label: 'Manga', desc: 'Komik dari Jepang' },
+            { value: 'Manhwa', mark: 'H', label: 'Manhwa', desc: 'Komik dari Korea' },
+            { value: 'Manhua', mark: 'C', label: 'Manhua', desc: 'Komik dari Tiongkok' },
+            { value: 'Webtoon', mark: 'W', label: 'Webtoon', desc: 'Komik digital berwarna' }
+          ]
+        },
+        status: {
+          label: 'Status',
+          filter: 'status',
+          options: [
+            { value: 'Semua', mark: 'A', label: 'Semua status', desc: 'Tanpa filter status' },
+            { value: 'Ongoing', mark: 'O', label: 'Ongoing', desc: 'Serial masih berlanjut' },
+            { value: 'Tamat', mark: 'T', label: 'Tamat', desc: 'Serial sudah selesai' },
+            { value: 'Hiatus', mark: 'H', label: 'Hiatus', desc: 'Istirahat sementara' }
+          ]
+        },
+        sort: {
+          label: 'Sort By',
+          filter: 'sort',
+          options: [
+            { value: 'terbaru', mark: '★', label: 'Popular / Relevance', desc: 'Urutan bawaan NexaManga' },
+            { value: 'abjad', mark: 'A', label: 'Alphabetical (A-Z)', desc: 'Judul dari A hingga Z' },
+            { value: 'rating', mark: '↑', label: 'Rating (Highest)', desc: 'Skor tertinggi terlebih dahulu' },
+            { value: 'populer', mark: '◉', label: 'Most Viewed', desc: 'Paling banyak dibaca' }
+          ]
+        }
+      };
+      function arcFilterSelectCurrent(kind) {
+        var def = arcFilterSelectDefs[kind];
+        var value = kind === 'type' ? state.filterType : kind === 'status' ? state.filterStatus : state.sortBy;
+        return def.options.filter(function (o) { return o.value === value; })[0] || def.options[0];
+      }
+      function arcFilterSelectHtml(kind) {
+        var def = arcFilterSelectDefs[kind];
+        var current = arcFilterSelectCurrent(kind);
+        var optionHtml = def.options.map(function (o) {
+          var active = o.value === current.value;
+          return '<button type="button" class="kv-arc-option' + (active ? ' is-active' : '') + '" role="option" aria-selected="' + (active ? 'true' : 'false') + '" data-action="arc-set-select" data-kind="' + kind + '" data-value="' + escapeHtml(o.value) + '">' +
+            '<span class="kv-arc-option-mark" aria-hidden="true">' + escapeHtml(o.mark) + '</span>' +
+            '<span class="kv-arc-option-body"><strong>' + escapeHtml(o.label) + '</strong><small>' + escapeHtml(o.desc) + '</small></span>' +
+            '<span class="kv-arc-option-check" aria-hidden="true">' + (active ? '✓' : '') + '</span>' +
+          '</button>';
+        }).join('');
+        var nativeHtml = def.options.map(function (o) {
+          return '<option value="' + escapeHtml(o.value) + '"' + (o.value === current.value ? ' selected' : '') + '>' + escapeHtml(o.label) + '</option>';
+        }).join('');
+        return '<div class="kv-arc-select">' +
+          '<button type="button" class="kv-arc-select-btn" id="kv-arc-' + kind + '-btn" data-action="arc-toggle-select" data-kind="' + kind + '" aria-haspopup="listbox" aria-expanded="false" aria-label="' + def.label + '">' +
+            '<span class="kv-arc-select-mark" aria-hidden="true">' + escapeHtml(current.mark) + '</span>' +
+            '<span class="kv-arc-select-copy"><span class="kv-arc-select-label">' + def.label + '</span><span class="kv-arc-select-value">' + escapeHtml(current.label) + '</span></span>' +
+            '<span class="kv-arc-select-caret" aria-hidden="true">▾</span>' +
+          '</button>' +
+          '<div class="kv-arc-select-panel" id="kv-arc-' + kind + '-panel" data-kind="' + kind + '" role="listbox" aria-label="' + def.label + '" hidden>' +
+            '<div class="kv-arc-select-panel-head"><span>' + def.label + '</span><span>' + escapeHtml(current.value) + '</span></div>' + optionHtml +
+          '</div>' +
+          '<select class="kv-arc-native" data-yz-filter="' + def.filter + '" aria-label="' + def.label + '">' + nativeHtml + '</select>' +
+        '</div>';
+      }
+      function setArcFilterPanel(kind, open) {
+        var btn = document.getElementById('kv-arc-' + kind + '-btn');
+        var panel = document.getElementById('kv-arc-' + kind + '-panel');
+        if (!btn || !panel) return;
+        if (open) {
+          ['type', 'status', 'sort'].forEach(function (name) {
+            if (name === kind) return;
+            var otherBtn = document.getElementById('kv-arc-' + name + '-btn');
+            var otherPanel = document.getElementById('kv-arc-' + name + '-panel');
+            if (otherBtn && otherPanel) {
+              otherPanel.hidden = true;
+              otherBtn.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+        panel.hidden = !open;
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      function applyArcFilterChoice(kind, value) {
+        var def = arcFilterSelectDefs[kind];
+        var opt = def.options.filter(function (o) { return o.value === value; })[0];
+        if (!opt) return;
+        var btn = document.getElementById('kv-arc-' + kind + '-btn');
+        var select = btn ? btn.parentNode.querySelector('select[data-yz-filter="' + def.filter + '"]') : null;
+        if (select) {
+          select.value = opt.value;
+          var evt = document.createEvent('HTMLEvents');
+          evt.initEvent('change', true, true);
+          select.dispatchEvent(evt);
+        } else {
+          setArcFilterPanel(kind, false);
+        }
+      }
+
             function renderCatalog() {
         var allGenres = collectGenres();
         var list = (state.data.manga || []).filter(function (m) {
@@ -6223,10 +6351,6 @@ function renderFilterDrawer(allGenres, typeOptions, statusOptions) {
         var totalPages = Math.max(1, Math.ceil(list.length / CONFIG.ITEMS_PER_PAGE));
         if (state.page > totalPages) state.page = totalPages;
         var paged = list.slice((state.page - 1) * CONFIG.ITEMS_PER_PAGE, state.page * CONFIG.ITEMS_PER_PAGE);
-        var option = function (value, label, selected) { return '<option value="' + escapeHtml(value) + '"' + (selected ? ' selected' : '') + '>' + escapeHtml(label) + '</option>'; };
-        var typeOptions = ['Semua', 'Manga', 'Manhwa', 'Manhua', 'Webtoon'].map(function (v) { return option(v, v === 'Semua' ? 'All Formats' : v, state.filterType === v); }).join('');
-        var statusOptions = ['Semua', 'Ongoing', 'Tamat', 'Hiatus'].map(function (v) { return option(v, v === 'Semua' ? 'All Status' : v, state.filterStatus === v); }).join('');
-        var sortOptions = [['terbaru', 'Popular / Relevance'], ['abjad', 'Alphabetical (A-Z)'], ['rating', 'Rating (Highest)'], ['populer', 'Most Viewed']].map(function (o) { return option(o[0], o[1], state.sortBy === o[0]); }).join('');
         var genreHtml = allGenres.slice(0, 14).map(function (g) {
           var active = state.filterGenres.indexOf(g) !== -1;
           return '<button type="button" data-action="toggle-filter-genre" data-genre="' + escapeHtml(g) + '" class="rounded-full border px-2.5 py-1 text-[10px] font-semibold transition ' + (active ? 'border-white bg-white text-black' : 'border-white/10 bg-white/[0.05] text-zinc-400 hover:text-white') + '">' + escapeHtml(g) + '</button>';
@@ -6250,15 +6374,16 @@ function renderFilterDrawer(allGenres, typeOptions, statusOptions) {
           '<button type="button" data-action="set-filter-type" data-value="Manga" class="rounded-lg px-4 py-2 text-xs font-bold transition ' + (state.filterType === 'Manga' ? 'scale-100 bg-white text-black shadow-lg' : 'bg-white/[0.06] text-zinc-300 hover:text-white') + '">Manga</button></div>' +
           '<div class="mt-5 flex flex-col gap-3 sm:flex-row">' +
             '<div class="relative flex-1">' + yzIco('search', 'absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500') + '<input id="search-query-input" data-yz-search type="search" name="q" placeholder="Search by manga name, genres, author..." maxlength="100" value="' + escapeHtml(state.search || '') + '" aria-label="Cari manga" class="w-full rounded-xl border border-zinc-800 bg-zinc-950 py-3.5 pl-12 pr-10 text-sm text-white outline-none transition-all placeholder:text-zinc-500 focus:border-white focus:bg-zinc-900"/>' + '</div>' +
-            '<button type="button" data-action="surprise-me" class="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-xs font-bold text-white hover:bg-zinc-900">' + yzIco('shuffle', 'h-4 w-4') + 'Surprise Me</button>' +
+            '<div class="flex shrink-0 items-center gap-2">' +
+              '<button type="button" data-action="surprise-me" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-xs font-bold text-white hover:bg-zinc-900 sm:flex-none">' + yzIco('shuffle', 'h-4 w-4') + '<span>Surprise Me</span></button>' +
+              '<button type="button" data-action="toggle-filter-drawer" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-xs font-bold text-white hover:bg-zinc-900 sm:flex-none lg:hidden" aria-label="Tampilkan filter">' + yzIco('sliders', 'h-4 w-4') + '<span>Show Filters</span></button>' +
+            '</div>' +
           '</div>' +
+          '<div class="kv-arc-toolbar">' + arcFilterSelectHtml('type') + arcFilterSelectHtml('sort') + arcFilterSelectHtml('status') + '</div>' +
           '<div class="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-4">' +
-            '<aside class="space-y-8 lg:col-span-1"><button type="button" data-action="toggle-filter-drawer" class="flex min-h-[44px] w-full items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm font-semibold text-white lg:hidden">Show Filters ' + yzIco('chevron', 'h-4 w-4') + '</button>' +
+            '<aside class="space-y-8 lg:col-span-1">' +
               '<div class="rounded-xl border border-zinc-900 bg-zinc-950/60 p-5 space-y-6 ' + (state.filterDrawerOpen ? 'block yz-drawer-slide-up' : 'hidden lg:block') + '">' +
                 '<div class="hidden items-center justify-between font-semibold text-white lg:flex border-b border-zinc-900 pb-3">Filter Manga</div>' +
-                '<div class="space-y-2"><label class="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Format</label><select data-yz-filter="type" class="min-h-[44px] w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-xs text-zinc-300 outline-none transition-colors focus:border-white">' + typeOptions + '</select></div>' +
-                '<div class="space-y-2"><label class="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Sort By</label><select data-yz-filter="sort" class="min-h-[44px] w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-xs text-zinc-300 outline-none transition-colors focus:border-white cursor-pointer">' + sortOptions + '</select></div>' +
-                '<div class="space-y-2"><label class="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Status</label><select data-yz-filter="status" class="min-h-[44px] w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-xs text-zinc-300 outline-none transition-colors focus:border-white">' + statusOptions + '</select></div>' +
                 '<div class="space-y-2"><span class="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Genres</span><div class="flex flex-wrap gap-2">' + genreHtml + '</div></div>' +
                 '<button type="button" data-action="clear-filters" class="w-full rounded-lg border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white">Reset Filter</button>' +
               '</div>' +
@@ -11332,6 +11457,12 @@ function setBannerDotsActive(index) {
           setMfSelectPanel(panel.getAttribute('data-field'), false);
         });
       }
+      var insideArcSelect = e.target && e.target.closest ? e.target.closest('.kv-arc-select') : null;
+      if (!insideArcSelect) {
+        Array.prototype.forEach.call(document.querySelectorAll('.kv-arc-select-panel:not([hidden])'), function (panel) {
+          setArcFilterPanel(panel.getAttribute('data-kind'), false);
+        });
+      }
       var insideMore = e.target && e.target.closest ? (e.target.closest('[data-yz-more-menu]') || e.target.closest('[data-action="toggle-yz-more"]')) : null;
       var closeMore = !!state.yzMoreOpen && !insideMore;
       if (closeMore) state.yzMoreOpen = false;
@@ -11688,6 +11819,12 @@ function setBannerDotsActive(index) {
           setMfSelectPanel(mfField, mfPanel ? mfPanel.hidden : false);
         }
         else if (act === 'mf-set-select') { applyMfSelectChoice(el.getAttribute('data-field'), el.getAttribute('data-value')); }
+        else if (act === 'arc-toggle-select') {
+          var arcKind = el.getAttribute('data-kind');
+          var arcPanel = document.getElementById('kv-arc-' + arcKind + '-panel');
+          setArcFilterPanel(arcKind, arcPanel ? arcPanel.hidden : false);
+        }
+        else if (act === 'arc-set-select') { applyArcFilterChoice(el.getAttribute('data-kind'), el.getAttribute('data-value')); }
         else if (act === 'admin-comment-filter') { state.commentFilter = el.getAttribute('data-filter'); render(); }
         else if (act === 'admin-open-leaderboard') { state.adminTab = 'leaderboard'; state.adminDrawerOpen = false; render(); }
         else if (act === 'md-toggle-lang') { setMdLangMenu(!state.mdLangMenuOpen); }
