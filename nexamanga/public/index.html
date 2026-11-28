@@ -345,7 +345,7 @@
     .pe-tabs { display:flex; gap:6px; margin-top:14px; }
     .pe-tab { padding:7px 13px; border:1px solid var(--kv-border); border-radius:999px; background:transparent; color:var(--kv-text-muted); font:600 .6rem/1 var(--kv-font-mono); letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
     .pe-tab.is-active { border-color:var(--kv-neon); background:color-mix(in srgb,var(--kv-neon) 14%,transparent); color:var(--kv-text); }
-    .pe-layout { display:grid; grid-template-columns:minmax(240px,.85fr) minmax(0,1.65fr); gap:18px; padding:18px 22px 20px; }
+    .pe-layout { display:grid; grid-template-columns:minmax(240px,.85fr) minmax(0,1.65fr); gap:18px; padding:18px 22px 20px; align-items:start; }
     .pe-preview-col { min-width:0; }
     .pe-section-label { display:block; margin-bottom:8px; font:600 .58rem/1 var(--kv-font-mono); letter-spacing:.16em; text-transform:uppercase; color:var(--kv-text-muted); }
     .pe-preview { position:relative; aspect-ratio:4/3; overflow:hidden; border-radius:18px; border:1px solid var(--kv-border); background:linear-gradient(135deg,#101319,#18222a 55%,#0a0c10); box-shadow:inset 0 1px rgba(255,255,255,.07),0 18px 40px -28px rgba(0,0,0,.9); }
@@ -358,15 +358,15 @@
     .pe-preview-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; padding:10px 12px; border:1px solid var(--kv-border); border-radius:12px; background:var(--kv-surface-2); }
     .pe-preview-meta small { font:500 .6rem/1.4 var(--kv-font-mono); color:var(--kv-text-muted); }
     .pe-preview-meta strong { font-size:.74rem; color:var(--kv-text); }
-    .pe-tools-col { display:flex; min-width:0; flex-direction:column; }
+    .pe-tools-col { display:flex; min-width:0; min-height:0; max-height:min(74vh,660px); flex-direction:column; overflow:hidden; }
     .pe-search-wrap { display:flex; align-items:center; gap:9px; padding:9px 12px; border:1px solid var(--kv-border); border-radius:12px; background:var(--kv-surface-2); }
     .pe-search-wrap svg { flex:none; color:var(--kv-text-muted); }
     .pe-search { width:100%; border:0; outline:0; background:transparent; color:var(--kv-text); font-size:.76rem; }
     .pe-search::placeholder { color:var(--kv-text-muted); }
     .pe-grid-head { display:flex; justify-content:space-between; align-items:center; margin:14px 0 9px; }
     .pe-grid-head span { font:600 .58rem/1 var(--kv-font-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--kv-text-muted); }
-    .pe-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:9px; max-height:min(52vh,430px); overflow:auto; padding:2px 6px 2px 2px; scrollbar-width:thin; }
-    .pe-card { position:relative; overflow:hidden; padding:6px; border:1px solid var(--kv-border); border-radius:14px; background:var(--kv-surface-2); color:var(--kv-text); text-align:left; cursor:pointer; transition:transform var(--dur-fast) var(--ease-out),border-color var(--dur-fast),box-shadow var(--dur-fast); }
+    .pe-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); grid-auto-rows:max-content; align-content:start; gap:9px; flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:2px 6px 2px 2px; scrollbar-width:thin; }
+    .pe-card { position:relative; align-self:start; overflow:hidden; padding:6px; border:1px solid var(--kv-border); border-radius:14px; background:var(--kv-surface-2); color:var(--kv-text); text-align:left; cursor:pointer; transition:transform var(--dur-fast) var(--ease-out),border-color var(--dur-fast),box-shadow var(--dur-fast); }
     .pe-card:hover { transform:translateY(-2px); border-color:var(--kv-neon); box-shadow:0 12px 24px -18px rgba(0,0,0,.8); }
     .pe-card.is-active { border-color:var(--kv-neon); box-shadow:0 0 0 1px var(--kv-neon) inset; }
     .pe-card-art { position:relative; display:block; height:76px; overflow:hidden; border-radius:10px; background:#0b0e14; }
@@ -386,7 +386,7 @@
     .pe-foot-status strong { color:var(--kv-text); }
     .kv-banner-reset { margin-right:auto; color:var(--kv-text-muted); font-size:.7rem; font-weight:600; background:transparent; border:0; cursor:pointer; }
     .kv-banner-reset:hover { color:var(--kv-text); text-decoration:underline; }
-    @media (max-width:760px) { .kv-banner-modal { padding:12px; } .kv-banner-modal .kv-modal-box { max-height:calc(100dvh - 24px); overflow:auto; } .pe-layout { grid-template-columns:1fr; } .pe-grid { max-height:340px; } }
+    @media (max-width:760px) { .kv-banner-modal { padding:12px; } .kv-banner-modal .kv-modal-box { max-height:calc(100dvh - 24px); overflow:auto; } .pe-layout { grid-template-columns:1fr; max-height:none; } .pe-tools-col { max-height:none; overflow:visible; } .pe-grid { flex:none; min-height:180px; max-height:min(46dvh,340px); } }
     @media (max-width:520px) { .kv-banner-fields { grid-template-columns:1fr; } .kv-banner-foot { flex-wrap:wrap; } .kv-banner-reset { width:100%; text-align:left; margin:0 0 4px; } .pe-tabs { width:100%; } .pe-tab { flex:1; } }
     .kv-report-modal { --rp-line:var(--kv-border); --rp-ink:var(--kv-text); --rp-muted:var(--kv-text-muted); --rp-hot:var(--kv-danger); --rp-accent:var(--kv-accent); align-items:flex-end; padding:10px; }
     .kv-report-modal-box {
@@ -8117,13 +8117,15 @@ function renderSettings() {
       if (equip) equip.disabled = !effect;
     }
 
-    function updateEffectGrid() {
+    function updateEffectGrid(preserveScroll) {
       var grid = document.querySelector('[data-effect-grid]');
       if (!grid) return;
+      var scrollTop = preserveScroll ? grid.scrollTop : 0;
       var list = filteredProfileEffects();
       var limit = Math.max(12, Number(state.profileEffectsLimit) || 12);
       var shown = list.slice(0, limit);
       grid.innerHTML = shown.length ? shown.map(renderEffectCard).join('') : '<p class="pe-empty">Tidak ada efek yang cocok.</p>';
+      grid.scrollTop = scrollTop;
       var count = document.querySelector('[data-effect-count]');
       if (count) count.textContent = shown.length + ' / ' + list.length + ' efek';
       var more = document.querySelector('[data-effect-more]');
@@ -8379,6 +8381,10 @@ function renderSettings() {
         : initial;
       var bannerUrl = String(profile.bannerUrl || '');
       var bannerCss = bannerUrl ? 'url(\'' + escapeHtml(bannerUrl) + '\')' : 'radial-gradient(circle at 28% 24%, rgba(145,184,177,.2), transparent 58%), linear-gradient(135deg, #10161a, #080a0e)';
+      var publicEffectValue = profile.profileEffect || profile.effectId || profile.effect || profile.bannerEffect;
+      var publicEffectId = publicEffectValue && typeof publicEffectValue === 'object' ? String(publicEffectValue.id || '') : String(publicEffectValue || '');
+      var ownPublicSlug = String((state.user && (state.user.publicSlug || state.user.public_slug)) || '');
+      var publicEffect = profileEffectById(publicEffectId) || (ownPublicSlug && ownPublicSlug === slug ? profileEffectById(profileOverride().bannerEffect) : null);
       var comments = Array.isArray(profile.comments) ? profile.comments : [];
       var commentsHtml = comments.length ? comments.map(function (comment, i) {
         var href = comment.manga_slug ? publicHref('/manga/' + encodeURIComponent(comment.manga_slug)) : publicHref('/catalog');
@@ -8396,6 +8402,7 @@ function renderSettings() {
         '<div class="pf-ambient" aria-hidden="true"></div>' +
         '<main class="relative mx-auto max-w-5xl w-full px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-20 sm:pb-12">' +
           '<section class="pf-hero pf-d1">' +
+            renderProfileEffectOverlay(publicEffect) +
             '<div class="pf-hero__banner" style="background-image:' + bannerCss + '" role="img" aria-label="Banner profil ' + escapeHtml(displayName) + '">' +
               '<span class="pf-hero__stamp" aria-hidden="true">NEXA / READER FILE</span>' +
               '<span class="pf-hero__sigil" aria-hidden="true">' + initial + '</span>' +
@@ -12388,7 +12395,7 @@ function setBannerDotsActive(index) {
         }
         if (act === 'profile-effects-tab') { state.profileEffectsTab = el.getAttribute('data-tab') === 'banner' ? 'banner' : 'effects'; render(); return; }
         if (act === 'profile-effects-select') { state.profileEffectsSelected = normalizeProfileEffectId(el.getAttribute('data-effect')); applyEffectSelection(); return; }
-        if (act === 'profile-effects-more') { state.profileEffectsLimit = (Number(state.profileEffectsLimit) || 12) + 12; updateEffectGrid(); return; }
+        if (act === 'profile-effects-more') { state.profileEffectsLimit = (Number(state.profileEffectsLimit) || 12) + 12; updateEffectGrid(true); return; }
         if (act === 'profile-effects-equip') {
           var effectUserId = state.user && state.user.id;
           if (!effectUserId) { toast('Masuk terlebih dahulu untuk memasang efek.', 'warn'); return; }
