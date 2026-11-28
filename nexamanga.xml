@@ -2482,6 +2482,112 @@ border-radius:0; min-height:0; -webkit-tap-highlight-color:transparent; }
       .kv-admin-shell.kv-admin-top .kv-textarea:focus {
         border-color: var(--ad-amber); box-shadow: 0 0 0 3px var(--ad-amber-soft); background: var(--ad-panel);
       }
+      .kv-admin-shell.kv-admin-top #kv-manga-form.kv-card {
+        margin-top: 16px; padding: 0; overflow: hidden;
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-head {
+        display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 16px 18px; border-bottom: 1px solid var(--ad-line);
+        background: linear-gradient(100deg, var(--ad-amber-soft), transparent 58%), var(--ad-panel);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-heading { display: flex; align-items: center; gap: 11px; min-width: 0; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-index {
+        width: 32px; height: 32px; flex: 0 0 auto; display: grid; place-items: center;
+        clip-path: polygon(0 0, 100% 0, 100% 74%, 74% 100%, 0 100%);
+        background: var(--ad-amber); color: #10161A;
+        font-family: 'JetBrains Mono', monospace; font-size: .7rem; font-weight: 700;
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-kicker {
+        display: block; font-family: 'JetBrains Mono', monospace; font-size: .56rem;
+        letter-spacing: .14em; text-transform: uppercase; color: var(--ad-dim);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-section-title { margin: 2px 0 0; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-id {
+        max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        padding: 3px 7px; border: 1px solid var(--ad-line); border-radius: 2px;
+        font-family: 'JetBrains Mono', monospace; font-size: .58rem; color: var(--ad-muted);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-body {
+        display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(290px, .8fr); gap: 14px; padding: 18px;
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-panel,
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-side { min-width: 0; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-panel {
+        padding: 14px; border: 1px solid var(--ad-line); border-radius: 3px; background: var(--ad-raised);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-panel + .kv-mf-panel { margin-top: 14px; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-panel-title {
+        display: flex; align-items: center; gap: 8px; margin: 0 0 12px;
+        font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 500;
+        letter-spacing: .14em; text-transform: uppercase; color: var(--ad-dim);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-panel-title::before { content: ''; width: 14px; height: 2px; background: var(--ad-amber); }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field {
+        display: flex; flex-direction: column; gap: 6px; min-width: 0;
+        font-family: 'JetBrains Mono', monospace; font-size: .58rem; font-weight: 500;
+        letter-spacing: .12em; text-transform: uppercase; color: var(--ad-dim);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field--wide { grid-column: 1 / -1; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-hint { letter-spacing: 0; text-transform: none; color: var(--ad-muted); }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field .kv-input,
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field .kv-select,
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field .kv-textarea { width: 100%; margin-top: 0; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field .kv-input::placeholder,
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field .kv-textarea::placeholder { color: var(--ad-dim); opacity: .8; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-toolbar-wysi {
+        margin: 0; padding: 6px; border: 1px solid var(--ad-line); border-radius: 2px 2px 0 0;
+        background: var(--ad-panel);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-toolbar-wysi button {
+        padding: 4px 9px; border: 1px solid var(--ad-line); border-radius: 2px;
+        background: var(--ad-raised); color: var(--ad-muted);
+        font-family: 'JetBrains Mono', monospace; font-size: .62rem; letter-spacing: .06em;
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-toolbar-wysi button:hover { border-color: var(--ad-amber); background: var(--ad-amber-soft); color: var(--ad-amber); }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-field .kv-wysi-textarea { min-height: 172px; resize: vertical; border-radius: 0 0 2px 2px !important; line-height: 1.65; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover {
+        height: 112px; margin-bottom: 12px; overflow: hidden;
+        border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-panel);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover img,
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover > div { width: 100%; height: 100%; object-fit: cover; }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-cover-empty {
+        display: grid; place-items: center; height: 100%;
+        font-family: 'JetBrains Mono', monospace; font-size: .6rem;
+        letter-spacing: .1em; text-transform: uppercase; color: var(--ad-dim);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-flags {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 0 18px 16px;
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-flag {
+        display: flex; align-items: flex-start; gap: 9px; padding: 11px 12px;
+        border: 1px solid var(--ad-line); border-radius: 2px; background: var(--ad-raised);
+        color: var(--ad-text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: .74rem;
+        font-weight: 600; line-height: 1.35; letter-spacing: 0; text-transform: none; cursor: pointer;
+        transition: border-color .15s ease, background .15s ease;
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-flag:hover { border-color: var(--ad-amber); background: var(--ad-amber-soft); }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-flag input { margin-top: 2px; accent-color: var(--ad-amber); }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-flag small { display: block; margin-top: 3px; font-family: 'JetBrains Mono', monospace; font-size: .58rem; font-weight: 400; color: var(--ad-muted); }
+      .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-foot {
+        display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+        padding: 14px 18px; border-top: 1px solid var(--ad-line);
+        background: linear-gradient(90deg, var(--ad-amber-soft), transparent 45%), var(--ad-panel);
+      }
+      .kv-admin-shell.kv-admin-top #kv-manga-form #kv-manga-form-err {
+        margin: 0; font-family: 'JetBrains Mono', monospace; font-size: .64rem; color: var(--ad-red);
+      }
+      @media (max-width: 900px) {
+        .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-body { grid-template-columns: 1fr; }
+        .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-flags { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 560px) {
+        .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-grid { grid-template-columns: 1fr; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .kv-admin-shell.kv-admin-top #kv-manga-form .kv-mf-flag { transition: none; }
+      }
       .kv-admin-shell.kv-admin-top .kv-user-role-menu { position: relative; flex: 1; min-width: 0; }
       .kv-admin-shell.kv-admin-top .kv-user-role-btn {
         width: 100%; display: flex; align-items: center; gap: 9px; min-height: 40px; padding: 9px 10px;
@@ -8350,43 +8456,63 @@ function renderAdmin() {
 
     function renderAdminMangaForm() {
       var f = state.adminForm;
-       return '<form id="kv-manga-form" class="kv-card" style="margin-top:16px;" novalidate>' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">' +
-          '<h2 class="kv-section-title">' + (f.id ? 'Ubah Manga' : 'Tambah Manga Baru') + '</h2>' +
-          '<button type="button" class="kv-btn kv-btn-ghost" data-action="admin-cancel-form">Batal</button>' +
+      var cover = f.coverBloggerUrl
+        ? renderCover(f.coverBloggerUrl, f.title || 'Tanpa sampul')
+        : '<span class="kv-mf-cover-empty">Belum ada sampul</span>';
+      var toolbar = [['bold', 'B', 'Tebal'], ['italic', 'I', 'Miring'], ['h3', 'H3', 'Judul'], ['ul', 'List', 'Daftar'], ['link', 'Link', 'Tautan']].map(function (item) {
+        return '<button type="button" data-wysi="' + item[0] + '" title="' + item[2] + '" aria-label="' + item[2] + '">' + item[1] + '</button>';
+      }).join('');
+      return '<form id="kv-manga-form" class="kv-card" novalidate>' +
+        '<div class="kv-mf-head">' +
+          '<div class="kv-mf-heading">' +
+            '<span class="kv-mf-index">' + (f.id ? '02' : '01') + '</span>' +
+            '<div>' +
+              '<span class="kv-mf-kicker">Katalog / Entri Manga</span>' +
+              '<h2 class="kv-section-title">' + (f.id ? 'Ubah Manga' : 'Tambah Manga Baru') + '</h2>' +
+            '</div>' +
+            (f.id ? '<span class="kv-mf-id">' + escapeHtml(f.id) + '</span>' : '') +
+          '</div>' +
+          '<button type="button" class="kv-btn kv-btn-sm kv-btn-ghost" data-action="admin-cancel-form">Batal</button>' +
         '</div>' +
         '<input type="hidden" name="id" value="' + escapeHtml(f.id || '') + '"/>' +
-        '<div class="kv-form-grid">' +
-          '<label>Judul *<input class="kv-input" name="title" value="' + escapeHtml(f.title) + '" required style="width:100%;display:block;margin-top:4px;"/></label>' +
-          '<label>Judul Alternatif<input class="kv-input" name="altTitle" value="' + escapeHtml(f.altTitle || '') + '" style="width:100%;display:block;margin-top:4px;"/></label>' +
-          '<label>Slug (otomatis dari judul jika kosong)<input class="kv-input kv-mono" name="slug" value="' + escapeHtml(f.slug || '') + '" placeholder="contoh: judul-manga" style="width:100%;display:block;margin-top:4px;"/></label>' +
-          '<label>Penulis<input class="kv-input" name="author" value="' + escapeHtml(f.author || '') + '" style="width:100%;display:block;margin-top:4px;"/></label>' +
-          '<label style="grid-column:1/-1;">Sinopsis *' +
-            '<div class="kv-toolbar-wysi">' +
-              '<button type="button" data-wysi="bold">B</button>' +
-              '<button type="button" data-wysi="italic">I</button>' +
-              '<button type="button" data-wysi="h3">H3</button>' +
-              '<button type="button" data-wysi="ul">List</button>' +
-              '<button type="button" data-wysi="link">Link</button>' +
+        '<div class="kv-mf-body">' +
+          '<section class="kv-mf-panel">' +
+            '<h3 class="kv-mf-panel-title">Identitas &amp; Sinopsis</h3>' +
+            '<div class="kv-mf-grid">' +
+              '<label class="kv-mf-field kv-mf-field--wide">Judul *<input class="kv-input" name="title" value="' + escapeHtml(f.title) + '" required/></label>' +
+              '<label class="kv-mf-field">Judul Alternatif<input class="kv-input" name="altTitle" value="' + escapeHtml(f.altTitle || '') + '"/></label>' +
+              '<label class="kv-mf-field">Penulis<input class="kv-input" name="author" value="' + escapeHtml(f.author || '') + '"/></label>' +
+              '<label class="kv-mf-field kv-mf-field--wide">Slug <span class="kv-mf-hint">otomatis dari judul jika kosong</span><input class="kv-input kv-mono" name="slug" value="' + escapeHtml(f.slug || '') + '" placeholder="contoh: judul-manga"/></label>' +
+              '<label class="kv-mf-field kv-mf-field--wide">Sinopsis *' +
+                '<div class="kv-toolbar-wysi">' + toolbar + '</div>' +
+                '<textarea class="kv-textarea kv-wysi-textarea" name="synopsis" id="kv-synopsis" required>' + escapeHtml(f.synopsis || '') + '</textarea>' +
+              '</label>' +
             '</div>' +
-            '<textarea class="kv-textarea kv-wysi-textarea" name="synopsis" id="kv-synopsis" required>' + escapeHtml(f.synopsis || '') + '</textarea>' +
-          '</label>' +
-          '<label style="grid-column:1/-1;">URL Cover Blogger<input class="kv-input" name="cover" value="' + escapeHtml(f.coverBloggerUrl || '') + '" placeholder="https://blogger.googleusercontent.com/..." style="width:100%;display:block;margin-top:4px;"/></label>' +
-          '<label>Genre (pisahkan dengan koma)<input class="kv-input" name="genres" value="' + escapeHtml(f.genresText || '') + '" placeholder="Aksi, Fantasi" style="width:100%;display:block;margin-top:4px;"/></label>' +
-          '<div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">' +
-            '<label class="kv-admin-meta-label">Tahun Rilis Manga<input class="kv-input kv-mono" name="releaseYear" type="number" min="1900" max="2100" step="1" value="' + escapeHtml(f.releaseYear || '') + '" placeholder="2024" style="width:130px;display:block;margin-top:4px;"/></label>' +
-            '<label class="kv-admin-meta-label">Tipe<select class="kv-select" name="type">' + ['Manga', 'Manhwa', 'Manhua'].map(function (t) { return '<option value="' + t + '"' + (f.type === t ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label>' +
-            '<label class="kv-admin-meta-label">Status<select class="kv-select" name="status">' + ['Ongoing', 'Tamat', 'Hiatus'].map(function (s) { return '<option value="' + s + '"' + (f.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select></label>' +
-            '<label class="kv-admin-meta-label">Rating 0-10<input class="kv-input kv-mono" name="rating" type="number" step="0.1" min="0" max="10" value="' + (f.rating !== '' && f.rating != null ? f.rating : '') + '" style="width:110px;display:block;margin-top:4px;"/></label>' +
-          '</div>' +
+          '</section>' +
+          '<aside class="kv-mf-side">' +
+            '<section class="kv-mf-panel">' +
+              '<h3 class="kv-mf-panel-title">Sampul &amp; Klasifikasi</h3>' +
+              '<div class="kv-mf-cover">' + cover + '</div>' +
+              '<div class="kv-mf-grid">' +
+                '<label class="kv-mf-field kv-mf-field--wide">URL Cover Blogger<input class="kv-input" name="cover" value="' + escapeHtml(f.coverBloggerUrl || '') + '" placeholder="https://blogger.googleusercontent.com/..."/></label>' +
+                '<label class="kv-mf-field kv-mf-field--wide">Genre <span class="kv-mf-hint">pisahkan dengan koma</span><input class="kv-input" name="genres" value="' + escapeHtml(f.genresText || '') + '" placeholder="Aksi, Fantasi"/></label>' +
+                '<label class="kv-mf-field">Tahun Rilis<input class="kv-input kv-mono" name="releaseYear" type="number" min="1900" max="2100" step="1" value="' + escapeHtml(f.releaseYear || '') + '" placeholder="2024"/></label>' +
+                '<label class="kv-mf-field">Rating 0-10<input class="kv-input kv-mono" name="rating" type="number" step="0.1" min="0" max="10" value="' + (f.rating !== '' && f.rating != null ? f.rating : '') + '"/></label>' +
+                '<label class="kv-mf-field">Tipe<select class="kv-select" name="type">' + ['Manga', 'Manhwa', 'Manhua'].map(function (t) { return '<option value="' + t + '"' + (f.type === t ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label>' +
+                '<label class="kv-mf-field">Status<select class="kv-select" name="status">' + ['Ongoing', 'Tamat', 'Hiatus'].map(function (s) { return '<option value="' + s + '"' + (f.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select></label>' +
+              '</div>' +
+            '</section>' +
+          '</aside>' +
         '</div>' +
-        '<div style="display:flex;gap:20px;margin:14px 0;flex-wrap:wrap;">' +
-          '<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="featured"' + (f.featured ? ' checked' : '') + '/> Manga unggulan (banner beranda)</label>' +
-          '<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="recommended"' + (f.recommended ? ' checked' : '') + '/> Rekomendasi redaksi</label>' +
-          '<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="isAdult"' + (f.isAdult ? ' checked' : '') + '/> Konten 18+ (blur aman aktif)</label>' +
+        '<div class="kv-mf-flags">' +
+          '<label class="kv-mf-flag"><input type="checkbox" name="featured"' + (f.featured ? ' checked' : '') + '/><span>Manga unggulan<small>Banner beranda</small></span></label>' +
+          '<label class="kv-mf-flag"><input type="checkbox" name="recommended"' + (f.recommended ? ' checked' : '') + '/><span>Rekomendasi redaksi<small>Sorotan kurator</small></span></label>' +
+          '<label class="kv-mf-flag"><input type="checkbox" name="isAdult"' + (f.isAdult ? ' checked' : '') + '/><span>Konten 18+<small>Blur aman aktif</small></span></label>' +
         '</div>' +
-        '<div id="kv-manga-form-err" style="color:var(--kv-danger);font-size:0.8125rem;min-height:1.2em;margin-bottom:10px;"></div>' +
-        '<button class="kv-btn kv-btn-primary" type="submit">' + (f.id ? 'Simpan Perubahan' : 'Publikasikan Manga') + '</button>' +
+        '<div class="kv-mf-foot">' +
+          '<div id="kv-manga-form-err"></div>' +
+          '<button class="kv-btn kv-btn-primary" type="submit">' + (f.id ? 'Simpan Perubahan' : 'Publikasikan Manga') + '</button>' +
+        '</div>' +
       '</form>';
     }
 
