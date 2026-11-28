@@ -347,28 +347,99 @@
       background: var(--kv-surface); border: 1px solid var(--kv-border);
       border-radius: 12px; padding: 24px; max-width: 440px; width: 100%;
     }
-    .kv-banner-modal .kv-modal-box { max-width: 460px; padding: 0; overflow: hidden; border-radius: 20px; box-shadow: 0 28px 80px -30px rgba(0,0,0,.85); }
-    .kv-banner-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:18px 20px 14px; border-bottom:1px solid var(--kv-border); }
-    .kv-banner-eyebrow { display:block; font-size:.6rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--kv-accent); }
-    .kv-banner-head h2 { margin:5px 0 0; font-size:1rem; line-height:1.25; color:var(--kv-text); }
-    .kv-banner-head p { margin:6px 0 0; font-size:.7rem; line-height:1.5; color:var(--kv-text-muted); }
-    .kv-banner-close { flex:none; width:30px; height:30px; border-radius:50%; border:1px solid var(--kv-border); background:transparent; color:var(--kv-text-muted); display:grid; place-items:center; cursor:pointer; }
-    .kv-banner-close:hover { color:var(--kv-text); border-color:var(--kv-text-muted); }
-    .kv-banner-body { padding:18px 20px; }
-    .kv-banner-preview { height:92px; border-radius:14px; border:1px solid var(--kv-border); box-shadow:inset 0 1px rgba(255,255,255,.05); }
-    .kv-banner-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:16px; }
-    .kv-banner-field { display:flex; align-items:center; gap:8px; min-width:0; padding:8px 10px; border:1px solid var(--kv-border); border-radius:12px; background:var(--kv-surface-2); }
-    .kv-banner-field input { width:34px; height:34px; flex:none; padding:0; border:0; background:transparent; cursor:pointer; }
-    .kv-banner-field input::-webkit-color-swatch-wrapper { padding:0; }
-    .kv-banner-field input::-webkit-color-swatch { border:1px solid var(--kv-border); border-radius:9px; }
-    .kv-banner-field input::-moz-color-swatch { border:1px solid var(--kv-border); border-radius:9px; }
-    .kv-banner-field span { min-width:0; }
-    .kv-banner-field b { display:block; font-size:.6rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--kv-text-muted); }
-    .kv-banner-field code { display:block; margin-top:2px; font-size:.68rem; color:var(--kv-text); font-family:inherit; }
-    .kv-banner-foot { display:flex; align-items:center; gap:8px; padding:14px 20px 18px; border-top:1px solid var(--kv-border); }
+    .kv-banner-modal .kv-modal-box { width:min(960px,100%); max-width:960px; padding:0; overflow:hidden; border-radius:24px; box-shadow:0 40px 120px -40px rgba(0,0,0,.9); }
+    .kv-banner-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:18px 22px 14px; border-bottom:1px solid var(--kv-border); background:radial-gradient(700px 160px at 15% -40%, color-mix(in srgb,var(--kv-neon) 22%,transparent), transparent 70%); }
+    .kv-banner-eyebrow { display:block; font:600 .6rem/1.4 var(--kv-font-mono); letter-spacing:.2em; text-transform:uppercase; color:var(--kv-neon); }
+    .kv-banner-head h2 { margin:4px 0 0; font-family:Cinzel,Georgia,serif; font-size:1.35rem; line-height:1.2; letter-spacing:.02em; color:var(--kv-text); }
+    .kv-banner-head p { margin:6px 0 0; font-size:.72rem; line-height:1.5; color:var(--kv-text-muted); }
+    .kv-banner-close { flex:none; width:32px; height:32px; border-radius:50%; border:1px solid var(--kv-border); background:transparent; color:var(--kv-text-muted); display:grid; place-items:center; cursor:pointer; }
+    .kv-banner-close:hover { color:var(--kv-text); border-color:var(--kv-neon); }
+    .pe-tabs { display:flex; gap:6px; margin-top:14px; }
+    .pe-tab { padding:7px 13px; border:1px solid var(--kv-border); border-radius:999px; background:transparent; color:var(--kv-text-muted); font:600 .6rem/1 var(--kv-font-mono); letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+    .pe-tab.is-active { border-color:var(--kv-neon); background:color-mix(in srgb,var(--kv-neon) 14%,transparent); color:var(--kv-text); }
+    .pe-layout { display:grid; grid-template-columns:minmax(240px,.85fr) minmax(0,1.65fr); gap:18px; padding:18px 22px 20px; }
+    .pe-preview-col { min-width:0; }
+    .pe-section-label { display:block; margin-bottom:8px; font:600 .58rem/1 var(--kv-font-mono); letter-spacing:.16em; text-transform:uppercase; color:var(--kv-text-muted); }
+    .pe-preview { position:relative; aspect-ratio:4/3; overflow:hidden; border-radius:18px; border:1px solid var(--kv-border); background:linear-gradient(135deg,#101319,#18222a 55%,#0a0c10); box-shadow:inset 0 1px rgba(255,255,255,.07),0 18px 40px -28px rgba(0,0,0,.9); }
+    .pe-preview-bg { position:absolute; inset:0; background-size:cover; background-position:center; filter:saturate(.9); }
+    .pe-preview-layer { z-index:2; opacity:.86; mix-blend-mode:screen; }
+    .pe-preview-top { position:absolute; z-index:3; top:12px; left:12px; right:12px; display:flex; justify-content:space-between; font:600 .52rem/1 var(--kv-font-mono); letter-spacing:.16em; color:rgba(255,255,255,.7); text-transform:uppercase; }
+    .pe-preview-id { position:absolute; z-index:3; left:14px; bottom:13px; right:14px; }
+    .pe-preview-id b { display:block; color:#fff; font-family:Cinzel,Georgia,serif; font-size:1rem; letter-spacing:.03em; text-shadow:0 2px 12px rgba(0,0,0,.9); }
+    .pe-preview-id span { display:block; margin-top:3px; font:500 .56rem/1 var(--kv-font-mono); letter-spacing:.14em; color:rgba(255,255,255,.6); text-transform:uppercase; }
+    .pe-preview-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; padding:10px 12px; border:1px solid var(--kv-border); border-radius:12px; background:var(--kv-surface-2); }
+    .pe-preview-meta small { font:500 .6rem/1.4 var(--kv-font-mono); color:var(--kv-text-muted); }
+    .pe-preview-meta strong { font-size:.74rem; color:var(--kv-text); }
+    .pe-tools-col { display:flex; min-width:0; flex-direction:column; }
+    .pe-search-wrap { display:flex; align-items:center; gap:9px; padding:9px 12px; border:1px solid var(--kv-border); border-radius:12px; background:var(--kv-surface-2); }
+    .pe-search-wrap svg { flex:none; color:var(--kv-text-muted); }
+    .pe-search { width:100%; border:0; outline:0; background:transparent; color:var(--kv-text); font-size:.76rem; }
+    .pe-search::placeholder { color:var(--kv-text-muted); }
+    .pe-grid-head { display:flex; justify-content:space-between; align-items:center; margin:14px 0 9px; }
+    .pe-grid-head span { font:600 .58rem/1 var(--kv-font-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--kv-text-muted); }
+    .pe-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:9px; max-height:min(52vh,430px); overflow:auto; padding:2px 6px 2px 2px; scrollbar-width:thin; }
+    .pe-card { position:relative; overflow:hidden; padding:6px; border:1px solid var(--kv-border); border-radius:14px; background:var(--kv-surface-2); color:var(--kv-text); text-align:left; cursor:pointer; transition:transform var(--dur-fast) var(--ease-out),border-color var(--dur-fast),box-shadow var(--dur-fast); }
+    .pe-card:hover { transform:translateY(-2px); border-color:var(--kv-neon); box-shadow:0 12px 24px -18px rgba(0,0,0,.8); }
+    .pe-card.is-active { border-color:var(--kv-neon); box-shadow:0 0 0 1px var(--kv-neon) inset; }
+    .pe-card-art { position:relative; display:block; height:76px; overflow:hidden; border-radius:10px; background:#0b0e14; }
+    .pe-card-info { display:block; padding:8px 3px 3px; }
+    .pe-card-info b { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.66rem; font-weight:700; }
+    .pe-card-info small { display:block; margin-top:2px; font:500 .52rem/1 var(--kv-font-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--kv-text-muted); }
+    .pe-card-check { position:absolute; top:10px; right:10px; z-index:4; display:none; width:18px; height:18px; place-items:center; border-radius:50%; background:var(--kv-neon); color:#07120e; font-size:.65rem; font-weight:800; }
+    .pe-card.is-active .pe-card-check { display:grid; }
+    .pe-empty { grid-column:1/-1; padding:28px 10px; text-align:center; font-size:.72rem; color:var(--kv-text-muted); }
+    .pe-more { align-self:flex-start; margin-top:12px; padding:8px 12px; border:1px solid var(--kv-border); border-radius:10px; background:transparent; color:var(--kv-text-muted); font:600 .6rem/1 var(--kv-font-mono); letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    .pe-more:hover { color:var(--kv-text); border-color:var(--kv-neon); }
+    .kv-banner-foot { display:flex; align-items:center; gap:8px; padding:14px 22px 18px; border-top:1px solid var(--kv-border); background:var(--kv-surface); }
+    .pe-foot-status { margin-right:auto; display:flex; align-items:center; gap:8px; min-width:0; }
+    .pe-foot-status i { width:7px; height:7px; flex:none; border-radius:50%; background:var(--kv-text-muted); box-shadow:0 0 0 3px color-mix(in srgb,var(--kv-text-muted) 18%,transparent); }
+    .pe-foot-status.is-on i { background:var(--kv-neon); box-shadow:0 0 0 3px color-mix(in srgb,var(--kv-neon) 18%,transparent); }
+    .pe-foot-status span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:500 .62rem/1 var(--kv-font-mono); color:var(--kv-text-muted); }
+    .pe-foot-status strong { color:var(--kv-text); }
+    .pefx { position:absolute; inset:0; overflow:hidden; pointer-events:none; --fx-a:#91b8b1; --fx-b:#2d5d8f; --fx-c:#eafff8; }
+    .pefx::before,.pefx::after { content:''; position:absolute; inset:-18%; }
+    .pefx--aurora::before { background:radial-gradient(ellipse at 20% 30%,var(--fx-a) 0%,transparent 48%),radial-gradient(ellipse at 78% 64%,var(--fx-b) 0%,transparent 52%); filter:blur(13px); animation:pefx-drift 8s ease-in-out infinite alternate; }
+    .pefx--aurora::after { background:linear-gradient(115deg,transparent 35%,var(--fx-c) 50%,transparent 65%); opacity:.24; animation:pefx-sweep 6s linear infinite; }
+    .pefx--ember::before { background:radial-gradient(circle,var(--fx-a) 0 2px,transparent 3px) 0 0/28px 28px,radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 14px 10px/38px 38px; animation:pefx-rise 7s linear infinite; }
+    .pefx--ember::after { background:radial-gradient(ellipse at 50% 100%,var(--fx-b),transparent 68%); filter:blur(12px); animation:pefx-flicker 3.2s ease-in-out infinite alternate; }
+    .pefx--rain::before { background:repeating-linear-gradient(112deg,transparent 0 13px,var(--fx-a) 14px 15px,transparent 16px 27px); opacity:.42; animation:pefx-fall 4.5s linear infinite; }
+    .pefx--rain::after { background:linear-gradient(180deg,transparent,var(--fx-b)); opacity:.28; }
+    .pefx--stars::before { background:radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 0 0/26px 26px,radial-gradient(circle,var(--fx-a) 0 1.5px,transparent 2.5px) 11px 17px/41px 41px; animation:pefx-twinkle 3.4s steps(2) infinite; }
+    .pefx--stars::after { background:radial-gradient(circle at 70% 25%,var(--fx-b),transparent 45%); filter:blur(18px); }
+    .pefx--mist::before { background:radial-gradient(ellipse at 25% 65%,var(--fx-a),transparent 55%),radial-gradient(ellipse at 75% 35%,var(--fx-b),transparent 52%); filter:blur(20px); opacity:.75; animation:pefx-drift 11s ease-in-out infinite alternate-reverse; }
+    .pefx--mist::after { background:linear-gradient(90deg,transparent,var(--fx-c),transparent); opacity:.12; animation:pefx-sweep 9s linear infinite; }
+    .pefx--flare::before { background:conic-gradient(from 0deg,transparent,var(--fx-a),transparent 35%,var(--fx-b),transparent 70%); filter:blur(15px); opacity:.7; animation:pefx-spin 10s linear infinite; }
+    .pefx--flare::after { background:radial-gradient(circle at 50% 50%,var(--fx-c) 0 4%,transparent 28%); opacity:.55; animation:pefx-flicker 4s ease-in-out infinite alternate; }
+    .pefx--bloom::before { background:radial-gradient(circle at 50% 55%,var(--fx-a) 0%,var(--fx-b) 35%,transparent 68%); filter:blur(10px); animation:pefx-bloom 6s ease-in-out infinite alternate; }
+    .pefx--bloom::after { border:1px solid var(--fx-c); border-radius:50%; opacity:.16; animation:pefx-ring 5s ease-out infinite; }
+    .pefx--pulse::before { background:repeating-radial-gradient(circle at 50% 60%,transparent 0 18px,var(--fx-a) 19px 20px,transparent 21px 38px); opacity:.45; animation:pefx-bloom 5.5s ease-in-out infinite alternate; }
+    .pefx--pulse::after { background:radial-gradient(circle,var(--fx-b),transparent 62%); filter:blur(16px); }
+    .pefx--comet::before { background:linear-gradient(115deg,transparent 20%,var(--fx-a) 48%,var(--fx-c) 51%,transparent 56%); transform:rotate(-8deg); animation:pefx-comet 5.5s linear infinite; }
+    .pefx--comet::after { background:radial-gradient(circle at 78% 22%,var(--fx-b),transparent 46%); filter:blur(18px); }
+    .pefx--noise::before { background:repeating-linear-gradient(0deg,var(--fx-a) 0 1px,transparent 1px 4px); opacity:.24; animation:pefx-noise .7s steps(3) infinite; }
+    .pefx--noise::after { background:linear-gradient(90deg,transparent 45%,var(--fx-b) 50%,transparent 55%); opacity:.3; animation:pefx-sweep 5s linear infinite; }
+    .pefx--halo::before { border:2px solid var(--fx-a); border-radius:50%; width:62%; height:62%; inset:auto; left:19%; top:19%; box-shadow:0 0 28px var(--fx-a),inset 0 0 22px var(--fx-b); animation:pefx-pulse 3.8s ease-in-out infinite alternate; }
+    .pefx--halo::after { background:radial-gradient(circle,var(--fx-c) 0 3%,transparent 30%); opacity:.45; }
+    .pefx--grid::before { background-image:linear-gradient(var(--fx-a) 1px,transparent 1px),linear-gradient(90deg,var(--fx-a) 1px,transparent 1px); background-size:24px 24px; opacity:.32; transform:perspective(180px) rotateX(56deg) scale(1.7); animation:pefx-grid 7s linear infinite; }
+    .pefx--grid::after { background:radial-gradient(ellipse at 50% 80%,var(--fx-b),transparent 60%); filter:blur(16px); opacity:.7; }
+    .pefx-banner { z-index:1; opacity:.72; mix-blend-mode:screen; border-radius:inherit; }
+    @keyframes pefx-drift { from { transform:translate3d(-6%,-4%,0) scale(1); } to { transform:translate3d(7%,6%,0) scale(1.14); } }
+    @keyframes pefx-sweep { from { transform:translateX(-120%); } to { transform:translateX(120%); } }
+    @keyframes pefx-rise { from { transform:translateY(18%); } to { transform:translateY(-18%); } }
+    @keyframes pefx-fall { from { transform:translate3d(-8%,-20%,0); } to { transform:translate3d(8%,20%,0); } }
+    @keyframes pefx-twinkle { 0%,100% { opacity:.35; } 50% { opacity:.9; } }
+    @keyframes pefx-spin { to { transform:rotate(360deg); } }
+    @keyframes pefx-flicker { from { opacity:.35; transform:scale(.94); } to { opacity:.8; transform:scale(1.08); } }
+    @keyframes pefx-bloom { from { transform:scale(.86); opacity:.45; } to { transform:scale(1.18); opacity:.9; } }
+    @keyframes pefx-ring { from { transform:scale(.35); opacity:.4; } to { transform:scale(1.4); opacity:0; } }
+    @keyframes pefx-comet { from { transform:translate3d(-120%,40%,0) rotate(-8deg); } to { transform:translate3d(120%,-40%,0) rotate(-8deg); } }
+    @keyframes pefx-noise { 0% { transform:translate(0,0); } 33% { transform:translate(-2px,1px); } 66% { transform:translate(2px,-1px); } 100% { transform:translate(0,0); } }
+    @keyframes pefx-pulse { from { transform:scale(.82); opacity:.45; } to { transform:scale(1.08); opacity:1; } }
+    @keyframes pefx-grid { from { background-position:0 0; } to { background-position:0 24px; } }
     .kv-banner-reset { margin-right:auto; color:var(--kv-text-muted); font-size:.7rem; font-weight:600; background:transparent; border:0; cursor:pointer; }
     .kv-banner-reset:hover { color:var(--kv-text); text-decoration:underline; }
-    @media (max-width:520px) { .kv-banner-fields { grid-template-columns:1fr; } .kv-banner-foot { flex-wrap:wrap; } .kv-banner-reset { width:100%; text-align:left; margin:0 0 4px; } }
+    @media (max-width:760px) { .kv-banner-modal { padding:12px; } .kv-banner-modal .kv-modal-box { max-height:calc(100dvh - 24px); overflow:auto; } .pe-layout { grid-template-columns:1fr; } .pe-grid { max-height:340px; } }
+    @media (max-width:520px) { .kv-banner-fields { grid-template-columns:1fr; } .kv-banner-foot { flex-wrap:wrap; } .kv-banner-reset { width:100%; text-align:left; margin:0 0 4px; } .pe-tabs { width:100%; } .pe-tab { flex:1; } }
     .kv-report-modal { --rp-line:var(--kv-border); --rp-ink:var(--kv-text); --rp-muted:var(--kv-text-muted); --rp-hot:var(--kv-danger); --rp-accent:var(--kv-accent); align-items:flex-end; padding:10px; }
     .kv-report-modal-box {
       position:relative; overflow:auto; width:100%; max-width:780px; max-height:calc(100dvh - 20px); padding:0;
@@ -4599,6 +4670,10 @@ function yzSettingRead(key, fallback) {
         avatarPickerApplied: '',
         profileEffectsOpen: false,
         profileEffectsDraft: null,
+        profileEffectsTab: 'effects',
+        profileEffectsQuery: '',
+        profileEffectsLimit: 12,
+        profileEffectsSelected: '',
         profileBannerBusy: false,
         replyingTo: null,
         imageTargetForm: null,
@@ -5034,6 +5109,78 @@ function yzSettingRead(key, fallback) {
       function profileBannerGradientCss(gradient) {
         var g = normalizeProfileBannerGradient(gradient);
         return 'linear-gradient(135deg, ' + g.from + ' 0%, ' + g.via + ' 50%, ' + g.to + ' 100%)';
+      }
+
+      var PROFILE_EFFECTS = [
+        ['aurora-drift', 'Aurora Drift', 'aurora', '#8ee4d0', '#2d5d8f', '#eafff8'],
+        ['ember-rain', 'Ember Rain', 'ember', '#ff9a5b', '#7c2d12', '#ffe0a3'],
+        ['meteor-shower', 'Meteor Shower', 'rain', '#a8c7ff', '#243c8a', '#eaf1ff'],
+        ['starfall', 'Starfall', 'stars', '#fff3c4', '#8f6b2f', '#ffffff'],
+        ['mist-veil', 'Mist Veil', 'mist', '#c7f2e8', '#4c6f7a', '#f2fffc'],
+        ['solar-flare', 'Solar Flare', 'flare', '#ffd37a', '#e04b2f', '#fff6d8'],
+        ['ink-bloom', 'Ink Bloom', 'bloom', '#b7a7ff', '#3b2b78', '#efeaff'],
+        ['tide-pulse', 'Tide Pulse', 'pulse', '#7dd3fc', '#155e75', '#e0faff'],
+        ['comet-trail', 'Comet Trail', 'comet', '#f0abfc', '#701a75', '#fff0ff'],
+        ['signal-noise', 'Signal Noise', 'noise', '#a3e635', '#365314', '#efffd0'],
+        ['moon-halo', 'Moon Halo', 'halo', '#e2e8f0', '#64748b', '#ffffff'],
+        ['grid-runner', 'Grid Runner', 'grid', '#5eead4', '#134e4a', '#d5fffa'],
+        ['boreal-wave', 'Boreal Wave', 'aurora', '#86efac', '#14532d', '#ecfdf5'],
+        ['cinder-glow', 'Cinder Glow', 'ember', '#fb7185', '#881337', '#ffe4e6'],
+        ['neon-drizzle', 'Neon Drizzle', 'rain', '#67e8f9', '#155e75', '#e0ffff'],
+        ['dust-twinkle', 'Dust Twinkle', 'stars', '#fde68a', '#92400e', '#fffbeb'],
+        ['peach-fog', 'Peach Fog', 'mist', '#fed7aa', '#9a3412', '#fff7ed'],
+        ['prism-burst', 'Prism Burst', 'flare', '#c4b5fd', '#5b21b6', '#f5f3ff'],
+        ['violet-bloom', 'Violet Bloom', 'bloom', '#f9a8d4', '#831843', '#fff1f2'],
+        ['sonar-ring', 'Sonar Ring', 'pulse', '#fdba74', '#9a3412', '#fff7ed'],
+        ['dust-comet', 'Dust Comet', 'comet', '#fcd34d', '#92400e', '#fffbeb'],
+        ['static-bloom', 'Static Bloom', 'noise', '#f0abfc', '#701a75', '#fdf4ff'],
+        ['aurora-ring', 'Aurora Ring', 'halo', '#99f6e4', '#115e59', '#f0fdfa'],
+        ['midnight-grid', 'Midnight Grid', 'grid', '#93c5fd', '#1e3a8a', '#eff6ff']
+      ].map(function (row) {
+        return { id: row[0], name: row[1], kind: row[2], a: row[3], b: row[4], c: row[5] };
+      });
+
+      function normalizeProfileEffectId(id) {
+        var value = String(id || '');
+        for (var i = 0; i < PROFILE_EFFECTS.length; i++) {
+          if (PROFILE_EFFECTS[i].id === value) return value;
+        }
+        return '';
+      }
+
+      function profileEffectById(id) {
+        var value = normalizeProfileEffectId(id);
+        for (var i = 0; i < PROFILE_EFFECTS.length; i++) {
+          if (PROFILE_EFFECTS[i].id === value) return PROFILE_EFFECTS[i];
+        }
+        return null;
+      }
+
+      function profileEffectVars(effect) {
+        if (!effect) return '';
+        return '--fx-a:' + effect.a + ';--fx-b:' + effect.b + ';--fx-c:' + effect.c;
+      }
+
+      function profileEffectLayer(effect, extraClass) {
+        if (!effect) return '';
+        return '<span class="pefx pefx--' + effect.kind + (extraClass ? ' ' + extraClass : '') + '" style="' + profileEffectVars(effect) + '" aria-hidden="true"></span>';
+      }
+
+      function filteredProfileEffects() {
+        var query = String(state.profileEffectsQuery || '').trim().toLowerCase();
+        if (!query) return PROFILE_EFFECTS;
+        return PROFILE_EFFECTS.filter(function (effect) {
+          return effect.name.toLowerCase().indexOf(query) !== -1 || effect.kind.indexOf(query) !== -1;
+        });
+      }
+
+      function renderEffectCard(effect, index) {
+        var active = normalizeProfileEffectId(state.profileEffectsSelected) === effect.id;
+        return '<button type="button" class="pe-card' + (active ? ' is-active' : '') + '" data-action="profile-effects-select" data-effect="' + effect.id + '" data-effect-option aria-pressed="' + (active ? 'true' : 'false') + '">' +
+          '<span class="pe-card-art"><span class="pefx pefx--' + effect.kind + '" style="' + profileEffectVars(effect) + '" aria-hidden="true"></span></span>' +
+          '<span class="pe-card-info"><b>' + escapeHtml(effect.name) + '</b><small>' + escapeHtml(effect.kind) + ' &middot; ' + (index + 1 < 10 ? '0' : '') + (index + 1) + '</small></span>' +
+          '<span class="pe-card-check" aria-hidden="true">&#10003;</span>' +
+        '</button>';
       }
 
       function profileBannerPhoto() {
@@ -7583,6 +7730,9 @@ function renderSettings() {
           e.preventDefault();
           state.profileEffectsOpen = false;
           state.profileEffectsDraft = null;
+          state.profileEffectsSelected = '';
+          state.profileEffectsQuery = '';
+          state.profileEffectsLimit = 12;
           render();
           return;
         }
@@ -7599,8 +7749,16 @@ function renderSettings() {
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       });
       document.addEventListener('input', function (e) {
+        if (!state.profileEffectsOpen) return;
+        var search = e.target && e.target.closest ? e.target.closest('[data-effect-search]') : null;
+        if (search) {
+          state.profileEffectsQuery = search.value || '';
+          state.profileEffectsLimit = 12;
+          updateEffectGrid();
+          return;
+        }
         var input = e.target && e.target.closest ? e.target.closest('[data-banner-color]') : null;
-        if (!input || !state.profileEffectsOpen) return;
+        if (!input) return;
         var key = input.getAttribute('data-banner-color');
         if (['from', 'via', 'to'].indexOf(key) === -1) return;
         if (!state.profileEffectsDraft) state.profileEffectsDraft = profileBannerGradient();
@@ -7622,17 +7780,97 @@ function renderSettings() {
       });
     }
 
+    function applyEffectSelection() {
+      var effect = profileEffectById(state.profileEffectsSelected);
+      Array.prototype.forEach.call(document.querySelectorAll('[data-effect-option]'), function (button) {
+        var active = !!effect && button.getAttribute('data-effect') === effect.id;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      var previewFx = document.querySelector('[data-effect-preview-fx]');
+      if (previewFx) {
+        if (effect) {
+          previewFx.className = 'pefx pefx--' + effect.kind + ' pe-preview-layer';
+          previewFx.setAttribute('style', profileEffectVars(effect));
+          previewFx.hidden = false;
+        } else {
+          previewFx.className = 'pefx pe-preview-layer';
+          previewFx.setAttribute('style', '');
+          previewFx.hidden = true;
+        }
+      }
+      var previewName = document.querySelector('[data-effect-preview-name]');
+      if (previewName) previewName.textContent = effect ? effect.name : 'Tanpa overlay';
+      var previewKind = document.querySelector('[data-effect-preview-kind]');
+      if (previewKind) previewKind.textContent = effect ? effect.kind + ' layer' : 'no layer';
+      var previewState = document.querySelector('[data-effect-preview-state]');
+      if (previewState) previewState.textContent = effect ? 'FX ON' : 'FX OFF';
+      var status = document.querySelector('[data-effect-status]');
+      if (status) {
+        status.classList.toggle('is-on', !!effect);
+        var statusName = status.querySelector('strong');
+        if (statusName) statusName.textContent = effect ? effect.name : 'Tanpa overlay';
+      }
+      var equip = document.querySelector('[data-effect-equip]');
+      if (equip) equip.disabled = !effect;
+    }
+
+    function updateEffectGrid() {
+      var grid = document.querySelector('[data-effect-grid]');
+      if (!grid) return;
+      var list = filteredProfileEffects();
+      var limit = Math.max(12, Number(state.profileEffectsLimit) || 12);
+      var shown = list.slice(0, limit);
+      grid.innerHTML = shown.length ? shown.map(renderEffectCard).join('') : '<p class="pe-empty">Tidak ada efek yang cocok.</p>';
+      var count = document.querySelector('[data-effect-count]');
+      if (count) count.textContent = shown.length + ' / ' + list.length + ' efek';
+      var more = document.querySelector('[data-effect-more]');
+      if (more) more.hidden = shown.length >= list.length;
+      applyEffectSelection();
+    }
+
     function renderProfileEffects() {
       var draft = normalizeProfileBannerGradient(state.profileEffectsDraft || profileBannerGradient());
+      var selected = profileEffectById(state.profileEffectsSelected);
+      var isEffects = state.profileEffectsTab !== 'banner';
       var labels = [['from', 'Awal'], ['via', 'Tengah'], ['to', 'Akhir']];
       var fields = labels.map(function (f) {
         return '<label class="kv-banner-field"><input type="color" data-banner-color="' + f[0] + '" value="' + draft[f[0]] + '" aria-label="Warna ' + f[1] + '"/><span><b>' + f[1] + '</b><code data-banner-value="' + f[0] + '">' + draft[f[0]] + '</code></span></label>';
       }).join('');
+      var list = filteredProfileEffects();
+      var limit = Math.max(12, Number(state.profileEffectsLimit) || 12);
+      var shown = list.slice(0, limit);
+      var moreHidden = shown.length >= list.length;
+      var selectedLabel = selected ? escapeHtml(selected.name) : 'Tanpa overlay';
+      var previewLayer = selected
+        ? '<span class="pefx pefx--' + selected.kind + ' pe-preview-layer" data-effect-preview-fx style="' + profileEffectVars(selected) + '" aria-hidden="true"></span>'
+        : '<span class="pefx pe-preview-layer" data-effect-preview-fx style="" aria-hidden="true" hidden></span>';
+      var effectsBody = '<div class="pe-layout">' +
+          '<div class="pe-preview-col"><span class="pe-section-label">Live preview / banner</span>' +
+            '<div class="pe-preview"><div class="pe-preview-bg" style="background-image:' + profileBannerCss() + '"></div>' + previewLayer +
+              '<div class="pe-preview-top"><span>NexaManga / Profile Signal</span><span data-effect-preview-state>' + (selected ? 'FX ON' : 'FX OFF') + '</span></div>' +
+              '<div class="pe-preview-id"><b data-effect-preview-name>' + selectedLabel + '</b><span data-effect-preview-kind>' + (selected ? escapeHtml(selected.kind) + ' layer' : 'no layer') + '</span></div>' +
+            '</div>' +
+            '<div class="pe-preview-meta"><small>Preview langsung di banner profil lokal kamu.</small><strong>Preview</strong></div>' +
+          '</div>' +
+          '<div class="pe-tools-col">' +
+            '<label class="pe-search-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" class="pe-search" data-effect-search value="' + escapeHtml(state.profileEffectsQuery || '') + '" placeholder="Cari efek..." aria-label="Cari efek"/></label>' +
+            '<div class="pe-grid-head"><span>Library / animated overlays</span><span data-effect-count>' + shown.length + ' / ' + list.length + ' efek</span></div>' +
+            '<div class="pe-grid" data-effect-grid>' + (shown.length ? shown.map(renderEffectCard).join('') : '<p class="pe-empty">Tidak ada efek yang cocok.</p>') + '</div>' +
+            '<button type="button" class="pe-more" data-action="profile-effects-more" data-effect-more' + (moreHidden ? ' hidden' : '') + '>Muat lebih banyak</button>' +
+          '</div>' +
+        '</div>';
+      var colorBody = '<div class="kv-banner-body"><span class="pe-section-label">Banner color / tiga stop gradien</span><div class="kv-banner-preview" data-banner-preview style="background-image:' + profileBannerGradientCss(draft) + '"></div><div class="kv-banner-fields">' + fields + '</div></div>';
+      var foot = isEffects
+        ? '<div class="pe-foot-status' + (selected ? ' is-on' : '') + '" data-effect-status><i></i><span>Overlay aktif: <strong>' + selectedLabel + '</strong></span></div><button type="button" class="kv-btn kv-btn-ghost" data-action="profile-effects-clear">Hapus Efek</button><button type="button" class="kv-btn kv-btn-ghost" data-action="profile-effects-cancel">Batal</button><button type="button" class="kv-btn kv-btn-primary" data-action="profile-effects-equip" data-effect-equip' + (selected ? '' : ' disabled') + '>Equip Effect</button>'
+        : '<button type="button" class="kv-banner-reset" data-action="profile-effects-reset">Gunakan warna bawaan</button><button type="button" class="kv-btn kv-btn-ghost" data-action="profile-effects-cancel">Batal</button><button type="button" class="kv-btn kv-btn-primary" data-action="profile-effects-save">Simpan warna</button>';
       return '<div class="kv-modal kv-banner-modal" role="dialog" aria-modal="true" aria-labelledby="kv-banner-title" data-banner-backdrop>' +
         '<div class="kv-modal-box kv-banner-box" data-banner-dialog tabindex="-1">' +
-          '<div class="kv-banner-head"><div><span class="kv-banner-eyebrow">Profile effects / banner</span><h2 id="kv-banner-title">Edit warna banner profil</h2><p>Tiga warna ini dipakai di semua mode tema, termasuk mode terang dan gelap.</p></div><button type="button" class="kv-banner-close" data-action="profile-effects-cancel" aria-label="Tutup editor warna">&times;</button></div>' +
-          '<div class="kv-banner-body"><div class="kv-banner-preview" data-banner-preview style="background-image:' + profileBannerGradientCss(draft) + '"></div><div class="kv-banner-fields">' + fields + '</div></div>' +
-          '<div class="kv-banner-foot"><button type="button" class="kv-banner-reset" data-action="profile-effects-reset">Gunakan warna bawaan</button><button type="button" class="kv-btn kv-btn-ghost" data-action="profile-effects-cancel">Batal</button><button type="button" class="kv-btn kv-btn-primary" data-action="profile-effects-save">Simpan warna</button></div>' +
+          '<div class="kv-banner-head"><div><span class="kv-banner-eyebrow">Profile effects / NexaManga</span><h2 id="kv-banner-title">Profile Effects</h2><p>' + PROFILE_EFFECTS.length + ' animated overlays untuk banner profil. Pratinjau dulu, lalu pasang efek pilihanmu.</p>' +
+            '<div class="pe-tabs"><button type="button" class="pe-tab' + (isEffects ? ' is-active' : '') + '" data-action="profile-effects-tab" data-tab="effects" aria-pressed="' + (isEffects ? 'true' : 'false') + '">Effects</button><button type="button" class="pe-tab' + (isEffects ? '' : ' is-active') + '" data-action="profile-effects-tab" data-tab="banner" aria-pressed="' + (isEffects ? 'false' : 'true') + '">Banner</button></div>' +
+          '</div><button type="button" class="kv-banner-close" data-action="profile-effects-cancel" aria-label="Tutup profile effects">&times;</button></div>' +
+          (isEffects ? effectsBody : colorBody) +
+          '<div class="kv-banner-foot">' + foot + '</div>' +
         '</div>' +
       '</div>';
     }
@@ -7691,6 +7929,7 @@ function renderSettings() {
       var bannerGradient = profileBannerGradient();
       var bannerGradientCss = profileBannerGradientCss(bannerGradient);
       var bannerCss = profileBannerCss();
+      var equippedEffect = profileEffectById(override.bannerEffect);
       var bio = yzSettingRead('yume_profile_bio', '');
       var username = slugify(displayName);
       var tierRank = '';
@@ -7774,6 +8013,7 @@ function renderSettings() {
           '<section class="relative rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0a0c10] shadow-2xl overflow-hidden">' +
             '<div data-profile-banner class="relative h-36 sm:h-52 md:h-64 w-full overflow-hidden" style="background-image:' + bannerCss + '">' +
               (displayBackground ? '<img class="absolute inset-0 h-full w-full object-cover opacity-70" src="' + escapeHtml(displayBackground) + '" alt="" referrerpolicy="no-referrer"/>' : '<div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 30%, rgba(145,184,177,.16), transparent 55%)"></div>') +
+              profileEffectLayer(equippedEffect, 'pefx-banner') +
               '<div class="absolute inset-x-0 top-0 h-20 pointer-events-none" style="background-image:linear-gradient(to bottom, rgba(0,0,0,.75) 0%, rgba(0,0,0,.25) 55%, transparent 100%)"></div><div class="absolute inset-x-0 bottom-0 h-32 sm:h-40 pointer-events-none" style="background-image:linear-gradient(to top, #0a0c10 0%, rgba(10,12,16,.65) 55%, transparent 100%)"></div>' +
               '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><input type="file" data-profile-banner-file accept="image/jpeg,image/png,image/webp" class="hidden"/><button type="button" data-action="profile-banner-upload" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation"' + (state.profileBannerBusy ? ' disabled' : '') + '" title="Ganti foto banner"><span style="color:#91b8b1">' + pIcon('pencil', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">' + (state.profileBannerBusy ? 'Menyimpan...' : 'Ganti Foto') + '</span></button><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects"><span style="color:#91b8b1">' + pIcon('sparkles', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">Effects</span></button></div>' +
             '</div>' +
@@ -11538,7 +11778,7 @@ function setBannerDotsActive(index) {
       document.addEventListener('click', function (e) {
        if (e.target && e.target.closest && e.target.closest('[data-action="toggle-yz-blur"]')) { e.preventDefault(); return; }
        var bannerBackdrop = e.target && e.target.closest ? e.target.closest('[data-banner-backdrop]') : null;
-       if (bannerBackdrop && e.target === bannerBackdrop && state.profileEffectsOpen) { e.preventDefault(); state.profileEffectsOpen = false; state.profileEffectsDraft = null; render(); return; }
+        if (bannerBackdrop && e.target === bannerBackdrop && state.profileEffectsOpen) { e.preventDefault(); state.profileEffectsOpen = false; state.profileEffectsDraft = null; state.profileEffectsSelected = ''; state.profileEffectsQuery = ''; state.profileEffectsLimit = 12; render(); return; }
        var insideBannerDialog = e.target && e.target.closest ? e.target.closest('[data-banner-dialog]') : null;
        if (insideBannerDialog && !e.target.closest('[data-action]')) return;
        var routeLink = e.target.closest('a[href^="/"], a[href^="#/"]');
@@ -11712,12 +11952,51 @@ function setBannerDotsActive(index) {
         }
         if (act === 'profile-effects') {
           state.profileEffectsDraft = profileBannerGradient();
+          state.profileEffectsSelected = normalizeProfileEffectId(profileOverride().bannerEffect);
+          state.profileEffectsTab = 'effects';
+          state.profileEffectsQuery = '';
+          state.profileEffectsLimit = 12;
           state.profileEffectsOpen = true;
           render();
           setTimeout(function () { var dialog = document.querySelector('[data-banner-dialog]'); if (dialog) dialog.focus(); }, 0);
           return;
         }
-        if (act === 'profile-effects-cancel') { state.profileEffectsOpen = false; state.profileEffectsDraft = null; render(); return; }
+        if (act === 'profile-effects-tab') { state.profileEffectsTab = el.getAttribute('data-tab') === 'banner' ? 'banner' : 'effects'; render(); return; }
+        if (act === 'profile-effects-select') { state.profileEffectsSelected = normalizeProfileEffectId(el.getAttribute('data-effect')); applyEffectSelection(); return; }
+        if (act === 'profile-effects-more') { state.profileEffectsLimit = (Number(state.profileEffectsLimit) || 12) + 12; updateEffectGrid(); return; }
+        if (act === 'profile-effects-equip') {
+          var effectUserId = state.user && state.user.id;
+          if (!effectUserId) { toast('Masuk terlebih dahulu untuk memasang efek.', 'warn'); return; }
+          var effectId = normalizeProfileEffectId(state.profileEffectsSelected);
+          if (!effectId) { toast('Pilih efek terlebih dahulu.', 'warn'); return; }
+          var effectOverride = profileOverride();
+          effectOverride.bannerEffect = effectId;
+          try { localStorage.setItem('kv_profile_override_v2_' + effectUserId, JSON.stringify(effectOverride)); } catch (err) { toast('Gagal menyimpan efek di browser.', 'warn'); return; }
+          state.profileEffectsOpen = false;
+          state.profileEffectsDraft = null;
+          state.profileEffectsSelected = '';
+          state.profileEffectsQuery = '';
+          state.profileEffectsLimit = 12;
+          render();
+          toast('Efek banner profil dipasang.', 'ok');
+          return;
+        }
+        if (act === 'profile-effects-clear') {
+          var clearUserId = state.user && state.user.id;
+          if (!clearUserId) { toast('Masuk terlebih dahulu untuk menghapus efek.', 'warn'); return; }
+          var clearOverride = profileOverride();
+          delete clearOverride.bannerEffect;
+          try { localStorage.setItem('kv_profile_override_v2_' + clearUserId, JSON.stringify(clearOverride)); } catch (err) { toast('Gagal menyimpan efek di browser.', 'warn'); return; }
+          state.profileEffectsOpen = false;
+          state.profileEffectsDraft = null;
+          state.profileEffectsSelected = '';
+          state.profileEffectsQuery = '';
+          state.profileEffectsLimit = 12;
+          render();
+          toast('Overlay efek dihapus.', 'ok');
+          return;
+        }
+        if (act === 'profile-effects-cancel') { state.profileEffectsOpen = false; state.profileEffectsDraft = null; state.profileEffectsSelected = ''; state.profileEffectsQuery = ''; state.profileEffectsLimit = 12; render(); return; }
         if (act === 'profile-effects-reset') {
           state.profileEffectsDraft = normalizeProfileBannerGradient(null);
           ['from', 'via', 'to'].forEach(function (key) {
