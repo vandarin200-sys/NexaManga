@@ -155,12 +155,33 @@ function safeUser(user) {
     name: user.name,
     email: user.email || null,
     avatar: user.avatar || null,
+    bannerUrl: user.profileBannerUrl || null,
     provider: user.provider || null,
     role: user.role || 'member',
     emailVerified: !!user.emailVerified,
     hasPassword: !!user.passwordHash,
     connections: { anilist: summary('anilist'), mal: summary('mal') }
   };
+}
+
+function setProfileBanner(catalog, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new ValidationError('Data banner tidak valid.');
+  }
+  const user = findCatalogUser(catalog, input.userId);
+  let bannerUrl = null;
+  if (input.bannerUrl !== null && input.bannerUrl !== undefined) {
+    if (typeof input.bannerUrl !== 'string' || input.bannerUrl.length > 2048) {
+      throw new ValidationError('URL banner tidak valid.');
+    }
+    bannerUrl = input.bannerUrl.trim();
+    if (bannerUrl && !/^(?:https?:\/\/[^\s'"()\\]+|\/api\/media\/[A-Za-z0-9_=-]+)$/.test(bannerUrl)) {
+      throw new ValidationError('URL banner tidak valid.');
+    }
+    if (!bannerUrl) bannerUrl = null;
+  }
+  user.profileBannerUrl = bannerUrl;
+  return safeUser(user);
 }
 
 function setAccountCredentials(catalog, input) {
@@ -745,6 +766,7 @@ module.exports = {
   saveManga,
   saveSettings,
   setAccountCredentials,
+  setProfileBanner,
   setReportStatus,
   syncTrackerConnection,
   unlinkTrackerConnection,

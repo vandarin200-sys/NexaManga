@@ -38,6 +38,7 @@ const {
   saveManga,
   saveSettings,
   setAccountCredentials,
+  setProfileBanner,
   setReportStatus,
   syncTrackerConnection,
   unlinkTrackerConnection,
@@ -1515,12 +1516,28 @@ async function handler(req, res) {
       const { mimeType, bytes } = decodeUpload(body.dataBase64);
       const baseUrl = apiBaseUrl();
       const result = await uploadImage(body.fileName, mimeType, bytes, null, baseUrl);
+      let user = null;
+      await updateCatalog((catalog) => {
+        user = setProfileBanner(catalog, { userId: claims.sub, bannerUrl: result.url });
+      });
       return sendJson(res, 201, {
         telegramFileId: result.fileId,
         url: result.url,
         telegramStatus: result.status,
-        bloggerStatus: 'proxy aktif'
+        bloggerStatus: 'proxy aktif',
+        user
       });
+    }
+
+    if (route === 'profile/banner' && req.method === 'POST') {
+      const claims = await requireAccount(req);
+      const body = await readBody(req);
+      const payload = body && typeof body === 'object' && !Array.isArray(body) ? body : {};
+      let user = null;
+      await updateCatalog((catalog) => {
+        user = setProfileBanner(catalog, { userId: claims.sub, bannerUrl: payload.bannerUrl === undefined ? null : payload.bannerUrl });
+      });
+      return sendJson(res, 200, { ok: true, user });
     }
 
     if (route === 'admin/upload-dual' && req.method === 'POST') {

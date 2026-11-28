@@ -4599,6 +4599,7 @@ function yzSettingRead(key, fallback) {
         avatarPickerApplied: '',
         profileEffectsOpen: false,
         profileEffectsDraft: null,
+        profileBannerBusy: false,
         replyingTo: null,
         imageTargetForm: null,
         commentImageIndex: 0,
@@ -5033,6 +5034,15 @@ function yzSettingRead(key, fallback) {
       function profileBannerGradientCss(gradient) {
         var g = normalizeProfileBannerGradient(gradient);
         return 'linear-gradient(135deg, ' + g.from + ' 0%, ' + g.via + ' 50%, ' + g.to + ' 100%)';
+      }
+
+      function profileBannerPhoto() {
+        return String((state.user && (state.user.bannerUrl || state.user.profileBannerUrl)) || '');
+      }
+
+      function profileBannerCss() {
+        var photo = profileBannerPhoto();
+        return photo ? 'url(\'' + escapeHtml(photo) + '\')' : profileBannerGradientCss(profileBannerGradient());
       }
 
       function replaceImageTokens(content) {
@@ -7006,6 +7016,8 @@ function renderSettings() {
         if (!user) return '<div class="space-y-6 font-sans">' + head('Profile & Customization', 'Customize your avatar picture, decorative frame, custom name effects, and account credentials.', 'user', '') + signInRequired('Sign in to view your profile details and sync avatar data.') + '</div>';
         var displayName = String(currentDisplayName(user.name) || user.name || 'Member');
         var displayAvatar = currentDisplayAvatar(user.avatar || '') || user.avatar || '';
+        var bannerPhoto = profileBannerPhoto();
+        var bannerPreviewCss = bannerPhoto ? 'url(\'' + escapeHtml(bannerPhoto) + '\')' : profileBannerGradientCss(profileBannerGradient());
         var avatar = displayAvatar ? '<img src="' + escapeHtml(displayAvatar) + '" alt="Avatar" class="h-full w-full object-cover" referrerpolicy="no-referrer"/>' : '<span class="text-xl font-black text-white">' + escapeHtml(displayName.charAt(0).toUpperCase()) + '</span>';
         var synced = !!(user.connections && user.connections.anilist && user.connections.anilist.connected);
         var badges = synced ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-[#3db4f2]/40 bg-[#3db4f2]/10 text-[#3db4f2]"><span class="h-1.5 w-1.5 rounded-full bg-[#3db4f2]"></span> AniList Synced</span>' : '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-zinc-400">Direct Account</span>';
@@ -7014,6 +7026,7 @@ function renderSettings() {
           '<div class="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/40 p-4 sm:p-6 shadow-xl"><div class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left"><div class="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0"><div class="h-full w-full rounded-full bg-zinc-900 border-2 border-white/15 flex items-center justify-center text-xl font-black text-white overflow-hidden shadow-2xl">' + avatar + '</div></div><div class="space-y-2 min-w-0 flex-1"><div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">' + badges + '</div><p class="text-xs text-zinc-400 leading-relaxed max-w-md">This preview displays how your avatar, decorative frame, and styled username appear across ' + escapeHtml(siteName()) + ' watch parties and community discussions.</p></div></div></div>' +
           '<div class="space-y-3"><div class="flex items-center justify-between"><h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Profile Appearance & Styling</h3><span class="text-[10px] font-medium text-zinc-500">Live customization studio</span></div>' +
           '<div class="rounded-2xl border border-white/[0.08] bg-zinc-900/50 hover:bg-zinc-900/70 p-4 flex flex-col justify-between gap-4 transition-all duration-150"><div class="space-y-2"><div class="flex items-center justify-between"><div class="h-9 w-9 rounded-xl bg-[#3db4f2]/10 border border-[#3db4f2]/20 flex items-center justify-center text-[#3db4f2]">' + icon('user', 'h-4 w-4') + '</div><span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-white/5 border border-white/10 text-zinc-400">' + (synced ? 'AniList' : 'Custom') + '</span></div><div><h4 class="text-xs font-bold text-white uppercase tracking-wider">Avatar Picture</h4><p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Upload a photo, pick your favorite anime character, or sync your AniList avatar.</p></div></div><button type="button" class="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-white/5 active:scale-95" data-action="settings-edit-profile"><span>Change Avatar</span></button></div>' +
+          '<div class="rounded-2xl border border-white/[0.08] bg-zinc-900/50 p-4 flex flex-col gap-3 mt-3.5"><div class="h-24 rounded-xl border border-white/10 bg-cover bg-center" style="background-image:' + bannerPreviewCss + '"></div><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><h4 class="text-xs font-bold text-white uppercase tracking-wider">Profile Banner</h4><p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Unggah foto banner. Gambar disimpan di akun dan tampil di profil publik.</p></div><div class="flex items-center gap-2 shrink-0"><input type="file" data-profile-banner-file accept="image/jpeg,image/png,image/webp" class="hidden"/><button type="button" data-action="profile-banner-upload" class="py-2 px-3 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-extrabold transition-all cursor-pointer active:scale-95"' + (state.profileBannerBusy ? ' disabled' : '') + '>' + (state.profileBannerBusy ? 'Menyimpan...' : 'Unggah Foto') + '</button>' + (bannerPhoto ? '<button type="button" data-action="profile-banner-remove" class="py-2 px-3 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 text-xs font-bold transition-all cursor-pointer">Hapus Foto</button>' : '') + '</div></div></div>' +
           '<div class="rounded-2xl border border-white/[0.08] bg-zinc-900/50 p-4 space-y-3 mt-3.5"><div class="flex items-center justify-between"><div><h4 class="text-xs font-bold text-white uppercase tracking-wider">About Me / Bio</h4><p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Write a brief intro that appears on your profile and across community popouts.</p></div><span class="text-[10px] text-zinc-500">' + bio.length + '/100</span></div><form id="kv-settings-bio-form"><textarea name="bio" maxlength="100" rows="2" placeholder="Tell the community about yourself or your favorite anime..." class="w-full resize-none rounded-xl border border-white/[0.08] bg-zinc-950/80 p-3 text-xs text-white placeholder-zinc-500 focus:border-[#91b8b1] focus:outline-none transition-colors leading-relaxed">' + escapeHtml(bio) + '</textarea><div class="flex items-center justify-between gap-2 pt-2"><span class="text-[11px] text-zinc-400">' + bio.length + '/100</span><button type="submit" class="py-2 px-4 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-white/5 active:scale-95"><span>Save Bio</span></button></div></form></div></div>' +
           '<div class="space-y-3 pt-2"><h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Account Credentials</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"><div class="rounded-2xl border border-white/[0.08] bg-zinc-900/50 p-4 space-y-2"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Username</span></div><div class="w-full rounded-xl border border-white/[0.08] bg-zinc-900/90 py-2.5 px-3 text-xs text-white font-bold truncate">' + escapeHtml(user.username || displayName) + '</div></div><div class="rounded-2xl border border-white/[0.08] bg-zinc-900/50 p-4 space-y-2"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Email Address</span></div><div class="w-full rounded-xl border border-white/[0.08] bg-zinc-900/90 py-2.5 px-3 text-xs flex items-center justify-between min-h-[38px]">' + emailValue + '</div></div></div></div></div>';
       }
@@ -7528,6 +7541,39 @@ function renderSettings() {
       '</div>';
     }
 
+      function uploadProfileBanner(file) {
+        if (!CONFIG.API_BASE_URL || !state.adminToken) { toast('Masuk dan hubungkan backend untuk mengunggah banner.', 'warn'); return; }
+        if (!/^image\/(jpeg|png|webp)$/.test(file.type || '')) { toast('Banner harus berupa JPEG, PNG, atau WebP.', 'warn'); return; }
+        if (file.size > 3 * 1024 * 1024) { toast('Ukuran banner maksimal 3 MiB.', 'warn'); return; }
+        state.profileBannerBusy = true;
+        render();
+        compressImageFile(file).then(function (compressed) {
+          return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function () { resolve({ file: compressed, dataBase64: String(reader.result || '') }); };
+            reader.onerror = function () { reject(new Error('Gagal membaca gambar.')); };
+            reader.readAsDataURL(compressed);
+          });
+        }).then(function (payload) {
+          return apiPublicWrite('/api/profile/upload-background', {
+            fileName: payload.file.name || 'profile-banner.webp',
+            mimeType: payload.file.type || file.type,
+            dataBase64: payload.dataBase64
+          }).then(function (upload) {
+            if (!upload || !upload.url) throw new Error('URL banner tidak tersedia.');
+            return upload.url;
+          });
+        }).then(function () {
+          state.profileBannerBusy = false;
+          toast('Foto banner profil tersimpan.', 'ok');
+          refreshSession(true);
+        }).catch(function (err) {
+          state.profileBannerBusy = false;
+          toast(err && err.message ? err.message : 'Gagal menyimpan banner profil.', 'error');
+          render();
+        });
+      }
+
     function bindProfileEffects() {
       if (window.__profileEffectsBound) return;
       window.__profileEffectsBound = true;
@@ -7566,6 +7612,13 @@ function renderSettings() {
         if (preview) preview.style.backgroundImage = css;
         var banner = document.querySelector('[data-profile-banner]');
         if (banner) banner.style.backgroundImage = css;
+      });
+      document.addEventListener('change', function (e) {
+        var input = e.target && e.target.closest ? e.target.closest('[data-profile-banner-file]') : null;
+        if (!input) return;
+        var file = input.files && input.files[0];
+        input.value = '';
+        if (file) uploadProfileBanner(file);
       });
     }
 
@@ -7637,6 +7690,7 @@ function renderSettings() {
       var displayBackground = currentDisplayBackground('');
       var bannerGradient = profileBannerGradient();
       var bannerGradientCss = profileBannerGradientCss(bannerGradient);
+      var bannerCss = profileBannerCss();
       var bio = yzSettingRead('yume_profile_bio', '');
       var username = slugify(displayName);
       var tierRank = '';
@@ -7718,10 +7772,10 @@ function renderSettings() {
         '<div class="pointer-events-none fixed inset-x-0 top-0 h-[380px] overflow-hidden"><div class="absolute left-1/2 -top-44 -translate-x-1/2 w-[780px] h-[340px] rounded-full bg-[var(--yz-accent)]/[0.08] blur-[120px]"></div></div>' +
         '<main class="relative mx-auto max-w-6xl w-full px-3.5 sm:px-6 lg:px-8 pt-16 sm:pt-20 flex flex-col justify-between font-sans text-zinc-300"><div class="space-y-5 sm:space-y-6 flex-grow">' +
           '<section class="relative rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0a0c10] shadow-2xl overflow-hidden">' +
-            '<div data-profile-banner class="relative h-36 sm:h-52 md:h-64 w-full overflow-hidden" style="background-image:' + bannerGradientCss + '">' +
+            '<div data-profile-banner class="relative h-36 sm:h-52 md:h-64 w-full overflow-hidden" style="background-image:' + bannerCss + '">' +
               (displayBackground ? '<img class="absolute inset-0 h-full w-full object-cover opacity-70" src="' + escapeHtml(displayBackground) + '" alt="" referrerpolicy="no-referrer"/>' : '<div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 30%, rgba(145,184,177,.16), transparent 55%)"></div>') +
               '<div class="absolute inset-x-0 top-0 h-20 pointer-events-none" style="background-image:linear-gradient(to bottom, rgba(0,0,0,.75) 0%, rgba(0,0,0,.25) 55%, transparent 100%)"></div><div class="absolute inset-x-0 bottom-0 h-32 sm:h-40 pointer-events-none" style="background-image:linear-gradient(to top, #0a0c10 0%, rgba(10,12,16,.65) 55%, transparent 100%)"></div>' +
-              '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects"><span style="color:#91b8b1">' + pIcon('sparkles', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">Effects</span></button></div>' +
+              '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><input type="file" data-profile-banner-file accept="image/jpeg,image/png,image/webp" class="hidden"/><button type="button" data-action="profile-banner-upload" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation"' + (state.profileBannerBusy ? ' disabled' : '') + '" title="Ganti foto banner"><span style="color:#91b8b1">' + pIcon('pencil', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">' + (state.profileBannerBusy ? 'Menyimpan...' : 'Ganti Foto') + '</span></button><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects"><span style="color:#91b8b1">' + pIcon('sparkles', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">Effects</span></button></div>' +
             '</div>' +
             '<div class="relative z-10 px-4 sm:px-7 pb-5 sm:pb-7 -mt-12 sm:-mt-16 space-y-5">' +
               '<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5">' +
@@ -7747,20 +7801,25 @@ function renderSettings() {
     function renderPublicProfile() {
       var slug = String((state.params && state.params.slug) || '');
       var shell = function (inner) {
-        return '<main class="mx-auto min-h-[70vh] max-w-3xl px-4 pt-24 pb-16"><section class="' + yzCardClass() + ' p-6 sm:p-8">' + inner + '</section></main>';
+        return '<div class="pf-root font-sans text-zinc-200">' +
+          '<div class="pf-ambient" aria-hidden="true"></div>' +
+          '<main class="relative mx-auto max-w-5xl w-full px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-20 sm:pb-12">' +
+            '<section class="pf-hero pf-d1 p-6 text-center sm:p-8">' + inner + '</section>' +
+          '</main>' +
+        '</div>';
       };
       if (!CONFIG.API_BASE_URL) {
-        return shell('<h1 class="text-xl font-black text-white">Profil publik belum tersedia</h1><p class="mt-2 text-xs text-zinc-500">Backend NexaManga belum terhubung.</p>');
+        return shell('<div class="pf-stamp" aria-hidden="true">N</div><h1 class="text-lg font-bold text-zinc-100">Profil publik belum tersedia</h1><p class="mt-2 text-xs text-zinc-500">Backend NexaManga belum terhubung.</p>');
       }
       if (state.publicProfileLoading || (!state.publicProfile && !state.publicProfileError && state.publicProfileSlug === slug)) {
-        return shell('<div class="text-center"><div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/10 border-t-white"></div><p class="mt-3 text-xs text-zinc-500">Memuat profil publik...</p></div>');
+        return shell('<div class="pf-stamp" aria-hidden="true">N</div><p class="text-sm font-semibold text-zinc-200">Membuka arsip profil...</p><p class="mt-1 text-xs text-zinc-500">Menyiapkan identitas pembaca.</p>');
       }
       if (state.publicProfileError) {
-        return shell('<div class="text-center"><h1 class="text-xl font-black text-white">Profil tidak tersedia</h1><p class="mt-2 text-xs text-zinc-500">' + escapeHtml(state.publicProfileError) + '</p><button type="button" data-action="public-profile-retry" class="' + yzBtnClass(true) + ' mt-5">Coba Lagi</button><div class="mt-4"><a class="text-xs text-zinc-400 hover:text-white" href="' + publicHref('/leaderboard') + '">Kembali ke Leaderboard</a></div></div>');
+        return shell('<div class="pf-stamp" aria-hidden="true">!</div><h1 class="text-lg font-bold text-zinc-100">Profil tidak tersedia</h1><p class="mt-2 text-xs text-zinc-500">' + escapeHtml(state.publicProfileError) + '</p><button type="button" data-action="public-profile-retry" class="' + yzBtnClass(true) + ' mt-5">Coba Lagi</button><div class="mt-4"><a class="text-xs text-zinc-400 hover:text-white" href="' + publicHref('/leaderboard') + '">Kembali ke Leaderboard</a></div></div>');
       }
       var profile = state.publicProfile;
       if (!profile || profile.slug !== slug) {
-        return shell('<div class="text-center"><p class="text-xs text-zinc-500">Memuat profil publik...</p></div>');
+        return shell('<div class="pf-stamp" aria-hidden="true">N</div><p class="text-xs text-zinc-500">Memuat profil publik...</p>');
       }
       var progress = profile.progress || {};
       var totalXp = Math.max(0, Math.floor(Number(progress.total_xp) || 0));
@@ -7776,32 +7835,55 @@ function renderSettings() {
       var avatarHtml = profile.avatar
         ? '<img src="' + escapeHtml(profile.avatar) + '" alt="' + escapeHtml(displayName) + '" class="h-full w-full object-cover" referrerpolicy="no-referrer"/>'
         : initial;
+      var bannerUrl = String(profile.bannerUrl || '');
+      var bannerCss = bannerUrl ? 'url(\'' + escapeHtml(bannerUrl) + '\')' : 'radial-gradient(circle at 28% 24%, rgba(145,184,177,.2), transparent 58%), linear-gradient(135deg, #10161a, #080a0e)';
       var comments = Array.isArray(profile.comments) ? profile.comments : [];
-      var commentsHtml = comments.length ? comments.map(function (comment) {
+      var commentsHtml = comments.length ? comments.map(function (comment, i) {
         var href = comment.manga_slug ? publicHref('/manga/' + encodeURIComponent(comment.manga_slug)) : publicHref('/catalog');
         var text = String(comment.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 240);
-        return '<article class="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4"><a href="' + escapeHtml(href) + '" class="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-[var(--yz-accent)]">' + yzIco('book', 'h-3.5 w-3.5') + '<span>' + escapeHtml(comment.manga_title || 'Diskusi Manga') + '</span></a><p class="mt-2 text-xs leading-6 text-zinc-400">' + escapeHtml(text) + '</p><p class="mt-2 text-[10px] text-zinc-600">' + escapeHtml(String(comment.created_at || '').slice(0, 10)) + '</p></article>';
-      }).join('') : '<p class="py-8 text-center text-xs text-zinc-500">Belum ada komentar publik.</p>';
-      return '<div class="relative min-h-screen bg-[#060709] text-zinc-200 overflow-x-clip pb-20 sm:pb-12 font-sans">' +
-        '<div class="pointer-events-none fixed inset-x-0 top-0 h-[320px] overflow-hidden"><div class="absolute left-1/2 -top-44 -translate-x-1/2 h-[300px] w-[720px] rounded-full bg-[var(--yz-accent)]/[0.08] blur-[120px]"></div></div>' +
-        '<main class="relative mx-auto max-w-5xl w-full px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24">' +
-          '<section class="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0a0c10] shadow-2xl">' +
-            '<div class="relative h-32 sm:h-48 w-full overflow-hidden" style="background-image:radial-gradient(circle at 30% 30%, rgba(145,184,177,.16), transparent 55%)"><div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a0c10] to-transparent"></div></div>' +
-            '<div class="relative z-10 -mt-12 px-4 pb-5 sm:-mt-16 sm:px-7 sm:pb-7">' +
-              '<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">' +
-                '<div class="flex items-center gap-4"><div class="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-full bg-[#11141a] text-2xl font-extrabold text-white ring-4 ring-[#0a0c10] sm:h-28 sm:w-28">' + avatarHtml + '</div>' +
-                  '<div class="min-w-0"><h1 class="truncate text-xl sm:text-3xl font-extrabold tracking-tight text-white">' + escapeHtml(displayName) + '</h1>' +
-                    '<div class="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-zinc-400"><span class="font-semibold text-zinc-300">@' + escapeHtml(profile.username || 'member') + '</span><span>&middot;</span><span>profile/' + escapeHtml(profile.slug) + '</span><button type="button" data-action="public-profile-copy" class="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold text-zinc-300 transition-colors hover:bg-white/[0.09] cursor-pointer" aria-label="Salin URL profil">' + yzIco('copy', 'h-3 w-3') + '</button></div>' +
-                    '<div class="mt-2 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-500"><span class="inline-flex items-center gap-1 rounded-full border border-zinc-600/60 bg-zinc-800/60 px-2 py-0.5 font-bold text-zinc-300">' + yzIco('shield', 'h-3 w-3') + escapeHtml(tierRank) + ' &middot; Lv.' + level + '</span><span>' + escapeHtml(profile.role || 'member') + '</span><span>&middot;</span><span>' + escapeHtml(String(profile.created_at || '').slice(0, 10) || '—') + '</span></div>' +
-                  '</div></div>' +
+        return '<article class="pf-note pf-d' + Math.min(i + 2, 4) + '">' +
+          '<span class="pf-note__no">' + String(i + 1).padStart(2, '0') + '</span>' +
+          '<div class="min-w-0">' +
+            '<a href="' + escapeHtml(href) + '" class="pf-note__manga hover:text-[var(--yz-accent)]">' + yzIco('book', 'h-3.5 w-3.5') + '<span>' + escapeHtml(comment.manga_title || 'Diskusi Manga') + '</span></a>' +
+            '<p class="pf-note__text">' + escapeHtml(text) + '</p>' +
+            '<p class="pf-note__date">' + escapeHtml(String(comment.created_at || '').slice(0, 10) || '—') + '</p>' +
+          '</div>' +
+        '</article>';
+      }).join('') : '<p class="pf-empty">Belum ada catatan publik. Komentarmu pada manga akan muncul di sini.</p>';
+      return '<div class="pf-root font-sans text-zinc-200">' +
+        '<div class="pf-ambient" aria-hidden="true"></div>' +
+        '<main class="relative mx-auto max-w-5xl w-full px-3.5 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-20 sm:pb-12">' +
+          '<section class="pf-hero pf-d1">' +
+            '<div class="pf-hero__banner" style="background-image:' + bannerCss + '" role="img" aria-label="Banner profil ' + escapeHtml(displayName) + '">' +
+              '<span class="pf-hero__stamp" aria-hidden="true">NEXA / READER FILE</span>' +
+              '<span class="pf-hero__sigil" aria-hidden="true">' + initial + '</span>' +
+            '</div>' +
+            '<div class="pf-hero__body">' +
+              '<div class="pf-hero__top">' +
+                '<div class="flex items-center gap-4">' +
+                  '<div class="pf-avatar">' + avatarHtml + '</div>' +
+                  '<div class="pf-identity">' +
+                    '<h1 class="pf-name">' + escapeHtml(displayName) + '</h1>' +
+                    '<div class="pf-handle"><span class="font-semibold text-zinc-300">@' + escapeHtml(profile.username || 'member') + '</span><span aria-hidden="true">&middot;</span><span>profile/' + escapeHtml(profile.slug) + '</span><button type="button" data-action="public-profile-copy" class="pf-copy cursor-pointer" aria-label="Salin URL profil">' + yzIco('copy', 'h-3 w-3') + '</button></div>' +
+                    '<div class="pf-meta"><span class="pf-pill">' + yzIco('shield', 'h-3 w-3') + escapeHtml(tierRank) + ' &middot; Lv.' + level + '</span><span>' + escapeHtml(profile.role || 'member') + '</span><span aria-hidden="true">&middot;</span><span>Bergabung ' + escapeHtml(String(profile.created_at || '').slice(0, 10) || '—') + '</span></div>' +
+                  '</div>' +
+                '</div>' +
                 '<a href="' + publicHref('/leaderboard') + '" class="' + yzBtnClass(false) + ' shrink-0">Lihat Leaderboard</a>' +
               '</div>' +
-              '<div class="mt-5 grid grid-cols-3 divide-x divide-white/[0.07] rounded-2xl border border-white/[0.07] bg-white/[0.025] py-3 text-center tabular-nums"><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + totalXp.toLocaleString('id-ID') + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Total XP</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-[var(--yz-accent)]">Lv.' + level + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">' + streakDays + 'd Streak</div></div><div class="px-2"><div class="text-sm sm:text-lg font-extrabold text-white">' + comments.length + '</div><div class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Komentar</div></div></div>' +
-              '<div class="mt-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3.5"><div class="flex items-center justify-between text-xs"><span class="font-semibold text-white">' + escapeHtml(tierRank) + '</span><span class="font-mono text-zinc-300">' + xpInto + ' / ' + levelCost + ' XP</span></div><div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/[0.07]"><div class="h-full rounded-full bg-gradient-to-r from-zinc-600 to-zinc-400" style="width:' + xpPercent + '%"></div></div></div>' +
+              '<div class="pf-ledger pf-d2">' +
+                '<div class="pf-ledger__cell"><div class="pf-ledger__value">' + totalXp.toLocaleString('id-ID') + '</div><div class="pf-ledger__label">Total XP</div></div>' +
+                '<div class="pf-ledger__cell"><div class="pf-ledger__value is-accent">Lv.' + level + '</div><div class="pf-ledger__label">' + streakDays + ' hari streak</div></div>' +
+                '<div class="pf-ledger__cell"><div class="pf-ledger__value">' + comments.length + '</div><div class="pf-ledger__label">Catatan publik</div></div>' +
+              '</div>' +
+              '<div class="pf-progress pf-d3">' +
+                '<div class="pf-progress__head"><span class="font-semibold text-zinc-100">' + escapeHtml(tierRank) + '</span><span class="font-mono text-zinc-400">' + xpInto + ' / ' + levelCost + ' XP</span></div>' +
+                '<div class="pf-progress__track"><div class="pf-progress__fill" style="width:' + xpPercent + '%"></div></div>' +
+              '</div>' +
             '</div>' +
           '</section>' +
-          '<section class="' + yzCardClass() + ' mt-5 space-y-3">' +
-            '<div class="flex items-center justify-between"><h2 class="text-sm font-black text-white">Komentar Publik</h2><span class="text-[10px] text-zinc-500">' + comments.length + ' terbaru</span></div>' + commentsHtml +
+          '<section class="pf-notes pf-d4">' +
+            '<div class="pf-section-head"><div><span class="pf-kicker">Community trace</span><h2>Catatan Publik</h2></div><span class="text-[10px] text-zinc-500">' + comments.length + ' terbaru</span></div>' +
+            '<div class="pf-notes__grid">' + commentsHtml + '</div>' +
           '</section>' +
         '</main>' +
       '</div>';
@@ -11623,6 +11705,11 @@ function setBannerDotsActive(index) {
         if (act === 'profile-copy-vanity') { var ownSlug = String((state.user && (state.user.publicSlug || state.user.public_slug)) || ''); if (!ownSlug) { toast('Slug profil belum tersedia.', 'warn'); return; } var vanity = 'profile/' + ownSlug; try { navigator.clipboard.writeText(publicHref('/profile/' + ownSlug)); } catch (err) {} toast('URL profil disalin: ' + vanity, 'ok'); return; }
         if (act === 'public-profile-copy') { var publicSlugValue = String((state.publicProfile && state.publicProfile.slug) || ''); if (publicSlugValue) { try { navigator.clipboard.writeText(publicHref('/profile/' + publicSlugValue)); } catch (err) {} toast('URL profil disalin: profile/' + publicSlugValue, 'ok'); } return; }
         if (act === 'public-profile-retry') { state.publicProfileSlug = ''; state.publicProfileError = null; loadPublicProfile(String((state.params && state.params.slug) || '')); return; }
+        if (act === 'profile-banner-upload') { var bannerFileInput = document.querySelector('[data-profile-banner-file]'); if (bannerFileInput) bannerFileInput.click(); return; }
+        if (act === 'profile-banner-remove') {
+          runAccountAction('/api/profile/banner', { bannerUrl: null }, 'Foto banner dihapus.', function () { refreshSession(true); });
+          return;
+        }
         if (act === 'profile-effects') {
           state.profileEffectsDraft = profileBannerGradient();
           state.profileEffectsOpen = true;
@@ -12610,6 +12697,66 @@ applyYumeAccent();
       .lb-loading__stage { animation-name: lb-loading-breathe !important; animation-duration: calc(var(--dur-slow) * 2) !important; animation-timing-function: var(--ease-in-out) !important; animation-iteration-count: infinite !important; }
     }
     @keyframes lb-loading-breathe { 0%, 100% { opacity: .72; } 50% { opacity: 1; } }
+    .pf-root { position: relative; isolation: isolate; background: var(--yz-bg, #060709); }
+    .pf-root::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 48px 48px; opacity: .45; }
+    .pf-ambient { position: fixed; top: -180px; left: 50%; width: 760px; height: 380px; transform: translateX(-50%); border-radius: 999px; background: color-mix(in srgb, var(--yz-accent) 18%, transparent); filter: blur(120px); opacity: .55; pointer-events: none; z-index: -1; }
+    .pf-hero, .pf-notes, .pf-ledger, .pf-progress, .pf-note { animation: pf-rise var(--dur-slow) var(--ease-out) both; }
+    .pf-d1 { animation-delay: 0ms; }
+    .pf-d2 { animation-delay: var(--dur-fast); }
+    .pf-d3 { animation-delay: calc(var(--dur-fast) * 2); }
+    .pf-d4 { animation-delay: calc(var(--dur-fast) * 3); }
+    .pf-hero { overflow: hidden; border: 1px solid var(--yz-border, rgba(255,255,255,.09)); background: var(--yz-surface-1, #0a0c10); border-radius: 28px; box-shadow: 0 30px 80px -50px rgba(0,0,0,.95); }
+    .pf-hero__banner { position: relative; height: 160px; background-size: cover; background-position: center; }
+    .pf-hero__banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,7,11,.25) 0%, rgba(5,7,11,.05) 38%, var(--yz-surface-1, #0a0c10) 100%); }
+    .pf-hero__sigil { position: absolute; right: 24px; top: 8px; z-index: 1; font-family: 'Cinzel', serif; font-size: clamp(78px, 13vw, 150px); font-weight: 700; line-height: 1; letter-spacing: -.08em; color: rgba(255,255,255,.09); transform: rotate(-8deg); }
+    .pf-hero__stamp { position: absolute; left: 20px; top: 18px; z-index: 1; font-family: var(--kv-font-mono); font-size: 9px; letter-spacing: .22em; color: rgba(255,255,255,.65); }
+    .pf-hero__body { position: relative; z-index: 2; margin-top: -58px; padding: 0 20px 22px; }
+    .pf-hero__top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; }
+    .pf-avatar { width: 104px; height: 104px; flex: none; border-radius: 28px; overflow: hidden; border: 4px solid var(--yz-surface-1, #0a0c10); background: var(--yz-surface-2, #11141a); box-shadow: 0 18px 45px -24px rgba(0,0,0,.95); display: grid; place-items: center; font-family: 'Cinzel', serif; font-size: 2rem; color: var(--yz-accent); }
+    .pf-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .pf-identity { min-width: 0; flex: 1 1 320px; padding-bottom: 2px; }
+    .pf-name { margin: 0; font-family: 'Cinzel', serif; font-size: clamp(1.4rem, 4vw, 2.1rem); font-weight: 700; line-height: 1.15; letter-spacing: -.02em; color: var(--yz-text, #fff); word-break: break-word; }
+    .pf-handle { margin-top: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: var(--kv-font-mono); font-size: 11px; color: var(--yz-text-tertiary, #a0a7b8); }
+    .pf-copy { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; border: 1px solid var(--yz-border, rgba(255,255,255,.1)); color: inherit; transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }
+    .pf-meta { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--yz-text-tertiary, #a0a7b8); }
+    .pf-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--yz-accent) 35%, transparent); background: color-mix(in srgb, var(--yz-accent) 12%, transparent); color: var(--yz-accent); font-weight: 700; }
+    .pf-ledger { margin-top: 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--yz-border, rgba(255,255,255,.08)); border-bottom: 1px solid var(--yz-border, rgba(255,255,255,.08)); }
+    .pf-ledger__cell { padding: 14px 8px; text-align: center; position: relative; }
+    .pf-ledger__cell + .pf-ledger__cell::before { content: ''; position: absolute; left: 0; top: 14px; bottom: 14px; width: 1px; background: var(--yz-border, rgba(255,255,255,.08)); }
+    .pf-ledger__value { font-family: var(--kv-font-mono); font-size: clamp(1rem, 3vw, 1.45rem); font-weight: 700; color: var(--yz-text, #fff); }
+    .pf-ledger__value.is-accent { color: var(--yz-accent); }
+    .pf-ledger__label { margin-top: 3px; font-size: 9px; text-transform: uppercase; letter-spacing: .14em; color: var(--yz-text-tertiary, #a0a7b8); }
+    .pf-progress { margin-top: 16px; padding: 14px 16px; border-radius: 18px; background: var(--yz-surface-2, rgba(255,255,255,.04)); border: 1px solid var(--yz-border, rgba(255,255,255,.06)); }
+    .pf-progress__head { display: flex; justify-content: space-between; gap: 12px; font-size: 11px; }
+    .pf-progress__track { margin-top: 10px; height: 6px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.08); }
+    .pf-progress__fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--yz-accent) 55%, #6b7280), var(--yz-accent)); }
+    .pf-notes { margin-top: 20px; padding: 22px 20px; border: 1px solid var(--yz-border, rgba(255,255,255,.09)); background: var(--yz-surface-1, #0a0c10); border-radius: 28px; }
+    .pf-section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--yz-border, rgba(255,255,255,.08)); }
+    .pf-kicker { font-family: var(--kv-font-mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--yz-accent); }
+    .pf-section-head h2 { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--yz-text, #fff); }
+    .pf-notes__grid { margin-top: 16px; display: grid; gap: 12px; }
+    .pf-note { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding: 16px; border-radius: 18px; border: 1px solid var(--yz-border, rgba(255,255,255,.07)); background: var(--yz-surface-2, rgba(255,255,255,.025)); }
+    .pf-note__no { font-family: var(--kv-font-mono); font-size: 11px; font-weight: 700; color: var(--yz-accent); opacity: .75; }
+    .pf-note__manga { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--yz-text, #fff); }
+    .pf-note__text { margin-top: 8px; font-size: 12px; line-height: 1.7; color: var(--yz-text-secondary, #c8c4d6); }
+    .pf-note__date { margin-top: 10px; font-family: var(--kv-font-mono); font-size: 9px; color: var(--yz-text-tertiary, #a0a7b8); }
+    .pf-empty { grid-column: 1 / -1; padding: 30px 12px; text-align: center; font-size: 12px; color: var(--yz-text-tertiary, #a0a7b8); }
+    .pf-stamp { width: 52px; height: 52px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--yz-accent) 40%, transparent); background: color-mix(in srgb, var(--yz-accent) 12%, transparent); color: var(--yz-accent); font-family: 'Cinzel', serif; font-size: 1.4rem; animation: pf-breathe calc(var(--dur-slow) * 3) var(--ease-in-out) infinite; }
+    @media (min-width: 640px) {
+      .pf-hero__banner { height: 240px; }
+      .pf-hero__body { margin-top: -78px; padding: 0 30px 28px; }
+      .pf-avatar { width: 124px; height: 124px; border-radius: 32px; }
+      .pf-notes { padding: 28px 30px; }
+    }
+    @media (min-width: 768px) { .pf-notes__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (hover: hover) and (pointer: fine) { .pf-copy:hover { background: color-mix(in srgb, var(--yz-accent) 18%, transparent); color: var(--yz-accent); } }
+    @keyframes pf-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pf-breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      .pf-hero, .pf-notes, .pf-ledger, .pf-progress, .pf-note { animation-name: pf-fade !important; animation-duration: var(--dur-slow) !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
+      .pf-stamp { animation-duration: calc(var(--dur-slow) * 3) !important; }
+    }
+    @keyframes pf-fade { from { opacity: .65; } to { opacity: 1; } }
     .lb-root {
       --lb-accent: #5fd0be;
       --lb-on: #06231f;
