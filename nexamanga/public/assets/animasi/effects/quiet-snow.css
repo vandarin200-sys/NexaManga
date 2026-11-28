@@ -1,0 +1,4 @@
+.pefx--quiet-snow::before { background:radial-gradient(circle,var(--fx-a) 0 2px,transparent 3px) 0 0/44px 44px,radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 22px 13px/66px 66px; opacity:.6; animation:pe-quiet-snow-a 11s linear infinite; }
+.pefx--quiet-snow::after { background:radial-gradient(ellipse at 50% 90%,var(--fx-b),transparent 70%); filter:blur(20px); animation:pe-quiet-snow-b 8s ease-in-out infinite alternate; }
+@keyframes pe-quiet-snow-a { from { transform:translateY(-16%) rotate(-4deg); } to { transform:translateY(16%) rotate(4deg); } }
+@keyframes pe-quiet-snow-b { from { transform:scale(1); opacity:.3; } to { transform:scale(1.1); opacity:.6; } }

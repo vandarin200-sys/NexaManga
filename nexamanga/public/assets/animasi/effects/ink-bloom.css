@@ -1,0 +1,4 @@
+.pefx--ink-bloom::before { background:radial-gradient(circle at 50% 55%,var(--fx-a) 0%,var(--fx-b) 35%,transparent 68%); filter:blur(10px); animation:pe-ink-bloom-a 6s ease-in-out infinite alternate; }
+.pefx--ink-bloom::after { border:1px solid var(--fx-c); border-radius:50%; opacity:.16; animation:pe-ink-bloom-b 5s ease-out infinite; }
+@keyframes pe-ink-bloom-a { from { transform:scale(.86); opacity:.45; } to { transform:scale(1.18); opacity:.9; } }
+@keyframes pe-ink-bloom-b { from { transform:scale(.35); opacity:.4; } to { transform:scale(1.4); opacity:0; } }

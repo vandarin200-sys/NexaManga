@@ -1,0 +1,4 @@
+.pefx--prism-burst::before { background:conic-gradient(from 45deg,var(--fx-a),var(--fx-b),var(--fx-c),var(--fx-a)); filter:blur(18px); opacity:.6; animation:pe-prism-burst-a 11s linear infinite; }
+.pefx--prism-burst::after { background:linear-gradient(90deg,transparent,var(--fx-c) 50%,transparent); opacity:.28; animation:pe-prism-burst-b 4.5s ease-in-out infinite alternate; }
+@keyframes pe-prism-burst-a { from { transform:rotate(0deg) scale(.96); } to { transform:rotate(360deg) scale(1.04); } }
+@keyframes pe-prism-burst-b { from { transform:scaleX(.9); opacity:.16; } to { transform:scaleX(1.1); opacity:.4; } }

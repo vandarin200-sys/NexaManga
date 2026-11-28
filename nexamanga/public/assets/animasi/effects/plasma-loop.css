@@ -1,0 +1,4 @@
+.pefx--plasma-loop::before { background:conic-gradient(from 90deg,transparent,var(--fx-a),transparent 40%,var(--fx-b),transparent 80%); filter:blur(16px); opacity:.65; animation:pe-plasma-loop-a 9s linear infinite; }
+.pefx--plasma-loop::after { background:radial-gradient(circle at 50% 50%,var(--fx-c) 0 5%,transparent 30%); opacity:.5; animation:pe-plasma-loop-b 4s ease-in-out infinite alternate; }
+@keyframes pe-plasma-loop-a { from { transform:rotate(0deg) scale(.96); } to { transform:rotate(-360deg) scale(1.06); } }
+@keyframes pe-plasma-loop-b { from { transform:scale(.9); opacity:.3; } to { transform:scale(1.12); opacity:.7; } }

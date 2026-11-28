@@ -1,0 +1,4 @@
+.pefx--peach-fog::before { background:radial-gradient(ellipse at 20% 70%,var(--fx-a),transparent 58%),radial-gradient(ellipse at 80% 30%,var(--fx-b),transparent 55%); filter:blur(22px); opacity:.7; animation:pe-peach-fog-a 12s ease-in-out infinite alternate-reverse; }
+.pefx--peach-fog::after { background:linear-gradient(90deg,transparent,var(--fx-c),transparent); opacity:.14; animation:pe-peach-fog-b 10s linear infinite; }
+@keyframes pe-peach-fog-a { from { transform:translate3d(-4%,2%,0) scale(1); } to { transform:translate3d(5%,-3%,0) scale(1.14); } }
+@keyframes pe-peach-fog-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

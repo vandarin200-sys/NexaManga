@@ -1,0 +1,4 @@
+.pefx--solar-flare::before { background:conic-gradient(from 0deg,transparent,var(--fx-a),transparent 35%,var(--fx-b),transparent 70%); filter:blur(15px); opacity:.7; animation:pe-solar-flare-a 10s linear infinite; }
+.pefx--solar-flare::after { background:radial-gradient(circle at 50% 50%,var(--fx-c) 0 4%,transparent 28%); opacity:.55; animation:pe-solar-flare-b 4s ease-in-out infinite alternate; }
+@keyframes pe-solar-flare-a { from { transform:rotate(0deg) scale(1); } to { transform:rotate(360deg) scale(1); } }
+@keyframes pe-solar-flare-b { from { opacity:.35; transform:scale(.94); } to { opacity:.8; transform:scale(1.08); } }

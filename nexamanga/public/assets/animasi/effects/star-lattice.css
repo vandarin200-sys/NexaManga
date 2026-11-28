@@ -1,0 +1,4 @@
+.pefx--star-lattice::before { background-image:linear-gradient(var(--fx-a) 1px,transparent 1px),linear-gradient(90deg,var(--fx-a) 1px,transparent 1px); background-size:38px 38px; opacity:.26; animation:pe-star-lattice-a 12s ease-in-out infinite alternate; }
+.pefx--star-lattice::after { background:radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 0 0/38px 38px; opacity:.6; animation:pe-star-lattice-b 4s steps(2) infinite; }
+@keyframes pe-star-lattice-a { from { transform:translate3d(-2%,1%,0) scale(1); } to { transform:translate3d(2%,-1%,0) scale(1.08); } }
+@keyframes pe-star-lattice-b { 0%,100% { opacity:.3; } 50% { opacity:.8; } }

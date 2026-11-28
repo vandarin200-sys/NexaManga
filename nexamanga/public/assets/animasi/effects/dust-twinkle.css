@@ -1,0 +1,4 @@
+.pefx--dust-twinkle::before { background:radial-gradient(circle,var(--fx-a) 0 1px,transparent 2px) 0 0/30px 30px,radial-gradient(circle,var(--fx-c) 0 1.5px,transparent 2.5px) 13px 19px/47px 47px; animation:pe-dust-twinkle-a 3.8s steps(2) infinite; }
+.pefx--dust-twinkle::after { background:radial-gradient(circle at 30% 70%,var(--fx-b),transparent 48%); filter:blur(20px); animation:pe-dust-twinkle-b 7s ease-in-out infinite alternate; }
+@keyframes pe-dust-twinkle-a { 0%,100% { opacity:.3; transform:scale(1); } 50% { opacity:.9; transform:scale(1.04); } }
+@keyframes pe-dust-twinkle-b { from { transform:translate3d(-2%,1%,0); } to { transform:translate3d(2%,-1%,0); } }

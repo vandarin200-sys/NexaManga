@@ -1,0 +1,4 @@
+.pefx--ocean-ripple::before { background:repeating-radial-gradient(ellipse at 50% 55%,transparent 0 24px,var(--fx-a) 25px 26px,transparent 27px 48px); opacity:.4; animation:pe-ocean-ripple-a 6.5s ease-out infinite; }
+.pefx--ocean-ripple::after { background:linear-gradient(180deg,transparent,var(--fx-b)); opacity:.3; animation:pe-ocean-ripple-b 7s ease-in-out infinite alternate; }
+@keyframes pe-ocean-ripple-a { from { transform:scale(.35); opacity:.55; } to { transform:scale(1.15); opacity:0; } }
+@keyframes pe-ocean-ripple-b { from { transform:translateY(2%); opacity:.2; } to { transform:translateY(-2%); opacity:.45; } }

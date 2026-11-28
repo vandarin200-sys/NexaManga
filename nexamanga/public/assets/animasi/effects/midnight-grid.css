@@ -1,0 +1,4 @@
+.pefx--midnight-grid::before { background-image:linear-gradient(var(--fx-a) 1px,transparent 1px),linear-gradient(90deg,var(--fx-a) 1px,transparent 1px); background-size:30px 30px; opacity:.3; transform:perspective(200px) rotateX(60deg) scale(1.8); animation:pe-midnight-grid-a 8s linear infinite; }
+.pefx--midnight-grid::after { background:radial-gradient(ellipse at 50% 75%,var(--fx-b),transparent 65%); filter:blur(18px); animation:pe-midnight-grid-b 9s ease-in-out infinite alternate; }
+@keyframes pe-midnight-grid-a { from { transform:perspective(200px) rotateX(60deg) scale(1.8) translateY(0); } to { transform:perspective(200px) rotateX(60deg) scale(1.8) translateY(30px); } }
+@keyframes pe-midnight-grid-b { from { transform:scale(1); opacity:.5; } to { transform:scale(1.1); opacity:.8; } }

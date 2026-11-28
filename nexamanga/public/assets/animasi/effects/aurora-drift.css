@@ -1,0 +1,4 @@
+.pefx--aurora-drift::before { background:radial-gradient(ellipse at 20% 30%,var(--fx-a) 0%,transparent 48%),radial-gradient(ellipse at 78% 64%,var(--fx-b) 0%,transparent 52%); filter:blur(13px); animation:pe-aurora-drift-a 8s ease-in-out infinite alternate; }
+.pefx--aurora-drift::after { background:linear-gradient(115deg,transparent 35%,var(--fx-c) 50%,transparent 65%); opacity:.24; animation:pe-aurora-drift-b 6s linear infinite; }
+@keyframes pe-aurora-drift-a { from { transform:translate3d(-6%,-4%,0) scale(1); } to { transform:translate3d(7%,6%,0) scale(1.14); } }
+@keyframes pe-aurora-drift-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

@@ -18,8 +18,8 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
-    <link href="./assets/fonts.css" rel="stylesheet">
-    <link href="./assets/animasi/animasi.css" rel="stylesheet">
+    <link href="/assets/fonts.css" rel="stylesheet">
+    <link href="/assets/animasi/animasi.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"','sans-serif'], brand: ['Cinzel','serif'] }, colors: { brand: { red:'#DC2626', amber:'#D97706', dark:'#121215', surface:'#1A1A1E' } } } } };
@@ -5386,30 +5386,56 @@ function yzSettingRead(key, fallback) {
       }
 
       var PROFILE_EFFECTS = [
-        ['aurora-drift', 'Aurora Drift', 'aurora', '#8ee4d0', '#2d5d8f', '#eafff8'],
-        ['ember-rain', 'Ember Rain', 'ember', '#ff9a5b', '#7c2d12', '#ffe0a3'],
-        ['meteor-shower', 'Meteor Shower', 'rain', '#a8c7ff', '#243c8a', '#eaf1ff'],
-        ['starfall', 'Starfall', 'stars', '#fff3c4', '#8f6b2f', '#ffffff'],
-        ['mist-veil', 'Mist Veil', 'mist', '#c7f2e8', '#4c6f7a', '#f2fffc'],
-        ['solar-flare', 'Solar Flare', 'flare', '#ffd37a', '#e04b2f', '#fff6d8'],
-        ['ink-bloom', 'Ink Bloom', 'bloom', '#b7a7ff', '#3b2b78', '#efeaff'],
-        ['tide-pulse', 'Tide Pulse', 'pulse', '#7dd3fc', '#155e75', '#e0faff'],
-        ['comet-trail', 'Comet Trail', 'comet', '#f0abfc', '#701a75', '#fff0ff'],
-        ['signal-noise', 'Signal Noise', 'noise', '#a3e635', '#365314', '#efffd0'],
-        ['moon-halo', 'Moon Halo', 'halo', '#e2e8f0', '#64748b', '#ffffff'],
-        ['grid-runner', 'Grid Runner', 'grid', '#5eead4', '#134e4a', '#d5fffa'],
-        ['boreal-wave', 'Boreal Wave', 'aurora', '#86efac', '#14532d', '#ecfdf5'],
-        ['cinder-glow', 'Cinder Glow', 'ember', '#fb7185', '#881337', '#ffe4e6'],
-        ['neon-drizzle', 'Neon Drizzle', 'rain', '#67e8f9', '#155e75', '#e0ffff'],
-        ['dust-twinkle', 'Dust Twinkle', 'stars', '#fde68a', '#92400e', '#fffbeb'],
-        ['peach-fog', 'Peach Fog', 'mist', '#fed7aa', '#9a3412', '#fff7ed'],
-        ['prism-burst', 'Prism Burst', 'flare', '#c4b5fd', '#5b21b6', '#f5f3ff'],
-        ['violet-bloom', 'Violet Bloom', 'bloom', '#f9a8d4', '#831843', '#fff1f2'],
-        ['sonar-ring', 'Sonar Ring', 'pulse', '#fdba74', '#9a3412', '#fff7ed'],
-        ['dust-comet', 'Dust Comet', 'comet', '#fcd34d', '#92400e', '#fffbeb'],
-        ['static-bloom', 'Static Bloom', 'noise', '#f0abfc', '#701a75', '#fdf4ff'],
-        ['aurora-ring', 'Aurora Ring', 'halo', '#99f6e4', '#115e59', '#f0fdfa'],
-        ['midnight-grid', 'Midnight Grid', 'grid', '#93c5fd', '#1e3a8a', '#eff6ff']
+        ['aurora-drift', 'Aurora Drift', 'aurora-drift', '#8ee4d0', '#2d5d8f', '#eafff8'],
+        ['ember-rain', 'Ember Rain', 'ember-rain', '#ff9a5b', '#7c2d12', '#ffe0a3'],
+        ['meteor-shower', 'Meteor Shower', 'meteor-shower', '#a8c7ff', '#243c8a', '#eaf1ff'],
+        ['starfall', 'Starfall', 'starfall', '#fff3c4', '#8f6b2f', '#ffffff'],
+        ['mist-veil', 'Mist Veil', 'mist-veil', '#c7f2e8', '#4c6f7a', '#f2fffc'],
+        ['solar-flare', 'Solar Flare', 'solar-flare', '#ffd37a', '#e04b2f', '#fff6d8'],
+        ['ink-bloom', 'Ink Bloom', 'ink-bloom', '#b7a7ff', '#3b2b78', '#efeaff'],
+        ['tide-pulse', 'Tide Pulse', 'tide-pulse', '#7dd3fc', '#155e75', '#e0faff'],
+        ['comet-trail', 'Comet Trail', 'comet-trail', '#f0abfc', '#701a75', '#fff0ff'],
+        ['signal-noise', 'Signal Noise', 'signal-noise', '#a3e635', '#365314', '#efffd0'],
+        ['moon-halo', 'Moon Halo', 'moon-halo', '#e2e8f0', '#64748b', '#ffffff'],
+        ['grid-runner', 'Grid Runner', 'grid-runner', '#5eead4', '#134e4a', '#d5fffa'],
+        ['boreal-wave', 'Boreal Wave', 'boreal-wave', '#86efac', '#14532d', '#ecfdf5'],
+        ['cinder-glow', 'Cinder Glow', 'cinder-glow', '#fb7185', '#881337', '#ffe4e6'],
+        ['neon-drizzle', 'Neon Drizzle', 'neon-drizzle', '#67e8f9', '#155e75', '#e0ffff'],
+        ['dust-twinkle', 'Dust Twinkle', 'dust-twinkle', '#fde68a', '#92400e', '#fffbeb'],
+        ['peach-fog', 'Peach Fog', 'peach-fog', '#fed7aa', '#9a3412', '#fff7ed'],
+        ['prism-burst', 'Prism Burst', 'prism-burst', '#c4b5fd', '#5b21b6', '#f5f3ff'],
+        ['violet-bloom', 'Violet Bloom', 'violet-bloom', '#f9a8d4', '#831843', '#fff1f2'],
+        ['sonar-ring', 'Sonar Ring', 'sonar-ring', '#fdba74', '#9a3412', '#fff7ed'],
+        ['dust-comet', 'Dust Comet', 'dust-comet', '#fcd34d', '#92400e', '#fffbeb'],
+        ['static-bloom', 'Static Bloom', 'static-bloom', '#f0abfc', '#701a75', '#fdf4ff'],
+        ['aurora-ring', 'Aurora Ring', 'aurora-ring', '#99f6e4', '#115e59', '#f0fdfa'],
+        ['midnight-grid', 'Midnight Grid', 'midnight-grid', '#93c5fd', '#1e3a8a', '#eff6ff'],
+        ['crystal-shard', 'Crystal Shard', 'crystal-shard', '#a5f3fc', '#0e7490', '#ecfeff'],
+        ['sakura-fall', 'Sakura Fall', 'sakura-fall', '#fda4af', '#831843', '#fff1f2'],
+        ['ocean-ripple', 'Ocean Ripple', 'ocean-ripple', '#7dd3fc', '#0c4a6e', '#f0f9ff'],
+        ['neon-orbit', 'Neon Orbit', 'neon-orbit', '#f0abfc', '#86198f', '#fdf4ff'],
+        ['lunar-tide', 'Lunar Tide', 'lunar-tide', '#cbd5e1', '#334155', '#f8fafc'],
+        ['sunset-ribbon', 'Sunset Ribbon', 'sunset-ribbon', '#fdba74', '#7c2d12', '#fff7ed'],
+        ['firefly-dance', 'Firefly Dance', 'firefly-dance', '#fef08a', '#3f6212', '#fefce8'],
+        ['star-lattice', 'Star Lattice', 'star-lattice', '#c7d2fe', '#312e81', '#eef2ff'],
+        ['cosmic-dust', 'Cosmic Dust', 'cosmic-dust', '#d8b4fe', '#581c87', '#faf5ff'],
+        ['plasma-loop', 'Plasma Loop', 'plasma-loop', '#fca5a5', '#7f1d1d', '#fef2f2'],
+        ['frost-crystal', 'Frost Crystal', 'frost-crystal', '#bae6fd', '#0369a1', '#f0f9ff'],
+        ['ember-swirl', 'Ember Swirl', 'ember-swirl', '#fb923c', '#7c2d12', '#fff7ed'],
+        ['azure-beam', 'Azure Beam', 'azure-beam', '#93c5fd', '#1d4ed8', '#eff6ff'],
+        ['rose-quartz', 'Rose Quartz', 'rose-quartz', '#f9a8d4', '#9d174d', '#fff1f2'],
+        ['golden-hour', 'Golden Hour', 'golden-hour', '#fcd34d', '#92400e', '#fffbeb'],
+        ['cyber-glitch', 'Cyber Glitch', 'cyber-glitch', '#4ade80', '#14532d', '#f0fdf4'],
+        ['velvet-nebula', 'Velvet Nebula', 'velvet-nebula', '#c084fc', '#4c1d95', '#faf5ff'],
+        ['jade-current', 'Jade Current', 'jade-current', '#6ee7b7', '#065f46', '#ecfdf5'],
+        ['silver-rain', 'Silver Rain', 'silver-rain', '#e2e8f0', '#475569', '#f8fafc'],
+        ['solar-wind', 'Solar Wind', 'solar-wind', '#fde047', '#854d0e', '#fefce8'],
+        ['prism-rain', 'Prism Rain', 'prism-rain', '#f0abfc', '#6d28d9', '#faf5ff'],
+        ['ink-ripple', 'Ink Ripple', 'ink-ripple', '#a5b4fc', '#3730a3', '#eef2ff'],
+        ['aurora-curtain', 'Aurora Curtain', 'aurora-curtain', '#86efac', '#065f46', '#ecfdf5'],
+        ['meteoric-ash', 'Meteoric Ash', 'meteoric-ash', '#fdba74', '#7c2d12', '#fff7ed'],
+        ['electric-bloom', 'Electric Bloom', 'electric-bloom', '#fde047', '#713f12', '#fefce8'],
+        ['quiet-snow', 'Quiet Snow', 'quiet-snow', '#e0f2fe', '#475569', '#f8fafc']
       ].map(function (row) {
         return { id: row[0], name: row[1], kind: row[2], a: row[3], b: row[4], c: row[5] };
       });

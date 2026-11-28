@@ -1,0 +1,4 @@
+.pefx--lunar-tide::before { background:radial-gradient(ellipse at 50% 30%,var(--fx-a),transparent 60%),radial-gradient(ellipse at 50% 90%,var(--fx-b),transparent 62%); filter:blur(17px); animation:pe-lunar-tide-a 10s ease-in-out infinite alternate; }
+.pefx--lunar-tide::after { background:linear-gradient(90deg,transparent,var(--fx-c),transparent); opacity:.18; animation:pe-lunar-tide-b 8s linear infinite; }
+@keyframes pe-lunar-tide-a { from { transform:translateY(3%) scale(1); } to { transform:translateY(-3%) scale(1.12); } }
+@keyframes pe-lunar-tide-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

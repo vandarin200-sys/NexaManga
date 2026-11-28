@@ -1,0 +1,4 @@
+.pefx--meteor-shower::before { background:repeating-linear-gradient(112deg,transparent 0 13px,var(--fx-a) 14px 15px,transparent 16px 27px); opacity:.42; animation:pe-meteor-shower-a 4.5s linear infinite; }
+.pefx--meteor-shower::after { background:linear-gradient(180deg,transparent,var(--fx-b)); opacity:.28; animation:pe-meteor-shower-b 5s ease-in-out infinite alternate; }
+@keyframes pe-meteor-shower-a { from { transform:translate3d(-8%,-20%,0); } to { transform:translate3d(8%,20%,0); } }
+@keyframes pe-meteor-shower-b { from { opacity:.18; transform:scale(1); } to { opacity:.38; transform:scale(1.06); } }

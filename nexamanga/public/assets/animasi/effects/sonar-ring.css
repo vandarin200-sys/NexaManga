@@ -1,0 +1,4 @@
+.pefx--sonar-ring::before { background:repeating-radial-gradient(circle at 50% 50%,transparent 0 22px,var(--fx-a) 23px 24px,transparent 25px 44px); opacity:.42; animation:pe-sonar-ring-a 5s ease-out infinite; }
+.pefx--sonar-ring::after { background:radial-gradient(circle,var(--fx-b),transparent 60%); filter:blur(14px); animation:pe-sonar-ring-b 6s ease-in-out infinite alternate; }
+@keyframes pe-sonar-ring-a { from { transform:scale(.3); opacity:.5; } to { transform:scale(1.05); opacity:0; } }
+@keyframes pe-sonar-ring-b { from { transform:scale(.94); opacity:.4; } to { transform:scale(1.1); opacity:.75; } }

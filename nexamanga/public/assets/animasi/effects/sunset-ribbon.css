@@ -1,0 +1,4 @@
+.pefx--sunset-ribbon::before { background:linear-gradient(120deg,transparent 18%,var(--fx-a) 42%,var(--fx-b) 58%,transparent 82%); filter:blur(8px); opacity:.55; animation:pe-sunset-ribbon-a 7s ease-in-out infinite alternate; }
+.pefx--sunset-ribbon::after { background:linear-gradient(150deg,transparent 35%,var(--fx-c) 50%,transparent 65%); opacity:.22; animation:pe-sunset-ribbon-b 6s linear infinite; }
+@keyframes pe-sunset-ribbon-a { from { transform:translate3d(-5%,2%,0) rotate(-6deg) scale(1); } to { transform:translate3d(5%,-2%,0) rotate(6deg) scale(1.08); } }
+@keyframes pe-sunset-ribbon-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

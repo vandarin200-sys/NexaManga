@@ -1,0 +1,4 @@
+.pefx--comet-trail::before { background:linear-gradient(115deg,transparent 20%,var(--fx-a) 48%,var(--fx-c) 51%,transparent 56%); transform:rotate(-8deg); animation:pe-comet-trail-a 5.5s linear infinite; }
+.pefx--comet-trail::after { background:radial-gradient(circle at 78% 22%,var(--fx-b),transparent 46%); filter:blur(18px); animation:pe-comet-trail-b 6s ease-in-out infinite alternate; }
+@keyframes pe-comet-trail-a { from { transform:translate3d(-120%,40%,0) rotate(-8deg); } to { transform:translate3d(120%,-40%,0) rotate(-8deg); } }
+@keyframes pe-comet-trail-b { from { transform:scale(1); opacity:.45; } to { transform:scale(1.12); opacity:.75; } }

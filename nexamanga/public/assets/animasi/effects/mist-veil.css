@@ -1,0 +1,4 @@
+.pefx--mist-veil::before { background:radial-gradient(ellipse at 25% 65%,var(--fx-a),transparent 55%),radial-gradient(ellipse at 75% 35%,var(--fx-b),transparent 52%); filter:blur(20px); opacity:.75; animation:pe-mist-veil-a 11s ease-in-out infinite alternate-reverse; }
+.pefx--mist-veil::after { background:linear-gradient(90deg,transparent,var(--fx-c),transparent); opacity:.12; animation:pe-mist-veil-b 9s linear infinite; }
+@keyframes pe-mist-veil-a { from { transform:translate3d(-5%,3%,0) scale(1); } to { transform:translate3d(6%,-4%,0) scale(1.12); } }
+@keyframes pe-mist-veil-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

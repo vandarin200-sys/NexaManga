@@ -1,0 +1,4 @@
+.pefx--jade-current::before { background:repeating-linear-gradient(100deg,transparent 0 18px,var(--fx-a) 19px 20px,transparent 21px 36px); opacity:.36; animation:pe-jade-current-a 6s linear infinite; }
+.pefx--jade-current::after { background:radial-gradient(ellipse at 50% 80%,var(--fx-b),transparent 65%); filter:blur(17px); animation:pe-jade-current-b 7s ease-in-out infinite alternate; }
+@keyframes pe-jade-current-a { from { transform:translate3d(-8%,-10%,0); } to { transform:translate3d(8%,10%,0); } }
+@keyframes pe-jade-current-b { from { transform:scale(.96); opacity:.45; } to { transform:scale(1.12); opacity:.75; } }

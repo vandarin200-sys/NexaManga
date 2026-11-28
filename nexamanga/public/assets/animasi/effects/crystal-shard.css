@@ -1,0 +1,4 @@
+.pefx--crystal-shard::before { background:linear-gradient(135deg,transparent 20%,var(--fx-a) 48%,var(--fx-c) 52%,transparent 74%); opacity:.5; animation:pe-crystal-shard-a 7s ease-in-out infinite alternate; }
+.pefx--crystal-shard::after { background:linear-gradient(45deg,transparent 30%,var(--fx-b) 50%,transparent 70%); opacity:.35; animation:pe-crystal-shard-b 5s ease-in-out infinite alternate-reverse; }
+@keyframes pe-crystal-shard-a { from { transform:translate3d(-4%,3%,0) rotate(-8deg) scale(.96); } to { transform:translate3d(4%,-3%,0) rotate(8deg) scale(1.06); } }
+@keyframes pe-crystal-shard-b { from { transform:rotate(12deg) scale(.94); opacity:.2; } to { transform:rotate(-12deg) scale(1.08); opacity:.5; } }

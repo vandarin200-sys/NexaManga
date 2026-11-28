@@ -1,0 +1,4 @@
+.pefx--electric-bloom::before { background:radial-gradient(circle at 50% 55%,var(--fx-a) 0%,var(--fx-b) 32%,transparent 66%); filter:blur(11px); animation:pe-electric-bloom-a 5s ease-in-out infinite alternate; }
+.pefx--electric-bloom::after { background:repeating-linear-gradient(90deg,transparent 0 6px,var(--fx-c) 7px 8px,transparent 9px 16px); opacity:.22; animation:pe-electric-bloom-b .8s steps(3) infinite; }
+@keyframes pe-electric-bloom-a { from { transform:scale(.88); opacity:.42; } to { transform:scale(1.16); opacity:.9; } }
+@keyframes pe-electric-bloom-b { 0% { transform:translateX(-2px); } 50% { transform:translateX(2px); } 100% { transform:translateX(-2px); } }

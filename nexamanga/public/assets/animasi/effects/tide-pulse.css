@@ -1,0 +1,4 @@
+.pefx--tide-pulse::before { background:repeating-radial-gradient(circle at 50% 60%,transparent 0 18px,var(--fx-a) 19px 20px,transparent 21px 38px); opacity:.45; animation:pe-tide-pulse-a 5.5s ease-in-out infinite alternate; }
+.pefx--tide-pulse::after { background:radial-gradient(circle,var(--fx-b),transparent 62%); filter:blur(16px); animation:pe-tide-pulse-b 7s ease-in-out infinite alternate; }
+@keyframes pe-tide-pulse-a { from { transform:scale(.86); opacity:.35; } to { transform:scale(1.18); opacity:.8; } }
+@keyframes pe-tide-pulse-b { from { transform:translateY(2%) scale(1); } to { transform:translateY(-2%) scale(1.08); } }

@@ -1,0 +1,4 @@
+.pefx--static-bloom::before { background:repeating-linear-gradient(90deg,var(--fx-a) 0 1px,transparent 1px 5px); opacity:.22; animation:pe-static-bloom-a .65s steps(3) infinite; }
+.pefx--static-bloom::after { background:radial-gradient(circle at 50% 50%,var(--fx-b),transparent 60%); filter:blur(14px); animation:pe-static-bloom-b 4.5s ease-in-out infinite alternate; }
+@keyframes pe-static-bloom-a { 0% { transform:translate(0,0); } 50% { transform:translate(2px,-1px); } 100% { transform:translate(-1px,2px); } }
+@keyframes pe-static-bloom-b { from { transform:scale(.9); opacity:.35; } to { transform:scale(1.12); opacity:.7; } }

@@ -1,0 +1,4 @@
+.pefx--neon-drizzle::before { background:repeating-linear-gradient(108deg,transparent 0 15px,var(--fx-a) 16px 17px,transparent 18px 31px); opacity:.4; animation:pe-neon-drizzle-a 4.2s linear infinite; }
+.pefx--neon-drizzle::after { background:linear-gradient(180deg,transparent,var(--fx-b)); opacity:.3; animation:pe-neon-drizzle-b 5s ease-in-out infinite alternate; }
+@keyframes pe-neon-drizzle-a { from { transform:translate3d(-6%,-18%,0); } to { transform:translate3d(6%,18%,0); } }
+@keyframes pe-neon-drizzle-b { from { transform:scaleY(.9); opacity:.2; } to { transform:scaleY(1.08); opacity:.42; } }

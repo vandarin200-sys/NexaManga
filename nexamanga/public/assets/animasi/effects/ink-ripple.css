@@ -1,0 +1,4 @@
+.pefx--ink-ripple::before { background:repeating-radial-gradient(ellipse at 50% 50%,transparent 0 20px,var(--fx-a) 21px 22px,transparent 23px 40px); opacity:.4; animation:pe-ink-ripple-a 6s ease-out infinite; }
+.pefx--ink-ripple::after { background:radial-gradient(ellipse at 50% 60%,var(--fx-b),transparent 64%); filter:blur(15px); animation:pe-ink-ripple-b 7s ease-in-out infinite alternate; }
+@keyframes pe-ink-ripple-a { from { transform:scale(.32); opacity:.55; } to { transform:scale(1.12); opacity:0; } }
+@keyframes pe-ink-ripple-b { from { transform:scale(.95); opacity:.4; } to { transform:scale(1.1); opacity:.7; } }

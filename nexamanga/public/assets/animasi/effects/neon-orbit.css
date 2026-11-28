@@ -1,0 +1,4 @@
+.pefx--neon-orbit::before { border:1px solid var(--fx-a); border-radius:50%; width:54%; height:54%; inset:auto; left:23%; top:23%; box-shadow:0 0 24px var(--fx-a); animation:pe-neon-orbit-a 8s linear infinite; }
+.pefx--neon-orbit::after { background:radial-gradient(circle,var(--fx-b),transparent 55%); filter:blur(16px); animation:pe-neon-orbit-b 5s ease-in-out infinite alternate; }
+@keyframes pe-neon-orbit-a { from { transform:rotate(0deg) scale(.94); opacity:.45; } to { transform:rotate(360deg) scale(1.04); opacity:.85; } }
+@keyframes pe-neon-orbit-b { from { transform:scale(.92); opacity:.4; } to { transform:scale(1.12); opacity:.7; } }

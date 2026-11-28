@@ -1,0 +1,4 @@
+.pefx--grid-runner::before { background-image:linear-gradient(var(--fx-a) 1px,transparent 1px),linear-gradient(90deg,var(--fx-a) 1px,transparent 1px); background-size:24px 24px; opacity:.32; transform:perspective(180px) rotateX(56deg) scale(1.7); animation:pe-grid-runner-a 7s linear infinite; }
+.pefx--grid-runner::after { background:radial-gradient(ellipse at 50% 80%,var(--fx-b),transparent 60%); filter:blur(16px); opacity:.7; animation:pe-grid-runner-b 8s ease-in-out infinite alternate; }
+@keyframes pe-grid-runner-a { from { transform:perspective(180px) rotateX(56deg) scale(1.7) translateY(0); } to { transform:perspective(180px) rotateX(56deg) scale(1.7) translateY(24px); } }
+@keyframes pe-grid-runner-b { from { transform:scale(1); opacity:.5; } to { transform:scale(1.12); opacity:.8; } }

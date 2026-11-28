@@ -1,0 +1,4 @@
+.pefx--cyber-glitch::before { background:repeating-linear-gradient(0deg,var(--fx-a) 0 1px,transparent 1px 5px); opacity:.28; animation:pe-cyber-glitch-a .8s steps(3) infinite; }
+.pefx--cyber-glitch::after { background:linear-gradient(90deg,transparent 43%,var(--fx-b) 49%,var(--fx-c) 51%,transparent 57%); opacity:.3; animation:pe-cyber-glitch-b 4s ease-in-out infinite alternate; }
+@keyframes pe-cyber-glitch-a { 0% { transform:translate(0,0); } 33% { transform:translate(-3px,1px); } 66% { transform:translate(3px,-1px); } 100% { transform:translate(0,0); } }
+@keyframes pe-cyber-glitch-b { from { transform:scaleX(.9); opacity:.18; } to { transform:scaleX(1.1); opacity:.45; } }

@@ -1,0 +1,4 @@
+.pefx--rose-quartz::before { background:radial-gradient(ellipse at 30% 40%,var(--fx-a),transparent 55%),radial-gradient(ellipse at 70% 60%,var(--fx-b),transparent 58%); filter:blur(18px); opacity:.72; animation:pe-rose-quartz-a 9s ease-in-out infinite alternate; }
+.pefx--rose-quartz::after { background:linear-gradient(130deg,transparent 35%,var(--fx-c) 50%,transparent 65%); opacity:.2; animation:pe-rose-quartz-b 7s linear infinite; }
+@keyframes pe-rose-quartz-a { from { transform:translate3d(-3%,2%,0) scale(1); } to { transform:translate3d(4%,-3%,0) scale(1.1); } }
+@keyframes pe-rose-quartz-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

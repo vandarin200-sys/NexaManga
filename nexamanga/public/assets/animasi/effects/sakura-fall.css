@@ -1,0 +1,4 @@
+.pefx--sakura-fall::before { background:radial-gradient(ellipse at 40% 40%,var(--fx-a) 0 6px,transparent 7px) 0 0/70px 70px,radial-gradient(ellipse at 60% 60%,var(--fx-c) 0 4px,transparent 5px) 25px 15px/90px 90px; opacity:.55; animation:pe-sakura-fall-a 9s linear infinite; }
+.pefx--sakura-fall::after { background:radial-gradient(ellipse at 50% 85%,var(--fx-b),transparent 68%); filter:blur(16px); animation:pe-sakura-fall-b 6s ease-in-out infinite alternate; }
+@keyframes pe-sakura-fall-a { from { transform:translate3d(-8%,-20%,0) rotate(-12deg); } to { transform:translate3d(8%,20%,0) rotate(12deg); } }
+@keyframes pe-sakura-fall-b { from { transform:scale(1); opacity:.35; } to { transform:scale(1.1); opacity:.65; } }

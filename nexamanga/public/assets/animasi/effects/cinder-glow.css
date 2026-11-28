@@ -1,0 +1,4 @@
+.pefx--cinder-glow::before { background:radial-gradient(circle,var(--fx-a) 0 2px,transparent 4px) 4px 8px/32px 32px,radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 18px 22px/46px 46px; opacity:.7; animation:pe-cinder-glow-a 6s linear infinite; }
+.pefx--cinder-glow::after { background:radial-gradient(ellipse at 50% 90%,var(--fx-b),transparent 70%); filter:blur(14px); animation:pe-cinder-glow-b 3.6s ease-in-out infinite alternate; }
+@keyframes pe-cinder-glow-a { from { transform:translateY(16%); opacity:.4; } to { transform:translateY(-16%); opacity:.9; } }
+@keyframes pe-cinder-glow-b { from { transform:scale(.92); opacity:.45; } to { transform:scale(1.1); opacity:.85; } }

@@ -1,0 +1,4 @@
+.pefx--solar-wind::before { background:conic-gradient(from 270deg,transparent,var(--fx-a),transparent 35%,var(--fx-b),transparent 70%); filter:blur(15px); opacity:.62; animation:pe-solar-wind-a 10s linear infinite; }
+.pefx--solar-wind::after { background:linear-gradient(90deg,transparent,var(--fx-c),transparent); opacity:.2; animation:pe-solar-wind-b 6s ease-in-out infinite alternate; }
+@keyframes pe-solar-wind-a { from { transform:rotate(360deg) scale(.96); } to { transform:rotate(0deg) scale(1.08); } }
+@keyframes pe-solar-wind-b { from { transform:scaleX(.9); opacity:.12; } to { transform:scaleX(1.1); opacity:.34; } }

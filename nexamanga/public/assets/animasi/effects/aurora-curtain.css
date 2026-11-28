@@ -1,0 +1,4 @@
+.pefx--aurora-curtain::before { background:linear-gradient(180deg,var(--fx-a),transparent 45%,var(--fx-b)); filter:blur(16px); opacity:.55; animation:pe-aurora-curtain-a 9s ease-in-out infinite alternate; }
+.pefx--aurora-curtain::after { background:linear-gradient(90deg,transparent,var(--fx-c),transparent); opacity:.18; animation:pe-aurora-curtain-b 7s linear infinite; }
+@keyframes pe-aurora-curtain-a { from { transform:skewX(-6deg) scaleY(.94); } to { transform:skewX(6deg) scaleY(1.08); } }
+@keyframes pe-aurora-curtain-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

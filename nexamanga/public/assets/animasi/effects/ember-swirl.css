@@ -1,0 +1,4 @@
+.pefx--ember-swirl::before { background:conic-gradient(from 180deg,transparent,var(--fx-a),transparent 30%,var(--fx-b),transparent 65%); filter:blur(14px); opacity:.6; animation:pe-ember-swirl-a 8s linear infinite; }
+.pefx--ember-swirl::after { background:radial-gradient(circle,var(--fx-c) 0 2px,transparent 3px) 0 0/34px 34px; opacity:.6; animation:pe-ember-swirl-b 6s linear infinite; }
+@keyframes pe-ember-swirl-a { from { transform:rotate(0deg) scale(1); } to { transform:rotate(360deg) scale(1.08); } }
+@keyframes pe-ember-swirl-b { from { transform:translateY(14%) rotate(0deg); } to { transform:translateY(-14%) rotate(180deg); } }

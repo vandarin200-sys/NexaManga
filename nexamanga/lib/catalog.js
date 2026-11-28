@@ -8,7 +8,12 @@ const PROFILE_EFFECT_IDS = new Set([
   'aurora-drift', 'ember-rain', 'meteor-shower', 'starfall', 'mist-veil', 'solar-flare',
   'ink-bloom', 'tide-pulse', 'comet-trail', 'signal-noise', 'moon-halo', 'grid-runner',
   'boreal-wave', 'cinder-glow', 'neon-drizzle', 'dust-twinkle', 'peach-fog', 'prism-burst',
-  'violet-bloom', 'sonar-ring', 'dust-comet', 'static-bloom', 'aurora-ring', 'midnight-grid'
+  'violet-bloom', 'sonar-ring', 'dust-comet', 'static-bloom', 'aurora-ring', 'midnight-grid',
+  'crystal-shard', 'sakura-fall', 'ocean-ripple', 'neon-orbit', 'lunar-tide', 'sunset-ribbon',
+  'firefly-dance', 'star-lattice', 'cosmic-dust', 'plasma-loop', 'frost-crystal', 'ember-swirl',
+  'azure-beam', 'rose-quartz', 'golden-hour', 'cyber-glitch', 'velvet-nebula', 'jade-current',
+  'silver-rain', 'solar-wind', 'prism-rain', 'ink-ripple', 'aurora-curtain', 'meteoric-ash',
+  'electric-bloom', 'quiet-snow'
 ]);
 
 class ValidationError extends Error {

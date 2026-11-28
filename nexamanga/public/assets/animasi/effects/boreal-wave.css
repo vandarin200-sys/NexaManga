@@ -1,0 +1,4 @@
+.pefx--boreal-wave::before { background:radial-gradient(ellipse at 15% 40%,var(--fx-a),transparent 52%),radial-gradient(ellipse at 85% 60%,var(--fx-b),transparent 54%); filter:blur(14px); animation:pe-boreal-wave-a 9s ease-in-out infinite alternate; }
+.pefx--boreal-wave::after { background:linear-gradient(105deg,transparent 30%,var(--fx-c) 48%,transparent 66%); opacity:.2; animation:pe-boreal-wave-b 7s linear infinite; }
+@keyframes pe-boreal-wave-a { from { transform:translate3d(-5%,2%,0) scale(1.02); } to { transform:translate3d(6%,-3%,0) scale(1.16); } }
+@keyframes pe-boreal-wave-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

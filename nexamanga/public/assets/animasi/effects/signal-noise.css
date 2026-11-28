@@ -1,0 +1,4 @@
+.pefx--signal-noise::before { background:repeating-linear-gradient(0deg,var(--fx-a) 0 1px,transparent 1px 4px); opacity:.24; animation:pe-signal-noise-a .7s steps(3) infinite; }
+.pefx--signal-noise::after { background:linear-gradient(90deg,transparent 45%,var(--fx-b) 50%,transparent 55%); opacity:.3; animation:pe-signal-noise-b 5s linear infinite; }
+@keyframes pe-signal-noise-a { 0% { transform:translate(0,0); } 33% { transform:translate(-2px,1px); } 66% { transform:translate(2px,-1px); } 100% { transform:translate(0,0); } }
+@keyframes pe-signal-noise-b { from { transform:translateX(-120%); } to { transform:translateX(120%); } }

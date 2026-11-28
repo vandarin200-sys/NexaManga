@@ -1,0 +1,4 @@
+.pefx--azure-beam::before { background:linear-gradient(105deg,transparent 28%,var(--fx-a) 48%,var(--fx-c) 51%,transparent 70%); opacity:.5; animation:pe-azure-beam-a 6s linear infinite; }
+.pefx--azure-beam::after { background:radial-gradient(ellipse at 30% 70%,var(--fx-b),transparent 60%); filter:blur(18px); animation:pe-azure-beam-b 7s ease-in-out infinite alternate; }
+@keyframes pe-azure-beam-a { from { transform:translate3d(-120%,20%,0) rotate(-10deg); } to { transform:translate3d(120%,-20%,0) rotate(-10deg); } }
+@keyframes pe-azure-beam-b { from { transform:scale(.95); opacity:.4; } to { transform:scale(1.12); opacity:.75; } }

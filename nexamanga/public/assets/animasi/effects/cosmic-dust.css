@@ -1,0 +1,4 @@
+.pefx--cosmic-dust::before { background:radial-gradient(ellipse at 20% 40%,var(--fx-a),transparent 50%),radial-gradient(ellipse at 75% 65%,var(--fx-b),transparent 52%),radial-gradient(circle at 50% 50%,var(--fx-c),transparent 40%); filter:blur(20px); opacity:.7; animation:pe-cosmic-dust-a 11s ease-in-out infinite alternate; }
+.pefx--cosmic-dust::after { background:radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 0 0/34px 34px; opacity:.4; animation:pe-cosmic-dust-b 5s linear infinite; }
+@keyframes pe-cosmic-dust-a { from { transform:translate3d(-4%,2%,0) scale(1); } to { transform:translate3d(5%,-3%,0) scale(1.16); } }
+@keyframes pe-cosmic-dust-b { from { transform:translateY(6%); } to { transform:translateY(-6%); } }

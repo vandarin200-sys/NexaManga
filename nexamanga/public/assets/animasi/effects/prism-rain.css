@@ -1,0 +1,4 @@
+.pefx--prism-rain::before { background:repeating-linear-gradient(108deg,transparent 0 14px,var(--fx-a) 15px 16px,var(--fx-b) 17px 18px,transparent 19px 30px); opacity:.4; animation:pe-prism-rain-a 4.6s linear infinite; }
+.pefx--prism-rain::after { background:linear-gradient(180deg,transparent,var(--fx-c)); opacity:.18; animation:pe-prism-rain-b 5s ease-in-out infinite alternate; }
+@keyframes pe-prism-rain-a { from { transform:translate3d(-7%,-18%,0); } to { transform:translate3d(7%,18%,0); } }
+@keyframes pe-prism-rain-b { from { transform:scaleY(.92); opacity:.1; } to { transform:scaleY(1.08); opacity:.3; } }

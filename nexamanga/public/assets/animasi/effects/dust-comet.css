@@ -1,0 +1,4 @@
+.pefx--dust-comet::before { background:linear-gradient(120deg,transparent 24%,var(--fx-a) 47%,var(--fx-c) 50%,transparent 55%); animation:pe-dust-comet-a 6s linear infinite; }
+.pefx--dust-comet::after { background:radial-gradient(circle at 70% 30%,var(--fx-b),transparent 48%); filter:blur(18px); animation:pe-dust-comet-b 5s ease-in-out infinite alternate; }
+@keyframes pe-dust-comet-a { from { transform:translate3d(-120%,30%,0) rotate(-10deg); opacity:.4; } to { transform:translate3d(120%,-30%,0) rotate(-10deg); opacity:.9; } }
+@keyframes pe-dust-comet-b { from { transform:scale(1); opacity:.4; } to { transform:scale(1.14); opacity:.7; } }

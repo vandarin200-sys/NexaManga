@@ -1,0 +1,4 @@
+.pefx--ember-rain::before { background:radial-gradient(circle,var(--fx-a) 0 2px,transparent 3px) 0 0/28px 28px,radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 14px 10px/38px 38px; animation:pe-ember-rain-a 7s linear infinite; }
+.pefx--ember-rain::after { background:radial-gradient(ellipse at 50% 100%,var(--fx-b),transparent 68%); filter:blur(12px); animation:pe-ember-rain-b 3.2s ease-in-out infinite alternate; }
+@keyframes pe-ember-rain-a { from { transform:translateY(18%); } to { transform:translateY(-18%); } }
+@keyframes pe-ember-rain-b { from { opacity:.35; transform:scale(.94); } to { opacity:.8; transform:scale(1.08); } }
