@@ -4,6 +4,8 @@ const { neon } = require('@neondatabase/serverless');
 const { EMPTY_CATALOG, validateCatalog } = require('./catalog');
 const { config } = require('./env');
 const {
+  LEVEL_STEP,
+  MAX_LEVEL,
   XP_ACTIVITIES,
   normalizePublicSlug,
   normalizeUsername,
@@ -1205,19 +1207,6 @@ async function readAnalytics(from, to) {
   }));
 }
 
-function utcDay(value) {
-  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.toISOString().slice(0, 10);
-  if (value === null || value === undefined || value === '') return null;
-  const text = String(value);
-  return /^\d{4}-\d{2}-\d{2}/.test(text) ? text.slice(0, 10) : text.slice(0, 10);
-}
-
-function previousDay(day) {
-  const date = new Date(`${day}T00:00:00.000Z`);
-  date.setUTCDate(date.getUTCDate() - 1);
-  return date.toISOString().slice(0, 10);
-}
-
 async function awardXp(input) {
   await ensureSchema();
   if (!input || typeof input !== 'object') return null;
@@ -1230,48 +1219,47 @@ async function awardXp(input) {
   const name = String(input.name || username).slice(0, 100) || username;
   const avatar = typeof input.avatar === 'string' && input.avatar ? input.avatar.slice(0, 2048) : null;
   const refKey = String(input.refKey || '').slice(0, 300);
-  const day = new Date().toISOString().slice(0, 10);
   const db = executor();
 
-  return db.transaction(async (tx) => {
-    await tx`INSERT INTO nexamanga_user_progress (user_id, username, name, avatar)
+  const results = await db.transaction((tx) => [
+    tx`INSERT INTO nexamanga_user_progress (user_id, username, name, avatar)
       VALUES (${userId}, ${username}, ${name}, ${avatar})
       ON CONFLICT (user_id) DO UPDATE SET
         username = EXCLUDED.username,
         name = EXCLUDED.name,
         avatar = COALESCE(EXCLUDED.avatar, nexamanga_user_progress.avatar),
-        updated_at = now()`;
-
-    const eventRows = await tx`INSERT INTO nexamanga_xp_events (user_id, activity, ref_key, amount)
-      VALUES (${userId}, ${activity}, ${refKey}, ${amount})
-      ON CONFLICT (user_id, activity, ref_key) DO NOTHING
-      RETURNING amount`;
-    if (!rows(eventRows).length) return null;
-
-    const currentRows = await tx`SELECT xp, streak_days, last_active_date
-      FROM nexamanga_user_progress WHERE user_id = ${userId} FOR UPDATE`;
-    const current = firstRow(currentRows) || { xp: 0, streak_days: 0, last_active_date: null };
-    const lastActive = utcDay(current.last_active_date);
-    const streak = lastActive === day
-      ? Math.max(1, Math.floor(numberValue(current.streak_days)))
-      : lastActive === previousDay(day)
-        ? Math.max(1, Math.floor(numberValue(current.streak_days))) + 1
-        : 1;
-    const totalXp = Math.max(0, Math.floor(numberValue(current.xp))) + amount;
-    const progress = progressFromXp(totalXp);
-    await tx`UPDATE nexamanga_user_progress
-      SET xp = ${totalXp}, level = ${progress.level}, streak_days = ${streak},
-          last_active_date = ${day}, updated_at = now()
-      WHERE user_id = ${userId}`;
-    return serializeProgress(Object.assign({}, current, {
-      user_id: userId,
-      username,
-      name,
-      avatar,
-      total_xp: totalXp,
-      streak_days: streak
-    }));
-  });
+        updated_at = now()
+      RETURNING user_id`,
+    tx`WITH granted AS (
+        INSERT INTO nexamanga_xp_events (user_id, activity, ref_key, amount)
+        VALUES (${userId}, ${activity}, ${refKey}, ${amount})
+        ON CONFLICT (user_id, activity, ref_key) DO NOTHING
+        RETURNING amount
+      ),
+      updated AS (
+        UPDATE nexamanga_user_progress p
+        SET xp = p.xp + granted.amount,
+            level = LEAST(${MAX_LEVEL}, GREATEST(1,
+              1 + FLOOR((p.xp + granted.amount)::numeric / ${LEVEL_STEP})::integer)),
+            streak_days = CASE
+              WHEN p.last_active_date = CURRENT_DATE THEN GREATEST(1, p.streak_days)
+              WHEN p.last_active_date = CURRENT_DATE - 1 THEN GREATEST(1, p.streak_days) + 1
+              ELSE 1
+            END,
+            last_active_date = CURRENT_DATE,
+            updated_at = now()
+        FROM granted
+        WHERE p.user_id = ${userId}
+        RETURNING p.user_id, p.username, p.name, p.avatar,
+            p.xp AS total_xp, p.streak_days
+      )
+      SELECT user_id, username, name, avatar, total_xp, streak_days FROM updated`
+  ]);
+  const awarded = firstRow(results[1]);
+  if (!awarded) return null;
+  return serializeProgress(Object.assign({}, awarded, {
+    total_xp: Math.max(0, Math.floor(numberValue(awarded.total_xp)))
+  }));
 }
 
 async function readLeaderboard(range = 'week', limit = 50) {
