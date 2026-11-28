@@ -778,7 +778,7 @@ const INSERT_COLUMN_TYPES = {
   nexamanga_comments: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'date', 'text', 'boolean', 'jsonb'],
   nexamanga_comment_upvotes: ['text', 'text'],
   nexamanga_reports: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'timestamptz', 'text', 'jsonb'],
-  nexamanga_accounts: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'timestamptz', 'boolean', 'jsonb'],
+  nexamanga_accounts: ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'timestamptz', 'boolean', 'jsonb'],
   nexamanga_account_credentials: ['text', 'text', 'text', 'text', 'text', 'timestamptz', 'integer'],
   nexamanga_account_connections: ['text', 'text', 'boolean', 'text', 'text', 'text', 'timestamptz', 'timestamptz', 'jsonb'],
   nexamanga_chapter_reactions: ['text', 'text', 'text'],
