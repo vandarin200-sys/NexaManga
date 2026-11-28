@@ -19,6 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
     <link href="./assets/fonts.css" rel="stylesheet">
+    <link href="./assets/animasi/animasi.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"','sans-serif'], brand: ['Cinzel','serif'] }, colors: { brand: { red:'#DC2626', amber:'#D97706', dark:'#121215', surface:'#1A1A1E' } } } } };
@@ -383,46 +384,6 @@
     .pe-foot-status.is-on i { background:var(--kv-neon); box-shadow:0 0 0 3px color-mix(in srgb,var(--kv-neon) 18%,transparent); }
     .pe-foot-status span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:500 .62rem/1 var(--kv-font-mono); color:var(--kv-text-muted); }
     .pe-foot-status strong { color:var(--kv-text); }
-    .pefx { position:absolute; inset:0; overflow:hidden; pointer-events:none; --fx-a:#91b8b1; --fx-b:#2d5d8f; --fx-c:#eafff8; }
-    .pefx::before,.pefx::after { content:''; position:absolute; inset:-18%; }
-    .pefx--aurora::before { background:radial-gradient(ellipse at 20% 30%,var(--fx-a) 0%,transparent 48%),radial-gradient(ellipse at 78% 64%,var(--fx-b) 0%,transparent 52%); filter:blur(13px); animation:pefx-drift 8s ease-in-out infinite alternate; }
-    .pefx--aurora::after { background:linear-gradient(115deg,transparent 35%,var(--fx-c) 50%,transparent 65%); opacity:.24; animation:pefx-sweep 6s linear infinite; }
-    .pefx--ember::before { background:radial-gradient(circle,var(--fx-a) 0 2px,transparent 3px) 0 0/28px 28px,radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 14px 10px/38px 38px; animation:pefx-rise 7s linear infinite; }
-    .pefx--ember::after { background:radial-gradient(ellipse at 50% 100%,var(--fx-b),transparent 68%); filter:blur(12px); animation:pefx-flicker 3.2s ease-in-out infinite alternate; }
-    .pefx--rain::before { background:repeating-linear-gradient(112deg,transparent 0 13px,var(--fx-a) 14px 15px,transparent 16px 27px); opacity:.42; animation:pefx-fall 4.5s linear infinite; }
-    .pefx--rain::after { background:linear-gradient(180deg,transparent,var(--fx-b)); opacity:.28; }
-    .pefx--stars::before { background:radial-gradient(circle,var(--fx-c) 0 1px,transparent 2px) 0 0/26px 26px,radial-gradient(circle,var(--fx-a) 0 1.5px,transparent 2.5px) 11px 17px/41px 41px; animation:pefx-twinkle 3.4s steps(2) infinite; }
-    .pefx--stars::after { background:radial-gradient(circle at 70% 25%,var(--fx-b),transparent 45%); filter:blur(18px); }
-    .pefx--mist::before { background:radial-gradient(ellipse at 25% 65%,var(--fx-a),transparent 55%),radial-gradient(ellipse at 75% 35%,var(--fx-b),transparent 52%); filter:blur(20px); opacity:.75; animation:pefx-drift 11s ease-in-out infinite alternate-reverse; }
-    .pefx--mist::after { background:linear-gradient(90deg,transparent,var(--fx-c),transparent); opacity:.12; animation:pefx-sweep 9s linear infinite; }
-    .pefx--flare::before { background:conic-gradient(from 0deg,transparent,var(--fx-a),transparent 35%,var(--fx-b),transparent 70%); filter:blur(15px); opacity:.7; animation:pefx-spin 10s linear infinite; }
-    .pefx--flare::after { background:radial-gradient(circle at 50% 50%,var(--fx-c) 0 4%,transparent 28%); opacity:.55; animation:pefx-flicker 4s ease-in-out infinite alternate; }
-    .pefx--bloom::before { background:radial-gradient(circle at 50% 55%,var(--fx-a) 0%,var(--fx-b) 35%,transparent 68%); filter:blur(10px); animation:pefx-bloom 6s ease-in-out infinite alternate; }
-    .pefx--bloom::after { border:1px solid var(--fx-c); border-radius:50%; opacity:.16; animation:pefx-ring 5s ease-out infinite; }
-    .pefx--pulse::before { background:repeating-radial-gradient(circle at 50% 60%,transparent 0 18px,var(--fx-a) 19px 20px,transparent 21px 38px); opacity:.45; animation:pefx-bloom 5.5s ease-in-out infinite alternate; }
-    .pefx--pulse::after { background:radial-gradient(circle,var(--fx-b),transparent 62%); filter:blur(16px); }
-    .pefx--comet::before { background:linear-gradient(115deg,transparent 20%,var(--fx-a) 48%,var(--fx-c) 51%,transparent 56%); transform:rotate(-8deg); animation:pefx-comet 5.5s linear infinite; }
-    .pefx--comet::after { background:radial-gradient(circle at 78% 22%,var(--fx-b),transparent 46%); filter:blur(18px); }
-    .pefx--noise::before { background:repeating-linear-gradient(0deg,var(--fx-a) 0 1px,transparent 1px 4px); opacity:.24; animation:pefx-noise .7s steps(3) infinite; }
-    .pefx--noise::after { background:linear-gradient(90deg,transparent 45%,var(--fx-b) 50%,transparent 55%); opacity:.3; animation:pefx-sweep 5s linear infinite; }
-    .pefx--halo::before { border:2px solid var(--fx-a); border-radius:50%; width:62%; height:62%; inset:auto; left:19%; top:19%; box-shadow:0 0 28px var(--fx-a),inset 0 0 22px var(--fx-b); animation:pefx-pulse 3.8s ease-in-out infinite alternate; }
-    .pefx--halo::after { background:radial-gradient(circle,var(--fx-c) 0 3%,transparent 30%); opacity:.45; }
-    .pefx--grid::before { background-image:linear-gradient(var(--fx-a) 1px,transparent 1px),linear-gradient(90deg,var(--fx-a) 1px,transparent 1px); background-size:24px 24px; opacity:.32; transform:perspective(180px) rotateX(56deg) scale(1.7); animation:pefx-grid 7s linear infinite; }
-    .pefx--grid::after { background:radial-gradient(ellipse at 50% 80%,var(--fx-b),transparent 60%); filter:blur(16px); opacity:.7; }
-    .pefx-banner { z-index:1; opacity:.72; mix-blend-mode:screen; border-radius:inherit; }
-    @keyframes pefx-drift { from { transform:translate3d(-6%,-4%,0) scale(1); } to { transform:translate3d(7%,6%,0) scale(1.14); } }
-    @keyframes pefx-sweep { from { transform:translateX(-120%); } to { transform:translateX(120%); } }
-    @keyframes pefx-rise { from { transform:translateY(18%); } to { transform:translateY(-18%); } }
-    @keyframes pefx-fall { from { transform:translate3d(-8%,-20%,0); } to { transform:translate3d(8%,20%,0); } }
-    @keyframes pefx-twinkle { 0%,100% { opacity:.35; } 50% { opacity:.9; } }
-    @keyframes pefx-spin { to { transform:rotate(360deg); } }
-    @keyframes pefx-flicker { from { opacity:.35; transform:scale(.94); } to { opacity:.8; transform:scale(1.08); } }
-    @keyframes pefx-bloom { from { transform:scale(.86); opacity:.45; } to { transform:scale(1.18); opacity:.9; } }
-    @keyframes pefx-ring { from { transform:scale(.35); opacity:.4; } to { transform:scale(1.4); opacity:0; } }
-    @keyframes pefx-comet { from { transform:translate3d(-120%,40%,0) rotate(-8deg); } to { transform:translate3d(120%,-40%,0) rotate(-8deg); } }
-    @keyframes pefx-noise { 0% { transform:translate(0,0); } 33% { transform:translate(-2px,1px); } 66% { transform:translate(2px,-1px); } 100% { transform:translate(0,0); } }
-    @keyframes pefx-pulse { from { transform:scale(.82); opacity:.45; } to { transform:scale(1.08); opacity:1; } }
-    @keyframes pefx-grid { from { background-position:0 0; } to { background-position:0 24px; } }
     .kv-banner-reset { margin-right:auto; color:var(--kv-text-muted); font-size:.7rem; font-weight:600; background:transparent; border:0; cursor:pointer; }
     .kv-banner-reset:hover { color:var(--kv-text); text-decoration:underline; }
     @media (max-width:760px) { .kv-banner-modal { padding:12px; } .kv-banner-modal .kv-modal-box { max-height:calc(100dvh - 24px); overflow:auto; } .pe-layout { grid-template-columns:1fr; } .pe-grid { max-height:340px; } }
@@ -5479,6 +5440,15 @@ function yzSettingRead(key, fallback) {
         return '<span class="pefx pefx--' + effect.kind + (extraClass ? ' ' + extraClass : '') + '" style="' + profileEffectVars(effect) + '" aria-hidden="true"></span>';
       }
 
+      function renderProfileEffectOverlay(effect) {
+        if (!effect) return '';
+        var vars = profileEffectVars(effect);
+        return '<div data-profile-effect-overlay class="pe-overlay pointer-events-none select-none absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl z-20" role="presentation">' +
+          '<span class="pefx pefx--' + effect.kind + ' pe-layer pe-layer--a" style="' + vars + '" aria-hidden="true"></span>' +
+          '<span class="pefx pefx--' + effect.kind + ' pe-layer pe-layer--b" style="' + vars + '" aria-hidden="true"></span>' +
+        '</div>';
+      }
+
       function filteredProfileEffects() {
         var query = String(state.profileEffectsQuery || '').trim().toLowerCase();
         if (!query) return PROFILE_EFFECTS;
@@ -8108,15 +8078,27 @@ function renderSettings() {
         button.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
       var previewFx = document.querySelector('[data-effect-preview-fx]');
+      var previewFxAlt = document.querySelector('[data-effect-preview-fx-b]');
       if (previewFx) {
         if (effect) {
-          previewFx.className = 'pefx pefx--' + effect.kind + ' pe-preview-layer';
+          previewFx.className = 'pefx pefx--' + effect.kind + ' pe-preview-layer pe-layer--a';
           previewFx.setAttribute('style', profileEffectVars(effect));
           previewFx.hidden = false;
         } else {
-          previewFx.className = 'pefx pe-preview-layer';
+          previewFx.className = 'pefx pe-preview-layer pe-layer--a';
           previewFx.setAttribute('style', '');
           previewFx.hidden = true;
+        }
+      }
+      if (previewFxAlt) {
+        if (effect) {
+          previewFxAlt.className = 'pefx pefx--' + effect.kind + ' pe-preview-layer pe-layer--b';
+          previewFxAlt.setAttribute('style', profileEffectVars(effect));
+          previewFxAlt.hidden = false;
+        } else {
+          previewFxAlt.className = 'pefx pe-preview-layer pe-layer--b';
+          previewFxAlt.setAttribute('style', '');
+          previewFxAlt.hidden = true;
         }
       }
       var previewName = document.querySelector('[data-effect-preview-name]');
@@ -8163,15 +8145,15 @@ function renderSettings() {
       var moreHidden = shown.length >= list.length;
       var selectedLabel = selected ? escapeHtml(selected.name) : 'Tanpa overlay';
       var previewLayer = selected
-        ? '<span class="pefx pefx--' + selected.kind + ' pe-preview-layer" data-effect-preview-fx style="' + profileEffectVars(selected) + '" aria-hidden="true"></span>'
-        : '<span class="pefx pe-preview-layer" data-effect-preview-fx style="" aria-hidden="true" hidden></span>';
+        ? '<span class="pefx pefx--' + selected.kind + ' pe-preview-layer pe-layer--a" data-effect-preview-fx style="' + profileEffectVars(selected) + '" aria-hidden="true"></span><span class="pefx pefx--' + selected.kind + ' pe-preview-layer pe-layer--b" data-effect-preview-fx-b style="' + profileEffectVars(selected) + '" aria-hidden="true"></span>'
+        : '<span class="pefx pe-preview-layer pe-layer--a" data-effect-preview-fx style="" aria-hidden="true" hidden></span><span class="pefx pe-preview-layer pe-layer--b" data-effect-preview-fx-b style="" aria-hidden="true" hidden></span>';
       var effectsBody = '<div class="pe-layout">' +
-          '<div class="pe-preview-col"><span class="pe-section-label">Live preview / banner</span>' +
+          '<div class="pe-preview-col"><span class="pe-section-label">Live preview / seluruh profil</span>' +
             '<div class="pe-preview"><div class="pe-preview-bg" style="background-image:' + profileBannerCss() + '"></div>' + previewLayer +
-              '<div class="pe-preview-top"><span>NexaManga / Profile Signal</span><span data-effect-preview-state>' + (selected ? 'FX ON' : 'FX OFF') + '</span></div>' +
-              '<div class="pe-preview-id"><b data-effect-preview-name>' + selectedLabel + '</b><span data-effect-preview-kind>' + (selected ? escapeHtml(selected.kind) + ' layer' : 'no layer') + '</span></div>' +
+              '<div class="pe-preview-top"><span>NexaManga / Profile Card</span><span data-effect-preview-state>' + (selected ? 'FX ON' : 'FX OFF') + '</span></div>' +
+              '<div class="pe-preview-id"><b data-effect-preview-name>' + selectedLabel + '</b><span data-effect-preview-kind>' + (selected ? escapeHtml(selected.kind) + ' · full profile' : 'no layer') + '</span></div>' +
             '</div>' +
-            '<div class="pe-preview-meta"><small>Preview langsung di banner profil lokal kamu.</small><strong>Preview</strong></div>' +
+            '<div class="pe-preview-meta"><small>Preview langsung di seluruh kartu profil lokal kamu.</small><strong>Preview</strong></div>' +
           '</div>' +
           '<div class="pe-tools-col">' +
             '<label class="pe-search-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" class="pe-search" data-effect-search value="' + escapeHtml(state.profileEffectsQuery || '') + '" placeholder="Cari efek..." aria-label="Cari efek"/></label>' +
@@ -8331,9 +8313,9 @@ function renderSettings() {
         '<div class="pointer-events-none fixed inset-x-0 top-0 h-[380px] overflow-hidden"><div class="absolute left-1/2 -top-44 -translate-x-1/2 w-[780px] h-[340px] rounded-full bg-[var(--yz-accent)]/[0.08] blur-[120px]"></div></div>' +
         '<main class="relative mx-auto max-w-6xl w-full px-3.5 sm:px-6 lg:px-8 pt-16 sm:pt-20 flex flex-col justify-between font-sans text-zinc-300"><div class="space-y-5 sm:space-y-6 flex-grow">' +
           '<section class="relative rounded-2xl sm:rounded-3xl border border-white/[0.08] bg-[#0a0c10] shadow-2xl overflow-hidden">' +
+            renderProfileEffectOverlay(equippedEffect) +
             '<div data-profile-banner class="relative h-36 sm:h-52 md:h-64 w-full overflow-hidden" style="background-image:' + bannerCss + '">' +
               (displayBackground ? '<img class="absolute inset-0 h-full w-full object-cover opacity-70" src="' + escapeHtml(displayBackground) + '" alt="" referrerpolicy="no-referrer"/>' : '<div class="absolute inset-0" style="background-image:radial-gradient(circle at 30% 30%, rgba(145,184,177,.16), transparent 55%)"></div>') +
-              profileEffectLayer(equippedEffect, 'pefx-banner') +
               '<div class="absolute inset-x-0 top-0 h-20 pointer-events-none" style="background-image:linear-gradient(to bottom, rgba(0,0,0,.75) 0%, rgba(0,0,0,.25) 55%, transparent 100%)"></div><div class="absolute inset-x-0 bottom-0 h-32 sm:h-40 pointer-events-none" style="background-image:linear-gradient(to top, #0a0c10 0%, rgba(10,12,16,.65) 55%, transparent 100%)"></div>' +
               '<div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2"><input type="file" data-profile-banner-file accept="image/jpeg,image/png,image/webp" class="hidden"/><button type="button" data-action="profile-banner-upload" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation"' + (state.profileBannerBusy ? ' disabled' : '') + '" title="Ganti foto banner"><span style="color:#91b8b1">' + pIcon('pencil', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">' + (state.profileBannerBusy ? 'Menyimpan...' : 'Ganti Foto') + '</span></button><button type="button" data-action="profile-effects" class="flex items-center gap-1.5 rounded-full bg-black/65 hover:bg-black/85 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-zinc-100 transition-colors cursor-pointer touch-manipulation" title="Profile Effects"><span style="color:#91b8b1">' + pIcon('sparkles', 'h-3.5 w-3.5') + '</span><span class="hidden sm:inline">Effects</span></button></div>' +
             '</div>' +
